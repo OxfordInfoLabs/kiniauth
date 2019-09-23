@@ -1,0 +1,17 @@
+[
+  {
+    "key": "viewdata",
+    "description": "Test View Data Privilege.",
+    "scope": "ACCOUNT"
+  },
+  {
+    "key": "editdata",
+    "description": "Test Edit Data Privilege.",
+    "scope": "ACCOUNT"
+  },
+  {
+    "key": "deletedata",
+    "description": "Test Delete Data Privilege.",
+    "scope": "ACCOUNT"
+  }
+]

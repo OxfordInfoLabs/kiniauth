@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "emailAddress": "admin@kinicart.com",
+    "name": "Administrator",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "status": "ACTIVE",
+    "roles": [
+      {
+        "scopeId": 0
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "emailAddress": "sam@samdavisdesign.co.uk",
+    "name": "Sam Davis",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "mobileNumber": "07891 147676",
+    "backupEmailAddress": "samdavis@gmail.com",
+    "status": "ACTIVE",
+    "roles": [
+      {
+        "scopeId": 1
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "emailAddress": "simon@peterjonescarwash.com",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "status": "ACTIVE",
+    "roles": [
+      {
+        "scopeId": 2
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "emailAddress": "james@smartcoasting.org",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "activeAccountId": 3,
+    "status": "ACTIVE",
+    "roles": [
+      {
+        "scopeId": 2
+      },
+      {
+        "scopeId": 3
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "emailAddress": "suspended@suspendeduser.com",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "status": "SUSPENDED"
+  },
+  {
+    "id": 6,
+    "emailAddress": "john@shoppingonline.com",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "status": "ACTIVE",
+    "roles": [
+      {
+        "scopeId": 4,
+        "roleId": 1
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "emailAddress": "mary@shoppingonline.com",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "activeAccountId": 4,
+    "status": "ACTIVE",
+    "roles": [
+      {
+        "scopeId": 4,
+        "roleId": 2
+      },
+      {
+        "scopeId": 2,
+        "roleId": 3
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "emailAddress": "pending@myfactoryoutlet.com",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "activeAccountId": 2,
+    "status": "PENDING"
+  },
+  {
+    "id": 9,
+    "emailAddress": "james@smartcoasting.org",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "activeAccountId": 5,
+    "parentAccountId": 1,
+    "status": "ACTIVE",
+    "roles": [
+      {
+        "scopeId": 5
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "emailAddress": "regularuser@smartcoasting.org",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "activeAccountId": 3,
+    "status": "ACTIVE",
+    "roles": [
+      {
+        "scopeId": 1,
+        "roleId": 2
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "emailAddress": "bob@twofactor.com",
+    "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "status": "ACTIVE",
+    "roles": [
+      {
+        "scopeId": 1
+      }
+    ],
+    "twoFactorData": "H5OW4O4TUP4W2CGP"
+  }
+]

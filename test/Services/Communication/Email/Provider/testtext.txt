@@ -1,0 +1,1 @@
+Hello world.  This is an example attachment to be added to an email.
