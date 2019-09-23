@@ -1,0 +1,37 @@
+[
+  {
+    "accountId": 1,
+    "name": "Sam Davis Design",
+    "subAccountsEnabled": 1,
+    "apiKey": "TESTAPIKEY",
+    "apiSecret": "TESTAPISECRET",
+    "status": "ACTIVE"
+  },
+  {
+    "accountId": 2,
+    "name": "Peter Jones Car Washing",
+    "status": "ACTIVE",
+    "apiKey": "TESTAPIKEY2",
+    "apiSecret": "TESTAPISECRET2"
+  },
+  {
+    "accountId": 3,
+    "name": "Smart Coasting",
+    "status": "ACTIVE",
+    "apiKey": "TESTAPIKEY3",
+    "apiSecret": "TESTAPISECRET3"
+  },
+  {
+    "accountId": 4,
+    "name": "Suspended Account",
+    "status": "SUSPENDED"
+  },
+  {
+    "accountId": 5,
+    "name": "Smart Coasting - Design Account",
+    "status": "ACTIVE",
+    "parentAccountId": 1,
+    "apiKey": "HELLOWORLD",
+    "apiSecret": "HAPPYCAMPERS"
+  }
+]

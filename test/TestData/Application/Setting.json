@@ -1,0 +1,25 @@
+[
+  {
+    "key": "brandName",
+    "value": "Kiniauth Example"
+  },
+  {
+    "key": "logo",
+    "value": "TESTLOGO"
+  },
+  {
+    "parentAccountId": 1,
+    "key": "brandName",
+    "value": "Sam Davis Retail Outlet"
+  },
+  {
+    "parentAccountId": 1,
+    "key": "logo",
+    "value": "TESTLOGO2"
+  },
+  {
+    "parentAccountId": 1,
+    "key": "referringDomains",
+    "value": "samdavis.org"
+  }
+]

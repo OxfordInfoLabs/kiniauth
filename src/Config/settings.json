@@ -1,0 +1,51 @@
+[
+  {
+    "title": "Site / Brand Name",
+    "description": "Used in the dashboard and within email templates.",
+    "key": "brandName",
+    "type": "string",
+    "scope": "ALL"
+  },
+  {
+    "title": "Logo",
+    "description": "Used in the dashboard and within email templates as required.",
+    "key": "logo",
+    "type": "image",
+    "scope": "ALL"
+  },
+  {
+    "title": "Reverse Logo",
+    "description": "Used in the dashboard and within email templates as required.",
+    "key": "logo",
+    "type": "image",
+    "scope": "ALL"
+  },
+  {
+    "title": "Dashboard URL",
+    "description": "The URL for the dashboard.  This is used in email templates",
+    "key": "dashboardURL",
+    "type": "url",
+    "scope": "ALL"
+  },
+  {
+    "title": "Help and Support URL",
+    "description": "The URL for any help and support documentation.  This is used in email templates if supplied",
+    "key": "helpSupportURL",
+    "type": "url",
+    "scope": "ALL"
+  },
+  {
+    "title": "Terms URL",
+    "description": "The URL for any terms and conditions.  This is used in email templates if supplied",
+    "key": "termsURL",
+    "type": "url",
+    "scope": "ALL"
+  },
+  {
+    "title": "Referring Domains",
+    "description": "Your website and dashboard domain names which allow us to authenticate your users for whitelabel access",
+    "key": "referringDomains",
+    "type": "domain",
+    "scope": "PARENT_ACCOUNT"
+  }
+]

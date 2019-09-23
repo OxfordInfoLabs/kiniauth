@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Viewer",
+    "description": "Can view key data in our test system",
+    "privileges": [
+      "viewdata"
+    ]
+  },
+  {
+    "name": "Editor",
+    "description": "Can make edits to key data in our test system",
+    "privileges": [
+      "viewdata",
+      "editdata"
+    ]
+  },
+  {
+    "name": "Super Editor",
+    "description": "Can make edits and deletes to key data in our test system",
+    "privileges": [
+      "viewdata",
+      "editdata",
+      "deletedata"
+    ]
+  }
+]
