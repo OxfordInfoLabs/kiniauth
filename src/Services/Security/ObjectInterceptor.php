@@ -8,13 +8,15 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\Session;
+use Kinikit\Core\DependencyInjection\ContainerInterceptor;
 use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Core\Reflection\Method;
 
 /**
  * Generic method interceptor.  Currently allows for privilege based enforcement at the method level as well
  * as an ability to override object interceptors using markup.
  */
-class ObjectInterceptor extends \Kinikit\Core\DependencyInjection\ObjectInterceptor {
+class ObjectInterceptor extends ContainerInterceptor {
 
     private $objectInterceptor;
     private $securityService;
@@ -36,14 +38,17 @@ class ObjectInterceptor extends \Kinikit\Core\DependencyInjection\ObjectIntercep
      *
      * @param object $objectInstance - The object being called
      * @param string $methodName - The method name
-     * @param string[string] $params - The parameters passed to the method as name => value pairs.
-     * @param \Kinikit\Core\Util\Annotation\ClassAnnotations $classAnnotations - The class annotations for convenience for e.g. role based enforcement.
+     * @param string [string] $params - The parameters passed to the method as name => value pairs.
+     * @param Method $methodInspector - The method inspector
+     * for this class method.
      *
      * @return string[string] - The params array either intact or modified if required.
      */
-    public function beforeMethod($objectInstance, $methodName, $params, $classAnnotations) {
+    public function beforeMethod($objectInstance, $methodName, $params, $methodInspector) {
 
-        if ($matches = $classAnnotations->getMethodAnnotationsForMatchingTag("hasPrivilege", $methodName)) {
+        if ($matches =
+            $methodInspector->getMethodAnnotations()["hasPrivilege"] ?? []
+        ) {
 
             foreach ($matches as $match) {
 
@@ -101,14 +106,14 @@ class ObjectInterceptor extends \Kinikit\Core\DependencyInjection\ObjectIntercep
      * Check for object interceptor disabling.
      *
      * @param callable $callable
-     * @param \Kinikit\Core\Util\Annotation\ClassAnnotations $classAnnotations
+     * @param Method $methodInspector
      *
      * @return callable
      */
-    public function methodCallable($callable, $methodName, $params, $classAnnotations) {
+    public function methodCallable($callable, $methodName, $params, $methodInspector) {
 
         // Check for objectInterceptorDisabled
-        if ($classAnnotations->getMethodAnnotationsForMatchingTag("objectInterceptorDisabled", $methodName)) {
+        if ($methodInspector->getMethodAnnotations()["objectInterceptorDisabled"] ?? []) {
             return function () use ($callable) {
                 return $this->objectInterceptor->executeInsecure($callable);
             };

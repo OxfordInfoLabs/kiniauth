@@ -3,16 +3,15 @@
 
 namespace Kiniauth\Objects\Application;
 
-use Kinikit\Core\Util\ArrayUtils;
-use Kinikit\MVC\Framework\SourceBaseManager;
-use Kinikit\Persistence\UPF\Object\ActiveRecord;
+use Kinikit\Persistence\ORM\ActiveRecord;
+
 
 /**
  * Setting object for persisting settings.
  *
  * Class Setting
  *
- * @ormTable kc_setting
+ * @table kc_setting
  * @interceptors \Kiniauth\Objects\Application\SettingInterceptor
  */
 class Setting extends ActiveRecord {
@@ -28,7 +27,7 @@ class Setting extends ActiveRecord {
     /**
      * @var string
      * @primaryKey
-     * @ormColumn setting_key
+     * @column setting_key
      */
     private $key;
 

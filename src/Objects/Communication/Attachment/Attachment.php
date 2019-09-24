@@ -5,7 +5,7 @@ namespace Kiniauth\Objects\Communication\Attachment;
 
 /**
  *
- * @ormTable kc_attachment
+ * @table kc_attachment
  */
 class Attachment extends AttachmentSummary {
 
@@ -13,7 +13,7 @@ class Attachment extends AttachmentSummary {
      * The raw content of this attachment.
      *
      * @var string
-     * @ormType LONGTEXT
+     * @sqlType LONGTEXT
      */
     private $content;
 

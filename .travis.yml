@@ -1,0 +1,13 @@
+language: php
+php:
+  - '7.2'
+
+before_script: composer clearcache; composer install; composer update;  cd test
+
+script: phpunit .
+
+notifications:
+  slack:
+    secure: Q7mvsFsvSkuS1K0vsPlD/WUN+uFRxfBQLsERL0gc9LcyWwt5yefbVxK7EMXKMruQ39gZLC2zuJOrSaG7ebwkDxgxY6GseGU6JYsonvBnr+7birmvmx8ICLu/lnTxaPov5FsyP9FkKCMg4beTOnm8ZfTAaKEEVGeDEOyVypC45vRPF0iS8L0EcKTheqevDQd7LVXgBCSiAgeQ6PQTd3lb+0FaBHDOVJ/rfXr2DjUtEetTkREJWzqDpDmSOcDthGFeXxgH+wsWledAS09KSX7UHe5Diy3WcE3Q0yot1FT/T7yeGckFHJsthhQBN6y+nttEacRjsjTq/nFF6ZGRbt1ANm/jSBHUEIKEs52/w/muG+FvdudQnv79WJj3ruddxr2+9TY5mCriDwdcuh+lvUY9+EGCDBXAg4JaPlZYyhtIgvveF/tcOjgHMIbzA8xntBiriBhC7mZjah6YIf0ouEjbDbdvLLlzBeJtJURusSOmuU1SdKGPduXJl5WnvVDWVjZwvheRQFEUS27a8fE6VUVNQui0CDt+o2F1OVCMVV3QonnA3jZjrJv9haNyYr50h40tjR8jjV8coTXCLFiBS2BelvUOdF4S3Uv3oEHLQSYQ2sfYWBdmPRkThwHH3sYOPBdgleLQHF9v8XyDOzHhRZoRS3HFPIqxPJBX5+yTxijz7DY=
+
+

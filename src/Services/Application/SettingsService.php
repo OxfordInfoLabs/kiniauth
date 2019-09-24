@@ -16,7 +16,7 @@ class SettingsService {
      * @param $value string
      */
     public function getSettingByKeyAndValue($key, $value) {
-        $matches = Setting::query("WHERE key = ? AND value = ?", $key, $value);
+        $matches = Setting::filter("WHERE key = ? AND value = ?", $key, $value);
         if (sizeof($matches) > 0) {
             return $matches[0];
         } else {

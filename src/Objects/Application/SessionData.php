@@ -13,8 +13,9 @@ use Kinikit\Core\Object\SerialisableObject;
  * application for display purposes etc.
  *
  * @package Kiniauth\Objects\Application
+ * @noGenerate
  */
-class SessionData extends SerialisableObject {
+class SessionData  {
 
     /**
      * @var User

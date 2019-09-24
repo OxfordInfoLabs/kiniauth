@@ -3,13 +3,13 @@
 
 namespace Kiniauth\Objects\Security;
 
-use Kinikit\Core\Object\SerialisableObject;
-
 
 /**
  * Privilege class which encodes a simple key and description for a system privilege.
+ *
+ * @noGenerate
  */
-class Privilege extends SerialisableObject {
+class Privilege {
 
     /**
      * A string identifier for a privilege for programmatic use.

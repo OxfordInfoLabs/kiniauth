@@ -4,9 +4,13 @@
 namespace Kiniauth\Objects\Communication\Email;
 
 
-use Kinikit\Core\Object\SerialisableObject;
-
-class EmailSendResult extends SerialisableObject {
+/**
+ * @noGenerate
+ *
+ * Class EmailSendResult
+ * @package Kiniauth\Objects\Communication\Email
+ */
+class EmailSendResult  {
 
     private $status;
     private $emailId;

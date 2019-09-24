@@ -2,15 +2,13 @@
 
 
 namespace Kiniauth\Objects\Security;
-
-
-use Kinikit\Persistence\UPF\Object\ActiveRecord;
+use Kinikit\Persistence\ORM\ActiveRecord;
 
 
 /**
  * Role class.  A role may contain an array of Privilege objects or may be a standalone role.
  *
- * @ormTable kc_role
+ * @table kc_role
  */
 class Role extends ActiveRecord {
 
@@ -46,7 +44,7 @@ class Role extends ActiveRecord {
      * String name .
      *
      * @var string
-     * @validation required
+     * @required
      */
     private $name;
 
@@ -55,7 +53,7 @@ class Role extends ActiveRecord {
      * Description for this role.
      *
      * @var string
-     * @validation required
+     * @required
      */
     private $description;
 
@@ -63,9 +61,9 @@ class Role extends ActiveRecord {
     /**
      * An array of privileges.
      *
-     * @formatter json
+     * @json
      * @var string[]
-     * @ormType LONGTEXT
+     * @sqlType LONGTEXT
      */
     private $privileges;
 

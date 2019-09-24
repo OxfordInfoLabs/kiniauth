@@ -2,15 +2,14 @@
 
 
 namespace Kiniauth\Objects\Communication\Attachment;
+use Kinikit\Persistence\ORM\ActiveRecord;
 
-
-use Kinikit\Persistence\UPF\Object\ActiveRecord;
 
 /**
  * Attachment summary for use when summarising attachments.
  *
- * @ormTable kc_attachment
- * @noGeneratedTable
+ * @table kc_attachment
+ * @noGenerate
  *
  */
 class AttachmentSummary extends ActiveRecord {
