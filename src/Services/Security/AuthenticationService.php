@@ -9,7 +9,7 @@ use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
-use Kinikit\Core\Configuration;
+use Kinikit\Core\Configuration\Configuration;
 
 
 /**

@@ -46,9 +46,7 @@ class UserService {
         $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId())));
         $user->save();
 
-        // Resync the user object
-        $user->synchroniseRelationships();
-
+      
         return $user;
 
     }

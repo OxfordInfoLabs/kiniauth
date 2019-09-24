@@ -2,15 +2,13 @@
 
 
 namespace Kiniauth\Objects\Communication\Email;
-
-
-use Kinikit\Persistence\UPF\Object\ActiveRecord;
+use Kinikit\Persistence\ORM\ActiveRecord;
 
 
 /**
  * Summary class for listing of emails
  *
- * @noGeneratedTable
+ * @noGenerate
  */
 class EmailSummary extends ActiveRecord {
 
@@ -33,10 +31,8 @@ class EmailSummary extends ActiveRecord {
     /**
      * Sent date for this email
      *
-     * @var string
-     * @validation required
-     * @formatter britishdatetime
-     * @ormType DATETIME
+     * @var \DateTime
+     * @required
      */
     protected $sentDate;
 
@@ -45,7 +41,7 @@ class EmailSummary extends ActiveRecord {
      * From field
      *
      * @var string
-     * @validation required
+     * @required
      *
      */
     protected $sender;
@@ -54,28 +50,25 @@ class EmailSummary extends ActiveRecord {
     /**
      * To field
      *
-     * @var string[]
-     * @validation required
-     * @ormType TEXT
-     * @formatter json
+     * @var array
+     * @required
+     * @json
      */
     protected $recipients;
 
     /**
      * Optional CC field
      *
-     * @var string[]
-     * @ormType TEXT
-     * @formatter json
+     * @var array
+     * @json
      */
     protected $cc;
 
     /**
      * Optional BCC field
      *
-     * @var string[]
-     * @ormType TEXT
-     * @formatter json
+     * @var array
+     * @json
      */
     protected $bcc;
 
@@ -84,7 +77,7 @@ class EmailSummary extends ActiveRecord {
      * Subject field
      *
      * @var string
-     * @validation required
+     * @required
      */
     protected $subject;
 
@@ -99,7 +92,6 @@ class EmailSummary extends ActiveRecord {
      * An error string if an error occurred sending this email
      *
      * @var string
-     * @ormType TEXT
      */
     protected $errorMessage;
 
@@ -108,7 +100,7 @@ class EmailSummary extends ActiveRecord {
      * The sent status of this email
      *
      * @var string
-     * @validation maxlength(30)
+     * @maxLength(30)
      */
     protected $status;
 

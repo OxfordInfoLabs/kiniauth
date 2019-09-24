@@ -4,11 +4,12 @@ namespace Kiniauth\Objects\Communication\Email;
 
 
 use Kiniauth\Objects\Communication\Attachment\Attachment;
+use Kiniauth\Objects\Communication\Attachment\AttachmentSummary;
 use Kinikit\Persistence\UPF\Object\ActiveRecord;
 
 /**
  *
- * @ormTable kc_email
+ * @table kc_email
  */
 class Email extends EmailSummary {
 
@@ -17,21 +18,16 @@ class Email extends EmailSummary {
      * The main text body for this email.
      *
      * @var string
-     * @validation required
-     * @ormType LONGTEXT
+     * @required
+     * @sqlType LONGTEXT
      */
     private $textBody;
 
     /**
      * Array of attachment summary objects summarising any attachments for this email
      *
-     * @var \Kiniauth\Objects\Communication\Attachment\AttachmentSummary[]
-     *
-     * @relationship
-     * @isMultiple
-     * @relatedClassName Kiniauth\Objects\Communication\Attachment\AttachmentSummary
-     * @relatedFields id=>parentObjectId,"Email"=>parentObjectType
-     *
+     * @oneToMany
+     * @var AttachmentSummary[]
      */
     private $attachments;
 

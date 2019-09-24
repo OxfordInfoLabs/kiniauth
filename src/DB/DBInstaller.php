@@ -5,9 +5,9 @@ namespace Kiniauth\DB;
 
 
 use DirectoryIterator;
-use Kinikit\Core\Init;
-use Kinikit\Persistence\Database\Connection\DefaultDB;
-use Kinikit\Persistence\UPF\Engines\ORM\SchemaGenerator\SchemaGenerator;
+use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Persistence\Database\Connection\DatabaseConnection;
+use Kinikit\Persistence\ORM\SchemaGenerator\SchemaGenerator;
 
 class DBInstaller {
 
@@ -18,10 +18,11 @@ class DBInstaller {
      */
     public function run($coreOnly = false, $sourceDirectory = ".") {
 
-        $databaseConnection = DefaultDB::instance();
+        $databaseConnection = Container::instance()->get(DatabaseConnection::class);
+        $schemaGenerator = Container::instance()->get(SchemaGenerator::class);
+
 
         // Execute the create schema for both the core and application
-        $schemaGenerator = new SchemaGenerator($databaseConnection);
         $schemaGenerator->createSchema(__DIR__ . "/../Objects", "Kiniauth\Objects");
         $schemaGenerator->createSchema($sourceDirectory . "/Objects");
 
@@ -45,8 +46,6 @@ class DBInstaller {
      * Main clean function.
      */
     public static function runFromComposer($event) {
-
-        new Init();
 
         $sourceDirectory = $event && isset($event->getComposer()->getPackage()->getConfig()["source-directory"]) ?
             $event->getComposer()->getPackage()->getConfig()["source-directory"] : ".";

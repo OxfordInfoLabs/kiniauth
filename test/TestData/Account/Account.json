@@ -2,7 +2,7 @@
   {
     "accountId": 1,
     "name": "Sam Davis Design",
-    "subAccountsEnabled": 1,
+    "subAccountsEnabled": true,
     "apiKey": "TESTAPIKEY",
     "apiSecret": "TESTAPISECRET",
     "status": "ACTIVE"

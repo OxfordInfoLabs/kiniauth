@@ -6,7 +6,7 @@ namespace Kiniauth\Services\Application;
 use Kiniauth\Objects\Account\Account;
 
 use Kiniauth\Objects\Security\User;
-use Kinikit\Core\Util\HTTP\HttpSession;
+
 
 /**
  * Kiniauth session object.  This subclasses the Kinikit HTTP Session object to provide
@@ -15,7 +15,7 @@ use Kinikit\Core\Util\HTTP\HttpSession;
  * Class Session
  * @package Kiniauth\Objects\Application
  */
-class Session extends HttpSession {
+class Session extends \Kinikit\MVC\Session\PHPSession {
 
     /**
      * Get the logged in user

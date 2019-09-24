@@ -2,10 +2,7 @@
 
 
 namespace Kiniauth\Objects\Account;
-
-
-use Kinikit\Persistence\UPF\Object\ActiveRecord;
-
+use Kinikit\Persistence\ORM\ActiveRecord;
 
 
 /**
@@ -13,7 +10,7 @@ use Kinikit\Persistence\UPF\Object\ActiveRecord;
  *
  * Class Contact
  *
- * @ormTable kc_contact
+ * @table kc_contact
  */
 class Contact extends ActiveRecord {
 
@@ -30,7 +27,7 @@ class Contact extends ActiveRecord {
      * Owner account id.
      *
      * @var integer
-     * @validation required
+     * @required
      */
     protected $accountId;
 
@@ -41,7 +38,7 @@ class Contact extends ActiveRecord {
      * Defaults to general
      *
      * @var string
-     * @validation required
+     * @required
      */
     private $type = self::ADDRESS_TYPE_GENERAL;
 
@@ -66,7 +63,7 @@ class Contact extends ActiveRecord {
      * Street 1
      *
      * @var string
-     * @validation required
+     * @required
      */
     private $street1;
 
@@ -83,7 +80,7 @@ class Contact extends ActiveRecord {
      * City
      *
      * @var string
-     * @validation required
+     * @required
      */
     private $city;
 
@@ -107,7 +104,7 @@ class Contact extends ActiveRecord {
      * Country code (2 Letter)
      *
      * @var string
-     * @validation required
+     * @required
      */
     private $countryCode;
 
@@ -124,7 +121,7 @@ class Contact extends ActiveRecord {
      * Email address.
      *
      * @var string
-     * @validation email
+     * @email
      */
     private $emailAddress;
 

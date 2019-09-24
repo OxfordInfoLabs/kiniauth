@@ -2,16 +2,13 @@
 
 
 namespace Kiniauth\Objects\Security;
-
-
-use Kinikit\Persistence\UPF\Object\ActiveRecord;
+use Kinikit\Persistence\ORM\ActiveRecord;
 
 
 /**
  * Encodes a role for a user on an account.
  *
- * @ormTable kc_user_role
- * @ormView kc_vw_user_role
+ * @table kc_user_role
  *
  */
 class UserRole extends ActiveRecord {

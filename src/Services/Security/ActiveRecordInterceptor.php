@@ -6,14 +6,16 @@ namespace Kiniauth\Services\Security;
 use Kiniauth\Objects\Application\Session;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Object\SerialisableObject;
-use Kinikit\Persistence\UPF\Framework\UPFObjectInterceptorBase;
+use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
+
 
 /**
  * Generic object interceptor for intercepting requests for all objects.  This predominently enforces security rules
  * around objects containing an accountId property.
  *
+ * @noProxy
  */
-class ActiveRecordInterceptor extends UPFObjectInterceptorBase {
+class ActiveRecordInterceptor extends DefaultORMInterceptor {
 
     private $securityService;
     private $session;

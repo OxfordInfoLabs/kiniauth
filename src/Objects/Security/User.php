@@ -7,16 +7,15 @@ namespace Kiniauth\Objects\Security;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Application\Session;
 use Kinikit\Core\Exception\ValidationException;
-use Kinikit\Core\Object\SerialisableObject;
-use Kinikit\Core\Util\SerialisableArrayUtils;
+use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Validation\FieldValidationError;
-use Kinikit\Persistence\UPF\Object\ActiveRecord;
+use Kinikit\Persistence\ORM\ActiveRecord;
 
 
 /**
  * Main user entity for accessing the system.  Users typically belong to one or more accounts or are super users.
  *
- * @ormTable kc_user
+ * @table kc_user
  */
 class User extends ActiveRecord {
 
@@ -91,12 +90,9 @@ class User extends ActiveRecord {
     /**
      * An array of explicit user account role objects
      *
-     * @var \Kiniauth\Objects\Security\UserRole[]
-     * @relationship
-     * @isMultiple
-     * @relatedClassName Kiniauth\Objects\Security\UserRole
-     * @relatedFields id=>userId
-     *
+     * @oneToMany
+     * @childJoinColumns user_id
+     * @var UserRole[]
      */
     private $roles = array();
 
@@ -278,8 +274,8 @@ class User extends ActiveRecord {
     public function getActiveAccountId() {
         $firstActiveAccountId = null;
 
-        $rolesByAccountId = SerialisableArrayUtils::indexArrayOfObjectsByMember("accountId", $this->getRoles());
-
+        $rolesByAccountId = ObjectArrayUtils::indexArrayOfObjectsByMember("accountId", $this->getRoles());
+        
         foreach ($rolesByAccountId as $role) {
 
             if ($role->getAccountStatus() == Account::STATUS_ACTIVE) {
@@ -323,14 +319,15 @@ class User extends ActiveRecord {
      * @return array
      */
     public function validate() {
-        $validationErrors = parent::validate();
+
+        $validationErrors = [];
 
         // Check for duplication across parent accounts
-        $matchingUsers = self::countQuery("WHERE emailAddress = ? AND parent_account_id = ? AND id <> ?", $this->emailAddress,
+        $matchingUsers = self::values("COUNT(*)", "WHERE emailAddress = ? AND parent_account_id = ? AND id <> ?", $this->emailAddress,
             $this->parentAccountId ? $this->parentAccountId : 0, $this->id ? $this->id : -1);
 
 
-        if ($matchingUsers > 0)
+        if ($matchingUsers[0] > 0)
             $validationErrors["emailAddress"] = new FieldValidationError("emailAddress", "duplicateEmail", "A user already exists with this email address");
 
         return $validationErrors;

@@ -2,15 +2,14 @@
 
 
 namespace Kiniauth\Objects\Account;
+use Kinikit\Persistence\ORM\ActiveRecord;
 
-
-use Kinikit\Persistence\UPF\Object\ActiveRecord;
 
 /**
  * Account summary.  Used for listing accounts in both Admin and for a user.
  *
- * @ormTable kc_account
- * @noGeneratedTable
+ * @table kc_account
+ * @noGenerate
  */
 class AccountSummary extends ActiveRecord {
 
@@ -43,7 +42,7 @@ class AccountSummary extends ActiveRecord {
      * Status of the account in question.
      *
      * @var string
-     * @validation maxlength(30)
+     * @maxLength 30
      */
     protected $status = self::STATUS_ACTIVE;
 

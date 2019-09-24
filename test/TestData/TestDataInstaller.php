@@ -6,12 +6,22 @@ namespace Kiniauth\Test\TestData;
 
 use DirectoryIterator;
 use Kiniauth\DB\DBInstaller;
+use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Init;
 
 
 class TestDataInstaller {
+
+    /**
+     * @var ObjectBinder
+     */
+    private $objectBinder;
+
+    public function __construct() {
+        $this->objectBinder = Container::instance()->get(ObjectBinder::class);
+    }
 
 
     /**
@@ -113,8 +123,8 @@ class TestDataInstaller {
             }
 
             $items = json_decode(file_get_contents($filepath), true);
-
-            $objects = \Kinikit\Core\Util\SerialisableArrayUtils::convertArrayToSerialisableObjects($items, $targetClass . "[]");
+            
+            $objects = $this->objectBinder->bindFromArray($items, $targetClass . "[]");
 
             foreach ($objects as $item) {
                 $item->save();

@@ -4,9 +4,14 @@
 namespace Kiniauth\Objects\Application;
 
 
-use Kinikit\Persistence\UPF\Framework\UPFObjectInterceptorBase;
+use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
 
-class SettingInterceptor extends UPFObjectInterceptorBase {
+/**
+ *
+ * @noGenerate
+ *
+ */
+class SettingInterceptor extends DefaultORMInterceptor {
 
 
     /**
@@ -16,7 +21,7 @@ class SettingInterceptor extends UPFObjectInterceptorBase {
      * @param null $upfInstance
      * @return bool
      */
-    public function postMap($object = null, $upfInstance = null) {
+    public function postMap($object = null) {
 
         // Ensure we populate this setting with a definition.
         $object->populateSettingWithDefinition();

@@ -3,6 +3,7 @@
 
 namespace Kiniauth\WebServices\Security;
 
+use Kinikit\Core\DependencyInjection\ContainerInterceptor;
 use Kinikit\Core\DependencyInjection\ObjectInterceptor;
 use Kinikit\Core\Util\HTTP\URLHelper;
 use Kinikit\MVC\Framework\Controller;
@@ -14,7 +15,7 @@ use Kinikit\MVC\Framework\Controller\RESTService;
  *
  * @package Kiniauth\WebServices\Security
  */
-abstract class ControllerAccessInterceptor extends ObjectInterceptor {
+abstract class ControllerAccessInterceptor extends ContainerInterceptor {
 
 
     /**
@@ -26,7 +27,7 @@ abstract class ControllerAccessInterceptor extends ObjectInterceptor {
      * @param \Kinikit\Core\Util\Annotation\ClassAnnotations $classAnnotations
      * @return string
      */
-    public function afterCreate($objectInstance) {
+    public function afterCreate($objectInstance, $classInspector) {
         if ($objectInstance instanceof Controller) {
             $this->onControllerAccess($objectInstance, new URLHelper($_SERVER ['REQUEST_URI']));
         }
