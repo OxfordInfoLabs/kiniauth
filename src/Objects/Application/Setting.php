@@ -3,6 +3,8 @@
 
 namespace Kiniauth\Objects\Application;
 
+use Kinikit\Core\Configuration\FileResolver;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Persistence\ORM\ActiveRecord;
 
 
@@ -130,6 +132,9 @@ class Setting extends ActiveRecord {
      * @return string
      */
     public function getTitle() {
+        if (!$this->title && $this->key) {
+            $this->title = $this->getSettingDefinition()["title"] ?? null;
+        }
         return $this->title;
     }
 
@@ -137,6 +142,9 @@ class Setting extends ActiveRecord {
      * @return string
      */
     public function getDescription() {
+        if (!$this->description && $this->key) {
+            $this->description = $this->getSettingDefinition()["description"] ?? null;
+        }
         return $this->description;
     }
 
@@ -144,22 +152,26 @@ class Setting extends ActiveRecord {
      * @return string
      */
     public function getType() {
+        if (!$this->type && $this->key) {
+            $this->type = $this->getSettingDefinition()["type"] ?? null;
+        }
         return $this->type;
     }
 
 
     /**
-     * Populate this setting with a definition.
+     * Get our setting definition (used in getters above).
      *
-     * @param $setting Setting
+     * @return array
      */
-    public function populateSettingWithDefinition() {
+    private function getSettingDefinition() {
+
         $defs = self::getSettingDefinitions();
         if (isset($defs[$this->getKey()])) {
             $def = $defs[$this->getKey()];
-            unset($def["scope"]);
-            $this->bind($def);
         }
+
+        return $def;
     }
 
 
@@ -168,8 +180,11 @@ class Setting extends ActiveRecord {
      */
     public static function getSettingDefinitions() {
         if (!self::$settingDefinitions) {
+
+            $fileResolver = Container::instance()->get(FileResolver::class);
+
             $settingDefinitions = array();
-            foreach (SourceBaseManager::instance()->getSourceBases() as $sourceBase) {
+            foreach ($fileResolver->getSearchPaths() as $sourceBase) {
                 if (file_exists($sourceBase . "/Config/settings.json")) {
                     $newDefs = json_decode(file_get_contents($sourceBase . "/Config/settings.json"), true);
                     $settingDefinitions = array_merge($settingDefinitions, $newDefs);

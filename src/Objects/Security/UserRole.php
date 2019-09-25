@@ -2,6 +2,8 @@
 
 
 namespace Kiniauth\Objects\Security;
+
+use Kiniauth\Objects\Account\Account;
 use Kinikit\Persistence\ORM\ActiveRecord;
 
 
@@ -43,38 +45,39 @@ class UserRole extends ActiveRecord {
 
 
     /**
-     * The role id to be attached to a user and account - if left blank this is assumed to mean all roles.
+     * The role id for this user role.
      *
      * @var integer
-     * @primaryKey
      */
     protected $roleId;
 
+    /**
+     * The role object for this user role
+     *
+     * @manyToOne
+     * @parentJoinColumns role_id
+     * @readOnly
+     *
+     * @var Role
+     */
+    protected $role;
 
     /**
-     * The read only array of privileges from the role object
-     *
-     * @var string[]
-     * @formatter json
+     * @manyToOne
+     * @parentJoinColumns scope_id
      * @readOnly
-     */
-    protected $privileges;
-
-
-    /**
-     * Read only status for the linked account (only applicable in the case that the scope is ACCOUNT).
      *
-     * @var string
-     * @readOnly
+     * @var Account
      */
-    protected $accountStatus;
-
+    protected $account;
 
     /**
      * Construct a new user account role object.
      *
-     * @param integer $accountId
+     * @param string $scope
+     * @param integer $scopeId
      * @param integer $roleId
+     * @param integer $userId
      */
     public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $userId = null) {
         $this->scope = $scope;
@@ -116,7 +119,7 @@ class UserRole extends ActiveRecord {
      * @return string[]
      */
     public function getPrivileges() {
-        return $this->privileges;
+        return $this->role ? $this->role->getPrivileges() : [];
     }
 
 
@@ -132,7 +135,7 @@ class UserRole extends ActiveRecord {
      * @return string
      */
     public function getAccountStatus() {
-        return $this->accountStatus;
+        return $this->account ? $this->account->getStatus() : null;
     }
 
 

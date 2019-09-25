@@ -137,14 +137,14 @@ class Role extends ActiveRecord {
     }
 
     /**
-     * @return Privilege[]
+     * @return string[]
      */
     public function getPrivileges() {
         return $this->privileges;
     }
 
     /**
-     * @param Privilege[] $privileges
+     * @param string[] $privileges
      */
     public function setPrivileges($privileges) {
         $this->privileges = $privileges;

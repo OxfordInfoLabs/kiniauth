@@ -72,7 +72,7 @@ class AuthenticationService {
             $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
         }
 
-        $matchingUsers = User::query("WHERE emailAddress = ? AND hashedPassword = ? AND parentAccountId = ?", $emailAddress, hash("md5", $password), $parentAccountId);
+        $matchingUsers = User::filter("WHERE emailAddress = ? AND hashedPassword = ? AND parentAccountId = ?", $emailAddress, hash("md5", $password), $parentAccountId);
 
         // If there is a matching user, return it now.
         if (sizeof($matchingUsers) > 0) {
