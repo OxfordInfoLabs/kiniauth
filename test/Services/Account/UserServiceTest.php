@@ -7,7 +7,7 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
-use Kinikit\Core\Exception\ValidationException;
+use Kinikit\Core\Validation\ValidationException;
 
 include_once __DIR__ . "/../../autoloader.php";
 
@@ -45,6 +45,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
 
         $this->assertEquals(1, sizeof($newUser->getRoles()));
+
 
         $this->assertEquals($newUser->getActiveAccountId(), $newUser->getRoles()[0]->getScopeId());
         $this->assertNull($newUser->getRoles()[0]->getRoleId());

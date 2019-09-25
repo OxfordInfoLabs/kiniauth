@@ -7,9 +7,7 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
-use Kiniauth\Services\Security\AuthenticationService;
-use Kinikit\Core\Exception\ValidationException;
-use Kinikit\Core\Object\SerialisableObject;
+use Kinikit\Core\Validation\ValidationException;
 
 
 class UserService {
@@ -46,7 +44,7 @@ class UserService {
         $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId())));
         $user->save();
 
-      
+
         return $user;
 
     }
@@ -70,9 +68,6 @@ class UserService {
 
         $user->setRoles(array(new UserRole(0)));
         $user->save();
-
-        // Resync the user object
-        $user->synchroniseRelationships();
 
         return $user;
     }

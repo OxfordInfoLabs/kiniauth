@@ -4,9 +4,7 @@
 namespace Kiniauth\Test\Services\Security;
 
 
-use Kinikit\Core\Object\SerialisableObject;
-
-class TestNonAccountObject extends SerialisableObject {
+class TestNonAccountObject {
 
     private $id;
     private $name;

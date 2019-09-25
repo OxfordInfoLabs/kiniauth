@@ -4,9 +4,7 @@
 namespace Kiniauth\Exception\Security;
 
 
-use Kinikit\Core\Exception\SerialisableException;
-
-class InvalidLoginException extends SerialisableException {
+class InvalidLoginException extends \Exception {
 
     public function __construct() {
         parent::__construct("The username or password supplied was invalid");

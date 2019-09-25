@@ -10,6 +10,7 @@ use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Init;
+use Kinikit\Persistence\ORM\ORM;
 
 
 class TestDataInstaller {
@@ -19,8 +20,14 @@ class TestDataInstaller {
      */
     private $objectBinder;
 
+    /**
+     * @var ORM
+     */
+    private $orm;
+
     public function __construct() {
         $this->objectBinder = Container::instance()->get(ObjectBinder::class);
+        $this->orm = Container::instance()->get(ORM::class);
     }
 
 
@@ -123,12 +130,11 @@ class TestDataInstaller {
             }
 
             $items = json_decode(file_get_contents($filepath), true);
-            
-            $objects = $this->objectBinder->bindFromArray($items, $targetClass . "[]");
 
-            foreach ($objects as $item) {
-                $item->save();
-            }
+            $objects = $this->objectBinder->bindFromArray($items, $targetClass . "[]", false);
+
+            // Save the objects.
+            $this->orm->save($objects);
 
         }
 

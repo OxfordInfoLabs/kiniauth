@@ -15,6 +15,7 @@ use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kinikit\Core\Object\SerialisableObject;
+use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\SerialisableArrayUtils;
 use Kinikit\MVC\Framework\SourceBaseManager;
 
@@ -27,6 +28,11 @@ class SecurityService {
      */
     private $scopeAccesses;
 
+    /**
+     * @var ClassInspectorProvider
+     */
+    private $classInspectorProvider;
+
 
     /**
      * Indexed array of all privileges indexed by key.
@@ -35,13 +41,16 @@ class SecurityService {
      */
     private $privileges;
 
+
     /**
      * @param \Kiniauth\Services\Application\Session $session
      * @param \Kiniauth\Services\Security\AccountScopeAccess $accountScopeAccess
+     * @param ClassInspectorProvider $classInspectorProvider
      */
-    public function __construct($session, $accountScopeAccess) {
+    public function __construct($session, $accountScopeAccess, $classInspectorProvider) {
         $this->session = $session;
         $this->scopeAccesses = [$accountScopeAccess];
+        $this->classInspectorProvider = $classInspectorProvider;
     }
 
 
@@ -174,13 +183,13 @@ class SecurityService {
      */
     public function checkLoggedInObjectAccess($object) {
 
-        $accessors = $object->__findSerialisablePropertyAccessors();
+        $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
 
         $access = true;
         foreach ($this->scopeAccesses as $scopeAccess) {
             $objectMember = $scopeAccess->getObjectMember();
-            if ($objectMember && isset($accessors[strtolower($objectMember)])) {
-                $scopeId = $object->__getSerialisablePropertyValue($objectMember);
+            if ($objectMember && $classInspector->hasAccessor($objectMember)) {
+                $scopeId = $classInspector->getPropertyData($object, $objectMember);
                 $access = $access && $this->getLoggedInScopePrivileges($scopeAccess->getScope(), $scopeId);
             }
             if (!$access)
