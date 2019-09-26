@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Created by PhpStorm.
+ * User: mark
+ * Date: 26/09/2019
+ * Time: 12:07
+ */
 
 namespace Kiniauth\WebServices\Security;
 
@@ -8,25 +13,24 @@ use Kiniauth\Exception\Security\MissingAPICredentialsException;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
 use Kinikit\Core\Exception\AccessDeniedException;
-use Kinikit\Core\Util\HTTP\HttpRequest;
-use Kinikit\Core\Util\HTTP\URLHelper;
-use Kinikit\MVC\Framework\Controller;
-use Kinikit\MVC\Framework\Controller\RESTService;
+use Kinikit\MVC\Routing\RouteInterceptor;
 
-/**
- * Default controller method interceptor.  This implements rules based upon the calling path to a controller using
- * the convention
- *
- * @package Kiniauth\WebServices\Security
- */
-class DefaultControllerAccessInterceptor extends ControllerAccessInterceptor {
+class GlobalRouteInterceptor extends RouteInterceptor {
 
+    /**
+     * @var SecurityService
+     */
     private $securityService;
+
+    /**
+     * @var AuthenticationService
+     */
     private $authenticationService;
 
     /**
-     * Constructor
+     * Construct with injected dependencies.
      *
+     * GlobalRouteInterceptor constructor.
      * @param SecurityService $securityService
      * @param AuthenticationService $authenticationService
      */
@@ -37,14 +41,14 @@ class DefaultControllerAccessInterceptor extends ControllerAccessInterceptor {
 
 
     /**
-     * On controller access method, called from above.
+     * Intercept all controller requests
      *
-     * @param Controller $controllerInstance
-     * @param URLHelper $urlHelper
+     * @param \Kinikit\MVC\Request\Request $request
      */
-    public function onControllerAccess($controllerInstance, $urlHelper) {
-        $controlSegment = $urlHelper->getFirstSegment();
+    public function beforeRoute($request) {
 
+        $controlSegment = $request->getUrl()->getFirstPathSegment();
+        
         list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
 
         // If customer segment, make sure at least someone is logged in.
@@ -56,8 +60,8 @@ class DefaultControllerAccessInterceptor extends ControllerAccessInterceptor {
                 throw new AccessDeniedException();
         } else if ($controlSegment == "api") {
 
-            $apiKey = HttpRequest::instance()->getParameter("apiKey");
-            $apiSecret = HttpRequest::instance()->getParameter("apiSecret");
+            $apiKey = $request->getParameter("apiKey");
+            $apiSecret = $request->getParameter("apiSecret");
             if (!$apiKey || !$apiSecret) {
                 throw new MissingAPICredentialsException();
             }
@@ -66,6 +70,7 @@ class DefaultControllerAccessInterceptor extends ControllerAccessInterceptor {
             }
         }
 
-
     }
+
+
 }

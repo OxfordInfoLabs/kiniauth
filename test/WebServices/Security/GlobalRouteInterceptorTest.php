@@ -3,40 +3,34 @@
 namespace Kiniauth\Test\WebServices\Security;
 
 
-
 use Kiniauth\Exception\Security\InvalidAPICredentialsException;
 use Kiniauth\Exception\Security\MissingAPICredentialsException;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Test\TestBase;
-use Kiniauth\WebServices\Security\DefaultControllerAccessInterceptor;
+use Kiniauth\WebServices\Security\GlobalRouteInterceptor;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
-use Kinikit\Core\Util\HTTP\HttpRequest;
-use Kinikit\Core\Util\HTTP\URLHelper;
+use Kinikit\MVC\Request\Request;
 
 include_once __DIR__ . "/../../autoloader.php";
 
-class DefaultControllerAccessInterceptorTest extends TestBase {
+class GlobalRouteInterceptorTest extends TestBase {
 
     private $authenticationService;
 
     /**
-     * @var DefaultControllerAccessInterceptor
+     * @var GlobalRouteInterceptor
      */
-    private $defaultControllerAccessInterceptor;
+    private $globalRouteInterceptor;
 
-
-    /***
-     * @var TestController
-     */
-    private $testController;
 
     public function setUp():void {
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
         $securityService = Container::instance()->get(SecurityService::class);
-        $this->defaultControllerAccessInterceptor = new DefaultControllerAccessInterceptor($securityService, $this->authenticationService);
-        $this->testController = new TestController();
+        $this->globalRouteInterceptor = new GlobalRouteInterceptor($securityService, $this->authenticationService);
+
+        $_SERVER["HTTP_HOST"] = "localhost";
     }
 
     public function testPublicControllerURLsAreAccessibleByAll() {
@@ -45,20 +39,20 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
 
         // Guest
         $this->authenticationService->logout();
-        $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+        $this->globalRouteInterceptor->beforeRoute(new Request([]));
 
         // Account user
         $this->authenticationService->login("simon@peterjonescarwash.com", "password");
-        $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+        $this->globalRouteInterceptor->beforeRoute(new Request([]));
 
         // Root user
         $this->authenticationService->login("admin@kinicart.com", "password");
-        $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+        $this->globalRouteInterceptor->beforeRoute(new Request([]));
 
 
         // API login
         $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
-        $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+        $this->globalRouteInterceptor->beforeRoute(new Request([]));
 
         $this->assertTrue(true);
 
@@ -73,7 +67,7 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
         $this->authenticationService->logout();
 
         try {
-            $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+            $this->globalRouteInterceptor->beforeRoute(new Request([]));
             $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e) {
             // Success
@@ -81,16 +75,16 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
 
         // Account user
         $this->authenticationService->login("simon@peterjonescarwash.com", "password");
-        $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+        $this->globalRouteInterceptor->beforeRoute(new Request([]));
 
         // Root user
         $this->authenticationService->login("admin@kinicart.com", "password");
-        $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+        $this->globalRouteInterceptor->beforeRoute(new Request([]));
 
 
         // API login
         $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
-        $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+        $this->globalRouteInterceptor->beforeRoute(new Request([]));
 
         $this->assertTrue(true);
 
@@ -105,7 +99,7 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
         $this->authenticationService->logout();
 
         try {
-            $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+            $this->globalRouteInterceptor->beforeRoute(new Request([]));
             $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e) {
             // Success
@@ -114,7 +108,7 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
         // Account user
         $this->authenticationService->login("simon@peterjonescarwash.com", "password");
         try {
-            $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+            $this->globalRouteInterceptor->beforeRoute(new Request([]));
             $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e) {
             // Success
@@ -123,13 +117,13 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
 
         // Root user
         $this->authenticationService->login("admin@kinicart.com", "password");
-        $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+        $this->globalRouteInterceptor->beforeRoute(new Request([]));
 
 
         // API login
         $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
         try {
-            $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+            $this->globalRouteInterceptor->beforeRoute(new Request([]));
             $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e) {
             // Success
@@ -149,7 +143,7 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
         $this->authenticationService->logout();
 
         try {
-            $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+            $this->globalRouteInterceptor->beforeRoute(new Request([]));
             $this->fail("Should have thrown here");
         } catch (MissingAPICredentialsException $e) {
             // Success
@@ -158,7 +152,7 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
         // Account user
         $this->authenticationService->login("simon@peterjonescarwash.com", "password");
         try {
-            $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+            $this->globalRouteInterceptor->beforeRoute(new Request([]));
             $this->fail("Should have thrown here");
         } catch (MissingAPICredentialsException $e) {
             // Success
@@ -168,7 +162,7 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
         // Root user
         $this->authenticationService->login("admin@kinicart.com", "password");
         try {
-            $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+            $this->globalRouteInterceptor->beforeRoute(new Request([]));
             $this->fail("Should have thrown here");
         } catch (MissingAPICredentialsException $e) {
             // Success
@@ -179,7 +173,7 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
         $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
 
         try {
-            $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+            $this->globalRouteInterceptor->beforeRoute(new Request([]));
             $this->fail("should have thrown here");
         } catch (MissingAPICredentialsException $e) {
             // Success
@@ -191,10 +185,9 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
 
         $_SERVER["REQUEST_URI"] = "/api/somecontroller?mynameistest?apiKey=BADKEY&apiSecret=BADSECRET";
         $_GET = array("apiKey" => "BADKEY", "apiSecret" => "BADSECRET");
-        HttpRequest::instance(true);
 
         try {
-            $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+            $this->globalRouteInterceptor->beforeRoute(new Request([]));
             $this->fail("should have thrown here");
         } catch (InvalidAPICredentialsException $e) {
             // Success
@@ -204,9 +197,8 @@ class DefaultControllerAccessInterceptorTest extends TestBase {
         // Finally good credentials
         $_SERVER["REQUEST_URI"] = "/api/somecontroller?mynameistest?apiKey=TESTAPIKEY&apiSecret=TESTAPISECRET";
         $_GET = array("apiKey" => "TESTAPIKEY", "apiSecret" => "TESTAPISECRET");
-        HttpRequest::instance(true);
 
-        $this->defaultControllerAccessInterceptor->afterCreate($this->testController);
+        $this->globalRouteInterceptor->beforeRoute(new Request([]));
 
 
         $this->assertTrue(true);
