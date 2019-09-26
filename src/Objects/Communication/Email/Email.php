@@ -27,6 +27,8 @@ class Email extends EmailSummary {
      * Array of attachment summary objects summarising any attachments for this email
      *
      * @oneToMany
+     * @readOnly
+     * @childJoinColumns parent_object_id
      * @var AttachmentSummary[]
      */
     private $attachments;
@@ -64,7 +66,7 @@ class Email extends EmailSummary {
         $this->bcc = $bcc;
         $this->replyTo = $replyTo;
         $this->accountId = $accountId;
-        $this->sentDate = date("d/m/Y H:i:s");
+        $this->sentDate = new \DateTime();
 
     }
 

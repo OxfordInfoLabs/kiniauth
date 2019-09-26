@@ -38,7 +38,7 @@ class ActiveRecordInterceptorTest extends TestBase {
         $adhocObject = new TestNonAccountObject(1, "Marky Mark", "Marky Mark and the funky bunch");
         $this->assertTrue($this->objectInterceptor->preSave($adhocObject));
         $this->assertTrue($this->objectInterceptor->preDelete($adhocObject));
-        $this->assertTrue($this->objectInterceptor->preMap("TestNonAccountObject", $adhocObject->__getSerialisablePropertyMap()));
+        $this->assertTrue($this->objectInterceptor->postMap($adhocObject));
 
     }
 

@@ -11,7 +11,7 @@ use Kiniauth\Objects\Communication\Email\EmailSendResult;
  *
  * @package Kiniauth\Objects\Communication\Email\Transport
  */
-class NullProvider extends EmailProvider {
+class NullProvider implements EmailProvider {
 
     /**
      * Send an email.

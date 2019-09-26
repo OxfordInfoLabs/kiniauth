@@ -104,7 +104,6 @@ class SecurityServiceTest extends TestBase {
 
         $allPrivileges = $this->securityService->getAllPrivileges();
 
-
         $this->assertEquals(new Privilege("access", "Lowest level of access to an account.", "ACCOUNT"), $allPrivileges["access"]);
         $this->assertEquals(new Privilege("viewdata", "Test View Data Privilege.", "ACCOUNT"), $allPrivileges["viewdata"]);
         $this->assertEquals(new Privilege("editdata", "Test Edit Data Privilege.", "ACCOUNT"), $allPrivileges["editdata"]);

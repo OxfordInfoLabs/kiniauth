@@ -91,7 +91,7 @@ class AccountScopeAccess extends ScopeAccess {
         // If we have at least one account, check for child accounts and add privileges for these.
         if (!$superUser && sizeof($accountIds) > 0) {
 
-            $childAccounts = AccountSummary::query("WHERE parent_account_id IN (" . join(",", $accountIds) . ")");
+            $childAccounts = AccountSummary::filter("WHERE parent_account_id IN (" . join(",", $accountIds) . ")");
 
             foreach ($childAccounts as $childAccount) {
 

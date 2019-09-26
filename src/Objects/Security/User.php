@@ -275,10 +275,11 @@ class User extends ActiveRecord {
         $firstActiveAccountId = null;
 
         $rolesByAccountId = ObjectArrayUtils::indexArrayOfObjectsByMember("accountId", $this->getRoles());
-        
+
         foreach ($rolesByAccountId as $role) {
 
             if ($role->getAccountStatus() == Account::STATUS_ACTIVE) {
+
                 if ($this->activeAccountId == $role->getAccountId())
                     return $role->getAccountId();
 

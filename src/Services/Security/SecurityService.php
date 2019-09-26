@@ -14,8 +14,11 @@ use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
+use Kinikit\Core\Binding\ObjectBinder;
+use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\Object\SerialisableObject;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
+use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Util\SerialisableArrayUtils;
 use Kinikit\MVC\Framework\SourceBaseManager;
 
@@ -43,14 +46,29 @@ class SecurityService {
 
 
     /**
+     * @var FileResolver
+     */
+    private $fileResolver;
+
+
+    /**
+     * @var ObjectBinder
+     */
+    private $objectBinder;
+
+    /**
      * @param \Kiniauth\Services\Application\Session $session
      * @param \Kiniauth\Services\Security\AccountScopeAccess $accountScopeAccess
      * @param ClassInspectorProvider $classInspectorProvider
+     * @param FileResolver $fileResolver
+     * @param ObjectBinder $objectBinder
      */
-    public function __construct($session, $accountScopeAccess, $classInspectorProvider) {
+    public function __construct($session, $accountScopeAccess, $classInspectorProvider, $fileResolver, $objectBinder) {
         $this->session = $session;
         $this->scopeAccesses = [$accountScopeAccess];
         $this->classInspectorProvider = $classInspectorProvider;
+        $this->fileResolver = $fileResolver;
+        $this->objectBinder = $objectBinder;
     }
 
 
@@ -160,15 +178,18 @@ class SecurityService {
             $this->privileges = array();
 
 
-            foreach (SourceBaseManager::instance()->getSourceBases() as $sourceBase) {
+            foreach ($this->fileResolver->getSearchPaths() as $sourceBase) {
                 if (file_exists($sourceBase . "/Config/privileges.json")) {
                     $privText = file_get_contents($sourceBase . "/Config/privileges.json");
-                    $privileges = SerialisableArrayUtils::convertArrayToSerialisableObjects(json_decode($privText, true), "\Kiniauth\Objects\Security\Privilege[]");
+
+
+                    $privileges = $this->objectBinder->bindFromArray(json_decode($privText, true), "\Kiniauth\Objects\Security\Privilege[]");
+
                     $this->privileges = array_merge($this->privileges, $privileges);
                 }
             }
 
-            $this->privileges = SerialisableArrayUtils::indexArrayOfObjectsByMember("key", $this->privileges);
+            $this->privileges = ObjectArrayUtils::indexArrayOfObjectsByMember("key", $this->privileges);
         }
 
 

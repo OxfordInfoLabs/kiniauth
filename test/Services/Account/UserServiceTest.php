@@ -47,6 +47,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(1, sizeof($newUser->getRoles()));
 
 
+
         $this->assertEquals($newUser->getActiveAccountId(), $newUser->getRoles()[0]->getScopeId());
         $this->assertNull($newUser->getRoles()[0]->getRoleId());
 

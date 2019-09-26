@@ -124,11 +124,10 @@ class AuthenticationServiceTest extends TestBase {
         $this->assertEquals(2, $loggedInUser->getRoles()[0]->getAccountId());
         $this->assertEquals(3, $loggedInUser->getRoles()[1]->getAccountId());
 
-
         $loggedInAccount = $this->session->__getLoggedInAccount();
         $this->assertTrue($loggedInAccount instanceof AccountSummary);
-        $this->assertEquals(2, $loggedInAccount->getAccountId());
-        $this->assertEquals("Peter Jones Car Washing", $loggedInAccount->getName());
+        $this->assertEquals(3, $loggedInAccount->getAccountId());
+        $this->assertEquals("Smart Coasting", $loggedInAccount->getName());
 
     }
 

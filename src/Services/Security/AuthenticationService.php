@@ -54,7 +54,7 @@ class AuthenticationService {
             $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
         }
 
-        return User::countQuery("WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $parentAccountId) > 0;
+        return User::values("COUNT(*)", "WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $parentAccountId)[0] > 0;
     }
 
 
@@ -125,7 +125,7 @@ class AuthenticationService {
      */
     public function apiAuthenticate($apiKey, $apiSecret) {
 
-        $matchingAccounts = Account::query("WHERE apiKey = ? AND apiSecret = ?", $apiKey, $apiSecret);
+        $matchingAccounts = Account::filter("WHERE apiKey = ? AND apiSecret = ?", $apiKey, $apiSecret);
 
         // If there is a matching user, return it now.
         if (sizeof($matchingAccounts) > 0) {

@@ -17,18 +17,12 @@ class EmailService {
     private $provider;
 
     /**
-     * Construct optionally with a provider.
+     * Construct with the current provider.
      *
      * @param EmailProvider $provider
      */
-    public function __construct($provider = null) {
-
-        if ($provider) {
-            $this->provider = $provider;
-        } else {
-            $providerKey = Configuration::readParameter("email.provider") ? Configuration::readParameter("email.provider") : EmailProvider::PROVIDER_NULL;
-            $this->provider = EmailProvider::getProvider($providerKey);
-        }
+    public function __construct($provider) {
+        $this->provider = $provider;
     }
 
 
