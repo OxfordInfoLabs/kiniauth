@@ -7,7 +7,7 @@ namespace Kiniauth\Test\TestData;
 use DirectoryIterator;
 use Kiniauth\DB\DBInstaller;
 use Kinikit\Core\Binding\ObjectBinder;
-use Kinikit\Core\Configuration;
+use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Init;
 use Kinikit\Persistence\ORM\ORM;
@@ -73,7 +73,6 @@ class TestDataInstaller {
     // Install test data
     public static function runFromComposer($event) {
 
-        new Init();
 
         $sourceDirectory = $event && isset($event->getComposer()->getPackage()->getConfig()["source-directory"]) ?
             $event->getComposer()->getPackage()->getConfig()["source-directory"] : ".";
@@ -85,6 +84,8 @@ class TestDataInstaller {
         $testDirectory = getcwd() . "/" . $testDirectory;
 
         chdir($sourceDirectory);
+
+        new Init();
 
         $testDataInstaller = new TestDataInstaller();
         $testDataInstaller->run(false, true, ".", $testDirectory);

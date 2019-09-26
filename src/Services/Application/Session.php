@@ -14,6 +14,7 @@ use Kiniauth\Objects\Security\User;
  *
  * Class Session
  * @package Kiniauth\Objects\Application
+ * @noProxy
  */
 class Session extends \Kinikit\MVC\Session\PHPSession {
 

@@ -1,10 +1,9 @@
 <?php
 
-namespace Kiniauth\Controllers\guest;
+namespace Kiniauth\Controllers\Guest;
 
-use Kinikit\MVC\Framework\Controller\RESTService;
 
-class auth extends RESTService {
+class Auth  {
 
     use \Kiniauth\WebServices\ControllerTraits\Guest\Auth;
 
