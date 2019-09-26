@@ -76,8 +76,7 @@ class ObjectInterceptor extends ContainerInterceptor {
 
             }
         }
-
-
+        
         if ($key = array_search(Account::LOGGED_IN_ACCOUNT, $params)) {
             list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
             if ($account) {

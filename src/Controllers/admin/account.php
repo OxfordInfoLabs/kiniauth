@@ -1,10 +1,9 @@
 <?php
 
-namespace Kiniauth\Controllers\customer;
+namespace Kiniauth\Controllers\Admin;
 
-use Kinikit\MVC\Framework\Controller\RESTService;
 
-class account extends RESTService {
+class Account {
 
     use \Kiniauth\WebServices\ControllerTraits\Admin\Account;
 

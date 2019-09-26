@@ -15,6 +15,14 @@ use Kiniauth\Services\Security\SecurityService;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\MVC\Routing\RouteInterceptor;
 
+
+/**
+ *
+ * @noProxy
+ * 
+ * Class GlobalRouteInterceptor
+ * @package Kiniauth\WebServices\Security
+ */
 class GlobalRouteInterceptor extends RouteInterceptor {
 
     /**

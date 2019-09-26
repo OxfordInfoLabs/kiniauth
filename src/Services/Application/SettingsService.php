@@ -6,6 +6,11 @@ namespace Kiniauth\Services\Application;
 
 use Kiniauth\Objects\Application\Setting;
 
+/**
+ * Class SettingsService
+ * @package Kiniauth\Services\Application
+ * @noProxy
+ */
 class SettingsService {
 
 

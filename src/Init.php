@@ -3,9 +3,10 @@
 namespace Kiniauth;
 
 
+use Kiniauth\Controllers\Guest\Auth;
 use Kiniauth\Services\Application\BootstrapService;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\MVC\Framework\Dispatcher;
+use Kinikit\MVC\Routing\Router;
 
 class Init {
 
@@ -16,9 +17,9 @@ class Init {
 
         // Initialise the app using bootstrap service.
         Container::instance()->get(BootstrapService::class);
-
-        // Call the MVC dispatcher
-        (new Dispatcher())->dispatch();
+        
+        // Invoke the router
+        Router::route();
 
     }
 

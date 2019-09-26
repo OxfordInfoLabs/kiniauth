@@ -7,6 +7,7 @@
     "application",
     "cart"
   ],
+
   "homepage": "https://kinicart.com",
   "type": "library",
   "require": {
