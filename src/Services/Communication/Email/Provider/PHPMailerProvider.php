@@ -14,7 +14,7 @@ use PHPMailer\PHPMailer\PHPMailer;
  *
  * @package Kiniauth\Objects\Communication\Email\Provider
  */
-class PHPMailerProvider extends EmailProvider {
+class PHPMailerProvider implements EmailProvider {
 
     /**
      * The SMTP host to connect to.

@@ -8,11 +8,13 @@ use Kinikit\Core\Configuration;
 
 /**
  * Base email transport class.  Only one method required to be implemented (send)
+ *
+ * @implementationConfigParam email.provider
+ * @implementation php \Kiniauth\Services\Communication\Email\Provider\PHPMailerProvider
+ * @defaultImplementation \Kiniauth\Services\Communication\Email\Provider\NullProvider
+ *
  */
-abstract class EmailProvider {
-
-    const PROVIDER_PHP_MAILER = "PHP_MAILER";
-    const PROVIDER_NULL = "NULL";
+interface EmailProvider {
 
     /**
      * Send an email.
@@ -21,23 +23,7 @@ abstract class EmailProvider {
      * @return \Kiniauth\Objects\Communication\Email\EmailSendResult
      *
      */
-    public abstract function send($email);
+    public function send($email);
 
-
-    /**
-     * Get the active transport in use
-     */
-    public static function getProvider($providerKey) {
-
-        switch ($providerKey) {
-            case self::PROVIDER_PHP_MAILER:
-                return new PHPMailerProvider();
-                break;
-            default:
-                return new NullProvider();
-
-        }
-
-    }
 
 }

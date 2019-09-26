@@ -3,13 +3,12 @@
 
 namespace Kiniauth\Exception\Security;
 
-use Kinikit\Core\Exception\SerialisableException;
 
 /**
  * Missing scope object id for a privilege.  This is normally raised when a method
  * has been marked up with a @hasPrivilege tag but no qualifying data item.
  */
-class MissingScopeObjectIdForPrivilegeException extends SerialisableException {
+class MissingScopeObjectIdForPrivilegeException extends \Exception {
 
 
     public function __construct($privilege = null) {

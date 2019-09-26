@@ -8,8 +8,10 @@ use Kiniauth\Services\Security\ObjectInterceptor;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\WebServices\Security\DefaultControllerAccessInterceptor;
+use Kiniauth\WebServices\Security\GlobalRouteInterceptor;
 use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\MVC\Routing\RouteInterceptorProcessor;
 use Kinikit\Persistence\ORM\Interceptor\ORMInterceptorProcessor;
 
 /**
@@ -22,6 +24,7 @@ class BootstrapService {
     private $fileResolver;
     private $ormInterceptorProcessor;
     private $activeRecordInterceptor;
+    private $routeInterceptorProcessor;
 
 
     /**
@@ -32,15 +35,17 @@ class BootstrapService {
      * @param \Kiniauth\Services\Security\SecurityService $securityService
      * @param ORMInterceptorProcessor $ormInterceptorProcessor
      * @param FileResolver $fileResolver
+     * @param RouteInterceptorProcessor $routeInterceptorProcessor
      *
      */
-    public function __construct($authenticationService, $activeRecordInterceptor, $securityService, $ormInterceptorProcessor, $fileResolver) {
+    public function __construct($authenticationService, $activeRecordInterceptor, $securityService, $ormInterceptorProcessor, $fileResolver, $routeInterceptorProcessor) {
 
         $this->authenticationService = $authenticationService;
         $this->activeRecordInterceptor = $activeRecordInterceptor;
         $this->securityService = $securityService;
         $this->ormInterceptorProcessor = $ormInterceptorProcessor;
         $this->fileResolver = $fileResolver;
+        $this->routeInterceptorProcessor = $routeInterceptorProcessor;
         $this->run();
 
     }
@@ -59,8 +64,8 @@ class BootstrapService {
         // Add the generic object method interceptor
         Container::instance()->addInterceptor(new ObjectInterceptor($this->activeRecordInterceptor, $this->securityService));
 
-        // Add the controller method interceptor
-        Container::instance()->addInterceptor(new DefaultControllerAccessInterceptor($this->securityService, $this->authenticationService));
+        // Add the global route interceptor
+        $this->routeInterceptorProcessor->addInterceptor("*", GlobalRouteInterceptor::class);
 
         // Update the active parent account using the HTTP Referer.
         $this->authenticationService->updateActiveParentAccount(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : "");

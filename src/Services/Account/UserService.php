@@ -44,6 +44,7 @@ class UserService {
         $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId())));
         $user->save();
 
+        $user = User::fetch($user->getId());
 
         return $user;
 
