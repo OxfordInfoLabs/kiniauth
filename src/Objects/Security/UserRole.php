@@ -135,7 +135,7 @@ class UserRole extends ActiveRecord {
      * @return string
      */
     public function getAccountStatus() {
-        return $this->account ? $this->account->getStatus() : null;
+        return $this->scope == Role::SCOPE_ACCOUNT && $this->account ? $this->account->getStatus() : null;
     }
 
 
