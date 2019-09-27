@@ -28,7 +28,7 @@ class Email extends EmailSummary {
      *
      * @oneToMany
      * @readOnly
-     * @childJoinColumns parent_object_id
+     * @childJoinColumns parent_object_id, parent_object_type=Email
      * @var AttachmentSummary[]
      */
     private $attachments;
