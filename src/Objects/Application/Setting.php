@@ -13,7 +13,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  *
  * Class Setting
  *
- * @table kc_setting
+ * @table ka_setting
  * @interceptors \Kiniauth\Objects\Application\SettingInterceptor
  */
 class Setting extends ActiveRecord {

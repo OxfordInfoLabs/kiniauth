@@ -2,6 +2,7 @@
 
 namespace Kiniauth\Test\Objects\Application;
 
+use Kiniauth\Bootstrap;
 use Kiniauth\Exception\Security\AccountSuspendedException;
 use Kiniauth\Exception\Security\InvalidAPICredentialsException;
 use Kiniauth\Exception\Security\InvalidLoginException;
@@ -24,7 +25,6 @@ class AuthenticationServiceTest extends TestBase {
      * @var AuthenticationService
      */
     private $authenticationService;
-    private $bootstrapService;
 
     /**
      * @var Session
@@ -32,11 +32,11 @@ class AuthenticationServiceTest extends TestBase {
     private $session;
 
 
-    public function setUp():void {
+    public function setUp(): void {
 
         parent::setUp();
 
-        $this->bootstrapService = Container::instance()->get(BootstrapService::class);
+        Container::instance()->get(Bootstrap::class);
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
         $this->session = Container::instance()->get(Session::class);
     }

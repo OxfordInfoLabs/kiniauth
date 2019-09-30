@@ -8,7 +8,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
 /**
  * Attachment summary for use when summarising attachments.
  *
- * @table kc_attachment
+ * @table ka_attachment
  * @noGenerate
  *
  */

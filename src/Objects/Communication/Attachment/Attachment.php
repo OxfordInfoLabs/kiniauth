@@ -5,7 +5,7 @@ namespace Kiniauth\Objects\Communication\Attachment;
 
 /**
  *
- * @table kc_attachment
+ * @table ka_attachment
  */
 class Attachment extends AttachmentSummary {
 
