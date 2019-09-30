@@ -10,7 +10,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
 /**
  * Encodes a role for a user on an account.
  *
- * @table kc_user_role
+ * @table ka_user_role
  *
  */
 class UserRole extends ActiveRecord {

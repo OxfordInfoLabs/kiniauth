@@ -11,7 +11,7 @@ use Kinikit\Core\Util\StringUtils;
  *
  * Class Account
  *
- * @table kc_account
+ * @table ka_account
  *
  */
 class Account extends AccountSummary {

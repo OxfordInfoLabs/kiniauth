@@ -10,7 +10,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  *
  * Class Contact
  *
- * @table kc_contact
+ * @table ka_contact
  */
 class Contact extends ActiveRecord {
 

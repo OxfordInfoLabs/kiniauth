@@ -8,7 +8,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
 /**
  * Account summary.  Used for listing accounts in both Admin and for a user.
  *
- * @table kc_account
+ * @table ka_account
  * @noGenerate
  */
 class AccountSummary extends ActiveRecord {

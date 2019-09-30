@@ -9,7 +9,7 @@ use Kinikit\Persistence\UPF\Object\ActiveRecord;
 
 /**
  *
- * @table kc_email
+ * @table ka_email
  */
 class Email extends EmailSummary {
 

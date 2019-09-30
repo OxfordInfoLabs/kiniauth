@@ -67,7 +67,7 @@ class UserService {
             throw new ValidationException($validationErrors);
         }
 
-        $user->setRoles(array(new UserRole(0)));
+        $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, 0)));
         $user->save();
 
         return $user;

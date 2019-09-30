@@ -1,52 +1,43 @@
 <?php
 
+namespace Kiniauth;
 
-namespace Kiniauth\Services\Application;
-
-use Kiniauth\Services\Application\Session;
-use Kiniauth\Services\Security\ObjectInterceptor;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
+use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Services\Security\ObjectInterceptor;
 use Kiniauth\Services\Security\SecurityService;
-use Kiniauth\WebServices\Security\DefaultControllerAccessInterceptor;
 use Kiniauth\WebServices\Security\GlobalRouteInterceptor;
+use Kinikit\Core\ApplicationBootstrap;
 use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\MVC\Routing\RouteInterceptorProcessor;
 use Kinikit\Persistence\ORM\Interceptor\ORMInterceptorProcessor;
 
-/**
- * Generic bootstrap class - should be called early in application flow to ensure that global data is set up correctly.
- */
-class BootstrapService {
+class Bootstrap implements ApplicationBootstrap {
 
     private $authenticationService;
     private $securityService;
-    private $fileResolver;
     private $ormInterceptorProcessor;
     private $activeRecordInterceptor;
     private $routeInterceptorProcessor;
 
-
     /**
      * Construct with authentication service
      *
-     * @param \Kiniauth\Services\Security\AuthenticationService $authenticationService
-     * @param \Kiniauth\Services\Security\ActiveRecordInterceptor $activeRecordInterceptor
-     * @param \Kiniauth\Services\Security\SecurityService $securityService
+     * @param AuthenticationService $authenticationService
+     * @param ActiveRecordInterceptor $activeRecordInterceptor
+     * @param SecurityService $securityService
      * @param ORMInterceptorProcessor $ormInterceptorProcessor
-     * @param FileResolver $fileResolver
      * @param RouteInterceptorProcessor $routeInterceptorProcessor
      *
      */
-    public function __construct($authenticationService, $activeRecordInterceptor, $securityService, $ormInterceptorProcessor, $fileResolver, $routeInterceptorProcessor) {
+    public function __construct($authenticationService, $activeRecordInterceptor, $securityService, $ormInterceptorProcessor,$routeInterceptorProcessor) {
 
         $this->authenticationService = $authenticationService;
         $this->activeRecordInterceptor = $activeRecordInterceptor;
         $this->securityService = $securityService;
         $this->ormInterceptorProcessor = $ormInterceptorProcessor;
-        $this->fileResolver = $fileResolver;
         $this->routeInterceptorProcessor = $routeInterceptorProcessor;
-        $this->run();
 
     }
 
@@ -54,10 +45,7 @@ class BootstrapService {
     /**
      * Run the bootstrapping logic.
      */
-    private function run() {
-
-        // Ensure kinicart is appended as a source base and an application namespace.
-        $this->fileResolver->addSearchPath(__DIR__ . "/../..");
+    public function setup() {
 
         $this->ormInterceptorProcessor->addInterceptor("*", get_class($this->activeRecordInterceptor));
 
@@ -71,5 +59,6 @@ class BootstrapService {
         $this->authenticationService->updateActiveParentAccount(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : "");
 
     }
+
 
 }
