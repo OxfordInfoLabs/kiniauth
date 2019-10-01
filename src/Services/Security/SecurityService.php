@@ -21,6 +21,7 @@ use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Util\SerialisableArrayUtils;
 use Kinikit\MVC\Framework\SourceBaseManager;
+use Kinikit\Core\Logging\Logger;
 
 class SecurityService {
 
