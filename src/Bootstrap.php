@@ -31,7 +31,7 @@ class Bootstrap implements ApplicationBootstrap {
      * @param RouteInterceptorProcessor $routeInterceptorProcessor
      *
      */
-    public function __construct($authenticationService, $activeRecordInterceptor, $securityService, $ormInterceptorProcessor,$routeInterceptorProcessor) {
+    public function __construct($authenticationService, $activeRecordInterceptor, $securityService, $ormInterceptorProcessor, $routeInterceptorProcessor) {
 
         $this->authenticationService = $authenticationService;
         $this->activeRecordInterceptor = $activeRecordInterceptor;
