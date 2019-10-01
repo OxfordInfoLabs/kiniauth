@@ -10,6 +10,8 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Logging\Logger;
 
 
 /**
@@ -108,7 +110,16 @@ class AuthenticationService {
         $authenticated = $this->twoFactorProvider->authenticate($secretKey, $code);
 
         if ($authenticated) {
-            $this->securityService->logIn($pendingUser);
+
+            /**
+             * @var ActiveRecordInterceptor $interceptor
+             */
+            $interceptor = Container::instance()->get(ActiveRecordInterceptor::class);
+
+            $interceptor->executeInsecure(function() use ($pendingUser) {
+                $this->securityService->logIn($pendingUser);
+            });
+
             return true;
         }
         return false;
@@ -179,7 +190,7 @@ class AuthenticationService {
             $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
         }
 
-        $matchingUsers = User::query("WHERE emailAddress = ? AND hashedPassword = ? AND parentAccountId = ?", $emailAddress, hash("md5", $password), $parentAccountId);
+        $matchingUsers = User::filter("WHERE emailAddress = ? AND hashedPassword = ? AND parentAccountId = ?", $emailAddress, hash("md5", $password), $parentAccountId);
 
         return sizeof($matchingUsers) > 0;
     }
