@@ -9,5 +9,5 @@ curl -s -X POST \
    -H "Travis-API-Version: 3" \
    -H "Authorization: token $TRAVIS_API_TOKEN" \
    -d "$body" \
-   https://api.travis-ci.com/repo/OxfordInfoLabs%2F$1/requests
+   https://api.travis-ci.org/repo/OxfordInfoLabs%2F$1/requests
 
