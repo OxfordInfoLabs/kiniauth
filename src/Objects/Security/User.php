@@ -31,7 +31,8 @@ class User extends ActiveRecord {
      * Email address (identifies the user within the system).
      *
      * @var string
-     * @validation required
+     * @required
+     * @email
      */
     private $emailAddress;
 
@@ -66,6 +67,7 @@ class User extends ActiveRecord {
      * Optional mobile phone for extra security checks.
      *
      * @var string
+     * @regexp [0-9\+\. ]+
      */
     private $mobileNumber;
 
