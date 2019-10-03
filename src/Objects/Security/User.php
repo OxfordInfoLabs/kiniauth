@@ -76,6 +76,7 @@ class User extends ActiveRecord {
      * Backup email address for extra security checks.
      *
      * @var string
+     * @email
      */
     private $backupEmailAddress;
 
