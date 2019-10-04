@@ -16,7 +16,21 @@ use Kiniauth\Objects\Security\User;
  * @package Kiniauth\Objects\Application
  * @noProxy
  */
-class Session extends \Kinikit\MVC\Session\PHPSession {
+class Session implements \Kinikit\MVC\Session\Session {
+
+    /**
+     * @var \Kinikit\MVC\Session\Session
+     */
+    private $coreSession;
+
+
+    /**
+     * Session constructor.
+     * @param \Kinikit\MVC\Session\Session $coreSession
+     */
+    public function __construct($coreSession) {
+        $this->coreSession = $coreSession;
+    }
 
     /**
      * Get the logged in user
@@ -134,4 +148,49 @@ class Session extends \Kinikit\MVC\Session\PHPSession {
     }
 
 
+    /**
+     * Set a session value for a string key.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public function setValue($key, $value) {
+        $this->coreSession->setValue($key, $value);
+    }
+
+    /**
+     * Get a session value by key
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function getValue($key) {
+        return $this->coreSession->getValue($key);
+    }
+
+    /**
+     * Get all values - return as array of values keyed in by string.
+     *
+     * @return mixed[string]
+     */
+    public function getAllValues() {
+        return $this->coreSession->getAllValues();
+    }
+
+    /**
+     * Clear the session of all values
+     *
+     */
+    public function clearAll() {
+        return $this->coreSession->clearAll();
+    }
+
+    /**
+     * Reload session data - particularly useful if session implementation is caching
+     *
+     * @return mixed
+     */
+    public function reload() {
+        return $this->coreSession->reload();
+    }
 }
