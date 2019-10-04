@@ -8,6 +8,7 @@ use Kiniauth\Services\Security\ObjectInterceptor;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\WebServices\Security\GlobalRouteInterceptor;
 use Kinikit\Core\ApplicationBootstrap;
+use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\MVC\Routing\RouteInterceptorProcessor;
@@ -57,6 +58,10 @@ class Bootstrap implements ApplicationBootstrap {
 
         // Update the active parent account using the HTTP Referer.
         $this->authenticationService->updateActiveParentAccount(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : "");
+
+        if (!Configuration::readParameter("default.decorator")) {
+            Configuration::instance()->addParameter("default.decorator", "DefaultDecorator");
+        }
 
     }
 
