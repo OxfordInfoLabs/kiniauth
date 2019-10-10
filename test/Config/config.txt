@@ -4,5 +4,5 @@ application.namespace = Kiniauth
 
 db.provider = sqlite3
 db.filename = DB/kiniauth-test.db
-
+db.logFile = DB/db.log
 
