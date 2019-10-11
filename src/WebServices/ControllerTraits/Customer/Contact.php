@@ -47,10 +47,26 @@ trait Contact {
     }
 
     /**
+     * Delete a contact from the system
+     *
+     * @http GET /delete
+     *
      * @param $contactId
      */
     public function removeContact($contactId) {
+        $this->contactService->deleteContact($contactId);
+    }
 
+    /**
+     * Make the passed in contact the default
+     *
+     * @http GET /default
+     *
+     * @param $contactId
+     * @return \Kiniauth\Objects\Account\Contact
+     */
+    public function setDefaultContact($contactId) {
+        return $this->contactService->setDefaultContact($contactId);
     }
 
     /**
