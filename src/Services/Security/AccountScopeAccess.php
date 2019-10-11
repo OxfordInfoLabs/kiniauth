@@ -9,6 +9,7 @@ use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
+use Kinikit\Core\DependencyInjection\Container;
 
 /**
  * Account scope access class - generates set of account privileges using a set of user roles.
@@ -17,8 +18,10 @@ use Kiniauth\Objects\Security\UserRole;
  * @package Kiniauth\Services\Security
  */
 class AccountScopeAccess extends ScopeAccess {
+
     /**
      * AccountScopeAccess constructor.
+     *
      */
     public function __construct() {
         parent::__construct(Role::SCOPE_ACCOUNT, "accountId");
@@ -91,6 +94,7 @@ class AccountScopeAccess extends ScopeAccess {
         // If we have at least one account, check for child accounts and add privileges for these.
         if (!$superUser && sizeof($accountIds) > 0) {
 
+
             $childAccounts = AccountSummary::filter("WHERE parent_account_id IN (" . join(",", $accountIds) . ")");
 
             foreach ($childAccounts as $childAccount) {
@@ -100,6 +104,8 @@ class AccountScopeAccess extends ScopeAccess {
                     $scopePrivileges[$childAccount->getAccountId()] = [$targetPrivilege];
                 }
             }
+
+
         }
 
 
