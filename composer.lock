@@ -427,12 +427,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/OxfordInfoLabs/kinikit-core.git",
-                "reference": "45d0cb1f077fce5a6b500ded38a03d0e5ad799a9"
+                "reference": "3a212794e4d1e402cec083dbdce53fd3bd31b0ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/OxfordInfoLabs/kinikit-core/zipball/45d0cb1f077fce5a6b500ded38a03d0e5ad799a9",
-                "reference": "45d0cb1f077fce5a6b500ded38a03d0e5ad799a9",
+                "url": "https://api.github.com/repos/OxfordInfoLabs/kinikit-core/zipball/3a212794e4d1e402cec083dbdce53fd3bd31b0ee",
+                "reference": "3a212794e4d1e402cec083dbdce53fd3bd31b0ee",
                 "shasum": ""
             },
             "require": {
@@ -461,7 +461,7 @@
                 "php",
                 "webservices"
             ],
-            "time": "2019-09-30T14:14:56+00:00"
+            "time": "2019-10-10T16:25:57+00:00"
         },
         {
             "name": "oxil/kinikit-mvc",
@@ -469,12 +469,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/OxfordInfoLabs/kinikit-mvc.git",
-                "reference": "0c8cf64c290b1a9197ba2329ba0fa0c89abab41f"
+                "reference": "b80eb86e2cfa0e2cfea303f7c4857718e693b260"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/OxfordInfoLabs/kinikit-mvc/zipball/0c8cf64c290b1a9197ba2329ba0fa0c89abab41f",
-                "reference": "0c8cf64c290b1a9197ba2329ba0fa0c89abab41f",
+                "url": "https://api.github.com/repos/OxfordInfoLabs/kinikit-mvc/zipball/b80eb86e2cfa0e2cfea303f7c4857718e693b260",
+                "reference": "b80eb86e2cfa0e2cfea303f7c4857718e693b260",
                 "shasum": ""
             },
             "require": {
@@ -498,7 +498,7 @@
                 "php",
                 "webservices"
             ],
-            "time": "2019-09-30T14:14:35+00:00"
+            "time": "2019-10-10T16:26:20+00:00"
         },
         {
             "name": "oxil/kinikit-persistence",
@@ -506,12 +506,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/OxfordInfoLabs/kinikit-persistence.git",
-                "reference": "3f1b897af1be3a3877cd1fbd3c1a89ff416b0c09"
+                "reference": "adb51d1a8315f151ff14060b51f5f765344f9588"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/OxfordInfoLabs/kinikit-persistence/zipball/3f1b897af1be3a3877cd1fbd3c1a89ff416b0c09",
-                "reference": "3f1b897af1be3a3877cd1fbd3c1a89ff416b0c09",
+                "url": "https://api.github.com/repos/OxfordInfoLabs/kinikit-persistence/zipball/adb51d1a8315f151ff14060b51f5f765344f9588",
+                "reference": "adb51d1a8315f151ff14060b51f5f765344f9588",
                 "shasum": ""
             },
             "require": {
@@ -535,7 +535,7 @@
                 "php",
                 "webservices"
             ],
-            "time": "2019-09-30T11:00:14+00:00"
+            "time": "2019-10-10T16:26:42+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -908,16 +908,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.11.3",
+            "version": "v2.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "699ed2342557c88789a15402de5eb834dedd6792"
+                "reference": "c7a85fd08348ca04b4d8f234f49583d9910906aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/699ed2342557c88789a15402de5eb834dedd6792",
-                "reference": "699ed2342557c88789a15402de5eb834dedd6792",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/c7a85fd08348ca04b4d8f234f49583d9910906aa",
+                "reference": "c7a85fd08348ca04b4d8f234f49583d9910906aa",
                 "shasum": ""
             },
             "require": {
@@ -927,13 +927,13 @@
             },
             "require-dev": {
                 "psr/container": "^1.0",
-                "symfony/debug": "^2.7",
-                "symfony/phpunit-bridge": "^3.4.19|^4.1.8|^5.0"
+                "symfony/debug": "^3.4|^4.2",
+                "symfony/phpunit-bridge": "^4.4@dev|^5.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.11-dev"
+                    "dev-master": "2.12-dev"
                 }
             },
             "autoload": {
@@ -956,14 +956,14 @@
                     "role": "Lead Developer"
                 },
                 {
-                    "name": "Armin Ronacher",
-                    "email": "armin.ronacher@active-4.com",
-                    "role": "Project Founder"
-                },
-                {
                     "name": "Twig Team",
                     "homepage": "https://twig.symfony.com/contributors",
                     "role": "Contributors"
+                },
+                {
+                    "name": "Armin Ronacher",
+                    "email": "armin.ronacher@active-4.com",
+                    "role": "Project Founder"
                 }
             ],
             "description": "Twig, the flexible, fast, and secure template language for PHP",
@@ -971,7 +971,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-06-18T15:37:11+00:00"
+            "time": "2019-10-05T16:42:38+00:00"
         }
     ],
     "packages-dev": [],
