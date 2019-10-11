@@ -1,0 +1,65 @@
+<?php
+
+
+namespace Kiniauth\Objects\Account;
+
+
+use Kinikit\Core\Util\ObjectArrayUtils;
+use Kinikit\Persistence\Database\Connection\DatabaseConnection;
+use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
+
+/**
+ * Class ContactInterceptor
+ * @package Kiniauth\Objects\Account
+ *
+ * @noGenerate
+ */
+class ContactInterceptor extends DefaultORMInterceptor {
+
+    /**
+     * @var DatabaseConnection
+     */
+    private $databaseConnection;
+
+    /**
+     * ContactInterceptor constructor.
+     *
+     * @param DatabaseConnection $databaseConnection
+     */
+    public function __construct($databaseConnection) {
+        $this->databaseConnection = $databaseConnection;
+    }
+
+    /**
+     * Check for account default
+     *
+     * @param $object
+     */
+    public function postSave($object) {
+        $this->ensureDefaultContact($object->getAccountId());
+    }
+
+    /**
+     * Check for account default
+     *
+     * @param $object
+     */
+    public function postDelete($object) {
+        $this->ensureDefaultContact($object->getAccountId());
+    }
+
+    // Check for default contact
+    private function ensureDefaultContact($accountId) {
+        $results = $this->databaseConnection->query("SELECT COUNT(*) total FROM ka_contact WHERE account_id = ? AND default_contact = 1", $accountId);
+        $total = $results->fetchAll()[0]["total"];
+        if ($total == 0) {
+            $firstContact = Contact::filter("WHERE account_id = ? LIMIT 1", $accountId);
+            if (sizeof($firstContact) > 0) {
+                $firstContact[0]->setDefaultContact(true);
+                $firstContact[0]->save();
+            }
+        }
+    }
+
+
+}

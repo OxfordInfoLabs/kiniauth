@@ -31,6 +31,11 @@ class ContactService {
         return $contact;
     }
 
+    public function deleteContact($contactId) {
+        Contact::fetch($contactId);
+
+    }
+
     /**
      * Return the contacts for the logged in account
      *

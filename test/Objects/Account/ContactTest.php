@@ -35,7 +35,19 @@ class ContactTest extends TestBase {
         $reContact = Contact::fetch($contact->getId());
         $this->assertTrue($reContact->isDefaultContact());
 
+        $contact2 = new Contact("Jeff Miles", "Jeff inc", "3 My house", "", "Oxford", "Oxon", "OX4 2RR", "GB");
+        $contact2->setAccountId(2);
+        $contact2->save();
 
+        $reContact2 = Contact::fetch($contact2->getId());
+        $this->assertFalse($reContact2->isDefaultContact());
+
+        // Delete the original contact.
+        $reContact->remove();
+
+        // Check second contact is now marked as default.
+        $reContact2 = Contact::fetch($contact2->getId());
+        $this->assertTrue($reContact2->isDefaultContact());
 
 
     }
