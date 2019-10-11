@@ -126,6 +126,13 @@ class Contact extends ActiveRecord {
     private $emailAddress;
 
 
+    /**
+     * Default contact
+     *
+     * @var boolean
+     */
+    private $defaultContact;
+
     const ADDRESS_TYPE_GENERAL = "GENERAL";
 
     /**
@@ -145,7 +152,7 @@ class Contact extends ActiveRecord {
      */
     public function __construct($name = null, $organisation = null, $street1 = null, $street2 = null, $city = null,
                                 $county = null, $postcode = null, $countryCode = null, $telephoneNumber = null,
-                                $emailAddress = null, $accountId = null, $type = null) {
+                                $emailAddress = null, $accountId = null, $type = self::ADDRESS_TYPE_GENERAL) {
 
         $this->accountId = $accountId;
         $this->type = $type;
@@ -167,6 +174,10 @@ class Contact extends ActiveRecord {
      */
     public function getId() {
         return $this->id;
+    }
+
+    public function setId($id) {
+        $this->id = $id;
     }
 
     /**
@@ -331,11 +342,42 @@ class Contact extends ActiveRecord {
     }
 
     /**
+     * @return bool
+     */
+    public function isDefaultContact() {
+        return $this->defaultContact;
+    }
+
+    /**
+     * @param bool $defaultContact
+     */
+    public function setDefaultContact($defaultContact) {
+        $this->defaultContact = $defaultContact;
+    }
+
+    /**
      * @param int $accountId
      */
     public function setAccountId($accountId) {
         $this->accountId = $accountId;
     }
 
+    public function getHtmlAddressLinesString() {
+        return $this->getAddressString("<br />");
+    }
+
+    public function getAddressString($separator = ", ") {
+        $address = array();
+        $this->organisation ? $address[] = trim($this->organisation) : null;
+        $this->street1 ? $address[] = trim($this->street1) : null;
+        $this->street2 ? $address[] = trim($this->street2) : null;
+        $this->city ? $address[] = trim($this->city) : null;
+        $this->county ? $address[] = trim($this->county) : null;
+        $this->postcode ? $address[] = trim($this->postcode) : null;
+        $this->countryCode ? $address[] = trim($this->countryCode) : null;
+
+        return join($separator, $address);
+
+    }
 
 }
