@@ -11,6 +11,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  * Class Contact
  *
  * @table ka_contact
+ * @interceptor \Kiniauth\Objects\Account\ContactInterceptor
  */
 class Contact extends ActiveRecord {
 
@@ -131,7 +132,7 @@ class Contact extends ActiveRecord {
      *
      * @var boolean
      */
-    private $defaultContact;
+    private $defaultContact = false;
 
     const ADDRESS_TYPE_GENERAL = "GENERAL";
 
