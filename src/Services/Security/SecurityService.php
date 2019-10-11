@@ -302,4 +302,18 @@ class SecurityService {
     }
 
 
+    /**
+     * Reload logged in user and account.  Useful after any live changes have been made to accounts etc.
+     */
+    public function reloadLoggedInObjects() {
+        list($user, $account) = $this->getLoggedInUserAndAccount();
+        if ($user) {
+            $this->session->__setLoggedInUser(User::fetch($user->getId()));
+        }
+        if ($account) {
+            $this->session->__setLoggedInAccount(Account::fetch($account->getAccountId()));
+        }
+    }
+
+
 }
