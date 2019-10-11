@@ -4,6 +4,7 @@ namespace Kiniauth\Test;
 
 
 use Kiniauth\Bootstrap;
+use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Init;
 use Kinikit\Persistence\Tools\TestDataInstaller;
@@ -14,9 +15,18 @@ class TestBase extends \PHPUnit\Framework\TestCase {
 
     public static function setUpBeforeClass(): void {
 
+        $bootstrap = Container::instance()->get(Bootstrap::class);
+        $bootstrap->setup();
+
+
         if (!self::$run) {
-            $testDataInstaller = Container::instance()->get(TestDataInstaller::class);
-            $testDataInstaller->run(true);
+
+            $activeRecordInterceptor = Container::instance()->get(ActiveRecordInterceptor::class);
+
+            $activeRecordInterceptor->executeInsecure(function () {
+                $testDataInstaller = Container::instance()->get(TestDataInstaller::class);
+                $testDataInstaller->run(true);
+            });
 
             Container::instance()->get(Init::class);
 

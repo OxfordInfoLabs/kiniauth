@@ -8,6 +8,12 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\Contact;
 use Kiniauth\Objects\Security\User;
 
+/**
+ * Class TestMethodService
+ * @package Kiniauth\Test\Services\Security
+ *
+ *
+ */
 class TestMethodService {
 
 
@@ -17,6 +23,8 @@ class TestMethodService {
     public function normalMethod() {
         $contact = new Contact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
             "Oxon", "OX4 7YY", "GB", null, "test@test.com", 1, Contact::ADDRESS_TYPE_GENERAL);
+
+
         $contact->save();
     }
 

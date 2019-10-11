@@ -37,6 +37,8 @@ class UserServiceTest extends TestBase {
      */
     public function testCanCreateUserWithABrandNewAccount() {
 
+        $this->authenticationService->logout();
+
         // Simple one with just email address and password.
         $newUser = $this->userService->createWithAccount("john@test.com", "helloworld");
 
