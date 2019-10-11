@@ -22,7 +22,7 @@ class ObjectInterceptorTest extends TestBase {
     private $testMethodService;
 
     /**
-     * @var AuthenticationService\
+     * @var AuthenticationService
      */
     private $authenticationService;
 

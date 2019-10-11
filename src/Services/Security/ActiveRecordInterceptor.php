@@ -71,7 +71,7 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
 
 
     /**
-     * @param SerialisableObject $object
+     * @param mixed $object
      * @return bool
      */
     private function resolveAccessForObject($object, $throwException = true) {
