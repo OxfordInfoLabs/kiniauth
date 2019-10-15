@@ -17870,3 +17870,698 @@ SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key,
 Completed in 0 seconds
 SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
 Completed in 0 seconds
+PRAGMA table_info('ka_setting')
+Completed in 0.0001 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0.0005 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_role')
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id WHERE (_X.id=?) OR (_X.id=?) OR (_X.id=?) OR (_X.id=?) OR (_X.id=?) OR (_X.id=?) OR (_X.id=?) OR (_X.id=?) OR (_X.id=?) OR (_X.id=?) OR (_X.id=?)
+Completed in 0.0001 seconds
+SELECT _X.user_id _X__user_id, _X.scope _X__scope, _X.scope_id _X__scope_id, _X.role_id _X__role_id FROM ka_user_role _X  WHERE (_X.user_id=? AND _X.scope=? AND _X.scope_id=?) OR (_X.user_id=? AND _X.scope=? AND _X.scope_id=?) OR (_X.user_id=? AND _X.scope=? AND _X.scope_id=?) OR (_X.user_id=? AND _X.scope=? AND _X.scope_id=?) OR (_X.user_id=? AND _X.scope=? AND _X.scope_id=?) OR (_X.user_id=? AND _X.scope=? AND _X.scope_id=?) OR (_X.user_id=? AND _X.scope=? AND _X.scope_id=?) OR (_X.user_id=? AND _X.scope=? AND _X.scope_id=?) OR (_X.user_id=? AND _X.scope=? AND _X.scope_id=?) OR (_X.user_id=? AND _X.scope=? AND _X.scope_id=?) OR (_X.user_id=? AND _X.scope=? AND _X.scope_id=?)
+Completed in 0.0001 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE (_X.parent_account_id=? AND _X.setting_key=? AND _X.value_index=?) OR (_X.parent_account_id=? AND _X.setting_key=? AND _X.value_index=?) OR (_X.parent_account_id=? AND _X.setting_key=? AND _X.value_index=?)
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE (_X.account_id=?) OR (_X.account_id=?) OR (_X.account_id=?) OR (_X.account_id=?) OR (_X.account_id=?)
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_contact')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_contact' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+SELECT COUNT(*) total FROM ka_contact WHERE account_id = ? AND default_contact = 1
+Completed in 0 seconds
+SELECT DISTINCT _X.id FROM ka_contact _X  WHERE _X.account_id = ? LIMIT 1
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.account_id _X__account_id, _X.type _X__type, _X.name _X__name, _X.organisation _X__organisation, _X.street_1 _X__street_1, _X.street_2 _X__street_2, _X.city _X__city, _X.county _X__county, _X.postcode _X__postcode, _X.country_code _X__country_code, _X.telephone_number _X__telephone_number, _X.email_address _X__email_address, _X.default_contact _X__default_contact FROM ka_contact _X  WHERE (_X.id = ?)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.account_id _X__account_id, _X.type _X__type, _X.name _X__name, _X.organisation _X__organisation, _X.street_1 _X__street_1, _X.street_2 _X__street_2, _X.city _X__city, _X.county _X__county, _X.postcode _X__postcode, _X.country_code _X__country_code, _X.telephone_number _X__telephone_number, _X.email_address _X__email_address, _X.default_contact _X__default_contact FROM ka_contact _X  WHERE (_X.id=?)
+Completed in 0 seconds
+SELECT COUNT(*) total FROM ka_contact WHERE account_id = ? AND default_contact = 1
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2)
+Completed in 0 seconds
+SELECT COUNT(*) total FROM ka_contact WHERE account_id = ? AND default_contact = 1
+Completed in 0 seconds
+SELECT DISTINCT _X.id FROM ka_contact _X  WHERE _X.account_id = ? LIMIT 1
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.account_id _X__account_id, _X.type _X__type, _X.name _X__name, _X.organisation _X__organisation, _X.street_1 _X__street_1, _X.street_2 _X__street_2, _X.city _X__city, _X.county _X__county, _X.postcode _X__postcode, _X.country_code _X__country_code, _X.telephone_number _X__telephone_number, _X.email_address _X__email_address, _X.default_contact _X__default_contact FROM ka_contact _X  WHERE (_X.id = ?)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.account_id _X__account_id, _X.type _X__type, _X.name _X__name, _X.organisation _X__organisation, _X.street_1 _X__street_1, _X.street_2 _X__street_2, _X.city _X__city, _X.county _X__county, _X.postcode _X__postcode, _X.country_code _X__country_code, _X.telephone_number _X__telephone_number, _X.email_address _X__email_address, _X.default_contact _X__default_contact FROM ka_contact _X  WHERE (_X.id=?)
+Completed in 0 seconds
+SELECT COUNT(*) total FROM ka_contact WHERE account_id = ? AND default_contact = 1
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.account_id _X__account_id, _X.type _X__type, _X.name _X__name, _X.organisation _X__organisation, _X.street_1 _X__street_1, _X.street_2 _X__street_2, _X.city _X__city, _X.county _X__county, _X.postcode _X__postcode, _X.country_code _X__country_code, _X.telephone_number _X__telephone_number, _X.email_address _X__email_address, _X.default_contact _X__default_contact FROM ka_contact _X  WHERE _X.id=?
+Completed in 0 seconds
+SELECT COUNT(*) total FROM ka_contact WHERE account_id = ? AND default_contact = 1
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.account_id _X__account_id, _X.type _X__type, _X.name _X__name, _X.organisation _X__organisation, _X.street_1 _X__street_1, _X.street_2 _X__street_2, _X.city _X__city, _X.county _X__county, _X.postcode _X__postcode, _X.country_code _X__country_code, _X.telephone_number _X__telephone_number, _X.email_address _X__email_address, _X.default_contact _X__default_contact FROM ka_contact _X  WHERE _X.id=?
+Completed in 0 seconds
+SELECT COUNT(*) total FROM ka_contact WHERE account_id = ? AND default_contact = 1
+Completed in 0.0001 seconds
+SELECT DISTINCT _X.id FROM ka_contact _X  WHERE _X.account_id = ? LIMIT 1
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.account_id _X__account_id, _X.type _X__type, _X.name _X__name, _X.organisation _X__organisation, _X.street_1 _X__street_1, _X.street_2 _X__street_2, _X.city _X__city, _X.county _X__county, _X.postcode _X__postcode, _X.country_code _X__country_code, _X.telephone_number _X__telephone_number, _X.email_address _X__email_address, _X.default_contact _X__default_contact FROM ka_contact _X  WHERE (_X.id = ?)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.account_id _X__account_id, _X.type _X__type, _X.name _X__name, _X.organisation _X__organisation, _X.street_1 _X__street_1, _X.street_2 _X__street_2, _X.city _X__city, _X.county _X__county, _X.postcode _X__postcode, _X.country_code _X__country_code, _X.telephone_number _X__telephone_number, _X.email_address _X__email_address, _X.default_contact _X__default_contact FROM ka_contact _X  WHERE (_X.id=?)
+Completed in 0 seconds
+SELECT COUNT(*) total FROM ka_contact WHERE account_id = ? AND default_contact = 1
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.account_id _X__account_id, _X.type _X__type, _X.name _X__name, _X.organisation _X__organisation, _X.street_1 _X__street_1, _X.street_2 _X__street_2, _X.city _X__city, _X.county _X__county, _X.postcode _X__postcode, _X.country_code _X__country_code, _X.telephone_number _X__telephone_number, _X.email_address _X__email_address, _X.default_contact _X__default_contact FROM ka_contact _X  WHERE _X.id=?
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.parent_account_id=? AND _X.setting_key=? AND _X.value_index=?
+Completed in 0.0002 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0.0001 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0.0001 seconds
+SELECT _X.user_id _X__user_id, _X.scope _X__scope, _X.scope_id _X__scope_id, _X.role_id _X__role_id FROM ka_user_role _X  WHERE (_X.user_id=? AND _X.scope=? AND _X.scope_id=?)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.id=?
+Completed in 0.0001 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0.0001 seconds
+SELECT _X.user_id _X__user_id, _X.scope _X__scope, _X.scope_id _X__scope_id, _X.role_id _X__role_id FROM ka_user_role _X  WHERE (_X.user_id=? AND _X.scope=? AND _X.scope_id=?)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.id=?
+Completed in 0.0001 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0.0001 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0.0001 seconds
+SELECT _X.user_id _X__user_id, _X.scope _X__scope, _X.scope_id _X__scope_id, _X.role_id _X__role_id FROM ka_user_role _X  WHERE (_X.user_id=? AND _X.scope=? AND _X.scope_id=?)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.id=?
+Completed in 0.0001 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0.0001 seconds
+SELECT _X.user_id _X__user_id, _X.scope _X__scope, _X.scope_id _X__scope_id, _X.role_id _X__role_id FROM ka_user_role _X  WHERE (_X.user_id=? AND _X.scope=? AND _X.scope_id=?)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.id=?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0.0001 seconds
+SELECT _X.user_id _X__user_id, _X.scope _X__scope, _X.scope_id _X__scope_id, _X.role_id _X__role_id FROM ka_user_role _X  WHERE (_X.user_id=? AND _X.scope=? AND _X.scope_id=?)
+Completed in 0.0001 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0.0002 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0.0001 seconds
+SELECT _X.user_id _X__user_id, _X.scope _X__scope, _X.scope_id _X__scope_id, _X.role_id _X__role_id FROM ka_user_role _X  WHERE (_X.user_id=? AND _X.scope=? AND _X.scope_id=?)
+Completed in 0.0001 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ? AND _X.id <> ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0.0002 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.id=?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2,4)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT COUNT(*) FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.parent_account_id = ?
+Completed in 0.0002 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0002 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2,3)
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (5)
+Completed in 0.0001 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0002 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2,4)
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2,3)
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0.0001 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0.0001 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0.0001 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2)
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0.0001 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT COUNT(*) total FROM ka_contact WHERE account_id = ? AND default_contact = 1
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2,4)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2,3)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2,3)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2,4)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2,4)
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0002 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (2)
+Completed in 0.0001 seconds
+SELECT _X.id _X__id, _X.email_address _X__email_address, _X.name _X__name, _X.parent_account_id _X__parent_account_id, _X.hashed_password _X__hashed_password, _X.mobile_number _X__mobile_number, _X.backup_email_address _X__backup_email_address, _X.two_factor_data _X__two_factor_data, _X.active_account_id _X__active_account_id, _X.status _X__status, _XA.user_id _XA__user_id, _XA.scope _XA__scope, _XA.scope_id _XA__scope_id, _XA.role_id _XA__role_id, _XAA.id _XAA__id, _XAA.account_id _XAA__account_id, _XAA.scope _XAA__scope, _XAA.name _XAA__name, _XAA.description _XAA__description, _XAA.privileges _XAA__privileges, _XAB.sub_accounts_enabled _XAB__sub_accounts_enabled, _XAB.api_key _XAB__api_key, _XAB.api_secret _XAB__api_secret, _XAB.name _XAB__name, _XAB.account_id _XAB__account_id, _XAB.parent_account_id _XAB__parent_account_id, _XAB.status _XAB__status FROM ka_user _X 
+LEFT JOIN ka_user_role _XA ON _X.id = _XA.user_id
+LEFT JOIN ka_role _XAA ON _XA.role_id = _XAA.id
+LEFT JOIN ka_account _XAB ON _XA.scope_id = _XAB.account_id WHERE _X.email_address = ? AND _X.hashed_password = ? AND _X.parent_account_id = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.api_key = ? AND _X.api_secret = ?
+Completed in 0.0001 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.account_id=?
+Completed in 0 seconds
+SELECT _X.sub_accounts_enabled _X__sub_accounts_enabled, _X.api_key _X__api_key, _X.api_secret _X__api_secret, _X.name _X__name, _X.account_id _X__account_id, _X.parent_account_id _X__parent_account_id, _X.status _X__status FROM ka_account _X  WHERE _X.parent_account_id IN (1)
+Completed in 0 seconds
