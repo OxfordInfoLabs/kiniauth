@@ -11,7 +11,7 @@ use Dolondro\GoogleAuthenticator\SecretFactory;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 
-class GoogleAuthenticatorProvider extends TwoFactorProvider {
+class GoogleAuthenticatorProvider implements TwoFactorProvider {
 
     private $issuer;
     private $accountName;

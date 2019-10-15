@@ -7,20 +7,32 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
+use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kinikit\Core\Validation\ValidationException;
 
 
 class UserService {
 
+    /**
+     * @var AuthenticationService
+     */
     private $authenticationService;
+
+    /**
+     * @var TwoFactorProvider
+     */
+    private $twoFactorProvider;
 
     /**
      * UserService constructor.
      *
-     * @param \Kiniauth\Services\Security\AuthenticationService $authenticationService
+     * @param AuthenticationService $authenticationService
+     * @param TwoFactorProvider $twoFactorProvider
      */
-    public function __construct($authenticationService) {
+    public function __construct($authenticationService, $twoFactorProvider) {
         $this->authenticationService = $authenticationService;
+        $this->twoFactorProvider = $twoFactorProvider;
     }
 
     /**
@@ -119,5 +131,45 @@ class UserService {
             return $user;
         }
     }
+
+
+    public function generateTwoFactorSettings($userId = User::LOGGED_IN_USER) {
+
+        /** @var User $user */
+        $user = User::fetch($userId);
+
+        $this->twoFactorProvider->setAccountName($user->getEmailAddress());
+
+        $secret = $this->twoFactorProvider->createSecretKey();
+        $qrCode = $this->twoFactorProvider->generateQRCode($secret);
+
+        return array("secret" => $secret, "qrCode" => $qrCode);
+    }
+
+    public function authenticateNewTwoFactor($code, $secret, $userId = User::LOGGED_IN_USER) {
+
+        /** @var User $user */
+        $user = User::fetch($userId);
+
+        $authenticated = $this->twoFactorProvider->authenticate($secret, $code);
+
+        if ($authenticated) {
+            $user->setTwoFactorData($secret);
+            $user->save();
+            return $user;
+        }
+        return false;
+    }
+
+    public function disableTwoFactor($userId = User::LOGGED_IN_USER) {
+
+        /** @var User $user */
+        $user = User::fetch($userId);
+
+        $user->setTwoFactorData(null);
+        $user->save();
+        return $user;
+    }
+
 
 }

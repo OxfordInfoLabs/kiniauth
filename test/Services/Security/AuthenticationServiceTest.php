@@ -301,20 +301,7 @@ class AuthenticationServiceTest extends TestBase {
         $this->authenticationService->updateActiveParentAccount("");
     }
 
-    public function testCanGenerateTwoFactorSettingsForDefaultProvider() {
-        // Attempt a login. We need to be logged in to generate settings.
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
 
-        // Check the user
-        $loggedInUser = $this->session->__getLoggedInUser();
-        $this->assertTrue($loggedInUser instanceof User);
-
-        $twoFactorSettings = $this->authenticationService->generateTwoFactorSettings();
-
-        $this->assertNotNull($twoFactorSettings["secret"]);
-        $this->assertNotNull($twoFactorSettings["qrCode"]);
-
-    }
 
 
 }

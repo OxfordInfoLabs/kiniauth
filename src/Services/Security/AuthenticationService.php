@@ -34,14 +34,13 @@ class AuthenticationService {
      * @param \Kiniauth\Services\Application\SettingsService $settingsService
      * @param \Kiniauth\Services\Application\Session $session
      * @param \Kiniauth\Services\Security\SecurityService $securityService
+     * @param TwoFactorProvider $twoFactorProvider
      */
-    public function __construct($settingsService, $session, $securityService) {
+    public function __construct($settingsService, $session, $securityService, $twoFactorProvider) {
         $this->settingsService = $settingsService;
         $this->session = $session;
         $this->securityService = $securityService;
-
-        $twoFactorProviderKey = Configuration::readParameter("two.factor.provider") ? Configuration::readParameter("two.factor.provider") : null;
-        $this->twoFactorProvider = TwoFactorProvider::getProvider($twoFactorProviderKey);
+        $this->twoFactorProvider = $twoFactorProvider;
     }
 
     /**
@@ -117,7 +116,7 @@ class AuthenticationService {
              */
             $interceptor = Container::instance()->get(ActiveRecordInterceptor::class);
 
-            $interceptor->executeInsecure(function() use ($pendingUser) {
+            $interceptor->executeInsecure(function () use ($pendingUser) {
                 $this->securityService->logIn($pendingUser);
             });
 
@@ -196,35 +195,6 @@ class AuthenticationService {
         return sizeof($matchingUsers) > 0;
     }
 
-    public function generateTwoFactorSettings() {
-        $userEmail = $this->session->__getLoggedInUser()->getEmailAddress();
-        $this->twoFactorProvider->setAccountName($userEmail);
-
-        $secret = $this->twoFactorProvider->createSecretKey();
-        $qrCode = $this->twoFactorProvider->generateQRCode($secret);
-
-        return array("secret" => $secret, "qrCode" => $qrCode);
-    }
-
-    public function authenticateNewTwoFactor($code, $secret) {
-        $user = $this->session->__getLoggedInUser();
-        $authenticated = $this->twoFactorProvider->authenticate($secret, $code);
-
-        if ($authenticated) {
-            $user->setTwoFactorData($secret);
-            $user->save();
-            $this->session->__setLoggedInUser($user);
-            return $user;
-        }
-        return false;
-    }
-
-    public function disableTwoFactor() {
-        $user = $this->session->__getLoggedInUser();
-        $user->setTwoFactorData(null);
-        $user->save();
-        return $user;
-    }
 
     /**
      * Log out function.

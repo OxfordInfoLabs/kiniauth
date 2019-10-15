@@ -65,27 +65,7 @@ trait Auth {
         return $this->authenticationService->validateUserPassword($emailAddress, $password, $parentAccountId);
     }
 
-    /**
-     * Generate two factor settings
-     *
-     * @http GET /twoFactorSettings
-     *
-     * @return array
-     */
-    public function createTwoFactorSettings() {
-        return $this->authenticationService->generateTwoFactorSettings();
-    }
 
-    /**
-     * @http GET /newTwoFactor
-     *
-     * @param $code
-     * @param $secret
-     * @return bool|\Kiniauth\Objects\Security\User
-     */
-    public function authenticateNewTwoFactorCode($code, $secret) {
-        return $this->authenticationService->authenticateNewTwoFactor($code, $secret);
-    }
 
     /**
      * Authenticate the two fa code prior to login
@@ -102,14 +82,5 @@ trait Auth {
         return $this->authenticationService->authenticateTwoFactor($code);
     }
 
-    /**
-     * Disable the current logged in users two fa.
-     *
-     * @http GET /disableTwoFA
-     *
-     * @return \Kiniauth\Objects\Security\User
-     */
-    public function disableTwoFactor() {
-        return  $this->authenticationService->disableTwoFactor();
-    }
+
 }

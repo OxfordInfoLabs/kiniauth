@@ -39,8 +39,8 @@ trait UserTrait {
      * @param $password
      * @return \Kiniauth\Objects\Security\User
      */
-    public function changeUserEmail($newEmailAddress, $password) {
-        return $this->userService->changeUserEmail($newEmailAddress, $password);
+    public function changeUserEmail($newEmailAddress, $password, $userId = User::LOGGED_IN_USER) {
+        return $this->userService->changeUserEmail($newEmailAddress, $password, $userId);
     }
 
     /**
@@ -52,8 +52,8 @@ trait UserTrait {
      * @param $password
      * @return \Kiniauth\Objects\Security\User
      */
-    public function changeUserBackupEmail($newEmailAddress, $password) {
-        return $this->userService->changeUserBackupEmail($newEmailAddress, $password);
+    public function changeUserBackupEmail($newEmailAddress, $password, $userId = User::LOGGED_IN_USER) {
+        return $this->userService->changeUserBackupEmail($newEmailAddress, $password, $userId);
     }
 
     /**
@@ -65,7 +65,41 @@ trait UserTrait {
      * @param $password
      * @return \Kiniauth\Objects\Security\User
      */
-    public function changeUserMobile($newMobile, $password) {
-        return $this->userService->changeUserMobile($newMobile, $password);
+    public function changeUserMobile($newMobile, $password, $userId = User::LOGGED_IN_USER) {
+        return $this->userService->changeUserMobile($newMobile, $password, $userId);
     }
+
+    /**
+     * Generate two factor settings
+     *
+     * @http GET /twoFactorSettings
+     *
+     * @return array
+     */
+    public function createTwoFactorSettings($userId = User::LOGGED_IN_USER) {
+        return $this->userService->generateTwoFactorSettings($userId);
+    }
+
+    /**
+     * @http GET /newTwoFactor
+     *
+     * @param $code
+     * @param $secret
+     * @return bool|\Kiniauth\Objects\Security\User
+     */
+    public function authenticateNewTwoFactorCode($code, $secret, $userId = User::LOGGED_IN_USER) {
+        return $this->userService->authenticateNewTwoFactor($code, $secret, $userId);
+    }
+
+    /**
+     * Disable the current logged in users two fa.
+     *
+     * @http GET /disableTwoFA
+     *
+     * @return \Kiniauth\Objects\Security\User
+     */
+    public function disableTwoFactor($userId = User::LOGGED_IN_USER) {
+        return $this->userService->disableTwoFactor($userId);
+    }
+
 }
