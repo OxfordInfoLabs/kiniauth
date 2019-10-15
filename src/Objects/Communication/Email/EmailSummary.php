@@ -2,6 +2,7 @@
 
 
 namespace Kiniauth\Objects\Communication\Email;
+
 use Kinikit\Persistence\ORM\ActiveRecord;
 
 
@@ -100,7 +101,7 @@ class EmailSummary extends ActiveRecord {
      * The sent status of this email
      *
      * @var string
-     * @maxLength 30 
+     * @maxLength 30
      */
     protected $status;
 

@@ -14,7 +14,6 @@
     "oxil/kinikit-core": "dev-master",
     "oxil/kinikit-mvc": "dev-master",
     "oxil/kinikit-persistence": "dev-master",
-    "phpmailer/phpmailer": "^6.0",
     "dolondro/google-authenticator": "^2.0",
     "cache/filesystem-adapter": "^1.0"
   },

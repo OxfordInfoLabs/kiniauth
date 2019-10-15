@@ -102,6 +102,7 @@ class AuthenticationService {
      * @throws \Kiniauth\Exception\Security\UserSuspendedException
      */
     public function authenticateTwoFactor($code) {
+
         $pendingUser = $this->session->__getPendingLoggedInUser();
         $secretKey = $pendingUser->getTwoFactorData();
 

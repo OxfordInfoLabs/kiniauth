@@ -5,7 +5,7 @@ namespace Kiniauth\Test\Services\Communication\Email;
 use Kiniauth\Objects\Communication\Attachment\Attachment;
 use Kiniauth\Objects\Communication\Attachment\AttachmentSummary;
 use Kiniauth\Objects\Communication\Email\Email;
-use Kiniauth\Services\Communication\Email\EmailService;
+use Kiniauth\Services\Communication\Email\EmailSender;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
@@ -15,7 +15,7 @@ include_once __DIR__ . "/../../../autoloader.php";
 class EmailServiceTest extends TestBase {
 
     /**
-     * @var \Kiniauth\Services\Communication\Email\EmailService
+     * @var \Kiniauth\Services\Communication\Email\EmailSender
      */
     private $emailService;
 
@@ -26,7 +26,7 @@ class EmailServiceTest extends TestBase {
         $authenticationService = Container::instance()->get(AuthenticationService::class);
         $authenticationService->login("sam@samdavisdesign.co.uk", "password");
 
-        $this->emailService = Container::instance()->get(EmailService::class);
+        $this->emailService = Container::instance()->get(EmailSender::class);
     }
 
     public function testWhenEmailSentCorrectlyWithDefaultProviderEmailIsAlsoLoggedInDatabase() {
