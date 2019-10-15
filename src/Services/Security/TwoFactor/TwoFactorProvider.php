@@ -2,30 +2,21 @@
 
 namespace Kiniauth\Services\Security\TwoFactor;
 
-abstract class TwoFactorProvider {
 
-    const PROVIDER_GOOGLE_AUTHENTICATOR = "GOOGLE_AUTHENTICATOR";
+/**
+ * Interface TwoFactorProvider
+ *
+ * @defaultImplementation \Kiniauth\Services\Security\TwoFactor\GoogleAuthenticatorProvider
+ *
+ * @package Kiniauth\Services\Security\TwoFactor
+ */
+interface TwoFactorProvider {
 
-    public abstract function createSecretKey();
+    public function createSecretKey();
 
-    public abstract function generateQRCode($secretKey);
+    public function generateQRCode($secretKey);
 
-    public abstract function authenticate($secretKey, $code);
+    public function authenticate($secretKey, $code);
 
-    /**
-     * Get the active transport in use
-     */
-    public static function getProvider($providerKey) {
-
-        switch ($providerKey) {
-            case self::PROVIDER_GOOGLE_AUTHENTICATOR:
-                return new GoogleAuthenticatorProvider();
-                break;
-            default:
-                return new GoogleAuthenticatorProvider();
-
-        }
-
-    }
 
 }

@@ -6,6 +6,7 @@ use Kiniauth\Bootstrap;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\BootstrapService;
+use Kiniauth\Services\Application\Session;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
@@ -26,10 +27,17 @@ class UserServiceTest extends TestBase {
     private $authenticationService;
 
 
+    /**
+     * @var Session
+     */
+    private $session;
+
+
     public function setUp(): void {
         parent::setUp();
         $this->userService = Container::instance()->get(\Kiniauth\Services\Account\UserService::class);
         $this->authenticationService = Container::instance()->get(\Kiniauth\Services\Security\AuthenticationService::class);
+        $this->session = Container::instance()->get(Session::class);
     }
 
     /**
@@ -162,6 +170,21 @@ class UserServiceTest extends TestBase {
             // Success
         }
 
+
+    }
+
+    public function testCanGenerateTwoFactorSettingsForDefaultProvider() {
+        // Attempt a login. We need to be logged in to generate settings.
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+
+        // Check the user
+        $loggedInUser = $this->session->__getLoggedInUser();
+        $this->assertTrue($loggedInUser instanceof User);
+
+        $twoFactorSettings = $this->userService->generateTwoFactorSettings();
+
+        $this->assertNotNull($twoFactorSettings["secret"]);
+        $this->assertNotNull($twoFactorSettings["qrCode"]);
 
     }
 
