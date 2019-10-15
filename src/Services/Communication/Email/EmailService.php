@@ -3,10 +3,14 @@
 
 namespace Kiniauth\Services\Communication\Email;
 
-use Kiniauth\Objects\Communication\Email\Email;
-use Kiniauth\Objects\Communication\Email\EmailSendResult;
-use Kiniauth\Services\Communication\Email\Provider\EmailProvider;
-use Kinikit\Core\Configuration;
+
+use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Communication\Attachment\Attachment;
+use Kiniauth\Objects\Communication\Email\StoredEmail;
+use Kiniauth\Objects\Communication\Email\StoredEmailSendResult;
+use Kinikit\Core\Communication\Email\Email;
+use Kinikit\Core\Communication\Email\EmailSendResult;
+use Kinikit\Core\Communication\Email\Provider\EmailProvider;
 
 /**
  * Service for sending and querying for sent emails.
@@ -31,22 +35,27 @@ class EmailService {
      *
      * @param Email $email
      *
-     * @return EmailSendResult
+     * @return StoredEmailSendResult
      */
-    public function send($email) {
+    public function send($email, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
         // Send the email
         $response = $this->provider->send($email);
 
-        $email->setStatus($response->getStatus());
+        // Save the email
+        $storedEmail = new StoredEmail($email, $accountId, $response->getStatus(), $response->getErrorMessage());
+        $storedEmail->save();
 
-        if ($response->getStatus() == Email::STATUS_SENT) {
-            $email->save();
-            $response = new EmailSendResult(Email::STATUS_SENT, null, $email->getId());
-        } else {
-            $email->setErrorMessage($response->getErrorMessage());
-            $email->save();
+        if (is_array($email->getAttachments())) {
+            foreach ($email->getAttachments() as $attachment) {
+                $attachment = new Attachment("Email", $storedEmail->getId(), $attachment->getContent(), $attachment->getContentMimeType(), $attachment->getAttachmentFilename(), $accountId);
+                $attachment->save();
+            }
+
         }
+
+
+        $response = new StoredEmailSendResult($response->getStatus(), $response->getErrorMessage(), $storedEmail->getId());
 
         return $response;
     }

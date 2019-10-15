@@ -11,7 +11,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  *
  * @noGenerate
  */
-class EmailSummary extends ActiveRecord {
+class StoredEmailSummary extends ActiveRecord {
 
 
     /**

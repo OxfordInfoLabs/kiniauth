@@ -3,11 +3,14 @@
 namespace Kiniauth\Test\Services\Communication\Email;
 
 use Kiniauth\Objects\Communication\Attachment\Attachment;
-use Kiniauth\Objects\Communication\Attachment\AttachmentSummary;
-use Kiniauth\Objects\Communication\Email\Email;
-use Kiniauth\Services\Communication\Email\EmailSender;
+use Kiniauth\Objects\Communication\Email\StoredEmail;
+use Kiniauth\Objects\Communication\Email\StoredEmailSendResult;
+use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Test\TestBase;
+use Kinikit\Core\Communication\Email\Attachment\FileEmailAttachment;
+use Kinikit\Core\Communication\Email\Email;
+use Kinikit\Core\Communication\Email\EmailSendResult;
 use Kinikit\Core\DependencyInjection\Container;
 
 include_once __DIR__ . "/../../../autoloader.php";
@@ -20,13 +23,13 @@ class EmailServiceTest extends TestBase {
     private $emailService;
 
 
-    public function setUp():void {
+    public function setUp(): void {
         parent::setUp();
 
         $authenticationService = Container::instance()->get(AuthenticationService::class);
         $authenticationService->login("sam@samdavisdesign.co.uk", "password");
 
-        $this->emailService = Container::instance()->get(EmailSender::class);
+        $this->emailService = Container::instance()->get(EmailService::class);
     }
 
     public function testWhenEmailSentCorrectlyWithDefaultProviderEmailIsAlsoLoggedInDatabase() {
@@ -37,13 +40,13 @@ class EmailServiceTest extends TestBase {
 
         $result = $this->emailService->send($email);
 
-        $this->assertEquals(Email::STATUS_SENT, $result->getStatus());
+        $this->assertEquals(StoredEmailSendResult::STATUS_SENT, $result->getStatus());
         $this->assertNotNull($result->getEmailId());
 
         /**
          * @var Email $email
          */
-        $email = Email::fetch($result->getEmailId());
+        $email = StoredEmail::fetch($result->getEmailId());
         $this->assertEquals("mark@oxil.co.uk", $email->getSender());
         $this->assertEquals(["test@joebloggs.com", "test2@home.com"], $email->getRecipients());
         $this->assertEquals("Test Message", $email->getSubject());
@@ -64,17 +67,17 @@ class EmailServiceTest extends TestBase {
         $email = new Email("mark@oxil.co.uk", ["test@joebloggs.com", "test2@home.com"], "Test Message", "Hello Joe, this is clearly a test",
             ["jane@test.com", "the@world.co.uk"], ["mary@test.com", "badger@haslanded.org"], "info@oxil.co.uk", 1);
 
-        $email->setLocalAttachmentFiles(array(__DIR__ . "/Provider/testimage.png", __DIR__ . "/Provider/testtext.txt"));
+        $email->setAttachments([new FileEmailAttachment(__DIR__ . "/Provider/testimage.png"), new FileEmailAttachment(__DIR__ . "/Provider/testtext.txt")]);
 
         $result = $this->emailService->send($email);
 
-        $this->assertEquals(Email::STATUS_SENT, $result->getStatus());
+        $this->assertEquals(EmailSendResult::STATUS_SENT, $result->getStatus());
         $this->assertNotNull($result->getEmailId());
 
         /**
          * @var Email $email
          */
-        $email = Email::fetch($result->getEmailId());
+        $email = StoredEmail::fetch($result->getEmailId());
         $this->assertEquals("mark@oxil.co.uk", $email->getSender());
         $this->assertEquals(["test@joebloggs.com", "test2@home.com"], $email->getRecipients());
         $this->assertEquals("Test Message", $email->getSubject());

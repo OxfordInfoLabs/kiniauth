@@ -5,13 +5,14 @@ namespace Kiniauth\Objects\Communication\Email;
 
 use Kiniauth\Objects\Communication\Attachment\Attachment;
 use Kiniauth\Objects\Communication\Attachment\AttachmentSummary;
+use Kinikit\Core\Communication\Email\Email;
 use Kinikit\Persistence\UPF\Object\ActiveRecord;
 
 /**
  *
  * @table ka_email
  */
-class Email extends EmailSummary {
+class StoredEmail extends StoredEmailSummary {
 
 
     /**
@@ -35,38 +36,27 @@ class Email extends EmailSummary {
 
 
     /**
-     * An array of local filenames to use as attachments to this email.
+     * Construct with a native Kinikit email.
      *
-     * @unmapped
-     * @var string[]
+     * StoredEmail constructor.
+     * @param Email $email
+     * @throws \Exception
      */
-    private $localAttachmentFiles = array();
+    public function __construct($email = null, $accountId = null, $status = null, $errorMessage = null) {
 
-
-    /**
-     * Email constructor.
-     *
-     * @param string $sender
-     * @param string[] $recipient
-     * @param string $subject
-     * @param string $textBody
-     * @param string[] $cc
-     * @param string[] $bcc
-     * @param string $replyTo
-     * @param integer $accountId
-     */
-    public function __construct($sender = null, $recipients = null, $subject = null, $textBody = null,
-                                $cc = null, $bcc = null, $replyTo = null, $accountId = null) {
-
-        $this->sender = $sender;
-        $this->recipients = $recipients;
-        $this->subject = $subject;
-        $this->textBody = $textBody;
-        $this->cc = $cc;
-        $this->bcc = $bcc;
-        $this->replyTo = $replyTo;
-        $this->accountId = $accountId;
-        $this->sentDate = new \DateTime();
+        if ($email) {
+            $this->sender = $email->getFrom();
+            $this->recipients = $email->getRecipients();
+            $this->subject = $email->getSubject();
+            $this->textBody = $email->getTextBody();
+            $this->cc = $email->getCc();
+            $this->bcc = $email->getBcc();
+            $this->replyTo = $email->getReplyTo();
+            $this->accountId = $accountId;
+            $this->sentDate = new \DateTime();
+            $this->status = $status;
+            $this->errorMessage = $errorMessage;
+        }
 
     }
 
@@ -156,50 +146,17 @@ class Email extends EmailSummary {
     }
 
     /**
-     * @return \Kiniauth\Objects\Communication\Attachment\AttachmentSummary[]
+     * @return AttachmentSummary[]
      */
     public function getAttachments() {
         return $this->attachments;
     }
 
     /**
-     * @param \Kiniauth\Objects\Communication\Attachment\AttachmentSummary[] $attachments
+     * @param AttachmentSummary[] $attachments
      */
     public function setAttachments($attachments) {
         $this->attachments = $attachments;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getLocalAttachmentFiles() {
-        return $this->localAttachmentFiles;
-    }
-
-    /**
-     * @param string[] $localAttachmentFiles
-     */
-    public function setLocalAttachmentFiles($localAttachmentFiles) {
-        $this->localAttachmentFiles = $localAttachmentFiles;
-    }
-
-
-    /**
-     * Overridden save method to also save any attachments which may have been added as local files.
-     */
-    public function save() {
-        parent::save();
-
-        // Save any local attachments if set.
-        if ($this->localAttachmentFiles) {
-            foreach ($this->getLocalAttachmentFiles() as $file) {
-
-                $attachment = new Attachment("Email", $this->id, $file, null, $this->accountId);
-                $attachment->save();
-            }
-
-            $this->localAttachmentFiles = null;
-        }
     }
 
 
