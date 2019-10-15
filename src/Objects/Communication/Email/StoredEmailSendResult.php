@@ -3,6 +3,7 @@
 
 namespace Kiniauth\Objects\Communication\Email;
 
+use Kinikit\Core\Communication\Email\EmailSendResult;
 
 /**
  * @noGenerate
@@ -10,11 +11,9 @@ namespace Kiniauth\Objects\Communication\Email;
  * Class EmailSendResult
  * @package Kiniauth\Objects\Communication\Email
  */
-class EmailSendResult  {
-
-    private $status;
+class StoredEmailSendResult extends EmailSendResult {
+    
     private $emailId;
-    private $errorMessage;
 
     /**
      * Email send result
@@ -23,8 +22,7 @@ class EmailSendResult  {
      * @param $errorMessage
      */
     public function __construct($status = null, $errorMessage = null, $emailId = null) {
-        $this->status = $status;
-        $this->errorMessage = $errorMessage;
+        parent::__construct($status, $errorMessage);
         $this->emailId = $emailId;
     }
 
@@ -32,23 +30,8 @@ class EmailSendResult  {
     /**
      * @return mixed
      */
-    public function getStatus() {
-        return $this->status;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getEmailId() {
         return $this->emailId;
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function getErrorMessage() {
-        return $this->errorMessage;
     }
 
 
