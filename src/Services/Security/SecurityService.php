@@ -315,5 +315,13 @@ class SecurityService {
         }
     }
 
+    /**
+     * Return the logged in user active parent account id.
+     *
+     * @return int
+     */
+    public function getParentAccountId() {
+        return $this->session->__getActiveParentAccountId();
+    }
 
 }
