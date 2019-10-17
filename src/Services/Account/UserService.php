@@ -148,6 +148,22 @@ class UserService {
     public function activateAccount($activationCode) {
 
 
+        try {
+            $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
+
+            /**
+             * @var User $user
+             */
+            $user = User::fetch($pendingAction->getObjectId());
+            $user->setStatus(User::STATUS_ACTIVE);
+            $user->save();
+
+            $this->pendingActionService->removePendingAction("USER_ACTIVATION", $activationCode);
+
+        } catch (ItemNotFoundException $e) {
+            throw new ValidationException(["activationCode" => new FieldValidationError("activationCode", "invalid", "Invalid activation code supplied for user")]);
+        }
+
     }
 
     /**
@@ -200,7 +216,7 @@ class UserService {
             $this->pendingActionService->removePendingAction("PASSWORD_RESET", $resetCode);
 
         } catch (ItemNotFoundException $e) {
-            throw new ValidationException([new FieldValidationError("resetCode", "invalid", "Invalid reset code supplied for password reset")]);
+            throw new ValidationException(["resetCode" => new FieldValidationError("resetCode", "invalid", "Invalid reset code supplied for password reset")]);
         }
 
     }

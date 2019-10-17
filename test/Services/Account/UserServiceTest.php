@@ -160,6 +160,45 @@ class UserServiceTest extends TestBase {
     }
 
 
+    /**
+     * Attempt account activation.
+     *
+     */
+    public function testCanActivateAccountProvidedValidCodeSupplied() {
+
+        $this->authenticationService->logout();
+
+        $newUser = $this->userService->createWithAccount("john5@test.com", "Helloworld1", "John Smith",
+            "Smythe Enterprises", 0);
+
+        $activationCode = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("USER_ACTIVATION", $newUser->getId())[0]->getIdentifier();
+
+        try {
+            $this->userService->activateAccount("BADCODE");
+            $this->fail("Should have thrown here");
+        } catch (ValidationException $e) {
+            // Success
+        }
+
+        // Activation should succeed.
+        $this->userService->activateAccount($activationCode);
+
+        // Check user is active
+        $reUser = User::fetch($newUser->getId());
+        $this->assertEquals(User::STATUS_ACTIVE, $reUser->getStatus());
+
+
+        // Check activation code is single use
+        try {
+            $this->userService->activateAccount($activationCode);
+            $this->fail("Should have thrown here");
+        } catch (ValidationException $e) {
+            // Success
+        }
+
+    }
+
+
     public function testCanCreateNewAdminUserProvidedWeAreLoggedInAsSuperUser() {
 
 
