@@ -18,7 +18,7 @@ include_once __DIR__ . "/../../../autoloader.php";
 class EmailServiceTest extends TestBase {
 
     /**
-     * @var \Kiniauth\Services\Communication\Email\EmailSender
+     * @var EmailService
      */
     private $emailService;
 
@@ -38,7 +38,7 @@ class EmailServiceTest extends TestBase {
             ["jane@test.com", "the@world.co.uk"], ["mary@test.com", "badger@haslanded.org"], "info@oxil.co.uk", 1);
 
 
-        $result = $this->emailService->send($email);
+        $result = $this->emailService->send($email, 1);
 
         $this->assertEquals(StoredEmailSendResult::STATUS_SENT, $result->getStatus());
         $this->assertNotNull($result->getEmailId());
@@ -69,7 +69,7 @@ class EmailServiceTest extends TestBase {
 
         $email->setAttachments([new FileEmailAttachment(__DIR__ . "/Provider/testimage.png"), new FileEmailAttachment(__DIR__ . "/Provider/testtext.txt")]);
 
-        $result = $this->emailService->send($email);
+        $result = $this->emailService->send($email, 1);
 
         $this->assertEquals(EmailSendResult::STATUS_SENT, $result->getStatus());
         $this->assertNotNull($result->getEmailId());
@@ -108,6 +108,9 @@ class EmailServiceTest extends TestBase {
 
 
     }
+
+
+
 
 
 }

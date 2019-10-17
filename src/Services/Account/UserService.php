@@ -4,11 +4,17 @@
 namespace Kiniauth\Services\Account;
 
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
+use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
+use Kiniauth\Services\Workflow\PendingActionService;
+use Kinikit\Core\Exception\ItemNotFoundException;
+use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
 
 
@@ -25,15 +31,58 @@ class UserService {
     private $twoFactorProvider;
 
     /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var PendingActionService
+     */
+    private $pendingActionService;
+
+
+    /**
+     * @var EmailService
+     */
+    private $emailService;
+
+    /**
      * UserService constructor.
      *
      * @param AuthenticationService $authenticationService
      * @param TwoFactorProvider $twoFactorProvider
+     * @param Session $session
+     * @param PendingActionService $pendingActionService
+     * @param EmailService $emailService
      */
-    public function __construct($authenticationService, $twoFactorProvider) {
+    public function __construct($authenticationService, $twoFactorProvider, $session, $pendingActionService, $emailService) {
         $this->authenticationService = $authenticationService;
         $this->twoFactorProvider = $twoFactorProvider;
+        $this->session = $session;
+        $this->pendingActionService = $pendingActionService;
+        $this->emailService = $emailService;
     }
+
+
+    /**
+     * Get all users matching a specific role scope and scope id, optionally limited to roles
+     *
+     * @param string $roleScope
+     * @param $roleScopeId
+     * @param $roleId
+     *
+     * @return User[]
+     */
+    public function getUsersWithRole($roleScope, $roleScopeId, $roleId = null) {
+
+        if ($roleId) {
+            return User::filter("WHERE roles.scope = ? AND roles.scope_id = ? AND roles.role_id = ? ORDER BY id", $roleScope, $roleScopeId, $roleId);
+        } else {
+            return User::filter("WHERE roles.scope = ? AND roles.scope_id = ? ORDER BY id", $roleScope, $roleScopeId);
+        }
+
+    }
+
 
     /**
      * Create a brand new user - optionally supply a name, account name and parent account id if relevant.  If no
@@ -41,7 +90,7 @@ class UserService {
      *
      * @objectInterceptorDisabled
      */
-    public function createWithAccount($emailAddress, $password, $name = null, $accountName = null, $parentAccountId = 0) {
+    public function createWithAccount($emailAddress, $password, $name = null, $accountName = null, $parentAccountId = null) {
 
         // Create a new user, save it and return it back.
         $user = new User($emailAddress, $password, $name, $parentAccountId);
@@ -50,11 +99,16 @@ class UserService {
         }
 
         // Create an account to match with any name we can find.
-        $account = new Account($accountName ? $accountName : ($name ? $name : $emailAddress), $parentAccountId);
+        $account = new Account($accountName ? $accountName : ($name ? $name : $emailAddress), $parentAccountId === null ? $this->session->__getActiveParentAccountId() : $parentAccountId);
         $account->save();
 
         $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId())));
         $user->save();
+
+        // Create a pending activation action
+        $actionIdentifier = $this->pendingActionService->createPendingAction("USER_ACTIVATION", $user->getId());
+
+        $this->emailService->send(new UserTemplatedEmail($user->getId(), "security/activate-account", ["code" => $actionIdentifier]), $account->getAccountId(), $user->getId());
 
         $user = User::fetch($user->getId());
 
@@ -84,6 +138,73 @@ class UserService {
 
         return $user;
     }
+
+
+    /**
+     * Activate an account with the supplied activation code.
+     *
+     * @param $activationCode
+     */
+    public function activateAccount($activationCode) {
+
+
+    }
+
+    /**
+     * Issue a password reset for a user with the supplied email address or the user with supplied id.
+     *
+     * @param string $emailAddress
+     * @param integer $userId
+     */
+    public function sendPasswordReset($emailAddress = null, $userId = null) {
+
+        $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
+
+        // Check for a matching user
+        $matchingUsers = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $parentAccountId);
+
+
+        // If a matching user, proceed otherwise do nothing
+        if (sizeof($matchingUsers) > 0) {
+
+            // Create a pending action
+            $userId = $matchingUsers[0]->getId();
+            $identifier = $this->pendingActionService->createPendingAction("PASSWORD_RESET", $userId);
+
+            // Send the email
+            $this->emailService->send(new UserTemplatedEmail($userId, "security/password-reset", ["code" => $identifier]), null, $userId);
+        }
+
+
+    }
+
+
+    /**
+     * Change password using a reset code.
+     *
+     * @param string $resetCode
+     * @param string $newPassword
+     */
+    public function changePassword($resetCode, $newPassword) {
+
+        try {
+            $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("PASSWORD_RESET", $resetCode);
+
+            /**
+             * @var User $user
+             */
+            $user = User::fetch($pendingAction->getObjectId());
+            $user->setNewPassword($newPassword);
+            $user->save();
+
+            $this->pendingActionService->removePendingAction("PASSWORD_RESET", $resetCode);
+
+        } catch (ItemNotFoundException $e) {
+            throw new ValidationException([new FieldValidationError("resetCode", "invalid", "Invalid reset code supplied for password reset")]);
+        }
+
+    }
+
 
     /**
      * @param $newEmailAddress

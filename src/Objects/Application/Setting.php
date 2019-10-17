@@ -24,7 +24,7 @@ class Setting extends ActiveRecord {
      * @var integer
      * @primaryKey
      */
-    private $parentAccountId;
+    private $parentAccountId = 0;
 
     /**
      * @var string
@@ -71,6 +71,14 @@ class Setting extends ActiveRecord {
      */
     protected $type;
 
+
+    /**
+     * Non-persisted definition field
+     *
+     * @unmapped
+     * @var boolean
+     */
+    protected $multiple;
 
     /**
      * @return int
@@ -158,6 +166,16 @@ class Setting extends ActiveRecord {
         return $this->type;
     }
 
+
+    /**
+     * @return boolean
+     */
+    public function isMultiple() {
+        if (!isset($this->multiple) && $this->key) {
+            $this->multiple = $this->getSettingDefinition()["multiple"] ?? false;
+        }
+        return $this->multiple;
+    }
 
     /**
      * Get our setting definition (used in getters above).

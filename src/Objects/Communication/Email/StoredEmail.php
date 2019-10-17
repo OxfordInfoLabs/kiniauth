@@ -42,7 +42,7 @@ class StoredEmail extends StoredEmailSummary {
      * @param Email $email
      * @throws \Exception
      */
-    public function __construct($email = null, $accountId = null, $status = null, $errorMessage = null) {
+    public function __construct($email = null, $accountId = null, $userId = null, $status = null, $errorMessage = null) {
 
         if ($email) {
             $this->sender = $email->getFrom();
@@ -53,82 +53,12 @@ class StoredEmail extends StoredEmailSummary {
             $this->bcc = $email->getBcc();
             $this->replyTo = $email->getReplyTo();
             $this->accountId = $accountId;
+            $this->userId = $userId;
             $this->sentDate = new \DateTime();
             $this->status = $status;
             $this->errorMessage = $errorMessage;
         }
 
-    }
-
-
-    /**
-     * @param string $date
-     */
-    public function setSentDate($sentDate) {
-        $this->sentDate = $sentDate;
-    }
-
-    /**
-     * @param string[] $cc
-     */
-    public function setCc($cc) {
-        $this->cc = $cc;
-    }
-
-    /**
-     * @param string[] $bcc
-     */
-    public function setBcc($bcc) {
-        $this->bcc = $bcc;
-    }
-
-    /**
-     * @param string $subject
-     */
-    public function setSubject($subject) {
-        $this->subject = $subject;
-    }
-
-    /**
-     * @param string $replyTo
-     */
-    public function setReplyTo($replyTo) {
-        $this->replyTo = $replyTo;
-    }
-
-    /**
-     * @param string $errorMessage
-     */
-    public function setErrorMessage($errorMessage) {
-        $this->errorMessage = $errorMessage;
-    }
-
-    /**
-     * @param string $from
-     */
-    public function setSender($sender) {
-        $this->sender = $sender;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId($id) {
-        $this->id = $id;
-    }
-
-    /**
-     * @param string[] $recipients
-     */
-    public function setRecipients($recipients) {
-        $this->recipients = $recipients;
-    }
-
-    /**
-     * @param string $status
-     */
-    public function setStatus($status) {
-        $this->status = $status;
     }
 
     /**
@@ -139,24 +69,10 @@ class StoredEmail extends StoredEmailSummary {
     }
 
     /**
-     * @param string $textBody
-     */
-    public function setTextBody($textBody) {
-        $this->textBody = $textBody;
-    }
-
-    /**
      * @return AttachmentSummary[]
      */
     public function getAttachments() {
         return $this->attachments;
-    }
-
-    /**
-     * @param AttachmentSummary[] $attachments
-     */
-    public function setAttachments($attachments) {
-        $this->attachments = $attachments;
     }
 
 

@@ -30,6 +30,14 @@ class StoredEmailSummary extends ActiveRecord {
 
 
     /**
+     * The user id for which this email refers if applicable.
+     *
+     * @var integer
+     */
+    protected $userId;
+
+
+    /**
      * Sent date for this email
      *
      * @var \DateTime
@@ -170,6 +178,14 @@ class StoredEmailSummary extends ActiveRecord {
     public function getAccountId() {
         return $this->accountId;
     }
+
+    /**
+     * @return int
+     */
+    public function getUserId() {
+        return $this->userId;
+    }
+
 
     /**
      * @return string[]

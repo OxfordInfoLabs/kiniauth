@@ -42,10 +42,32 @@
     "scope": "ALL"
   },
   {
+    "title": "Reset Password URL",
+    "description": "The URL for password resets.  This is for inclusion in password reset emails.",
+    "key": "resetPasswordURL",
+    "type": "url",
+    "scope": "ALL"
+  },
+  {
+    "title": "Reply to Address",
+    "description": "The default reply to address for all email correspondence",
+    "key": "replyToEmailAddress",
+    "type": "email",
+    "scope": "ALL"
+  },
+  {
+    "title": "From Address",
+    "description": "The default from address for all email correspondence",
+    "key": "fromEmailAddress",
+    "type": "email",
+    "scope": "ALL"
+  },
+  {
     "title": "Referring Domains",
     "description": "Your website and dashboard domain names which allow us to authenticate your users for whitelabel access",
     "key": "referringDomains",
     "type": "domain",
+    "multiple": true,
     "scope": "PARENT_ACCOUNT"
   }
 ]

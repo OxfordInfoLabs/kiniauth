@@ -6,11 +6,13 @@ use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\ObjectInterceptor;
 use Kiniauth\Services\Security\SecurityService;
+use Kiniauth\Services\Workflow\Validation\PasswordFieldValidator;
 use Kiniauth\WebServices\Security\GlobalRouteInterceptor;
 use Kinikit\Core\ApplicationBootstrap;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Validation\Validator;
 use Kinikit\MVC\Routing\RouteInterceptorProcessor;
 use Kinikit\Persistence\ORM\Interceptor\ORMInterceptorProcessor;
 
@@ -21,6 +23,7 @@ class Bootstrap implements ApplicationBootstrap {
     private $ormInterceptorProcessor;
     private $activeRecordInterceptor;
     private $routeInterceptorProcessor;
+    private $validator;
 
     /**
      * Construct with authentication service
@@ -30,15 +33,18 @@ class Bootstrap implements ApplicationBootstrap {
      * @param SecurityService $securityService
      * @param ORMInterceptorProcessor $ormInterceptorProcessor
      * @param RouteInterceptorProcessor $routeInterceptorProcessor
+     * @param Validator $validator
      *
      */
-    public function __construct($authenticationService, $activeRecordInterceptor, $securityService, $ormInterceptorProcessor, $routeInterceptorProcessor) {
+    public function __construct($authenticationService, $activeRecordInterceptor, $securityService, $ormInterceptorProcessor, $routeInterceptorProcessor,
+                                $validator) {
 
         $this->authenticationService = $authenticationService;
         $this->activeRecordInterceptor = $activeRecordInterceptor;
         $this->securityService = $securityService;
         $this->ormInterceptorProcessor = $ormInterceptorProcessor;
         $this->routeInterceptorProcessor = $routeInterceptorProcessor;
+        $this->validator = $validator;
 
     }
 
@@ -62,6 +68,8 @@ class Bootstrap implements ApplicationBootstrap {
         if (!Configuration::readParameter("default.decorator")) {
             Configuration::instance()->addParameter("default.decorator", "DefaultDecorator");
         }
+
+        $this->validator->addValidator("password", new PasswordFieldValidator("The password must be at least 8 characters with one capital, one lowercase and one number"));
 
     }
 
