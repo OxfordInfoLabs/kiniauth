@@ -13,7 +13,9 @@ use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
 
@@ -92,6 +94,9 @@ class UserService {
      */
     public function createWithAccount($emailAddress, $password, $name = null, $accountName = null, $parentAccountId = null) {
 
+        // Grab the parent account id if necessary.
+        $parentAccountId = $parentAccountId === null ? $this->session->__getActiveParentAccountId() : $parentAccountId;
+
         // Create a new user, save it and return it back.
         $user = new User($emailAddress, $password, $name, $parentAccountId);
         if ($validationErrors = $user->validate()) {
@@ -99,7 +104,12 @@ class UserService {
         }
 
         // Create an account to match with any name we can find.
-        $account = new Account($accountName ? $accountName : ($name ? $name : $emailAddress), $parentAccountId === null ? $this->session->__getActiveParentAccountId() : $parentAccountId);
+        $account = Container::instance()->new(Account::class,false);
+        $account->setName($accountName ? $accountName : ($name ? $name : $emailAddress));
+        $account->setParentAccountId($parentAccountId);
+
+        Logger::log($account);
+
         $account->save();
 
         $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId())));
