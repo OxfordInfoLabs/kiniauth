@@ -4,6 +4,7 @@ namespace Kiniauth\Objects\Account;
 
 
 use Kiniauth\Objects\Application\Session;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Util\StringUtils;
 
 /**
@@ -22,7 +23,7 @@ class Account extends AccountSummary {
      *
      * @var boolean
      */
-    private $subAccountsEnabled;
+    protected $subAccountsEnabled;
 
 
     /**
@@ -30,14 +31,14 @@ class Account extends AccountSummary {
      *
      * @var string
      */
-    private $apiKey;
+    protected $apiKey;
 
     /**
      * API secret for account access
      *
      * @var string
      */
-    private $apiSecret;
+    protected $apiSecret;
 
 
     // Logged in account constant for default value usage.

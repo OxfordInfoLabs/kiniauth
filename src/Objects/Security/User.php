@@ -121,6 +121,7 @@ class User extends ActiveRecord {
     /**
      * @var string
      * @password
+     * @unmapped
      */
     private $newPassword;
 
