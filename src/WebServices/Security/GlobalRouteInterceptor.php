@@ -19,7 +19,7 @@ use Kinikit\MVC\Routing\RouteInterceptor;
 /**
  *
  * @noProxy
- * 
+ *
  * Class GlobalRouteInterceptor
  * @package Kiniauth\WebServices\Security
  */
@@ -56,11 +56,11 @@ class GlobalRouteInterceptor extends RouteInterceptor {
     public function beforeRoute($request) {
 
         $controlSegment = $request->getUrl()->getFirstPathSegment();
-        
+
         list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
 
         // If customer segment, make sure at least someone is logged in.
-        if ($controlSegment == "customer") {
+        if ($controlSegment == "account") {
             if (!$user && !$account)
                 throw new AccessDeniedException();
         } else if ($controlSegment == "admin") {
