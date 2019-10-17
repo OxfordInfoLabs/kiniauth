@@ -1,0 +1,77 @@
+<?php
+
+namespace Kiniauth\Services\Workflow;
+
+
+use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Workflow\PendingAction;
+use Kinikit\Core\Exception\ItemNotFoundException;
+
+class PendingActionService {
+
+    /**
+     * Create a pending action for an account.  Returns the unique auto generated identifier for this action.
+     *
+     * @param $type
+     * @param integer $objectId
+     * @param mixed $data
+     * @param string $expiryOffset
+     * @param \DateTime $expiryDateTime
+     * @param string $accountId
+     *
+     * @return string
+     */
+    public function createPendingAction($type, $objectId = null, $data = null, $expiryOffset = null, $expiryDateTime = null) {
+
+        $action = new PendingAction($type, $objectId, $data, $expiryOffset, $expiryDateTime);
+        $action->save();
+
+        return $action->getIdentifier();
+
+    }
+
+
+    /**
+     * Get a pending action by type and it's unique identifier
+     *
+     * @param string $type
+     * @param string $identifier
+     *
+     * @return PendingAction
+     */
+    public function getPendingActionByIdentifier($type, $identifier) {
+
+        $pendingActions = PendingAction::filter("WHERE type = ? AND identifier = ?", $type, $identifier);
+        if (sizeof($pendingActions) > 0) {
+            return $pendingActions[0];
+        } else {
+            throw new ItemNotFoundException("The pending action does not exist with the passed identifier");
+        }
+
+    }
+
+
+    /**
+     * Get all account pending actions for a given type, ordered by latest first.  If an object id
+     * is passed, results will be limited to that object ID as well.
+     *
+     * @param $type
+     * @param integer $objectId
+     */
+    public function getAllPendingActionsForTypeAndObjectId($type, $objectId) {
+
+        return PendingAction::filter("WHERE type = ?  AND objectId = ? ORDER BY id DESC", $type, $objectId);
+
+    }
+
+    /**
+     * Remove a pending action by identifier
+     *
+     * @param $resetCode
+     */
+    public function removePendingAction($type, $identifier) {
+        $action = $this->getPendingActionByIdentifier($type, $identifier);
+        $action->remove();
+    }
+
+}

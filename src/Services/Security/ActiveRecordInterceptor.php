@@ -53,6 +53,8 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
      */
     public function executeInsecure($callable) {
 
+        $previousDisabled = $this->disabled;
+
         // Disable for the duration of the callable
         $this->disabled = true;
 
@@ -64,7 +66,7 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
             throw($e);
         }
 
-        $this->disabled = false;
+        $this->disabled = $previousDisabled;
 
         return $result;
     }

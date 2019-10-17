@@ -8,6 +8,18 @@
     "value": "TESTLOGO"
   },
   {
+    "key": "resetPasswordURL",
+    "value": "http://localhost:5013/sign-in/password-reset/"
+  },
+  {
+    "key": "replyToEmailAddress",
+    "value": "noreply@kiniauth.example"
+  },
+  {
+    "key": "fromEmailAddress",
+    "value": "Kiniauth Example <info@kiniauth.example>"
+  },
+  {
     "parentAccountId": 1,
     "key": "brandName",
     "value": "Sam Davis Retail Outlet"
@@ -21,5 +33,15 @@
     "parentAccountId": 1,
     "key": "referringDomains",
     "value": "samdavis.org"
+  },
+  {
+    "parentAccountId": 1,
+    "key": "replyToEmailAddress",
+    "value": "noreply@samdavis.org"
+  },
+  {
+    "parentAccountId": 1,
+    "key": "fromEmailAddress",
+    "value": "Sam Davis Retail <info@samdavis.org>"
   }
 ]

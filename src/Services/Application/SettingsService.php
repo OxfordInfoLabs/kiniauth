@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Application;
 
 
 use Kiniauth\Objects\Application\Setting;
+use Kiniauth\Services\Security\SecurityService;
 
 /**
  * Class SettingsService
@@ -12,6 +13,21 @@ use Kiniauth\Objects\Application\Setting;
  * @noProxy
  */
 class SettingsService {
+
+    /**
+     * @var
+     */
+    private $securityService;
+
+
+    /**
+     * SettingsService constructor.
+     *
+     * @param SecurityService $securityService
+     */
+    public function __construct($securityService) {
+        $this->securityService = $securityService;
+    }
 
 
     /**
@@ -27,6 +43,42 @@ class SettingsService {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get parent account settings for
+     */
+    public function getParentAccountSettingValues($accountId = null, $userId = null) {
+
+        // Get parent account id.
+        $activeParentAccountId = $this->securityService->getParentAccountId($accountId, $userId);
+
+        /**
+         * @var Setting[] $settings
+         */
+        $settings = Setting::filter("WHERE parentAccountId = ?", $activeParentAccountId);
+
+
+        $settingValues = [];
+
+        foreach ($settings as $setting) {
+            if (isset($settingValues[$setting->getKey()])) {
+                if ($setting->isMultiple()) {
+                    $settingValues[$setting->getKey()][] = $setting->getValue();
+                } else {
+                    $settingValues[$setting->getKey()] = $setting->getValue();
+                }
+            } else {
+                if ($setting->isMultiple()) {
+                    $settingValues[$setting->getKey()] = [$setting->getValue()];
+                } else {
+                    $settingValues[$setting->getKey()] = $setting->getValue();
+                }
+            }
+        }
+
+        return $settingValues;
+
     }
 
 }

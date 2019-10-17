@@ -58,7 +58,7 @@ class User extends ActiveRecord {
      * Hashed password for interactive login checks
      *
      * @var string
-     * @validation required
+     * @required
      */
     private $hashedPassword;
 
@@ -85,7 +85,7 @@ class User extends ActiveRecord {
      * Optional two factor authentication data if this has been enabled.
      *
      * @var string
-     * @validation maxlength(2000)
+     * @maxlength(2000)
      */
     private $twoFactorData;
 
@@ -113,9 +113,16 @@ class User extends ActiveRecord {
      * Status for this user.
      *
      * @var string
-     * @validation maxlength(30)
+     * @maxlength(30)
      */
     private $status = self::STATUS_PENDING;
+
+
+    /**
+     * @var string
+     * @password
+     */
+    private $newPassword;
 
 
     const STATUS_PENDING = "PENDING";
@@ -134,7 +141,10 @@ class User extends ActiveRecord {
      */
     public function __construct($emailAddress = null, $password = null, $name = null, $parentAccountId = 0) {
         $this->emailAddress = $emailAddress;
-        if ($password) $this->hashedPassword = hash("md5", $password);
+        if ($password) {
+            $this->setNewPassword($password);
+
+        }
         $this->name = $name;
         $this->parentAccountId = $parentAccountId ? $parentAccountId : 0;
     }
@@ -159,6 +169,14 @@ class User extends ActiveRecord {
      */
     public function setEmailAddress($emailAddress) {
         $this->emailAddress = $emailAddress;
+    }
+
+
+    /**
+     * Get the full email address (in Name<email> format).
+     */
+    public function getFullEmailAddress() {
+        return $this->name ? $this->name . " <" . $this->emailAddress . ">" : $this->emailAddress;
     }
 
     /**
@@ -188,6 +206,19 @@ class User extends ActiveRecord {
     public function setHashedPassword($hashedPassword) {
         $this->hashedPassword = $hashedPassword;
     }
+
+    /**
+     * @param string $newPassword
+     */
+    public function setNewPassword($newPassword) {
+        $this->newPassword = $newPassword;
+        if ($newPassword) {
+            $this->hashedPassword = hash("md5", $newPassword);
+        } else {
+            $this->hashedPassword = "";
+        }
+    }
+
 
     /**
      * @return string
