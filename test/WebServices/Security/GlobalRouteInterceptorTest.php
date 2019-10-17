@@ -61,7 +61,7 @@ class GlobalRouteInterceptorTest extends TestBase {
 
     public function testCustomerControllerURLsAreNotAccessibleByPublic() {
 
-        $_SERVER["REQUEST_URI"] = "/customer/somecontroller?mynameistest";
+        $_SERVER["REQUEST_URI"] = "/account/somecontroller?mynameistest";
 
         // Guest
         $this->authenticationService->logout();
