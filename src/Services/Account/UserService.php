@@ -144,6 +144,8 @@ class UserService {
      * Activate an account with the supplied activation code.
      *
      * @param $activationCode
+     *
+     * @objectInterceptorDisabled
      */
     public function activateAccount($activationCode) {
 
@@ -171,6 +173,8 @@ class UserService {
      *
      * @param string $emailAddress
      * @param integer $userId
+     *
+     * @objectInterceptorDisabled
      */
     public function sendPasswordReset($emailAddress = null, $userId = null) {
 
@@ -200,6 +204,8 @@ class UserService {
      *
      * @param string $resetCode
      * @param string $newPassword
+     *
+     * @objectInterceptorDisabled
      */
     public function changePassword($resetCode, $newPassword) {
 

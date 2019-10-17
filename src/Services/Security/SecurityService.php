@@ -10,18 +10,15 @@ use Kiniauth\Exception\Security\MissingScopeObjectIdForPrivilegeException;
 use Kiniauth\Exception\Security\NonExistentPrivilegeException;
 use Kiniauth\Exception\Security\UserSuspendedException;
 use Kiniauth\Objects\Account\Account;
-use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Services\Application\Session;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\FileResolver;
-use Kinikit\Core\Object\SerialisableObject;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
-use Kinikit\Core\Util\SerialisableArrayUtils;
-use Kinikit\MVC\Framework\SourceBaseManager;
-use Kinikit\Core\Logging\Logger;
+
 use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 
 class SecurityService {
@@ -65,8 +62,8 @@ class SecurityService {
     private $databaseConnection;
 
     /**
-     * @param \Kiniauth\Services\Application\Session $session
-     * @param \Kiniauth\Services\Security\AccountScopeAccess $accountScopeAccess
+     * @param Session $session
+     * @param AccountScopeAccess $accountScopeAccess
      * @param ClassInspectorProvider $classInspectorProvider
      * @param FileResolver $fileResolver
      * @param ObjectBinder $objectBinder
@@ -214,17 +211,47 @@ class SecurityService {
      */
     public function checkLoggedInObjectAccess($object) {
 
-        $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
+        // If super user, shortcut the process.
+        if ($this->isSuperUserLoggedIn())
+            return true;
 
-        $access = true;
-        foreach ($this->scopeAccesses as $scopeAccess) {
-            $objectMember = $scopeAccess->getObjectMember();
-            if ($objectMember && $classInspector->hasAccessor($objectMember)) {
-                $scopeId = $classInspector->getPropertyData($object, $objectMember);
-                $access = $access && $this->getLoggedInScopePrivileges($scopeAccess->getScope(), $scopeId);
+        // Handle user as a special case
+        if ($object instanceof User) {
+
+            // Shortcut if we are the logged in user
+            $loggedInUser = $this->session->__getLoggedInUser();
+
+            if ($loggedInUser) {
+                if ($loggedInUser->getId() == $object->getId())
+                    return true;
+
+                // Otherwise check to see whether we have any roles for this account
+                foreach ($object->getRoles() as $role) {
+                    if ($role->getAccountId())
+                        if ($privs = $this->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, $role->getAccountId())) {
+                            return in_array("*", $privs);
+                        }
+
+                }
             }
-            if (!$access)
-                break;
+
+            return false;
+
+        } else {
+
+            $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
+
+            $access = true;
+            foreach ($this->scopeAccesses as $scopeAccess) {
+                $objectMember = $scopeAccess->getObjectMember();
+                if ($objectMember && $classInspector->hasAccessor($objectMember)) {
+                    $scopeId = $classInspector->getPropertyData($object, $objectMember);
+                    $access = $access && $this->getLoggedInScopePrivileges($scopeAccess->getScope(), $scopeId);
+                }
+                if (!$access)
+                    break;
+            }
+
         }
 
         return $access;

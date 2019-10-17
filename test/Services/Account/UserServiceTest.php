@@ -183,10 +183,15 @@ class UserServiceTest extends TestBase {
         // Activation should succeed.
         $this->userService->activateAccount($activationCode);
 
+        // Login as admin to ensure permissions.
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
         // Check user is active
         $reUser = User::fetch($newUser->getId());
         $this->assertEquals(User::STATUS_ACTIVE, $reUser->getStatus());
 
+
+        $this->authenticationService->logout();
 
         // Check activation code is single use
         try {
@@ -204,13 +209,6 @@ class UserServiceTest extends TestBase {
 
         // Log out
         $this->authenticationService->logout();
-
-//        try {
-//            $this->userService->createAdminUser("marko@polo.com", "pickle");
-//            $this->fail("Should have thrown here");
-//        } catch (AccessDeniedException $e) {
-//            // Expected
-//        }
 
         // Log in as super user.
         $this->authenticationService->login("admin@kinicart.com", "password");
@@ -275,7 +273,6 @@ class UserServiceTest extends TestBase {
 
         $this->authenticationService->login("admin@kinicart.com", "password");
 
-
         $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("PASSWORD_RESET", 7);
         $this->assertEquals(1, sizeof($pendingActions));
         $identifier = $pendingActions[0]->getIdentifier();
@@ -330,6 +327,8 @@ class UserServiceTest extends TestBase {
 
     public function testCanChangePasswordIfValidPasswordAndCodeSupplied() {
 
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
         // Check old password still valid
         $user = new User("passwordchange@test.com", "Helloworld0", "Password Change");
         $user->setStatus(User::STATUS_ACTIVE);
@@ -366,8 +365,10 @@ class UserServiceTest extends TestBase {
     }
 
 
-    public
-    function testCanGetAllUsersWithRole() {
+    public function testCanGetAllUsersWithRole() {
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
 
         $accountUsers = $this->userService->getUsersWithRole(Role::SCOPE_ACCOUNT, 2);
 
