@@ -4,17 +4,23 @@
 namespace Kiniauth\WebServices\ControllerTraits\Guest;
 
 
+use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\WebServices\ValueObjects\Security\NewPasswordDescriptor;
 
 trait Auth {
 
     private $authenticationService;
 
+    private $userService;
+
     /**
-     * @param \Kiniauth\Services\Security\AuthenticationService $authenticationService
+     * @param AuthenticationService $authenticationService
+     * @param UserService $userService
      */
-    public function __construct($authenticationService) {
+    public function __construct($authenticationService, $userService) {
         $this->authenticationService = $authenticationService;
+        $this->userService = $userService;
     }
 
 
@@ -53,6 +59,30 @@ trait Auth {
      */
     public function authenticateTwoFactor($code) {
         return $this->authenticationService->authenticateTwoFactor($code);
+    }
+
+
+    /**
+     * Request a password reset
+     *
+     * @http GET /passwordReset
+     *
+     * @param $emailAddress
+     */
+    public function requestPasswordReset($emailAddress) {
+        $this->userService->sendPasswordReset($emailAddress);
+    }
+
+
+    /**
+     * Reset the password using a new password descriptor
+     *
+     * @http POST /passwordReset
+     *
+     * @param NewPasswordDescriptor $newPasswordDescriptor
+     */
+    public function resetPassword($newPasswordDescriptor) {
+        $this->userService->changePassword($newPasswordDescriptor->getResetCode(), $newPasswordDescriptor->getNewPassword());
     }
 
 

@@ -41,4 +41,16 @@ trait Registration {
 
     }
 
+
+    /**
+     * Activate a user account using a code
+     *
+     * @http GET /activate/$activationCode
+     *
+     * @param $activationCode
+     */
+    public function activateUserAccount($activationCode){
+        $this->userService->activateAccount($activationCode);
+    }
+
 }

@@ -179,14 +179,14 @@ class UserService {
     }
 
     /**
-     * Issue a password reset for a user with the supplied email address or the user with supplied id.
+     * Issue a password reset for a user with the supplied email address.
      *
      * @param string $emailAddress
      * @param integer $userId
      *
      * @objectInterceptorDisabled
      */
-    public function sendPasswordReset($emailAddress = null, $userId = null) {
+    public function sendPasswordReset($emailAddress = null) {
 
         $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
 
