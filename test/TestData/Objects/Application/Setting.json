@@ -9,7 +9,7 @@
   },
   {
     "key": "resetPasswordURL",
-    "value": "http://localhost:5013/sign-in/password-reset/"
+    "value": "http://localhost:5013/sign-in/new-password/"
   },
   {
     "key": "replyToEmailAddress",
