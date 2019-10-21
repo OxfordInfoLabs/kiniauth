@@ -6,7 +6,7 @@ namespace Kiniauth\Test;
 use Kiniauth\Bootstrap;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Init;
+use Kinikit\Core\Bootstrapper;
 use Kinikit\Persistence\Tools\TestDataInstaller;
 
 class TestBase extends \PHPUnit\Framework\TestCase {
@@ -28,7 +28,7 @@ class TestBase extends \PHPUnit\Framework\TestCase {
                 $testDataInstaller->run(true);
             });
 
-            Container::instance()->get(Init::class);
+            Container::instance()->get(Bootstrapper::class);
 
             self::$run = true;
         }
