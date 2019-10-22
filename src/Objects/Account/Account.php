@@ -13,6 +13,7 @@ use Kinikit\Core\Util\StringUtils;
  * Class Account
  *
  * @table ka_account
+ * @generate
  *
  */
 class Account extends AccountSummary {

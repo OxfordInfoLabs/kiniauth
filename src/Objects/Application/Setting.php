@@ -14,6 +14,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  * Class Setting
  *
  * @table ka_setting
+ * @generate
  * @interceptors \Kiniauth\Objects\Application\SettingInterceptor
  */
 class Setting extends ActiveRecord {
