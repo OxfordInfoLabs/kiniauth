@@ -11,8 +11,6 @@ use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
 /**
  * Class ContactInterceptor
  * @package Kiniauth\Objects\Account
- *
- * @noGenerate
  */
 class ContactInterceptor extends DefaultORMInterceptor {
 

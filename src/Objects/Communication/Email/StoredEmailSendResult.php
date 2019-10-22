@@ -6,13 +6,11 @@ namespace Kiniauth\Objects\Communication\Email;
 use Kinikit\Core\Communication\Email\EmailSendResult;
 
 /**
- * @noGenerate
- *
  * Class EmailSendResult
  * @package Kiniauth\Objects\Communication\Email
  */
 class StoredEmailSendResult extends EmailSendResult {
-    
+
     private $emailId;
 
     /**

@@ -16,6 +16,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  * Main user entity for accessing the system.  Users typically belong to one or more accounts or are super users.
  *
  * @table ka_user
+ * @generate
  */
 class User extends ActiveRecord {
 

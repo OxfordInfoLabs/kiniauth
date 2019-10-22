@@ -11,6 +11,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  * Class Contact
  *
  * @table ka_contact
+ * @generate
  * @interceptor \Kiniauth\Objects\Account\ContactInterceptor
  */
 class Contact extends ActiveRecord {
