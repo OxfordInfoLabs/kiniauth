@@ -77,6 +77,8 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
      * @return bool
      */
     private function resolveAccessForObject($object, $throwException = true) {
+
+
         if ($this->securityService->checkLoggedInObjectAccess($object))
             return true;
         else {

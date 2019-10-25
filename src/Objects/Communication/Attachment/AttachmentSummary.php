@@ -9,7 +9,6 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  * Attachment summary for use when summarising attachments.
  *
  * @table ka_attachment
- * @noGenerate
  *
  */
 class AttachmentSummary extends ActiveRecord {

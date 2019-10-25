@@ -7,9 +7,7 @@ namespace Kiniauth\Objects\Application;
 use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
 
 /**
- *
- * @noGenerate
- *
+ * Setting interceptor.
  */
 class SettingInterceptor extends DefaultORMInterceptor {
 

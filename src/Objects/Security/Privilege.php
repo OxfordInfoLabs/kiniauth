@@ -7,7 +7,6 @@ namespace Kiniauth\Objects\Security;
 /**
  * Privilege class which encodes a simple key and description for a system privilege.
  *
- * @noGenerate
  */
 class Privilege {
 

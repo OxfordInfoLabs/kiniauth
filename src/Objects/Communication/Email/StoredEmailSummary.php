@@ -9,7 +9,6 @@ use Kinikit\Persistence\ORM\ActiveRecord;
 /**
  * Summary class for listing of emails
  *
- * @noGenerate
  */
 class StoredEmailSummary extends ActiveRecord {
 

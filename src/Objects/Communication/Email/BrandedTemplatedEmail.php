@@ -14,7 +14,6 @@ use Kinikit\Core\Template\TemplateParser;
  * Used by the Account and User subclasses
  *
  * Class BrandedTemplatedEmail
- * @noGenerate
  * @package Kiniauth\Objects\Communication\Email
  */
 abstract class BrandedTemplatedEmail extends TemplatedEmail {
