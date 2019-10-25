@@ -14,6 +14,7 @@ trait Auth {
 
     private $userService;
 
+
     /**
      * @param AuthenticationService $authenticationService
      * @param UserService $userService
@@ -85,5 +86,8 @@ trait Auth {
         $this->userService->changePassword($newPasswordDescriptor->getResetCode(), $newPasswordDescriptor->getNewPassword());
     }
 
+    public function getSessionData() {
+
+    }
 
 }

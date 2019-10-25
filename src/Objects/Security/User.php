@@ -9,7 +9,6 @@ use Kiniauth\Objects\Application\Session;
 use Kinikit\Core\Exception\ValidationException;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Validation\FieldValidationError;
-use Kinikit\Persistence\ORM\ActiveRecord;
 
 
 /**
@@ -17,7 +16,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  *
  * @table ka_user
  */
-class User extends ActiveRecord {
+class User extends UserSummary {
 
     /**
      * Auto incremented id.
@@ -36,13 +35,6 @@ class User extends ActiveRecord {
      */
     private $emailAddress;
 
-
-    /**
-     * The full name for this user.  May or may not be required depending on the application.
-     *
-     * @var string
-     */
-    private $name;
 
     /**
      * An optional parent account id, if this account has been created in the context of a
@@ -110,26 +102,11 @@ class User extends ActiveRecord {
 
 
     /**
-     * Status for this user.
-     *
-     * @var string
-     * @maxlength(30)
-     */
-    private $status = self::STATUS_PENDING;
-
-
-    /**
      * @var string
      * @password
      * @unmapped
      */
     private $newPassword;
-
-
-    const STATUS_PENDING = "PENDING";
-    const STATUS_ACTIVE = "ACTIVE";
-    const STATUS_SUSPENDED = "SUSPENDED";
-    const STATUS_PASSWORD_RESET = "PASSWORD_RESET";
 
     const LOGGED_IN_USER = "LOGGED_IN_USER";
 
@@ -367,6 +344,10 @@ class User extends ActiveRecord {
             $validationErrors["emailAddress"] = new FieldValidationError("emailAddress", "duplicateEmail", "A user already exists with this email address");
 
         return $validationErrors;
+    }
+
+    public function generateSummary() {
+        return new UserSummary($this->name, $this->status);
     }
 
 

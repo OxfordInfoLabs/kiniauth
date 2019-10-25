@@ -4,12 +4,14 @@
 namespace Kiniauth\WebServices\ControllerTraits\Guest;
 
 
-use Kiniauth\Objects\Application\SessionData;
+use Kiniauth\Services\Application\SessionData;
+use Kinikit\Core\DependencyInjection\Container;
 
 
 trait Session {
 
     private $sessionService;
+
 
     /**
      * @param \Kiniauth\Services\Application\SessionService $sessionService
@@ -23,10 +25,10 @@ trait Session {
      *
      * @http GET /
      *
-     * @return SessionData
+     * @return mixed
      */
     public function getSessionData() {
-        return $this->sessionService->getSessionData();
+        return Container::instance()->get(SessionData::class);
     }
 
 }
