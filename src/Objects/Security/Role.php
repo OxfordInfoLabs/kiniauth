@@ -9,6 +9,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  * Role class.  A role may contain an array of Privilege objects or may be a standalone role.
  *
  * @table ka_role
+ * @generate
  */
 class Role extends ActiveRecord {
 

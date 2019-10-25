@@ -6,6 +6,7 @@ namespace Kiniauth\Objects\Communication\Attachment;
 /**
  *
  * @table ka_attachment
+ * @generate
  */
 class Attachment extends AttachmentSummary {
 

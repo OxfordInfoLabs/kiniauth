@@ -9,8 +9,6 @@ use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
 /**
  * Class PendingActionInterceptor
  * @package Kiniauth\Objects\Workflow
- *
- * @noGenerate
  */
 class PendingActionInterceptor extends DefaultORMInterceptor {
 

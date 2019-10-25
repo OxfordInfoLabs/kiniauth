@@ -11,6 +11,7 @@ use Kinikit\Persistence\UPF\Object\ActiveRecord;
 /**
  *
  * @table ka_email
+ * @generate
  */
 class StoredEmail extends StoredEmailSummary {
 

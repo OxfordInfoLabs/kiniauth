@@ -1,0 +1,32 @@
+PRAGMA table_info('ka_setting')
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0 seconds
+PRAGMA table_info('ka_setting')
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0 seconds
+PRAGMA table_info('ka_setting')
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_setting')
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0 seconds
+PRAGMA table_info('ka_setting')
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0 seconds
+PRAGMA table_info('ka_setting')
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0 seconds
+PRAGMA table_info('ka_setting')
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0.0002 seconds
+PRAGMA table_info('ka_setting')
+Completed in 0 seconds
+SELECT _X.parent_account_id _X__parent_account_id, _X.setting_key _X__setting_key, _X.value _X__value, _X.value_index _X__value_index FROM ka_setting _X  WHERE _X.setting_key = ? AND _X.value = ?
+Completed in 0 seconds

@@ -17,7 +17,6 @@ use Kinikit\Core\DependencyInjection\Container;
 /**
  * Class AccountTemplatedEmail
  * @package Kiniauth\Objects\Communication\Email
- * @noGenerate
  */
 class AccountTemplatedEmail extends BrandedTemplatedEmail {
 

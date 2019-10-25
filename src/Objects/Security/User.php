@@ -15,6 +15,7 @@ use Kinikit\Core\Validation\FieldValidationError;
  * Main user entity for accessing the system.  Users typically belong to one or more accounts or are super users.
  *
  * @table ka_user
+ * @generate
  */
 class User extends UserSummary {
 

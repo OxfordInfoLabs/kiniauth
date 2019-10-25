@@ -12,6 +12,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  * Class PendingAction
  *
  * @table ka_pending_action
+ * @generate
  *
  * @interceptor \Kiniauth\Objects\Workflow\PendingActionInterceptor
  */
