@@ -27,10 +27,17 @@ class PendingAction extends ActiveRecord {
 
 
     /**
+     * Optional object type if required
+     *
+     * @var string
+     */
+    private $objectType;
+
+    /**
      * Object id (required)
      *
      * @required
-     * @var integer
+     * @var string
      */
     private $objectId;
 
@@ -54,7 +61,6 @@ class PendingAction extends ActiveRecord {
     private $expiryDateTime;
 
 
-
     /**
      * A string identifier for identifying this action - automatically generated as
      * a secure 16 digit random string
@@ -69,7 +75,7 @@ class PendingAction extends ActiveRecord {
      * in certain use cases.
      *
      * @json
-     * @var string
+     * @var mixed
      */
     private $data;
 
@@ -87,7 +93,7 @@ class PendingAction extends ActiveRecord {
      * @param string $expiryOffset
      * @param \DateTime $expiryDateTime
      */
-    public function __construct($type, $objectId, $data = null, $expiryOffset = null, $expiryDateTime = null) {
+    public function __construct($type, $objectId, $data = null, $expiryOffset = null, $expiryDateTime = null, $objectType = null) {
         $this->type = $type;
         $this->objectId = $objectId;
 
@@ -102,9 +108,9 @@ class PendingAction extends ActiveRecord {
         }
 
 
-
         $this->data = $data;
         $this->identifier = StringUtils::generateRandomString(16);
+        $this->objectType = $objectType;
     }
 
 
@@ -149,6 +155,13 @@ class PendingAction extends ActiveRecord {
      */
     public function getData() {
         return $this->data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getObjectType() {
+        return $this->objectType;
     }
 
 

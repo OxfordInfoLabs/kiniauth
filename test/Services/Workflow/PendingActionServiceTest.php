@@ -43,6 +43,18 @@ class PendingActionServiceTest extends TestBase {
             $action->getExpiryDateTime()->format("d/m/Y"));
         $this->assertEquals($identifier, $action->getIdentifier());
 
+
+        $identifier = $this->pendingActionService->createPendingAction("EXAMPLE", 1, "Wonderful World", null, date_create_from_format("d/m/Y H:i:s", "01/01/2020 10:10:10"), "product");
+
+        $action = PendingAction::filter("WHERE identifier = ?", $identifier)[0];
+        $this->assertEquals("EXAMPLE", $action->getType());
+        $this->assertEquals(1, $action->getObjectId());
+        $this->assertEquals("Wonderful World", $action->getData());
+        $this->assertEquals(date_create_from_format("d/m/Y H:i:s", "01/01/2020 10:10:10"), $action->getExpiryDateTime());
+        $this->assertEquals($identifier, $action->getIdentifier());
+        $this->assertEquals("product", $action->getObjectType());
+
+
     }
 
     public function testCanGetPendingActionsByIdentifier() {
@@ -64,11 +76,13 @@ class PendingActionServiceTest extends TestBase {
     }
 
 
-    public function testCanGetAllActionsForTypeAndObjectId() {
+    public function testCanGetAllActionsForTypeAndObjectIdAndOptionalType() {
 
         $identifier1 = $this->pendingActionService->createPendingAction("NEW", 3);
         $identifier2 = $this->pendingActionService->createPendingAction("NEW", 3);
         $identifier3 = $this->pendingActionService->createPendingAction("NEW", 3);
+        $identifier4 = $this->pendingActionService->createPendingAction("NEW", 4, null, null, null, "text");
+        $identifier5 = $this->pendingActionService->createPendingAction("NEW", 4, null, null, null);
 
 
         $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 3);
@@ -78,6 +92,14 @@ class PendingActionServiceTest extends TestBase {
         $this->assertEquals(PendingAction::filter("WHERE identifier = ?", $identifier2)[0], $allActions[1]);
         $this->assertEquals(PendingAction::filter("WHERE identifier = ?", $identifier1)[0], $allActions[2]);
 
+        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 4);
+        $this->assertEquals(2, sizeof($allActions));
+        $this->assertEquals(PendingAction::filter("WHERE identifier = ?", $identifier5)[0], $allActions[0]);
+        $this->assertEquals(PendingAction::filter("WHERE identifier = ?", $identifier4)[0], $allActions[1]);
+
+        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 4, "text");
+        $this->assertEquals(1, sizeof($allActions));
+        $this->assertEquals(PendingAction::filter("WHERE identifier = ?", $identifier4)[0], $allActions[0]);
 
     }
 

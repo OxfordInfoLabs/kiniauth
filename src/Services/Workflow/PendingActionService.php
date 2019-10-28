@@ -21,9 +21,9 @@ class PendingActionService {
      *
      * @return string
      */
-    public function createPendingAction($type, $objectId = null, $data = null, $expiryOffset = null, $expiryDateTime = null) {
+    public function createPendingAction($type, $objectId = null, $data = null, $expiryOffset = null, $expiryDateTime = null, $objectType = null) {
 
-        $action = new PendingAction($type, $objectId, $data, $expiryOffset, $expiryDateTime);
+        $action = new PendingAction($type, $objectId, $data, $expiryOffset, $expiryDateTime, $objectType);
         $action->save();
 
         return $action->getIdentifier();
@@ -52,15 +52,32 @@ class PendingActionService {
 
 
     /**
-     * Get all account pending actions for a given type, ordered by latest first.  If an object id
-     * is passed, results will be limited to that object ID as well.
+     * Get all pending actions for a given type
+     *
+     * @param string $type
+     *
+     * @return PendingAction[]
+     */
+    public function getAllPendingActionsForType($type) {
+        return PendingAction::filter("WHERE type = ? ORDER BY id DESC", $type);
+    }
+
+
+    /**
+     * Get all account pending actions for a given type and object id.  If the object type is supplied
+     * this will also be added to the limit.
      *
      * @param $type
      * @param integer $objectId
+     *
+     * @return PendingAction[]
      */
-    public function getAllPendingActionsForTypeAndObjectId($type, $objectId) {
+    public function getAllPendingActionsForTypeAndObjectId($type, $objectId, $objectType = null) {
 
-        return PendingAction::filter("WHERE type = ?  AND objectId = ? ORDER BY id DESC", $type, $objectId);
+        if ($objectType)
+            return PendingAction::filter("WHERE type = ?  AND objectId = ? AND objectType = ? ORDER BY id DESC", $type, $objectId, $objectType);
+        else
+            return PendingAction::filter("WHERE type = ?  AND objectId = ? ORDER BY id DESC", $type, $objectId);
 
     }
 
