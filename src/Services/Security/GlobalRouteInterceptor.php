@@ -6,7 +6,7 @@
  * Time: 12:07
  */
 
-namespace Kiniauth\WebServices\Security;
+namespace Kiniauth\Services\Security;
 
 
 use Kiniauth\Exception\Security\MissingAPICredentialsException;

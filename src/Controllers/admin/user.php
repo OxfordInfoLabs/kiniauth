@@ -2,8 +2,10 @@
 
 namespace Kiniauth\Controllers\Admin;
 
+use Kiniauth\Traits\Controller\Admin\UserTrait;
+
 class User  {
 
-    use \Kiniauth\WebServices\ControllerTraits\Admin\UserTrait;
+    use UserTrait;
 
 }

@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Kiniauth\WebServices\ControllerTraits\Guest;
+namespace Kiniauth\Traits\Controller\Guest;
 
 
 use Kiniauth\Services\Account\UserService;
-use Kiniauth\WebServices\ValueObjects\Registration\NewUserAccountDescriptor;
+use Kiniauth\ValueObjects\Registration\NewUserAccountDescriptor;
 use Kinikit\Core\Logging\Logger;
 
 /**

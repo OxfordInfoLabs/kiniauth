@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Kiniauth\WebServices\ControllerTraits\API;
+namespace Kiniauth\Traits\Controller\API;
 
 
 use Kiniauth\Objects\Account\AccountSummary;

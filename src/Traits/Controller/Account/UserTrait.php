@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiniauth\WebServices\ControllerTraits\Account;
+namespace Kiniauth\Traits\Controller\Account;
 
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Account\UserService;

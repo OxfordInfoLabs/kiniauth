@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiniauth\WebServices\ValueObjects\Registration;
+namespace Kiniauth\ValueObjects\Registration;
 
 /**
  * Value object for use as a payload when creating new accounts

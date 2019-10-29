@@ -6,9 +6,9 @@ namespace Kiniauth\Test\WebServices\Security;
 use Kiniauth\Exception\Security\InvalidAPICredentialsException;
 use Kiniauth\Exception\Security\MissingAPICredentialsException;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Services\Security\GlobalRouteInterceptor;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Test\TestBase;
-use Kiniauth\WebServices\Security\GlobalRouteInterceptor;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\MVC\Request\Request;
@@ -25,7 +25,7 @@ class GlobalRouteInterceptorTest extends TestBase {
     private $globalRouteInterceptor;
 
 
-    public function setUp():void {
+    public function setUp(): void {
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
         $securityService = Container::instance()->get(SecurityService::class);
         $this->globalRouteInterceptor = new GlobalRouteInterceptor($securityService, $this->authenticationService);
