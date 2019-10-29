@@ -59,6 +59,13 @@ class Account extends AccountSummary {
         $this->apiSecret = StringUtils::generateRandomString(10, true, true, false);
     }
 
+    /**
+     * @param int $accountId
+     */
+    public function updateAccountId($accountId) {
+        $this->accountId = $accountId;
+    }
+
 
     /**
      * @param string $name
