@@ -6,5 +6,5 @@ namespace Kiniauth\Controllers\Guest;
 
 class Registration {
 
-    use \Kiniauth\WebServices\ControllerTraits\Guest\Registration;
+    use \Kiniauth\Traits\Controller\Guest\Registration;
 }

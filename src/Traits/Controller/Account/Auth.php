@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Kiniauth\WebServices\ControllerTraits\Account;
+namespace Kiniauth\Traits\Controller\Account;
 
 
 trait Auth {

@@ -1,7 +1,6 @@
 <?php
 
-namespace Kiniauth\WebServices\ValueObjects\Security;
-
+namespace Kiniauth\ValueObjects\Security;
 
 /**
  * Payload object for resetting passwords

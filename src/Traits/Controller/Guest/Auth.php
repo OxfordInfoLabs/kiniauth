@@ -1,12 +1,13 @@
 <?php
 
 
-namespace Kiniauth\WebServices\ControllerTraits\Guest;
+namespace Kiniauth\Traits\Controller\Guest;
 
 
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Security\AuthenticationService;
-use Kiniauth\WebServices\ValueObjects\Security\NewPasswordDescriptor;
+use Kiniauth\ValueObjects\Security\NewPasswordDescriptor;
+
 
 trait Auth {
 

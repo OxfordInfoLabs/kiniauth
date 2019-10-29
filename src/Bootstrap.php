@@ -4,10 +4,10 @@ namespace Kiniauth;
 
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Services\Security\GlobalRouteInterceptor;
 use Kiniauth\Services\Security\ObjectInterceptor;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\Validation\PasswordFieldValidator;
-use Kiniauth\WebServices\Security\GlobalRouteInterceptor;
 use Kinikit\Core\ApplicationBootstrap;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\Configuration\FileResolver;

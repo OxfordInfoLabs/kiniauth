@@ -3,8 +3,10 @@
 namespace Kiniauth\Controllers\Account;
 
 
+use Kiniauth\Traits\Controller\Account\UserTrait;
+
 class User {
 
-    use \Kiniauth\WebServices\ControllerTraits\Account\UserTrait;
+    use UserTrait;
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiniauth\WebServices\ControllerTraits\Admin;
+namespace Kiniauth\Traits\Controller\Admin;
 
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\User;

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Kiniauth\WebServices\ControllerTraits\Guest;
+namespace Kiniauth\Traits\Controller\Guest;
 
 
 use Kiniauth\Services\Application\SessionData;

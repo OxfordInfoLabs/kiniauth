@@ -4,6 +4,6 @@ namespace Kiniauth\Controllers\Guest;
 
 class Session {
 
-    use \Kiniauth\WebServices\ControllerTraits\Guest\Session;
+    use \Kiniauth\Traits\Controller\Guest\Session;
 
 }

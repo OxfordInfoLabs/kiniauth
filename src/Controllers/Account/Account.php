@@ -5,6 +5,6 @@ namespace Kiniauth\Controllers\Account;
 
 class Account {
 
-    use \Kiniauth\WebServices\ControllerTraits\Account\Account;
+    use \Kiniauth\Traits\Controller\Account\Account;
 
 }
