@@ -6,6 +6,7 @@ use Kiniauth\Bootstrap;
 use Kiniauth\Exception\Security\AccountSuspendedException;
 use Kiniauth\Exception\Security\InvalidAPICredentialsException;
 use Kiniauth\Exception\Security\InvalidLoginException;
+use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Exception\Security\UserSuspendedException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
@@ -231,6 +232,47 @@ class AuthenticationServiceTest extends TestBase {
     }
 
 
+    public function testCanAuthenticateWithValidUserAccessTokens() {
+
+        $this->authenticationService->logout();
+
+        try {
+            $this->authenticationService->authenticateByUserToken("BADTOKEN");
+            $this->fail("Should have thrown here");
+        } catch (InvalidUserAccessTokenException $e) {
+            // Success
+        }
+
+
+        // Try a simple token
+        $this->authenticationService->authenticateByUserToken("TESTTOKEN");
+
+        $loggedInUser = $this->session->__getLoggedInUser();
+        $this->assertTrue($loggedInUser instanceof User);
+        $this->assertEquals(4, $loggedInUser->getId());
+
+
+        $this->authenticationService->logout();
+
+        // Try a token with secondary token without secondary
+        try {
+            $this->authenticationService->authenticateByUserToken("TESTTOKEN2");
+            $this->fail("Should have thrown here");
+        } catch (InvalidUserAccessTokenException $e) {
+            // Success
+        }
+
+        // Try a simple token
+        $this->authenticationService->authenticateByUserToken("TESTTOKEN2", "TESTSECONDARY");
+
+        $loggedInUser = $this->session->__getLoggedInUser();
+        $this->assertTrue($loggedInUser instanceof User);
+        $this->assertEquals(7, $loggedInUser->getId());
+
+
+    }
+
+
     public function testCanAuthenticateWithAPICredentials() {
 
         try {
@@ -300,8 +342,6 @@ class AuthenticationServiceTest extends TestBase {
 
         $this->authenticationService->updateActiveParentAccount("");
     }
-
-
 
 
 }
