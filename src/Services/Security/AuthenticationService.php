@@ -6,8 +6,10 @@ namespace Kiniauth\Services\Security;
 
 use Kiniauth\Exception\Security\InvalidAPICredentialsException;
 use Kiniauth\Exception\Security\InvalidLoginException;
+use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
@@ -123,6 +125,31 @@ class AuthenticationService {
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * Authenticate by a user token and optionally a secondary access token if this
+     * has been added.
+     *
+     * @param string $userAccessToken
+     * @param string $secondaryAccessToken
+     *
+     * @objectInterceptorDisabled
+     */
+    public function authenticateByUserToken($userAccessToken, $secondaryAccessToken = null) {
+
+        $hashValue = md5($userAccessToken . ($secondaryAccessToken ? "--" . $secondaryAccessToken : ""));
+
+        $matches = UserAccessToken::filter("WHERE token_hash = ?", $hashValue);
+
+        if (sizeof($matches) > 0) {
+            $user = User::fetch($matches[0]->getUserId());
+            $this->securityService->login($user);
+        } else {
+            throw new InvalidUserAccessTokenException();
+        }
+
     }
 
 

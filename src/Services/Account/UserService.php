@@ -3,19 +3,25 @@
 
 namespace Kiniauth\Services\Account;
 
+use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
+use Kiniauth\Exception\Security\TooManyUserAccessTokensException;
+use Kiniauth\Exception\Security\TwoFactorAuthenticationRequiredException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
+use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Logging\Logger;
+use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
 
@@ -104,7 +110,7 @@ class UserService {
         }
 
         // Create an account to match with any name we can find.
-        $account = Container::instance()->new(Account::class,false);
+        $account = Container::instance()->new(Account::class, false);
         $account->setName($accountName ? $accountName : ($name ? $name : $emailAddress));
         $account->setParentAccountId($parentAccountId);
 
@@ -322,6 +328,71 @@ class UserService {
         $user->setTwoFactorData(null);
         $user->save();
         return $user;
+    }
+
+
+    /**
+     * Create a user access token for a user supplying email address, password and 2fa if required.
+     *
+     * @param string $emailAddress
+     * @param string $password
+     * @param string $twoFaCode
+     */
+    public function createUserAccessToken($emailAddress, $password, $twoFaCode = null) {
+
+        // Attempt login
+        $status = $this->authenticationService->login($emailAddress, $password);
+
+        // If 2fa, check twofa code as well
+        if ($status == AuthenticationService::STATUS_REQUIRES_2FA) {
+            if (!$this->authenticationService->authenticateTwoFactor($twoFaCode))
+                throw new TwoFactorAuthenticationRequiredException();
+        }
+
+        $loggedIn = $this->session->__getLoggedInUser();
+
+        // Check maximum number of tokens not reached
+        $maxTokens = Configuration::readParameter("max.useraccess.tokens") ?? 5;
+        $currentTotal = UserAccessToken::values("COUNT(*)", "WHERE userId = ?", $loggedIn->getId())[0];
+
+        if ($currentTotal >= $maxTokens)
+            throw new TooManyUserAccessTokensException();
+
+        // Generate a random token
+        $token = StringUtils::generateRandomString(32);
+
+        // Create the user access token
+        $userAccessToken = new UserAccessToken($loggedIn->getId(), $token);
+        $userAccessToken->save();
+
+        return $token;
+
+    }
+
+
+    /**
+     * Allows an additional security factor to user access tokens which may be used
+     * at the discretion of the application developer to provide more locked down access.
+     *
+     * @param $existingUserAccessToken
+     * @param $secondaryToken
+     */
+    public function addSecondaryTokenToUserAccessToken($existingUserAccessToken, $secondaryToken) {
+
+        $existingEntry = UserAccessToken::filter("WHERE tokenHash = ?", md5($existingUserAccessToken));
+
+        if (sizeof($existingEntry) > 0) {
+
+            // Update token hash with secondary entry.
+            $token = $existingEntry[0];
+            $token->setTokenHash(md5($existingUserAccessToken . "--" . $secondaryToken));
+            $token->save();
+
+        } else {
+            throw new InvalidUserAccessTokenException();
+        }
+
+
     }
 
 

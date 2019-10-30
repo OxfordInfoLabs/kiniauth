@@ -3,15 +3,21 @@
 namespace Kiniauth\Test\Services\Account;
 
 use Kiniauth\Bootstrap;
+use Kiniauth\Exception\Security\InvalidLoginException;
+use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
+use Kiniauth\Exception\Security\TooManyUserAccessTokensException;
+use Kiniauth\Exception\Security\TwoFactorAuthenticationRequiredException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Objects\Workflow\PendingAction;
 use Kiniauth\Services\Application\BootstrapService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\TestBase;
+use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Validation\ValidationException;
@@ -382,6 +388,107 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(1, sizeof($accountUsersWithRole));
         $this->assertEquals(User::fetch(7), $accountUsersWithRole[0]);
 
+
+    }
+
+
+    public function testCannotCreateUserAccessTokenForAccountWithInvalidLogin() {
+
+        try {
+            $this->userService->createUserAccessToken("dodgy", "pass");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+            // Success
+        }
+
+        try {
+            $this->userService->createUserAccessToken("bob@twofactor.com", "password");
+            $this->fail("Should have thrown here");
+        } catch (TwoFactorAuthenticationRequiredException $e) {
+            // Success
+        }
+
+
+        $this->assertTrue(true);
+    }
+
+
+    public function testCanCreateUserAccessTokenForAccountWithValidLogin() {
+
+        // Get the token
+        $token = $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+
+        $this->assertEquals(32, strlen($token));
+
+        // Check it is stored
+        $userAccessToken = UserAccessToken::fetch([2, md5($token)]);
+        $this->assertTrue($userAccessToken instanceof UserAccessToken);
+
+    }
+
+    public function testCanOnlyCreateUserAccessTokensUpToMaximumInConfigurationFile() {
+
+        // Max access tokens
+        Configuration::instance()->addParameter("max.useraccess.tokens", 1);
+
+        try {
+            $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+            $this->fail("Should have thrown here");
+        } catch (TooManyUserAccessTokensException $e) {
+            // Success
+        }
+
+        // Increase max
+        Configuration::instance()->addParameter("max.useraccess.tokens", 2);
+
+        // Should be able to create one more
+        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+        try {
+            $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+            $this->fail("Should have thrown here");
+        } catch (TooManyUserAccessTokensException $e) {
+            // Success
+        }
+
+
+        // Remove max, check it defaults to 5
+        Configuration::instance()->removeParameter("max.useraccess.tokens");
+
+
+        // Should be able to create three more
+        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+
+        try {
+            $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+            $this->fail("Should have thrown here");
+        } catch (TooManyUserAccessTokensException $e) {
+            // Success
+        }
+
+        $this->assertTrue(true);
+
+    }
+
+
+    public function testCanAddSecondaryTokenToExistingUserAccessToken() {
+
+        $token = $this->userService->createUserAccessToken("simon@peterjonescarwash.com", "password");
+
+        try {
+            $this->userService->addSecondaryTokenToUserAccessToken("BADTOKEN", "NEWSECONDARY");
+            $this->fail("Should have thrown here");
+        } catch (InvalidUserAccessTokenException $e) {
+            // Success
+        }
+
+
+        $this->userService->addSecondaryTokenToUserAccessToken($token, "WONDERFULWORLD");
+
+        // Check the hash has been updated.
+        $userAccessToken = UserAccessToken::fetch([3, md5($token . "--" . "WONDERFULWORLD")]);
+        $this->assertTrue($userAccessToken instanceof UserAccessToken);
 
     }
 
