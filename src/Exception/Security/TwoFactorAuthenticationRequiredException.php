@@ -16,7 +16,7 @@ use Kinikit\Core\Exception\AccessDeniedException;
 class TwoFactorAuthenticationRequiredException extends AccessDeniedException {
 
     public function __construct() {
-        parent::__construct("You must also supply a two factor authentication code");
+        parent::__construct("You must supply a valid two factor authentication code");
     }
 
 }
