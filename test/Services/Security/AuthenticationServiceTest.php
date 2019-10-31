@@ -12,11 +12,15 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Account\UserAccountRole;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Services\Application\SettingsService;
+use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Application\BootstrapService;
 use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Testing\MockObjectProvider;
 
 include_once __DIR__ . "/../../autoloader.php";
 
@@ -250,7 +254,7 @@ class AuthenticationServiceTest extends TestBase {
         $loggedInUser = $this->session->__getLoggedInUser();
         $this->assertTrue($loggedInUser instanceof User);
         $this->assertEquals(4, $loggedInUser->getId());
-
+        $this->assertEquals(md5("TESTTOKEN"), $this->session->__getLoggedInUserAccessTokenHash());
 
         $this->authenticationService->logout();
 
@@ -269,6 +273,32 @@ class AuthenticationServiceTest extends TestBase {
         $this->assertTrue($loggedInUser instanceof User);
         $this->assertEquals(7, $loggedInUser->getId());
 
+        $this->assertEquals(md5("TESTTOKEN2--TESTSECONDARY"), $this->session->__getLoggedInUserAccessTokenHash());
+
+
+    }
+
+
+    public function testAuthenticateByUserTokenIsOptimisedIfAlreadyLoggedInWithSameToken() {
+
+        /**
+         * @var $mockObjectProvider MockObjectProvider
+         */
+        $mockObjectProvider = Container::instance()->get(MockObjectProvider::class);
+
+        $securityService = $mockObjectProvider->getMockInstance(SecurityService::class);
+
+        $authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class), $this->session, $securityService, null);
+
+        $this->session->__setLoggedInUserAccessTokenHash(md5("TESTTOKEN"));
+
+        $interceptor = Container::instance()->get(ActiveRecordInterceptor::class);
+
+        $interceptor->executeInsecure(function () use ($authenticationService) {
+            $authenticationService->authenticateByUserToken("TESTTOKEN");
+        });
+
+        $this->assertFalse($securityService->methodWasCalled("login"));
 
     }
 

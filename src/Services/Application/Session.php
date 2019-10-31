@@ -51,6 +51,26 @@ class Session implements \Kinikit\MVC\Session\Session {
         $this->setValue("loggedInUser", $user);
     }
 
+
+    /**
+     * Get the logged in user access token hash for optimisation if
+     * used.
+     */
+    public function __getLoggedInUserAccessTokenHash() {
+        return $this->getValue("loggedInUserAccessTokenHash");
+    }
+
+
+    /**
+     * Set the logged in user access token hash.
+     *
+     * @param $tokenHash
+     */
+    public function __setLoggedInUserAccessTokenHash($tokenHash) {
+        $this->setValue("loggedInUserAccessTokenHash", $tokenHash);
+    }
+
+
     /**
      * Get the pending logged in user
      *
@@ -193,4 +213,6 @@ class Session implements \Kinikit\MVC\Session\Session {
     public function reload() {
         return $this->coreSession->reload();
     }
+
+
 }

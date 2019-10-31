@@ -10,6 +10,7 @@ use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
+use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
@@ -141,13 +142,16 @@ class AuthenticationService {
 
         $hashValue = md5($userAccessToken . ($secondaryAccessToken ? "--" . $secondaryAccessToken : ""));
 
-        $matches = UserAccessToken::filter("WHERE token_hash = ?", $hashValue);
+        if ($hashValue != $this->session->__getLoggedInUserAccessTokenHash()) {
 
-        if (sizeof($matches) > 0) {
-            $user = User::fetch($matches[0]->getUserId());
-            $this->securityService->login($user);
-        } else {
-            throw new InvalidUserAccessTokenException();
+            $matches = UserAccessToken::filter("WHERE token_hash = ?", $hashValue);
+
+            if (sizeof($matches) > 0) {
+                $user = User::fetch($matches[0]->getUserId());
+                $this->securityService->login($user, null, $hashValue);
+            } else {
+                throw new InvalidUserAccessTokenException();
+            }
         }
 
     }
