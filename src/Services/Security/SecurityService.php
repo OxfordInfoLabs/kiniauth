@@ -89,7 +89,7 @@ class SecurityService {
      * @throws InvalidLoginException
      * @throws UserSuspendedException
      */
-    public function login($user = null, $account = null) {
+    public function login($user = null, $account = null, $userAccessTokenHash = null) {
 
         $this->logout();
 
@@ -117,6 +117,10 @@ class SecurityService {
             }
 
             $this->session->__setLoggedInUser($user);
+
+            if ($userAccessTokenHash) {
+                $this->session->__setLoggedInUserAccessTokenHash($userAccessTokenHash);
+            }
 
 
         }
@@ -163,6 +167,7 @@ class SecurityService {
         $this->session->__setLoggedInUser(null);
         $this->session->__setLoggedInAccount(null);
         $this->session->__setLoggedInPrivileges(null);
+        $this->session->__setLoggedInUserAccessTokenHash(null);
     }
 
 

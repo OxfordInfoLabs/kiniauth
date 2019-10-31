@@ -9,11 +9,12 @@ use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\ValueObjects\Security\NewPasswordDescriptor;
 
 
+
 trait Auth {
 
-    private $authenticationService;
+    protected $authenticationService;
 
-    private $userService;
+    protected $userService;
 
 
     /**
@@ -87,8 +88,5 @@ trait Auth {
         $this->userService->changePassword($newPasswordDescriptor->getResetCode(), $newPasswordDescriptor->getNewPassword());
     }
 
-    public function getSessionData() {
-
-    }
 
 }
