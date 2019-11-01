@@ -58,7 +58,7 @@ class StoredEmailSummary extends ActiveRecord {
     /**
      * To field
      *
-     * @var array
+     * @var string[]
      * @required
      * @json
      */
@@ -67,7 +67,7 @@ class StoredEmailSummary extends ActiveRecord {
     /**
      * Optional CC field
      *
-     * @var array
+     * @var string[]
      * @json
      */
     protected $cc;
@@ -75,7 +75,7 @@ class StoredEmailSummary extends ActiveRecord {
     /**
      * Optional BCC field
      *
-     * @var array
+     * @var string[]
      * @json
      */
     protected $bcc;
