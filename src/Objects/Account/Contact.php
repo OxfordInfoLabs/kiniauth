@@ -370,6 +370,7 @@ class Contact extends ActiveRecord {
 
     public function getAddressString($separator = ", ") {
         $address = array();
+        $this->name ? $address[] = trim($this->name) : null;
         $this->organisation ? $address[] = trim($this->organisation) : null;
         $this->street1 ? $address[] = trim($this->street1) : null;
         $this->street2 ? $address[] = trim($this->street2) : null;

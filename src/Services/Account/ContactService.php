@@ -76,10 +76,16 @@ class ContactService {
     /**
      * Return the contacts for the logged in account
      *
+     * @param string $type
      * @param string $accountId
      * @return mixed
      */
-    public function getContacts($accountId = Account::LOGGED_IN_ACCOUNT) {
-        return Contact::filter("WHERE accountId = {$accountId}");
+    public function getContacts($type = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        if ($type) {
+            return Contact::filter("WHERE accountId = ? AND type = ?", $accountId, $type);
+        } else {
+            return Contact::filter("WHERE accountId = ?", $accountId);
+        }
+
     }
 }

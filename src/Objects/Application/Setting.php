@@ -185,6 +185,7 @@ class Setting extends ActiveRecord {
      */
     private function getSettingDefinition() {
 
+        $def = null;
         $defs = self::getSettingDefinitions();
         if (isset($defs[$this->getKey()])) {
             $def = $defs[$this->getKey()];

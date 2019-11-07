@@ -74,9 +74,11 @@ trait Contact {
      *
      * @http GET /contacts
      *
+     * @param string $type
+     *
      * @return mixed
      */
-    public function getContacts() {
-        return $this->contactService->getContacts();
+    public function getContacts($type = null) {
+        return $this->contactService->getContacts($type);
     }
 }
