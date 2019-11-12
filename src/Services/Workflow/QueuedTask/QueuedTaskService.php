@@ -66,7 +66,8 @@ class QueuedTaskService {
 
             Container::instance()->get($this->taskClasses[$taskIdentifier])->run($configuration);
 
-            $this->queuedTaskProcessor->registerTaskStatusChange($queueName, $taskInstanceIdentifier, QueueItem::STATUS_PENDING);
+            $this->queuedTaskProcessor->registerTaskStatusChange($queueName, $taskInstanceIdentifier, QueueItem::STATUS_COMPLETED);
+            $this->queuedTaskProcessor->deQueueTask($queueName, $taskInstanceIdentifier);
 
 
         } else {
