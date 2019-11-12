@@ -8,6 +8,7 @@ namespace Kiniauth\ValueObjects\QueuedTask;
  */
 class QueueItem {
 
+
     /**
      * Queue name
      *
@@ -59,6 +60,7 @@ class QueueItem {
     // Status constants
     const STATUS_PENDING = "PENDING";
     const STATUS_RUNNING = "RUNNING";
+    const STATUS_COMPLETED = "COMPLETED";
 
     /**
      * QueueItem constructor.

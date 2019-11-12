@@ -95,7 +95,7 @@ class QueuedTaskServiceTest extends TestBase {
             [
                 "testqueue",
                 "12345",
-                QueueItem::STATUS_PENDING
+                QueueItem::STATUS_COMPLETED
             ]));
 
     }

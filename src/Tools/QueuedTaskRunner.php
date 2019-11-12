@@ -4,6 +4,8 @@ namespace Kiniauth\Tools;
 
 use Kiniauth\Services\Workflow\QueuedTask\QueuedTaskService;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Init;
+
 
 class QueuedTaskRunner {
 
@@ -35,7 +37,19 @@ class QueuedTaskRunner {
      * Main composer execution function
      */
     public static function runFromComposer($event) {
-        Container::instance()->get(QueuedTaskRunner::class)->run();
+
+        $queueName = $event->getComposer()->getPackage()->getConfig()["queue-name"] ?? "default-queue";
+        $sourceDirectory = $event->getComposer()->getPackage()->getConfig()["source-directory"] ?? "src";
+
+        chdir($sourceDirectory);
+
+        // Ensure autoloader run from vendor.
+        include_once "../vendor/autoload.php";
+
+        // Ensure basic initialisation has occurred.
+        Container::instance()->get(Init::class);
+
+        Container::instance()->get(QueuedTaskRunner::class)->run($queueName);
     }
 
 }
