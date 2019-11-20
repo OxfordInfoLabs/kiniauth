@@ -52,6 +52,14 @@ class QueuedTaskService {
         return $this->queuedTaskProcessor->queueTask($queueName, $taskIdentifier, $description, $configuration);
     }
 
+
+    /**
+     * List queued tasks
+     */
+    public function listQueuedTasks($queueName){
+        return $this->queuedTaskProcessor->listQueuedTasks($queueName);
+    }
+
     /**
      * Process a queued task using a passed identifier and optional configuration.
      *
