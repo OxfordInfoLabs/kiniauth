@@ -1,7 +1,7 @@
 [
   {
     "key": "access",
-    "description": "Lowest level of access to an account.",
+    "description": "Basic access to an account.",
     "scope": "ACCOUNT"
   }
 ]
