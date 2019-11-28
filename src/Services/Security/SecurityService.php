@@ -80,6 +80,16 @@ class SecurityService {
 
 
     /**
+     * Add a scope access to the array of scope accesses.
+     *
+     * @param ScopeAccess $scopeAccess
+     */
+    public function addScopeAccess($scopeAccess) {
+        $this->scopeAccesses[] = $scopeAccess;
+    }
+
+
+    /**
      * Login as either a user or an account.  This should usually be called from
      * an Authentication service.  It sets up the session variables required to maintain state.
      *
