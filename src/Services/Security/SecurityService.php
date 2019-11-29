@@ -16,6 +16,7 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\Session;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\FileResolver;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 
@@ -286,6 +287,7 @@ class SecurityService {
 
         $allPrivileges = $this->getAllPrivileges();
 
+
         // Throw straight away if a bad privilege key is passed.
         if (!isset($allPrivileges[$privilegeKey])) {
             throw new NonExistentPrivilegeException($privilegeKey);
@@ -311,8 +313,10 @@ class SecurityService {
             }
         }
 
+
         // Now do the main check
         $loggedInPrivileges = $this->getLoggedInScopePrivileges($privilegeScope, $scopeId);
+
         return in_array($privilegeKey, $loggedInPrivileges) || in_array("*", $loggedInPrivileges);
 
     }
@@ -336,8 +340,7 @@ class SecurityService {
         }
 
         if (isset($allPrivileges[$scope][$scopeId]))
-            $privileges = $privileges + $allPrivileges[$scope][$scopeId];
-
+            $privileges = array_merge($privileges, $allPrivileges[$scope][$scopeId]);
 
         return $privileges;
 
