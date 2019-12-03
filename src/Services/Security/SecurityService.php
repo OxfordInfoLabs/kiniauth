@@ -212,7 +212,7 @@ class SecurityService {
                 }
             }
 
-            $this->privileges = ObjectArrayUtils::indexArrayOfObjectsByMember("key", $this->privileges);
+            $this->privileges = ObjectArrayUtils::indexArrayOfObjectsByMember(["scope", "key"], $this->privileges);
         }
 
 
@@ -283,14 +283,14 @@ class SecurityService {
      * @param $privilegeKey
      * @param $scopeId
      */
-    public function checkLoggedInHasPrivilege($privilegeKey, $scopeId = null) {
+    public function checkLoggedInHasPrivilege($privilegeScope, $privilegeKey, $scopeId = null) {
 
         $allPrivileges = $this->getAllPrivileges();
 
 
         // Throw straight away if a bad privilege key is passed.
-        if (!isset($allPrivileges[$privilegeKey])) {
-            throw new NonExistentPrivilegeException($privilegeKey);
+        if (!isset($allPrivileges[$privilegeScope][$privilegeKey]) && $privilegeKey != "*") {
+            throw new NonExistentPrivilegeException($privilegeScope, $privilegeKey);
         }
 
         // Return straight away if not logged in.
@@ -298,7 +298,6 @@ class SecurityService {
         $loggedInAccount = $this->session->__getLoggedInAccount();
         if ($loggedInUser == null && $loggedInAccount == null) return false;
 
-        $privilegeScope = $allPrivileges[$privilegeKey]->getScope();
 
         // Resolve missing ids.
         if (!$scopeId) {

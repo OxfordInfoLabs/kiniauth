@@ -12,6 +12,10 @@
     "value": "http://localhost:5013/sign-in/new-password/"
   },
   {
+    "key": "userInvitationURL",
+    "value": "http://localhost:5013/register/invite-user/"
+  },
+  {
     "key": "replyToEmailAddress",
     "value": "noreply@kiniauth.example"
   },

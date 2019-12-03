@@ -492,4 +492,9 @@ class UserServiceTest extends TestBase {
 
     }
 
+
+    public function testCanUpdateAssignedAccountRolesForUser() {
+
+    }
+
 }

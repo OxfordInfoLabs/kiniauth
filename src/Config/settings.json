@@ -49,6 +49,13 @@
     "scope": "ALL"
   },
   {
+    "title": "User Invitation URL",
+    "description": "The URL where users are redirected when they click on an invitation link.",
+    "key": "userInvitationURL",
+    "type": "url",
+    "scope": "ALL"
+  },
+  {
     "title": "Reply to Address",
     "description": "The default reply to address for all email correspondence",
     "key": "replyToEmailAddress",

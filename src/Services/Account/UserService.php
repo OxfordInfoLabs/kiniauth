@@ -17,6 +17,7 @@ use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
+use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
@@ -113,8 +114,6 @@ class UserService {
         $account = Container::instance()->new(Account::class, false);
         $account->setName($accountName ? $accountName : ($name ? $name : $emailAddress));
         $account->setParentAccountId($parentAccountId);
-
-        Logger::log($account);
 
         $account->save();
 
@@ -391,6 +390,24 @@ class UserService {
         } else {
             throw new InvalidUserAccessTokenException();
         }
+
+
+    }
+
+
+    /**
+     * Update assigned account roles for a user.  This requires login as a super user
+     * for the account in question.
+     *
+     * @param integer $userId
+     * @param integer $accountId
+     * @param AssignedRole[] $assignedRoles
+     *
+     * @hasPrivilege ACCOUNT:*($accountId)
+     *
+     */
+    public function updateAssignedAccountRolesForUser($userId, $accountId, $assignedRoles) {
+
 
 
     }
