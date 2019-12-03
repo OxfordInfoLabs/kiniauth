@@ -104,10 +104,10 @@ class SecurityServiceTest extends TestBase {
 
         $allPrivileges = $this->securityService->getAllPrivileges();
 
-        $this->assertEquals(new Privilege("access", "Basic access to an account.", "ACCOUNT"), $allPrivileges["access"]);
-        $this->assertEquals(new Privilege("viewdata", "Test View Data Privilege.", "ACCOUNT"), $allPrivileges["viewdata"]);
-        $this->assertEquals(new Privilege("editdata", "Test Edit Data Privilege.", "ACCOUNT"), $allPrivileges["editdata"]);
-        $this->assertEquals(new Privilege("deletedata", "Test Delete Data Privilege.", "ACCOUNT"), $allPrivileges["deletedata"]);
+        $this->assertEquals(new Privilege("access", "Basic access to an account.", "ACCOUNT"), $allPrivileges["ACCOUNT"]["access"]);
+        $this->assertEquals(new Privilege("viewdata", "Test View Data Privilege.", "ACCOUNT"), $allPrivileges["ACCOUNT"]["viewdata"]);
+        $this->assertEquals(new Privilege("editdata", "Test Edit Data Privilege.", "ACCOUNT"), $allPrivileges["ACCOUNT"]["editdata"]);
+        $this->assertEquals(new Privilege("deletedata", "Test Delete Data Privilege.", "ACCOUNT"), $allPrivileges["ACCOUNT"]["deletedata"]);
 
     }
 
@@ -116,7 +116,7 @@ class SecurityServiceTest extends TestBase {
 
         // Try non-existent privilege first
         try {
-            $this->securityService->checkLoggedInHasPrivilege("peterpan");
+            $this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "peterpan");
             $this->fail("Should have thrown here");
         } catch (NonExistentPrivilegeException $e) {
             // Success
@@ -125,31 +125,31 @@ class SecurityServiceTest extends TestBase {
 
         // Logged out
         $this->authenticationService->logout();
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege("access"));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege("access", 5));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access"));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access", 5));
 
         // Super user
         $this->authenticationService->login("admin@kinicart.com", "password");
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege("access"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege("viewdata"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege("editdata"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege("deletedata"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege("deletedata", 7));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"viewdata"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"deletedata"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"deletedata", 7));
 
         // Administrator
         $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege("access"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege("viewdata"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege("editdata"));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege("access", 2));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege("viewdata", 2));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege("editdata", 2));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"viewdata"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata"));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access", 2));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"viewdata", 2));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata", 2));
 
         // User with selective roles
         $this->authenticationService->login("regularuser@smartcoasting.org", "password");
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege("editdata"));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege("deletedata"));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege("editdata", 2));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata"));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"deletedata"));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata", 2));
 
     }
 

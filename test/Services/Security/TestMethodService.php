@@ -53,7 +53,7 @@ class TestMethodService {
 
 
     /**
-     * @hasPrivilege editdata($accountId)
+     * @hasPrivilege ACCOUNT:editdata($accountId)
      *
      * @param $accountId
      * @param $newName

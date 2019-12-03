@@ -69,14 +69,24 @@ class ObjectInterceptor extends ContainerInterceptor {
                     $scopeId = null;
                 }
 
+                $explodedPrivKey = explode(":", $privilegeKey);
+                $privilegeScope = null;
+                if (sizeof($explodedPrivKey) == 1) {
+                    $privilegeScope = Role::SCOPE_ACCOUNT;
+                } else {
+                    $privilegeScope = $explodedPrivKey[0];
+                    $privilegeKey = $explodedPrivKey[1];
+                }
+
+
                 // Throw if an issue is encountered.
-                if (!$this->securityService->checkLoggedInHasPrivilege($privilegeKey, $scopeId))
+                if (!$this->securityService->checkLoggedInHasPrivilege($privilegeScope, $privilegeKey, $scopeId))
                     throw new AccessDeniedException();
 
 
             }
         }
-        
+
         if ($key = array_search(Account::LOGGED_IN_ACCOUNT, $params)) {
             list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
             if ($account) {
@@ -113,6 +123,7 @@ class ObjectInterceptor extends ContainerInterceptor {
 
         // Check for objectInterceptorDisabled
         if ($methodInspector->getMethodAnnotations()["objectInterceptorDisabled"] ?? []) {
+
             return function () use ($callable) {
                 return $this->objectInterceptor->executeInsecure($callable);
             };
