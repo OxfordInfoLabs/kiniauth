@@ -32,7 +32,7 @@ class AssignedRole {
      * @param int $roleId
      * @param int $scopeId
      */
-    public function __construct($roleId, $scopeId = null) {
+    public function __construct($roleId, $scopeId) {
         $this->roleId = $roleId;
         $this->scopeId = $scopeId;
     }

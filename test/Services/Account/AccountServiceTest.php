@@ -5,8 +5,11 @@ namespace Kiniauth\Test\Services\Account;
 
 use Kiniauth\Exception\Security\UserAlreadyAttachedToAccountException;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
+use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Account\AccountService;
+use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;
@@ -75,7 +78,8 @@ class AccountServiceTest extends TestBase {
         $this->mockEmailService = $mockObjectProvider->getMockInstance(EmailService::class);
 
 
-        $this->mockedAccountService = new AccountService(Container::instance()->get(SecurityService::class), $this->mockPendingActionService, $this->mockEmailService);
+        $this->mockedAccountService = new AccountService(Container::instance()->get(SecurityService::class), $this->mockPendingActionService, $this->mockEmailService,
+            Container::instance()->get(UserService::class));
 
         $this->pendingActionService = Container::instance()->get(PendingActionService::class);
         $this->accountService = Container::instance()->get(AccountService::class);
@@ -90,7 +94,7 @@ class AccountServiceTest extends TestBase {
 
 
         try {
-            $this->accountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new AssignedRole(3)]);
+            $this->accountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new AssignedRole(3, 1)]);
             $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e) {
             $this->assertTrue(true);
@@ -100,7 +104,7 @@ class AccountServiceTest extends TestBase {
         $this->authenticationService->login("regularuser@smartcoasting.org", "password");
 
         try {
-            $this->accountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new AssignedRole(3)]);
+            $this->accountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new AssignedRole(3, 1)]);
             $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e) {
             $this->assertTrue(true);
@@ -116,7 +120,7 @@ class AccountServiceTest extends TestBase {
 
         try {
 
-            $this->mockedAccountService->inviteUserToAccount(1, "sam@samdavisdesign.co.uk", [new AssignedRole(3)]);
+            $this->mockedAccountService->inviteUserToAccount(1, "sam@samdavisdesign.co.uk", [new AssignedRole(3, 1)]);
             $this->fail("Should have thrown here");
         } catch (UserAlreadyAttachedToAccountException $e) {
             $this->assertTrue(true);
@@ -125,7 +129,7 @@ class AccountServiceTest extends TestBase {
 
         try {
 
-            $this->mockedAccountService->inviteUserToAccount(1, "regularuser@smartcoasting.org", [new AssignedRole(3)]);
+            $this->mockedAccountService->inviteUserToAccount(1, "regularuser@smartcoasting.org", [new AssignedRole(3, 1)]);
             $this->fail("Should have thrown here");
         } catch (UserAlreadyAttachedToAccountException $e) {
             $this->assertTrue(true);
@@ -142,19 +146,19 @@ class AccountServiceTest extends TestBase {
         $this->mockPendingActionService->returnValue("createPendingAction", "XXXYYYZZZ", ["USER_INVITE", 1,
             ["emailAddress" => "newuser@samdavisdesign.co.uk",
                 "initialRoles" => [
-                    new AssignedRole(3)
+                    new AssignedRole(3, 1)
                 ],
                 "newUser" => true]]);
 
 
         // Should succeed.
-        $this->mockedAccountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new AssignedRole(3)]);
+        $this->mockedAccountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new AssignedRole(3, 1)]);
 
         // Check pending action was created
         $this->assertTrue($this->mockPendingActionService->methodWasCalled("createPendingAction", ["USER_INVITE", 1,
             ["emailAddress" => "newuser@samdavisdesign.co.uk",
                 "initialRoles" => [
-                    new AssignedRole(3)
+                    new AssignedRole(3, 1)
                 ],
                 "newUser" => true]]));
 
@@ -178,8 +182,8 @@ class AccountServiceTest extends TestBase {
         $this->mockPendingActionService->returnValue("createPendingAction", "XXXYYYZZZ", ["USER_INVITE", 1,
             ["emailAddress" => "mary@shoppingonline.com",
                 "initialRoles" => [
-                    new AssignedRole(3),
-                    new AssignedRole(4)
+                    new AssignedRole(3, 1),
+                    new AssignedRole(4, 1)
                 ],
                 "newUser" => false]]);
 
@@ -190,8 +194,8 @@ class AccountServiceTest extends TestBase {
         // Simulate insecure - usually implemented by annotation.
         $interceptor->executeInsecure(function () {
             // Should succeed.
-            $this->mockedAccountService->inviteUserToAccount(1, "mary@shoppingonline.com", [new AssignedRole(3),
-                new AssignedRole(4)]);
+            $this->mockedAccountService->inviteUserToAccount(1, "mary@shoppingonline.com", [new AssignedRole(3, 1),
+                new AssignedRole(4, 1)]);
 
         });
 
@@ -200,8 +204,8 @@ class AccountServiceTest extends TestBase {
         $this->assertTrue($this->mockPendingActionService->methodWasCalled("createPendingAction", ["USER_INVITE", 1,
             ["emailAddress" => "mary@shoppingonline.com",
                 "initialRoles" => [
-                    new AssignedRole(3),
-                    new AssignedRole(4)
+                    new AssignedRole(3, 1),
+                    new AssignedRole(4, 1)
                 ],
                 "newUser" => false]]));
 
@@ -237,7 +241,7 @@ class AccountServiceTest extends TestBase {
         $invitationCode = $this->pendingActionService->createPendingAction("USER_INVITE", 1,
             ["emailAddress" => "newuser@samdavisdesign.co.uk",
                 "initialRoles" => [
-                    new AssignedRole(3)
+                    new AssignedRole(3, 1)
                 ],
                 "newUser" => true]);
 
@@ -257,7 +261,7 @@ class AccountServiceTest extends TestBase {
         $invitationCode = $this->pendingActionService->createPendingAction("USER_INVITE", 1,
             ["emailAddress" => "newuser@samdavisdesign.co.uk",
                 "initialRoles" => [
-                    new AssignedRole(3)
+                    new AssignedRole(3, 1)
                 ],
                 "newUser" => true]);
 
@@ -271,6 +275,44 @@ class AccountServiceTest extends TestBase {
 
         $this->assertEquals(md5("helloJeffrey1"), $newUser->getHashedPassword());
         $this->assertEquals(1, sizeof($newUser->getRoles()));
+        $this->assertEquals(3, $newUser->getRoles()[0]->getRoleId());
+
+    }
+
+
+    public function testExistingUserAddedToAccountCorrectlyIfValidInvitationCodeAndPassword() {
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $user = new User("existing@test.com", "Password12345");
+        $user->setRoles([
+            new UserRole(Role::SCOPE_ACCOUNT, 5, 3, 2),
+            new UserRole(Role::SCOPE_ACCOUNT, 6, 3, 3)
+        ]);
+        $user->setStatus(User::STATUS_ACTIVE);
+
+        $user->save();
+
+        $this->authenticationService->logout();
+
+        $invitationCode = $this->pendingActionService->createPendingAction("USER_INVITE", 4,
+            ["emailAddress" => "existing@test.com",
+                "initialRoles" => [
+                    new AssignedRole(3, 4)
+                ],
+                "newUser" => false]);
+
+
+        $this->accountService->acceptUserInvitationForAccount($invitationCode);
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $newUsers = User::filter("WHERE emailAddress = ? AND parent_account_id = ?", "existing@test.com", 0);
+        $newUser = $newUsers[0];
+
+        $this->assertEquals(3, sizeof($newUser->getRoles()));
+        $this->assertEquals(4, $newUser->getRoles()[0]->getAccountId());
+        $this->assertEquals(3, $newUser->getRoles()[0]->getRoleId());
 
     }
 

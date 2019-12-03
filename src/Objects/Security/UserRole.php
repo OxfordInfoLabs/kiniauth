@@ -48,8 +48,20 @@ class UserRole extends ActiveRecord {
      * The role id for this user role.
      *
      * @var integer
+     * @primaryKey
      */
     protected $roleId;
+
+
+    /**
+     * An optional account id which should be set if the role scope is ACCOUNT
+     * or if the scope being limited represents sub objects within an account for
+     * increased security.
+     *
+     * @var integer
+     */
+    protected $accountId;
+
 
     /**
      * The role object for this user role
@@ -64,7 +76,7 @@ class UserRole extends ActiveRecord {
 
     /**
      * @manyToOne
-     * @parentJoinColumns scope_id
+     * @parentJoinColumns account_id
      * @readOnly
      *
      * @var Account
@@ -79,10 +91,11 @@ class UserRole extends ActiveRecord {
      * @param integer $roleId
      * @param integer $userId
      */
-    public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $userId = null) {
+    public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $accountId = null, $userId = null) {
         $this->scope = $scope;
         $this->scopeId = $scopeId;
         $this->roleId = $roleId;
+        $this->accountId = $accountId;
         $this->userId = $userId;
     }
 
@@ -127,7 +140,7 @@ class UserRole extends ActiveRecord {
      * Get account id if relevant
      */
     public function getAccountId() {
-        return $this->scope == Role::SCOPE_ACCOUNT ? $this->scopeId : null;
+        return $this->accountId;
     }
 
     /**
@@ -135,7 +148,7 @@ class UserRole extends ActiveRecord {
      * @return string
      */
     public function getAccountStatus() {
-        return $this->scope == Role::SCOPE_ACCOUNT && $this->account ? $this->account->getStatus() : null;
+        return $this->account ? $this->account->getStatus() : null;
     }
 
 

@@ -12,11 +12,13 @@ use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
+use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Objects\Workflow\PendingAction;
 use Kiniauth\Services\Application\BootstrapService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\TestBase;
+use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
@@ -73,7 +75,6 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
 
         $this->assertEquals(1, sizeof($newUser->getRoles()));
-
 
         $this->assertEquals($newUser->getActiveAccountId(), $newUser->getRoles()[0]->getScopeId());
         $this->assertNull($newUser->getRoles()[0]->getRoleId());
@@ -494,6 +495,87 @@ class UserServiceTest extends TestBase {
 
 
     public function testCanUpdateAssignedAccountRolesForUser() {
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $user = new User("crossaccountfun@test.com", "Password12345");
+        $user->setRoles([
+            new UserRole(Role::SCOPE_ACCOUNT, 1, 3, 1),
+            new UserRole(Role::SCOPE_ACCOUNT, 2, 3, 2),
+            new UserRole(Role::SCOPE_ACCOUNT, 3, 3, 3)
+        ]);
+        $user->setStatus(User::STATUS_ACTIVE);
+
+        $user->save();
+
+        
+        // Log in as real user
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+
+        // Check we can't update users in different accounts
+        try {
+
+            $this->userService->updateAssignedAccountRolesForUser(3, [
+                new AssignedRole(1, 1),
+                new AssignedRole(2, 1),
+                new AssignedRole(3, 1)
+            ]);
+
+            $this->fail("Should have thrown here");
+
+        } catch (AccessDeniedException $e) {
+            $this->assertTrue(true);
+        }
+
+
+        // Update assigned account roles for user.
+        $this->userService->updateAssignedAccountRolesForUser($user->getId(), [
+            new AssignedRole(1, 1),
+            new AssignedRole(2, 1),
+            new AssignedRole(3, 1)
+        ]);
+
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $reUser = User::fetch($user->getId());
+        $this->assertEquals(5, sizeof($reUser->getRoles()));
+
+
+    }
+
+
+    public function testValidationExceptionRaisedIfInvalidAssignedRolesPassed() {
+
+        // Attempt to update account roles across accounts
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+
+
+        try {
+
+            $this->userService->updateAssignedAccountRolesForUser(10, [
+                new AssignedRole(null, null)
+            ]);
+
+            $this->fail("Should have thrown here");
+
+        } catch (ValidationException $e) {
+            $this->assertTrue(true);
+        }
+
+
+        try {
+
+            $this->userService->updateAssignedAccountRolesForUser(10, [
+                new AssignedRole(1, null)
+            ]);
+
+            $this->fail("Should have thrown here");
+
+        } catch (ValidationException $e) {
+            $this->assertTrue(true);
+        }
+
 
     }
 

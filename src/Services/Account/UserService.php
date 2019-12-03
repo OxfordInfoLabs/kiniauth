@@ -20,11 +20,14 @@ use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Logging\Logger;
+use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
+use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 
 class UserService {
@@ -117,7 +120,7 @@ class UserService {
 
         $account->save();
 
-        $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId())));
+        $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId(), null, $account->getAccountId())));
         $user->save();
 
         // Create a pending activation action
@@ -397,17 +400,56 @@ class UserService {
 
     /**
      * Update assigned account roles for a user.  This requires login as a super user
-     * for the account in question.
+     * for the account in question and for the user to have at least one role for the account.
      *
      * @param integer $userId
      * @param integer $accountId
      * @param AssignedRole[] $assignedRoles
      *
-     * @hasPrivilege ACCOUNT:*($accountId)
      *
      */
-    public function updateAssignedAccountRolesForUser($userId, $accountId, $assignedRoles) {
+    public function updateAssignedAccountRolesForUser($userId, $assignedRoles, $accountId = Account::LOGGED_IN_ACCOUNT, $newUserAccess = false) {
 
+        // grab the roles matching the newly assigned roles.
+        $roleIds = ObjectArrayUtils::getMemberValueArrayForObjects("roleId", $assignedRoles);
+
+        try {
+            $roles = Role::multiFetch($roleIds);
+
+            // Create and save new user roles
+            $newRoles = [];
+            foreach ($assignedRoles as $assignedRole) {
+
+                if (!$assignedRole->getScopeId())
+                    throw new ObjectNotFoundException("", "");
+
+                if (isset($roles[$assignedRole->getRoleId()])) {
+                    $role = $roles[$assignedRole->getRoleId()];
+                    $userRole = new UserRole($role->getScope(), $assignedRole->getScopeId(), $assignedRole->getRoleId(), $accountId, $userId);
+                    $newRoles[] = $userRole;
+                }
+            }
+
+
+            // Move old roles out of the way.
+            $userRoles = UserRole::filter("WHERE userId = ? AND accountId = ?", $userId, $accountId);
+
+            if (!$newUserAccess && (sizeof($userRoles) == 0))
+                throw new AccessDeniedException("The passed user has no access to the account");
+
+            foreach ($userRoles as $userRole) {
+                $userRole->remove();
+            }
+
+
+            // Save new roles
+            foreach ($newRoles as $newRole) {
+                $newRole->save();
+            }
+
+        } catch (ObjectNotFoundException $e) {
+            throw new ValidationException(["assignedRoles" => new FieldValidationError("assignedRoles", "invalid", "Invalid assigned roles passed to update roles for user")]);
+        }
 
 
     }

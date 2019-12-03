@@ -15,6 +15,8 @@ use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Security\AssignedRole;
+use Kinikit\Core\Binding\ObjectBinder;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
@@ -39,6 +41,11 @@ class AccountService {
 
 
     /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
      * Construct with required deps.
      *
      * @param SecurityService $securityService
@@ -46,10 +53,11 @@ class AccountService {
      * @param EmailService $emailService
      * @param UserService $userService
      */
-    public function __construct($securityService, $pendingActionService, $emailService) {
+    public function __construct($securityService, $pendingActionService, $emailService, $userService) {
         $this->securityService = $securityService;
         $this->pendingActionService = $pendingActionService;
         $this->emailService = $emailService;
+        $this->userService = $userService;
     }
 
 
@@ -139,13 +147,17 @@ class AccountService {
 
             $pendingData = $pendingAction->getData();
 
-
             if ($pendingData["newUser"]) {
                 $user = new User($pendingData["emailAddress"], $password, $name, $accountSummary->getParentAccountId());
                 $user->save();
-
-                
+            } else {
+                // Get existing user if exists
+                $user = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $pendingData["emailAddress"], $accountSummary->getParentAccountId())[0];
             }
+
+            $objectBinder = Container::instance()->get(ObjectBinder::class);
+
+            $this->userService->updateAssignedAccountRolesForUser($user->getId(), $objectBinder->bindFromArray($pendingData["initialRoles"], AssignedRole::class . "[]"), $pendingAction->getObjectId(), 1);
 
         } catch (ItemNotFoundException $e) {
             throw new ValidationException(["invitationCode" => new FieldValidationError("invitationCode", "invalid", "Invalid invitation code supplied for user invitation")]);

@@ -27,7 +27,7 @@ class Role extends ActiveRecord {
      *
      * @var integer
      */
-    private $accountId;
+    private $definedAccountId;
 
 
     /**
@@ -84,15 +84,15 @@ class Role extends ActiveRecord {
     /**
      * @return int
      */
-    public function getAccountId() {
-        return $this->accountId;
+    public function getDefinedAccountId() {
+        return $this->definedAccountId;
     }
 
     /**
-     * @param int $accountId
+     * @param int $definedAccountId
      */
-    public function setAccountId($accountId) {
-        $this->accountId = $accountId;
+    public function setDefinedAccountId($definedAccountId) {
+        $this->definedAccountId = $definedAccountId;
     }
 
     /**
