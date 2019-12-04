@@ -9,7 +9,8 @@ use Kinikit\Persistence\ORM\ActiveRecord;
 /**
  * Class UserSummary
  * @package Kiniauth\Objects\Security
- * @noGenerate
+ *
+ * @table ka_user
  */
 class UserSummary extends ActiveRecord {
 
@@ -17,6 +18,13 @@ class UserSummary extends ActiveRecord {
     const STATUS_ACTIVE = "ACTIVE";
     const STATUS_SUSPENDED = "SUSPENDED";
     const STATUS_PASSWORD_RESET = "PASSWORD_RESET";
+
+    /**
+     * Auto incremented id.
+     *
+     * @var integer
+     */
+    protected $id;
 
     /**
      * The full name for this user.  May or may not be required depending on the application.
@@ -34,6 +42,24 @@ class UserSummary extends ActiveRecord {
     protected $status = self::STATUS_PENDING;
 
     /**
+     * Email address (identifies the user within the system).
+     *
+     * @var string
+     * @required
+     * @email
+     */
+    protected $emailAddress;
+
+    /**
+     * An array of explicit user account role objects
+     *
+     * @oneToMany
+     * @childJoinColumns user_id
+     * @var UserRole[]
+     */
+    protected $roles = array();
+
+    /**
      * UserSummary constructor.
      * @param null $name
      * @param null $status
@@ -41,6 +67,13 @@ class UserSummary extends ActiveRecord {
     public function __construct($name = null, $status = null) {
         $this->name = $name;
         $this->status = $status;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId() {
+        return $this->id;
     }
 
     /**
@@ -69,6 +102,13 @@ class UserSummary extends ActiveRecord {
      */
     public function setStatus($status) {
         $this->status = $status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmailAddress() {
+        return $this->emailAddress;
     }
 
 

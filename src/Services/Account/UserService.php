@@ -12,6 +12,7 @@ use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Objects\Security\UserRole;
+use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\AuthenticationService;
@@ -220,8 +221,8 @@ class UserService {
         $fullQuery = $query . " ORDER BY IFNULL(name, 'ZZZZZZ') LIMIT $limit OFFSET $offset";
 
 
-        $rawResults = User::filter($fullQuery, $filterValues);
-        $totalRecords = User::values("COUNT(DISTINCT(id))", $query, $filterValues);
+        $rawResults = UserSummary::filter($fullQuery, $filterValues);
+        $totalRecords = UserSummary::values("COUNT(DISTINCT(id))", $query, $filterValues);
 
         return [
             "results" => $rawResults,

@@ -19,23 +19,6 @@ use Kinikit\Core\Validation\FieldValidationError;
  */
 class User extends UserSummary {
 
-    /**
-     * Auto incremented id.
-     *
-     * @var integer
-     */
-    protected $id;
-
-
-    /**
-     * Email address (identifies the user within the system).
-     *
-     * @var string
-     * @required
-     * @email
-     */
-    private $emailAddress;
-
 
     /**
      * An optional parent account id, if this account has been created in the context of a
@@ -84,16 +67,6 @@ class User extends UserSummary {
 
 
     /**
-     * An array of explicit user account role objects
-     *
-     * @oneToMany
-     * @childJoinColumns user_id
-     * @var UserRole[]
-     */
-    private $roles = array();
-
-
-    /**
      * Active account id.  This will default to the first account found for the
      * user based upon roles if not supplied.
      *
@@ -128,20 +101,6 @@ class User extends UserSummary {
         $this->parentAccountId = $parentAccountId ? $parentAccountId : 0;
     }
 
-
-    /**
-     * @return int
-     */
-    public function getId() {
-        return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmailAddress() {
-        return $this->emailAddress;
-    }
 
     /**
      * @param string $emailAddress

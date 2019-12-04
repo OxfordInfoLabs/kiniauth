@@ -4,17 +4,22 @@ namespace Kiniauth\Traits\Controller\Account;
 
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Account\UserService;
+use Kiniauth\Services\Application\Session;
 
 trait UserTrait {
 
     private $userService;
 
+    private $session;
+
     /**
      * Account constructor.
      * @param \Kiniauth\Services\Account\UserService $userService
+     * @param Session $session
      */
-    public function __construct($userService) {
+    public function __construct($userService, $session) {
         $this->userService = $userService;
+        $this->session = $session;
     }
 
     /**
@@ -102,4 +107,18 @@ trait UserTrait {
         return $this->userService->disableTwoFactor($userId);
     }
 
+    /**
+     * Search for account users
+     *
+     * @http GET /search
+     *
+     * @param string $searchString
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     */
+    public function searchForAccountUsers($searchString = "", $offset = 0, $limit = 10) {
+        $account = $this->session->__getLoggedInAccount()->getAccountId();
+        return $this->userService->searchForUsers($searchString, $offset, $limit, $account);
+    }
 }

@@ -37,8 +37,9 @@ class SessionData  {
      *
      * SessionData constructor.
      * @param SecurityService $securityService
+     * @param Session $session
      */
-    public function __construct($securityService) {
+    public function __construct($securityService, $session) {
         /**
          * @var $user User
          * @var $account Account
@@ -53,7 +54,7 @@ class SessionData  {
         }
 
         if ($user || $account) {
-            $this->privileges = $securityService->getAllPrivileges();
+            $this->privileges = $session->__getLoggedInPrivileges();
         }
     }
 
