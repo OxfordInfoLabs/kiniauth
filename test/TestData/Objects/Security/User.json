@@ -30,6 +30,7 @@
     "id": 3,
     "emailAddress": "simon@peterjonescarwash.com",
     "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "name": "Simon Car Wash",
     "status": "ACTIVE",
     "roles": [
       {
@@ -42,6 +43,7 @@
     "id": 4,
     "emailAddress": "james@smartcoasting.org",
     "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "name": "James Smartcoasting",
     "activeAccountId": 3,
     "status": "ACTIVE",
     "roles": [
@@ -104,6 +106,7 @@
     "id": 9,
     "emailAddress": "james@smartcoasting.org",
     "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "name": "James Smart Coasting",
     "activeAccountId": 5,
     "parentAccountId": 1,
     "status": "ACTIVE",
@@ -119,6 +122,7 @@
     "emailAddress": "regularuser@smartcoasting.org",
     "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
     "activeAccountId": 3,
+    "name": "Regular User",
     "status": "ACTIVE",
     "roles": [
       {

@@ -15,6 +15,7 @@ use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Security\AssignedRole;
@@ -58,6 +59,13 @@ class UserService {
      */
     private $emailService;
 
+
+    /**
+     * @var SecurityService
+     */
+    private $securityService;
+
+
     /**
      * UserService constructor.
      *
@@ -66,33 +74,15 @@ class UserService {
      * @param Session $session
      * @param PendingActionService $pendingActionService
      * @param EmailService $emailService
+     * @param SecurityService $securityService
      */
-    public function __construct($authenticationService, $twoFactorProvider, $session, $pendingActionService, $emailService) {
+    public function __construct($authenticationService, $twoFactorProvider, $session, $pendingActionService, $emailService, $securityService) {
         $this->authenticationService = $authenticationService;
         $this->twoFactorProvider = $twoFactorProvider;
         $this->session = $session;
         $this->pendingActionService = $pendingActionService;
         $this->emailService = $emailService;
-    }
-
-
-    /**
-     * Get all users matching a specific role scope and scope id, optionally limited to roles
-     *
-     * @param string $roleScope
-     * @param $roleScopeId
-     * @param $roleId
-     *
-     * @return User[]
-     */
-    public function getUsersWithRole($roleScope, $roleScopeId, $roleId = null) {
-
-        if ($roleId) {
-            return User::filter("WHERE roles.scope = ? AND roles.scope_id = ? AND roles.role_id = ? ORDER BY id", $roleScope, $roleScopeId, $roleId);
-        } else {
-            return User::filter("WHERE roles.scope = ? AND roles.scope_id = ? ORDER BY id", $roleScope, $roleScopeId);
-        }
-
+        $this->securityService = $securityService;
     }
 
 
@@ -185,6 +175,62 @@ class UserService {
         }
 
     }
+
+
+    /**
+     * Get all users matching a specific role scope and scope id, optionally limited to roles
+     *
+     * @param string $roleScope
+     * @param $roleScopeId
+     * @param $roleId
+     *
+     * @return User[]
+     */
+    public function getUsersWithRole($roleScope, $roleScopeId, $roleId = null) {
+
+        if ($roleId) {
+            return User::filter("WHERE roles.scope = ? AND roles.scope_id = ? AND roles.role_id = ? ORDER BY id", $roleScope, $roleScopeId, $roleId);
+        } else {
+            return User::filter("WHERE roles.scope = ? AND roles.scope_id = ? ORDER BY id", $roleScope, $roleScopeId);
+        }
+
+    }
+
+
+    /**
+     * Search for account users - limit and offset as supplied - optionally restricted to an account.
+     *
+     * @param string $searchString
+     * @param int $offset
+     * @param int $limit
+     * @param int $accountId
+     */
+    public function searchForUsers($searchString, $offset = 0, $limit = 10, $accountId = null) {
+
+        // Sort out params
+        $searchString = "%" . $searchString . "%";
+        $filterValues = [$searchString, $searchString];
+        $offset = $offset ? $offset : 0;
+
+        $query = "WHERE (name LIKE ? OR emailAddress LIKE ?)";
+        if ($accountId) {
+            $query .= " AND roles.account_id = ?";
+            $filterValues[] = $accountId;
+        }
+        $fullQuery = $query . " ORDER BY IFNULL(name, 'ZZZZZZ') LIMIT $limit OFFSET $offset";
+
+
+        $rawResults = User::filter($fullQuery, $filterValues);
+        $totalRecords = User::values("COUNT(DISTINCT(id))", $query, $filterValues);
+
+        return [
+            "results" => $rawResults,
+            "totalRecords" => $totalRecords[0]
+        ];
+
+
+    }
+
 
     /**
      * Issue a password reset for a user with the supplied email address.
@@ -426,7 +472,11 @@ class UserService {
                 if (isset($roles[$assignedRole->getRoleId()])) {
                     $role = $roles[$assignedRole->getRoleId()];
                     $userRole = new UserRole($role->getScope(), $assignedRole->getScopeId(), $assignedRole->getRoleId(), $accountId, $userId);
-                    $newRoles[] = $userRole;
+
+                    // Use the configured scope access object to confirm that this role is assignable.
+                    $scopeAccess = $this->securityService->getScopeAccess($userRole->getScope());
+                    if ($scopeAccess->isScopeUserRoleAssignable($userRole))
+                        $newRoles[] = $userRole;
                 }
             }
 

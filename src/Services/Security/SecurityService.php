@@ -89,6 +89,15 @@ class SecurityService {
         $this->scopeAccesses[] = $scopeAccess;
     }
 
+    /**
+     * Get the scope access for a given scope
+     *
+     * @return ScopeAccess
+     */
+    public function getScopeAccess($scope) {
+        return ObjectArrayUtils::indexArrayOfObjectsByMember("scope", $this->scopeAccesses)[$scope];
+    }
+
 
     /**
      * Login as either a user or an account.  This should usually be called from

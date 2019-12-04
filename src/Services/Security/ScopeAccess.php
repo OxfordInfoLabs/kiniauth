@@ -75,4 +75,21 @@ abstract class ScopeAccess {
     public abstract function generateScopePrivileges($user, $account, $accountPrivileges);
 
 
+    /**
+     * An optional method which may be overloaded to allow for custom checking logic to be made before
+     * a role is assigned for this scope to a user.  This is particularly useful if e.g. the number
+     * of users assigned a particular role is capped or additional security checks should be made.
+     *
+     * Simply returns a boolean indicator which should be true if the assignment is able to proceed.
+     *
+     * Defaults to open assignment access.
+     *
+     * @param UserRole $userRole
+     * @return boolean
+     */
+    public function isScopeUserRoleAssignable($userRole) {
+        return true;
+    }
+
+
 }

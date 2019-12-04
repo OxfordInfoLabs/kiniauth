@@ -256,6 +256,49 @@ class UserServiceTest extends TestBase {
 
     }
 
+
+    public function testCanSearchForAccountUsers() {
+
+        // Attempt a login. We need to be logged in to generate settings.
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        // Default search
+        $users = $this->userService->searchForUsers("");
+        $this->assertEquals(10, sizeof($users["results"]));
+        $this->assertTrue($users["totalRecords"] > 10);
+        $this->assertEquals("Administrator", $users["results"][0]->getName());
+        $this->assertEquals("James Smart Coasting", $users["results"][1]->getName());
+
+        // Filtered search
+        $users = $this->userService->searchForUsers("James");
+        $this->assertEquals(2, sizeof($users["results"]));
+        $this->assertEquals(2, $users["totalRecords"]);
+        $this->assertEquals("James Smart Coasting", $users["results"][0]->getName());
+        $this->assertEquals("James Smartcoasting", $users["results"][1]->getName());
+
+        // Offset search
+        $users = $this->userService->searchForUsers("James", 1);
+        $this->assertEquals(1, sizeof($users["results"]));
+        $this->assertEquals(2, $users["totalRecords"]);
+        $this->assertEquals("James Smartcoasting", $users["results"][0]->getName());
+
+        // Limit search
+        $users = $this->userService->searchForUsers("James", 0, 1);
+        $this->assertEquals(1, sizeof($users["results"]));
+        $this->assertEquals(2, $users["totalRecords"]);
+        $this->assertEquals("James Smart Coasting", $users["results"][0]->getName());
+
+
+        // Account restricted search.
+        $accountUsers = $this->userService->searchForUsers("", 0, 100, 1);
+        $this->assertEquals(4, sizeof($accountUsers["results"]));
+        $this->assertEquals("Regular User", $accountUsers["results"][0]->getName());
+        $this->assertEquals("Sam Davis", $accountUsers["results"][1]->getName());
+
+
+    }
+
+
     public function testCanGenerateTwoFactorSettingsForDefaultProvider() {
         // Attempt a login. We need to be logged in to generate settings.
         $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
@@ -508,7 +551,7 @@ class UserServiceTest extends TestBase {
 
         $user->save();
 
-        
+
         // Log in as real user
         $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
 

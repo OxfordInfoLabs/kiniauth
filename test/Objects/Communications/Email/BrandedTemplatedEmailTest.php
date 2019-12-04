@@ -65,7 +65,7 @@ class BrandedTemplatedEmailTest extends TestBase {
 
         $this->assertEquals("Kiniauth Example <info@kiniauth.example>", $accountTemplatedEmail->getFrom());
         $this->assertEquals("noreply@kiniauth.example", $accountTemplatedEmail->getReplyTo());
-        $this->assertEquals(["simon@peterjonescarwash.com", "james@smartcoasting.org", "mary@shoppingonline.com"], $accountTemplatedEmail->getRecipients());
+        $this->assertEquals(["Simon Car Wash <simon@peterjonescarwash.com>", "James Smartcoasting <james@smartcoasting.org>", "mary@shoppingonline.com"], $accountTemplatedEmail->getRecipients());
 
 
         $accountTemplatedEmail = new AccountTemplatedEmail(5, "test", ["title" => "Mr", "name" => "Bob"]);
@@ -86,7 +86,7 @@ class BrandedTemplatedEmailTest extends TestBase {
 
         $this->assertEquals("Sam Davis Retail <info@samdavis.org>", $accountTemplatedEmail->getFrom());
         $this->assertEquals("noreply@samdavis.org", $accountTemplatedEmail->getReplyTo());
-        $this->assertEquals(["james@smartcoasting.org"], $accountTemplatedEmail->getRecipients());
+        $this->assertEquals(["James Smart Coasting <james@smartcoasting.org>"], $accountTemplatedEmail->getRecipients());
 
 
     }
@@ -135,7 +135,7 @@ class BrandedTemplatedEmailTest extends TestBase {
 
         $this->assertEquals("Sam Davis Retail <info@samdavis.org>", $userTemplatedEmail->getFrom());
         $this->assertEquals("noreply@samdavis.org", $userTemplatedEmail->getReplyTo());
-        $this->assertEquals(["james@smartcoasting.org"], $userTemplatedEmail->getRecipients());
+        $this->assertEquals(["James Smart Coasting <james@smartcoasting.org>"], $userTemplatedEmail->getRecipients());
 
 
     }
