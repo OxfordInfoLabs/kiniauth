@@ -76,19 +76,20 @@ abstract class ScopeAccess {
 
 
     /**
-     * An optional method which may be overloaded to allow for custom checking logic to be made before
-     * a role is assigned for this scope to a user.  This is particularly useful if e.g. the number
-     * of users assigned a particular role is capped or additional security checks should be made.
+     * An optional method which may be overloaded to filter a set of user roles based upon whether
+     * the user is permitted to have each role assigned.
+     * This is particularly useful if e.g. the number of users assigned a particular role is capped
+     * or additional security checks should be made.
      *
      * Simply returns a boolean indicator which should be true if the assignment is able to proceed.
      *
      * Defaults to open assignment access.
      *
-     * @param UserRole $userRole
-     * @return boolean
+     * @param UserRole[] $userRoles
+     * @return UserRole[]
      */
-    public function isScopeUserRoleAssignable($userRole) {
-        return true;
+    public function getAssignableUserRoles($userRoles) {
+        return $userRoles;
     }
 
 

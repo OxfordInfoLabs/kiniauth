@@ -464,7 +464,7 @@ class UserService {
             $roles = Role::multiFetch($roleIds);
 
             // Create and save new user roles
-            $newRoles = [];
+            $candidateRoles = [];
             foreach ($assignedRoles as $assignedRole) {
 
                 if (!$assignedRole->getScopeId())
@@ -473,14 +473,17 @@ class UserService {
                 if (isset($roles[$assignedRole->getRoleId()])) {
                     $role = $roles[$assignedRole->getRoleId()];
                     $userRole = new UserRole($role->getScope(), $assignedRole->getScopeId(), $assignedRole->getRoleId(), $accountId, $userId);
-
-                    // Use the configured scope access object to confirm that this role is assignable.
-                    $scopeAccess = $this->securityService->getScopeAccess($userRole->getScope());
-                    if ($scopeAccess->isScopeUserRoleAssignable($userRole))
-                        $newRoles[] = $userRole;
+                    $candidateRoles[] = $userRole;
                 }
             }
 
+            // Group roles by scope.
+            $groupedCandidateRoles = ObjectArrayUtils::groupArrayOfObjectsByMember("scope", $candidateRoles);
+
+            $newRoles = [];
+            foreach ($this->securityService->getScopeAccesses() as $scopeAccess) {
+                $newRoles = array_merge($newRoles, $scopeAccess->getAssignableUserRoles($groupedCandidateRoles[$scopeAccess->getScope()]));
+            }
 
             // Move old roles out of the way.
             $userRoles = UserRole::filter("WHERE userId = ? AND accountId = ?", $userId, $accountId);
