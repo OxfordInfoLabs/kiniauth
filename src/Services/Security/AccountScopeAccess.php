@@ -121,7 +121,7 @@ class AccountScopeAccess extends ScopeAccess {
      *
      * @return mixed
      */
-    public function getScopeObjectLabelsById($scopeIds) {
+    public function getScopeObjectDescriptionsById($scopeIds) {
 
         $accounts = AccountSummary::multiFetch($scopeIds);
         return ObjectArrayUtils::getMemberValueArrayForObjects("name", $accounts);

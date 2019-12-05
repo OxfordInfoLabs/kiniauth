@@ -40,7 +40,7 @@ class ExampleScopeAccess extends ScopeAccess {
      *
      * @return mixed
      */
-    public function getScopeObjectLabelsById($scopeIds) {
+    public function getScopeObjectDescriptionsById($scopeIds) {
         $labels = [];
         foreach ($scopeIds as $scopeId) {
             $labels[$scopeId] = "EXAMPLE $scopeId";

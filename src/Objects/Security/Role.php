@@ -82,11 +82,12 @@ class Role extends ActiveRecord {
      * @param string $description
      * @param string[] $privileges
      */
-    public function __construct($scope, $name, $description, $privileges) {
+    public function __construct($scope, $name, $description, $privileges, $id = null) {
         $this->scope = $scope ?? Role::SCOPE_ACCOUNT;
         $this->name = $name;
         $this->description = $description;
         $this->privileges = $privileges;
+        $this->id = $id;
     }
 
 

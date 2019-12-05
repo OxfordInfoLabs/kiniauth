@@ -8,6 +8,7 @@ use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kiniauth\ValueObjects\Security\ScopeRoles;
+use Kiniauth\ValueObjects\Security\UserScopeRoles;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Validation\FieldValidationError;
@@ -41,6 +42,10 @@ class RoleService {
 
     /**
      * Get all possible account roles by scope - useful for drawing the roles GUI
+     *
+     * @param integer $accountId
+     *
+     * @return ScopeRoles[]
      */
     public function getAllPossibleAccountScopeRoles($accountId = Account::LOGGED_IN_ACCOUNT) {
 
@@ -56,6 +61,47 @@ class RoleService {
         }
 
         return $scopeRoles;
+    }
+
+
+    /**
+     * Get all user roles for the supplied account
+     *
+     * @param integer $userId
+     * @param integer $accountId
+     */
+    public function getAllUserAccountRoles($userId, $accountId = Account::LOGGED_IN_ACCOUNT) {
+
+        $allUserRoles = UserRole::filter("WHERE userId = ? AND accountId = ?", $userId, $accountId);
+
+        $groupedRoles = ObjectArrayUtils::groupArrayOfObjectsByMember(["scope", "scopeId"], $allUserRoles);
+
+        $userScopeRolesArray = [];
+
+        // Loop through creating the correct structure
+        foreach ($groupedRoles as $scope => $scopeObjectRoles) {
+
+            // Grab the scope description
+            $scopeAccess = $this->scopeManager->getScopeAccess($scope);
+            $scopeDescription = $scopeAccess->getScopeDescription();
+
+            // Grab all object descriptions
+            $scopeObjectDescriptions = $scopeAccess->getScopeObjectDescriptionsById(array_keys($scopeObjectRoles));
+
+            $userScopeRolesArray[$scopeDescription] = [];
+
+            foreach ($scopeObjectRoles as $scopeId => $userRoles) {
+                $roles = ObjectArrayUtils::getMemberValueArrayForObjects("role", $userRoles);
+                $userScopeRolesArray[$scopeDescription][] = new UserScopeRoles($scope, $scopeId, $scopeObjectDescriptions[$scopeId], $roles);
+            }
+
+
+        }
+
+
+        return $userScopeRolesArray;
+
+
     }
 
 
