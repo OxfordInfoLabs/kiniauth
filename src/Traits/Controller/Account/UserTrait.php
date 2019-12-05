@@ -3,6 +3,7 @@
 namespace Kiniauth\Traits\Controller\Account;
 
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\RoleService;
@@ -38,6 +39,19 @@ trait UserTrait {
      */
     public function getUser($userId = User::LOGGED_IN_USER) {
         return User::fetch($userId);
+    }
+
+    /**
+     * Get a user object by userId (optional), defaults to the logged in user
+     *
+     * @http GET /summary
+     *
+     * @param string $userId
+     *
+     * @return UserSummary
+     */
+    public function getUserSummary($userId = User::LOGGED_IN_USER) {
+        return UserSummary::fetch($userId);
     }
 
     /**
@@ -138,6 +152,21 @@ trait UserTrait {
      */
     public function getAllUserAccountRoles($userId) {
         return $this->roleService->getAllUserAccountRoles($userId);
+    }
+
+
+    /**
+     * Get all filtered assignable account scope roles
+     *
+     * @http GET /assignableRoles
+     *
+     * @param $userId
+     * @param $filterString
+     * @param $offset
+     * @param $limit
+     */
+    public function getFilteredAssignableAccountScopeRoles($userId, $scope, $filterString = "", $offset = 0, $limit = 10) {
+        return $this->roleService->getFilteredUserAssignableAccountScopeRoles($userId, $scope, $filterString, $offset, $limit);
     }
 
 }

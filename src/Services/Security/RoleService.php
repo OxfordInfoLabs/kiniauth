@@ -135,21 +135,29 @@ class RoleService {
 
         $userScopeRolesArray = [];
 
+        // All scopes
+        $allScopes = $this->scopeManager->getScopeAccesses();
+
         // Loop through creating the correct structure
-        foreach ($groupedRoles as $scope => $scopeObjectRoles) {
+        foreach ($allScopes as $scope => $scopeAccess) {
 
-            // Grab the scope description
-            $scopeAccess = $this->scopeManager->getScopeAccess($scope);
+
+            $scopeObjectRoles = $groupedRoles[$scope] ?? [];
+
+            // Grab the scope description and create the array entry
             $scopeDescription = $scopeAccess->getScopeDescription();
-
-            // Grab all object descriptions
-            $scopeObjectDescriptions = $scopeAccess->getScopeObjectDescriptionsById(array_keys($scopeObjectRoles));
-
             $userScopeRolesArray[$scopeDescription] = [];
 
-            foreach ($scopeObjectRoles as $scopeId => $userRoles) {
-                $roles = ObjectArrayUtils::getMemberValueArrayForObjects("role", $userRoles);
-                $userScopeRolesArray[$scopeDescription][] = new UserScopeRoles($scope, $scopeId, $scopeObjectDescriptions[$scopeId], $roles);
+            if (sizeof($scopeObjectRoles) > 0) {
+
+                // Grab all object descriptions
+                $scopeObjectDescriptions = $scopeAccess->getScopeObjectDescriptionsById(array_keys($scopeObjectRoles));
+
+
+                foreach ($scopeObjectRoles as $scopeId => $userRoles) {
+                    $roles = ObjectArrayUtils::getMemberValueArrayForObjects("role", $userRoles);
+                    $userScopeRolesArray[$scopeDescription][] = new UserScopeRoles($scope, $scopeId, $scopeObjectDescriptions[$scopeId], $roles);
+                }
             }
 
 
