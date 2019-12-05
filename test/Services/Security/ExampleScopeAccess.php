@@ -47,4 +47,38 @@ class ExampleScopeAccess extends ScopeAccess {
         }
         return $labels;
     }
+
+
+    /**
+     * Get filtered scope object descriptions with offset and limiting for paging purposes.  If supplied, the
+     * account id will be used to filter these if required.
+     *
+     * @param string $searchFilter
+     * @param integer $accountId
+     */
+    public function getFilteredScopeObjectDescriptions($searchFilter, $offset = 0, $limit = 10, $accountId = null) {
+
+        $descriptions = [];
+        for ($i = 0; $i < 5; $i++) {
+            $description = "EXAMPLE " . ($i + 1);
+            if (!$searchFilter || strpos($description, $searchFilter) !== null)
+                $descriptions[$i + 1] = $description;
+        }
+
+        return $descriptions;
+
+    }
+
+    public function getAssignableUserRoles($userRoles) {
+
+        $assignables = [];
+        foreach ($userRoles as $userRole) {
+            if ($userRole->getRoleId() != 5)
+                $assignables[] = $userRole;
+        }
+
+        return $assignables;
+    }
+
+
 }

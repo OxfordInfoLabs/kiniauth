@@ -102,6 +102,16 @@ abstract class ScopeAccess {
 
 
     /**
+     * Get filtered scope object descriptions with offset and limiting for paging purposes.  If supplied, the
+     * account id should be used to filter these if required.
+     *
+     * @param string $searchFilter
+     * @param integer $accountId
+     */
+    public abstract function getFilteredScopeObjectDescriptions($searchFilter, $offset = 0, $limit = 10, $accountId = null);
+
+
+    /**
      * An optional method which may be overloaded to filter a set of user roles based upon whether
      * the user is permitted to have each role assigned.
      * This is particularly useful if e.g. the number of users assigned a particular role is capped

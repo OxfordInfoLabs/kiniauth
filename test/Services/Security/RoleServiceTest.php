@@ -16,6 +16,7 @@ use Kiniauth\ValueObjects\Security\ScopeRoles;
 use Kiniauth\ValueObjects\Security\UserScopeRoles;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Core\Testing\MockObjectProvider;
 use Kinikit\Core\Validation\ValidationException;
 
 class RoleServiceTest extends TestBase {
@@ -110,6 +111,55 @@ class RoleServiceTest extends TestBase {
             new Role("EXAMPLE", "Example Role 1", "Example Role 1", ["testpriv"], 4),
         ]), $exampleUserRoles[0]);
 
+
+    }
+
+
+    public function testCanGetFilteredUserAssignableAccountScopeRolesAndAppropriateCallsAreMade() {
+
+        // Log in as real user
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+
+        $scopeRoles = $this->roleService->getFilteredUserAssignableAccountScopeRoles(2, "ACCOUNT");
+
+        $this->assertEquals(1, sizeof($scopeRoles));
+        $this->assertEquals(new UserScopeRoles("ACCOUNT", 1, "Sam Davis Design",
+            [1 => Role::fetch(1),
+                2 => Role::fetch(2),
+                3 => Role::fetch(3)]), $scopeRoles[0]);
+
+
+        $scopeRoles = $this->roleService->getFilteredUserAssignableAccountScopeRoles(2, "EXAMPLE");
+        $this->assertEquals(5, sizeof($scopeRoles));
+        $this->assertEquals(new UserScopeRoles("EXAMPLE", 1, "EXAMPLE 1",
+            [
+                4 => Role::fetch(4),
+                5 => null
+            ]), $scopeRoles[0]);
+
+        $this->assertEquals(new UserScopeRoles("EXAMPLE", 2, "EXAMPLE 2",
+            [
+                4 => Role::fetch(4),
+                5 => null
+            ]), $scopeRoles[1]);
+
+        $this->assertEquals(new UserScopeRoles("EXAMPLE", 3, "EXAMPLE 3",
+            [
+                4 => Role::fetch(4),
+                5 => null
+            ]), $scopeRoles[2]);
+
+        $this->assertEquals(new UserScopeRoles("EXAMPLE", 4, "EXAMPLE 4",
+            [
+                4 => Role::fetch(4),
+                5 => null
+            ]), $scopeRoles[3]);
+
+        $this->assertEquals(new UserScopeRoles("EXAMPLE", 5, "EXAMPLE 5",
+            [
+                4 => Role::fetch(4),
+                5 => null
+            ]), $scopeRoles[4]);
 
     }
 

@@ -65,6 +65,63 @@ class RoleService {
 
 
     /**
+     * Get filtered user assignable scope roles.  This returns an array of UserScopeRoles objects where the roles collection
+     * represents just the roles which are assignable for the user.  If a filter string is passed this will be passed
+     * as a filter to the scope object description and offset and limit will be applied to allow paging of these results.
+     *
+     * @param integer $userId
+     * @param string $filterString
+     * @param integer $offset
+     * @param integer $limit
+     * @param integer $accountId
+     */
+    public function getFilteredUserAssignableAccountScopeRoles($userId, $scope, $filterString = "", $offset = 0, $limit = 10, $accountId = Account::LOGGED_IN_ACCOUNT) {
+
+        // Get the scope access.
+        $scopeAccess = $this->scopeManager->getScopeAccess($scope);
+
+        $allScopeRoles = Role::filter("WHERE scope = ? ORDER BY id", $scope);
+
+        // Grab matching descriptions
+        $matchingDescriptions = $scopeAccess->getFilteredScopeObjectDescriptions($filterString, $offset, $limit, $accountId);
+
+        // Loop through each matching description, create all possible user roles.
+        $userRoles = [];
+        foreach ($matchingDescriptions as $scopeId => $scopeObjectDescription) {
+
+            foreach ($allScopeRoles as $scopeRole) {
+                $userRoles[] = new UserRole($scope, $scopeId, $scopeRole->getId(), $accountId, $userId);
+            }
+        }
+
+        // Eliminate unassignable roles
+        $assignableUserRoles = ObjectArrayUtils::groupArrayOfObjectsByMember(["scopeId", "roleId"],
+            $scopeAccess->getAssignableUserRoles($userRoles));
+
+
+        // Now construct array of user scope roles
+        $userScopeRoles = [];
+        foreach ($matchingDescriptions as $scopeId => $scopeObjectDescription) {
+
+            $roles = [];
+            foreach ($allScopeRoles as $role) {
+                if (isset($assignableUserRoles[$scopeId][$role->getId()])) {
+                    $roles[$role->getId()] = $role;
+                } else {
+                    $roles[$role->getId()] = null;
+                }
+            }
+
+            $userScopeRoles[] = new UserScopeRoles($scope, $scopeId, $scopeObjectDescription, $roles);
+        }
+
+
+        return $userScopeRoles;
+
+    }
+
+
+    /**
      * Get all user roles for the supplied account
      *
      * @param integer $userId

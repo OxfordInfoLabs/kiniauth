@@ -128,5 +128,19 @@ class AccountScopeAccess extends ScopeAccess {
 
     }
 
+    /**
+     * Get filtered scope object descriptions with offset and limiting for paging purposes.  If supplied, the
+     * account id will be used to filter these if required.
+     *
+     * @param string $searchFilter
+     * @param integer $accountId
+     */
+    public function getFilteredScopeObjectDescriptions($searchFilter, $offset = 0, $limit = 10, $accountId = null) {
+
+        $account = AccountSummary::fetch($accountId);
+        return [$account->getAccountId() => $account->getName()];
+
+    }
+
 
 }
