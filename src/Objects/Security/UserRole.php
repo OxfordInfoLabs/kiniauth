@@ -129,6 +129,14 @@ class UserRole extends ActiveRecord {
     }
 
     /**
+     * @return Role
+     */
+    public function getRole() {
+        return $this->role;
+    }
+
+
+    /**
      * @return string[]
      */
     public function getPrivileges() {

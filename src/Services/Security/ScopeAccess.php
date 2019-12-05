@@ -98,7 +98,7 @@ abstract class ScopeAccess {
      *
      * @return mixed
      */
-    public abstract function getScopeObjectLabelsById($scopeIds);
+    public abstract function getScopeObjectDescriptionsById($scopeIds);
 
 
     /**

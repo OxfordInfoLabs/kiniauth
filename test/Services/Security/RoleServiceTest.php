@@ -13,6 +13,7 @@ use Kiniauth\Services\Security\ScopeManager;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kiniauth\ValueObjects\Security\ScopeRoles;
+use Kiniauth\ValueObjects\Security\UserScopeRoles;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Validation\ValidationException;
@@ -75,6 +76,39 @@ class RoleServiceTest extends TestBase {
         $this->assertEquals(2, sizeof($exampleRoles));
         $this->assertEquals("Example Role 1", $exampleRoles[0]->getName());
         $this->assertEquals("Example Role 2", $exampleRoles[1]->getName());
+
+
+    }
+
+
+    public function testCanGetAllUserAccountRoles() {
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $userRole1 = new UserRole("EXAMPLE", 1, 4, 1, 2);
+        $userRole2 = new UserRole("EXAMPLE", 2, 5, 1, 2);
+        $userRole3 = new UserRole("EXAMPLE", 1, 4, 2, 3);
+
+        $userRole1->save();
+        $userRole2->save();
+        $userRole3->save();
+
+        $allUserRoles = $this->roleService->getAllUserAccountRoles(2, 1);
+
+        $this->assertEquals(2, sizeof($allUserRoles));
+        $accountUserRoles = $allUserRoles["Account"];
+        $exampleUserRoles = $allUserRoles["Example"];
+
+        $this->assertEquals(1, sizeof($accountUserRoles));
+        $this->assertEquals(new UserScopeRoles("ACCOUNT", 1, "Sam Davis Design", [
+            null
+        ]), $accountUserRoles[0]);
+
+
+        $this->assertEquals(2, sizeof($exampleUserRoles));
+        $this->assertEquals(new UserScopeRoles("EXAMPLE", 1, "EXAMPLE 1", [
+            new Role("EXAMPLE", "Example Role 1", "Example Role 1", ["testpriv"], 4),
+        ]), $exampleUserRoles[0]);
 
 
     }
