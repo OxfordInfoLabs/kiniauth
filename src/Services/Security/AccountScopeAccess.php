@@ -10,6 +10,7 @@ use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Util\ObjectArrayUtils;
 
 /**
  * Account scope access class - generates set of account privileges using a set of user roles.
@@ -24,7 +25,7 @@ class AccountScopeAccess extends ScopeAccess {
      *
      */
     public function __construct() {
-        parent::__construct(Role::SCOPE_ACCOUNT, "accountId");
+        parent::__construct(Role::SCOPE_ACCOUNT, "Account", "accountId");
     }
 
 
@@ -112,4 +113,20 @@ class AccountScopeAccess extends ScopeAccess {
         return $scopePrivileges;
 
     }
+
+
+    /**
+     * Return labels matching each scope id.  This enables the generic role assignment screen
+     * to show sensible values.
+     *
+     * @return mixed
+     */
+    public function getScopeObjectLabelsById($scopeIds) {
+
+        $accounts = AccountSummary::multiFetch($scopeIds);
+        return ObjectArrayUtils::getMemberValueArrayForObjects("name", $accounts);
+
+    }
+
+
 }

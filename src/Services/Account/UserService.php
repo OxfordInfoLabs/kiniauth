@@ -61,12 +61,6 @@ class UserService {
 
 
     /**
-     * @var SecurityService
-     */
-    private $securityService;
-
-
-    /**
      * UserService constructor.
      *
      * @param AuthenticationService $authenticationService
@@ -74,15 +68,13 @@ class UserService {
      * @param Session $session
      * @param PendingActionService $pendingActionService
      * @param EmailService $emailService
-     * @param SecurityService $securityService
      */
-    public function __construct($authenticationService, $twoFactorProvider, $session, $pendingActionService, $emailService, $securityService) {
+    public function __construct($authenticationService, $twoFactorProvider, $session, $pendingActionService, $emailService) {
         $this->authenticationService = $authenticationService;
         $this->twoFactorProvider = $twoFactorProvider;
         $this->session = $session;
         $this->pendingActionService = $pendingActionService;
         $this->emailService = $emailService;
-        $this->securityService = $securityService;
     }
 
 
@@ -443,69 +435,6 @@ class UserService {
 
     }
 
-
-    /**
-     * Update assigned account roles for a user.  This requires login as a super user
-     * for the account in question and for the user to have at least one role for the account.
-     *
-     * @param integer $userId
-     * @param integer $accountId
-     * @param AssignedRole[] $assignedRoles
-     *
-     *
-     */
-    public function updateAssignedAccountRolesForUser($userId, $assignedRoles, $accountId = Account::LOGGED_IN_ACCOUNT, $newUserAccess = false) {
-
-        // grab the roles matching the newly assigned roles.
-        $roleIds = ObjectArrayUtils::getMemberValueArrayForObjects("roleId", $assignedRoles);
-
-        try {
-            $roles = Role::multiFetch($roleIds);
-
-            // Create and save new user roles
-            $candidateRoles = [];
-            foreach ($assignedRoles as $assignedRole) {
-
-                if (!$assignedRole->getScopeId())
-                    throw new ObjectNotFoundException("", "");
-
-                if (isset($roles[$assignedRole->getRoleId()])) {
-                    $role = $roles[$assignedRole->getRoleId()];
-                    $userRole = new UserRole($role->getScope(), $assignedRole->getScopeId(), $assignedRole->getRoleId(), $accountId, $userId);
-                    $candidateRoles[] = $userRole;
-                }
-            }
-
-            // Group roles by scope.
-            $groupedCandidateRoles = ObjectArrayUtils::groupArrayOfObjectsByMember("scope", $candidateRoles);
-
-            $newRoles = [];
-            foreach ($this->securityService->getScopeAccesses() as $scopeAccess) {
-                $newRoles = array_merge($newRoles, $scopeAccess->getAssignableUserRoles($groupedCandidateRoles[$scopeAccess->getScope()]));
-            }
-
-            // Move old roles out of the way.
-            $userRoles = UserRole::filter("WHERE userId = ? AND accountId = ?", $userId, $accountId);
-
-            if (!$newUserAccess && (sizeof($userRoles) == 0))
-                throw new AccessDeniedException("The passed user has no access to the account");
-
-            foreach ($userRoles as $userRole) {
-                $userRole->remove();
-            }
-
-
-            // Save new roles
-            foreach ($newRoles as $newRole) {
-                $newRole->save();
-            }
-
-        } catch (ObjectNotFoundException $e) {
-            throw new ValidationException(["assignedRoles" => new FieldValidationError("assignedRoles", "invalid", "Invalid assigned roles passed to update roles for user")]);
-        }
-
-
-    }
 
 
 }

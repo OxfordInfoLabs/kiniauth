@@ -12,6 +12,7 @@ use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Communication\Email\EmailService;
+use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Security\AssignedRole;
@@ -41,9 +42,9 @@ class AccountService {
 
 
     /**
-     * @var UserService
+     * @var RoleService
      */
-    private $userService;
+    private $roleService;
 
     /**
      * Construct with required deps.
@@ -51,13 +52,13 @@ class AccountService {
      * @param SecurityService $securityService
      * @param PendingActionService $pendingActionService
      * @param EmailService $emailService
-     * @param UserService $userService
+     * @param RoleService $roleService
      */
-    public function __construct($securityService, $pendingActionService, $emailService, $userService) {
+    public function __construct($securityService, $pendingActionService, $emailService, $roleService) {
         $this->securityService = $securityService;
         $this->pendingActionService = $pendingActionService;
         $this->emailService = $emailService;
-        $this->userService = $userService;
+        $this->roleService = $roleService;
     }
 
 
@@ -157,7 +158,7 @@ class AccountService {
 
             $objectBinder = Container::instance()->get(ObjectBinder::class);
 
-            $this->userService->updateAssignedAccountRolesForUser($user->getId(), $objectBinder->bindFromArray($pendingData["initialRoles"], AssignedRole::class . "[]"), $pendingAction->getObjectId(), 1);
+            $this->roleService->updateAssignedAccountRolesForUser($user->getId(), $objectBinder->bindFromArray($pendingData["initialRoles"], AssignedRole::class . "[]"), $pendingAction->getObjectId(), 1);
 
         } catch (ItemNotFoundException $e) {
             throw new ValidationException(["invitationCode" => new FieldValidationError("invitationCode", "invalid", "Invalid invitation code supplied for user invitation")]);

@@ -23,6 +23,14 @@ abstract class ScopeAccess {
      */
     private $scope;
 
+
+    /**
+     * The display description for this access object.
+     *
+     * @var string
+     */
+    private $scopeDescription;
+
     /**
      * The object member which will be checked for in object / method interceptors
      * for this scope access.
@@ -37,8 +45,9 @@ abstract class ScopeAccess {
      *
      * @param $scope
      */
-    public function __construct($scope, $objectMember = null) {
+    public function __construct($scope, $scopeDescription, $objectMember = null) {
         $this->scope = $scope;
+        $this->scopeDescription = $scopeDescription;
         $this->objectMember = $objectMember;
     }
 
@@ -47,6 +56,14 @@ abstract class ScopeAccess {
      */
     public function getScope() {
         return $this->scope;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getScopeDescription() {
+        return $this->scopeDescription;
     }
 
     /**
@@ -73,6 +90,15 @@ abstract class ScopeAccess {
      * @return
      */
     public abstract function generateScopePrivileges($user, $account, $accountPrivileges);
+
+
+    /**
+     * Return labels matching each scope id.  This enables the generic role assignment screen
+     * to show sensible values.
+     *
+     * @return mixed
+     */
+    public abstract function getScopeObjectLabelsById($scopeIds);
 
 
     /**

@@ -26,10 +26,6 @@ class SecurityService {
 
     private $session;
 
-    /**
-     * @var ScopeAccess[]
-     */
-    private $scopeAccesses;
 
     /**
      * @var ClassInspectorProvider
@@ -58,51 +54,30 @@ class SecurityService {
 
 
     /**
+     * @var ScopeManager
+     */
+    private $scopeManager;
+
+    /**
      * @var DatabaseConnection
      */
     private $databaseConnection;
 
     /**
      * @param Session $session
-     * @param AccountScopeAccess $accountScopeAccess
+     * @param ScopeManager $scopeManager
      * @param ClassInspectorProvider $classInspectorProvider
      * @param FileResolver $fileResolver
      * @param ObjectBinder $objectBinder
      * @param DatabaseConnection $databaseConnection
      */
-    public function __construct($session, $accountScopeAccess, $classInspectorProvider, $fileResolver, $objectBinder, $databaseConnection) {
+    public function __construct($session, $scopeManager, $classInspectorProvider, $fileResolver, $objectBinder, $databaseConnection) {
         $this->session = $session;
-        $this->scopeAccesses = [$accountScopeAccess];
         $this->classInspectorProvider = $classInspectorProvider;
         $this->fileResolver = $fileResolver;
         $this->objectBinder = $objectBinder;
         $this->databaseConnection = $databaseConnection;
-    }
-
-
-    /**
-     * Add a scope access to the array of scope accesses.
-     *
-     * @param ScopeAccess $scopeAccess
-     */
-    public function addScopeAccess($scopeAccess) {
-        $this->scopeAccesses[] = $scopeAccess;
-    }
-
-    /**
-     * Get the scope access for a given scope
-     *
-     * @return ScopeAccess
-     */
-    public function getScopeAccess($scope) {
-        return ObjectArrayUtils::indexArrayOfObjectsByMember("scope", $this->scopeAccesses)[$scope];
-    }
-
-    /**
-     * @return ScopeAccess[]
-     */
-    public function getScopeAccesses() {
-        return $this->scopeAccesses;
+        $this->scopeManager = $scopeManager;
     }
 
 
@@ -175,7 +150,7 @@ class SecurityService {
 
         // Add account scope access
         $accountPrivileges = null;
-        foreach ($this->scopeAccesses as $scopeAccess) {
+        foreach ($this->scopeManager->getScopeAccesses() as $scopeAccess) {
             $scopePrivileges = $scopeAccess->generateScopePrivileges($user, $account, $accountPrivileges);
             $privileges[$scopeAccess->getScope()] = $scopePrivileges;
             if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT) $accountPrivileges = $scopePrivileges;
@@ -274,7 +249,7 @@ class SecurityService {
             $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
 
             $access = true;
-            foreach ($this->scopeAccesses as $scopeAccess) {
+            foreach ($this->scopeManager->getScopeAccesses() as $scopeAccess) {
                 $objectMember = $scopeAccess->getObjectMember();
                 if ($objectMember && $classInspector->hasAccessor($objectMember)) {
                     $scopeId = $classInspector->getPropertyData($object, $objectMember);

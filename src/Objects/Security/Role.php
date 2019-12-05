@@ -2,6 +2,7 @@
 
 
 namespace Kiniauth\Objects\Security;
+
 use Kinikit\Persistence\ORM\ActiveRecord;
 
 
@@ -72,6 +73,22 @@ class Role extends ActiveRecord {
     // SCOPE CONSTANTS
     const SCOPE_PARENT_ACCOUNT = "PARENT_ACCOUNT";
     const SCOPE_ACCOUNT = "ACCOUNT";
+
+    /**
+     * Role constructor.
+     *
+     * @param string $scope
+     * @param string $name
+     * @param string $description
+     * @param string[] $privileges
+     */
+    public function __construct($scope, $name, $description, $privileges) {
+        $this->scope = $scope ?? Role::SCOPE_ACCOUNT;
+        $this->name = $name;
+        $this->description = $description;
+        $this->privileges = $privileges;
+    }
+
 
     /**
      * @return int
