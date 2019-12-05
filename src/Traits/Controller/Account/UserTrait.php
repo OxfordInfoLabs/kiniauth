@@ -5,6 +5,7 @@ namespace Kiniauth\Traits\Controller\Account;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Security\RoleService;
 
 trait UserTrait {
 
@@ -12,14 +13,18 @@ trait UserTrait {
 
     private $session;
 
+    private $roleService;
+
     /**
      * Account constructor.
      * @param \Kiniauth\Services\Account\UserService $userService
      * @param Session $session
+     * @param RoleService $roleService
      */
-    public function __construct($userService, $session) {
+    public function __construct($userService, $session, $roleService) {
         $this->userService = $userService;
         $this->session = $session;
+        $this->roleService = $roleService;
     }
 
     /**
@@ -121,4 +126,18 @@ trait UserTrait {
         $account = $this->session->__getLoggedInAccount()->getAccountId();
         return $this->userService->searchForUsers($searchString, $offset, $limit, $account);
     }
+
+    /**
+     * Get all account roles for a user
+     *
+     * @http GET /roles
+     *
+     * @hasPrivilege ACCOUNT:*
+     * @param $userId
+     * @return array
+     */
+    public function getAllUserAccountRoles($userId) {
+        return $this->roleService->getAllUserAccountRoles($userId);
+    }
+
 }
