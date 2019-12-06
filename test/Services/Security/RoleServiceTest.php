@@ -12,8 +12,9 @@ use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\ScopeManager;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Security\AssignedRole;
+use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kiniauth\ValueObjects\Security\ScopeRoles;
-use Kiniauth\ValueObjects\Security\UserScopeRoles;
+use Kiniauth\ValueObjects\Security\ScopeObjectRoles;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Testing\MockObjectProvider;
@@ -101,13 +102,13 @@ class RoleServiceTest extends TestBase {
         $exampleUserRoles = $allUserRoles["Example"];
 
         $this->assertEquals(1, sizeof($accountUserRoles));
-        $this->assertEquals(new UserScopeRoles("ACCOUNT", 1, "Sam Davis Design", [
+        $this->assertEquals(new ScopeObjectRoles("ACCOUNT", 1, "Sam Davis Design", [
             null
         ]), $accountUserRoles[0]);
 
 
         $this->assertEquals(2, sizeof($exampleUserRoles));
-        $this->assertEquals(new UserScopeRoles("EXAMPLE", 1, "EXAMPLE 1", [
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 1, "EXAMPLE 1", [
             new Role("EXAMPLE", "Example Role 1", "Example Role 1", ["testpriv"], 4),
         ]), $exampleUserRoles[0]);
 
@@ -123,7 +124,7 @@ class RoleServiceTest extends TestBase {
         $scopeRoles = $this->roleService->getFilteredUserAssignableAccountScopeRoles(2, "ACCOUNT");
 
         $this->assertEquals(1, sizeof($scopeRoles));
-        $this->assertEquals(new UserScopeRoles("ACCOUNT", 1, "Sam Davis Design",
+        $this->assertEquals(new ScopeObjectRoles("ACCOUNT", 1, "Sam Davis Design",
             [1 => Role::fetch(1),
                 2 => Role::fetch(2),
                 3 => Role::fetch(3)]), $scopeRoles[0]);
@@ -131,36 +132,74 @@ class RoleServiceTest extends TestBase {
 
         $scopeRoles = $this->roleService->getFilteredUserAssignableAccountScopeRoles(2, "EXAMPLE");
         $this->assertEquals(5, sizeof($scopeRoles));
-        $this->assertEquals(new UserScopeRoles("EXAMPLE", 1, "EXAMPLE 1",
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 1, "EXAMPLE 1",
             [
                 4 => Role::fetch(4),
                 5 => null
             ]), $scopeRoles[0]);
 
-        $this->assertEquals(new UserScopeRoles("EXAMPLE", 2, "EXAMPLE 2",
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 2, "EXAMPLE 2",
             [
                 4 => Role::fetch(4),
                 5 => null
             ]), $scopeRoles[1]);
 
-        $this->assertEquals(new UserScopeRoles("EXAMPLE", 3, "EXAMPLE 3",
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 3, "EXAMPLE 3",
             [
                 4 => Role::fetch(4),
                 5 => null
             ]), $scopeRoles[2]);
 
-        $this->assertEquals(new UserScopeRoles("EXAMPLE", 4, "EXAMPLE 4",
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 4, "EXAMPLE 4",
             [
                 4 => Role::fetch(4),
                 5 => null
             ]), $scopeRoles[3]);
 
-        $this->assertEquals(new UserScopeRoles("EXAMPLE", 5, "EXAMPLE 5",
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 5, "EXAMPLE 5",
             [
                 4 => Role::fetch(4),
                 5 => null
             ]), $scopeRoles[4]);
 
+    }
+
+
+    public function testCanUpdateAssignedScopeObjectRolesForUser() {
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $user = new User("crossaccount@test.com", "Password12345");
+        $user->setRoles([
+            new UserRole(Role::SCOPE_ACCOUNT, 1, 3, 1),
+            new UserRole(Role::SCOPE_ACCOUNT, 2, 3, 2),
+            new UserRole(Role::SCOPE_ACCOUNT, 3, 3, 3),
+            new UserRole("EXAMPLE", 1, 4, 1),
+            new UserRole("EXAMPLE", 2, 5, 2),
+
+        ]);
+        $user->setStatus(User::STATUS_ACTIVE);
+
+        $user->save();
+
+
+        // Log in as real user
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+
+
+        $scopeObjectRoles = [
+            new  ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [1, 2])
+        ];
+
+        $this->roleService->updateAssignedScopeObjectRolesForUser($user->getId(), $scopeObjectRoles);
+
+
+        // Now recheck the roles have been updated
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $userRoles = UserRole::filter("WHERE user_id = ?", $user->getId());
+        $this->assertEquals(5, sizeof($userRoles));
+        
     }
 
 

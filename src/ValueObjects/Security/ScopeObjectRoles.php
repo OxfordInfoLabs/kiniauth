@@ -6,7 +6,7 @@ namespace Kiniauth\ValueObjects\Security;
 
 use Kiniauth\Objects\Security\Role;
 
-class UserScopeRoles {
+class ScopeObjectRoles {
 
 
     /**

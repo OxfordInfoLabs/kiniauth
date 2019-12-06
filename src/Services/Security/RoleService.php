@@ -7,8 +7,9 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\ValueObjects\Security\AssignedRole;
+use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kiniauth\ValueObjects\Security\ScopeRoles;
-use Kiniauth\ValueObjects\Security\UserScopeRoles;
+use Kiniauth\ValueObjects\Security\ScopeObjectRoles;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Validation\FieldValidationError;
@@ -112,7 +113,7 @@ class RoleService {
                 }
             }
 
-            $userScopeRoles[] = new UserScopeRoles($scope, $scopeId, $scopeObjectDescription, $roles);
+            $userScopeRoles[] = new ScopeObjectRoles($scope, $scopeId, $scopeObjectDescription, $roles);
         }
 
 
@@ -156,7 +157,7 @@ class RoleService {
 
                 foreach ($scopeObjectRoles as $scopeId => $userRoles) {
                     $roles = ObjectArrayUtils::getMemberValueArrayForObjects("role", $userRoles);
-                    $userScopeRolesArray[$scopeDescription][] = new UserScopeRoles($scope, $scopeId, $scopeObjectDescriptions[$scopeId], $roles);
+                    $userScopeRolesArray[$scopeDescription][] = new ScopeObjectRoles($scope, $scopeId, $scopeObjectDescriptions[$scopeId], $roles);
                 }
             }
 
@@ -165,6 +166,59 @@ class RoleService {
 
 
         return $userScopeRolesArray;
+
+
+    }
+
+
+    /**
+     * Update the roles for a given scope object for a user using a Scope Object Roles object.  This operates only on the
+     * passed account (defaulting to the logged in account).
+     *
+     * @param integer $userId
+     * @param ScopeObjectRolesAssignment[] $scopeObjectRolesAssignments
+     */
+    public function updateAssignedScopeObjectRolesForUser($userId, $scopeObjectRolesAssignments, $accountId = Account::LOGGED_IN_ACCOUNT) {
+
+
+        /**
+         * Process each scope object roles assignment object
+         */
+        foreach ($scopeObjectRolesAssignments as $scopeObjectRolesAssignment) {
+
+
+            // Grab the roles
+            $roleIds = $scopeObjectRolesAssignment->getRoleIds();
+            $roles = Role::multiFetch($roleIds);
+
+            // Create and save new user roles
+            $candidateRoles = [];
+            foreach ($roleIds as $roleId) {
+
+                if (isset($roles[$roleId])) {
+                    $role = $roles[$roleId];
+                    $userRole = new UserRole($role->getScope(), $scopeObjectRolesAssignment->getScopeId(), $roleId, $accountId, $userId);
+                    $candidateRoles[] = $userRole;
+                }
+            }
+
+            // Limit the roles to just assignable ones.
+            $scopeAccess = $this->scopeManager->getScopeAccess($scopeObjectRolesAssignment->getScope());
+            $newRoles = $scopeAccess->getAssignableUserRoles($candidateRoles);
+
+            // Move old roles out of the way.
+            $userRoles = UserRole::filter("WHERE userId = ? AND accountId = ? AND scope_id = ?", $userId, $accountId, $scopeObjectRolesAssignment->getScopeId());
+            foreach ($userRoles as $userRole) {
+                $userRole->remove();
+            }
+
+            // Save new roles
+            foreach ($newRoles as $newRole) {
+                $newRole->save();
+            }
+
+
+        }
 
 
     }
