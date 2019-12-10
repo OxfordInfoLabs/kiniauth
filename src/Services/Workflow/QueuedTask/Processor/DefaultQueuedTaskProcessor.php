@@ -63,7 +63,7 @@ class DefaultQueuedTaskProcessor implements QueuedTaskProcessor {
      * @return mixed
      */
     public function listQueuedTasks($queueName) {
-        $queueItems = StoredQueueItem::filter("WHERE queue_name = ?", $queueName);
+        $queueItems = StoredQueueItem::filter("WHERE queue_name = ? ORDER BY id", $queueName);
         $items = [];
         foreach ($queueItems as $queueItem) {
             $items[] = new QueueItem($queueItem->getQueueName(), $queueItem->getId(),
