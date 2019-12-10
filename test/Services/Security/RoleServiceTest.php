@@ -198,8 +198,8 @@ class RoleServiceTest extends TestBase {
         $this->authenticationService->login("admin@kinicart.com", "password");
 
         $userRoles = UserRole::filter("WHERE user_id = ?", $user->getId());
-        $this->assertEquals(5, sizeof($userRoles));
-        
+        $this->assertEquals(6, sizeof($userRoles));
+
     }
 
 

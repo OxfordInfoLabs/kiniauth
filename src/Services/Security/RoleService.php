@@ -216,7 +216,7 @@ class RoleService {
             $newRoles = $scopeAccess->getAssignableUserRoles($candidateRoles);
 
             // Move old roles out of the way.
-            $userRoles = UserRole::filter("WHERE userId = ? AND accountId = ? AND scope_id = ?", $userId, $accountId, $scopeObjectRolesAssignment->getScopeId());
+            $userRoles = UserRole::filter("WHERE userId = ? AND accountId = ? AND scope = ? AND scope_id = ?", $userId, $accountId, $scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId());
             foreach ($userRoles as $userRole) {
                 $userRole->remove();
             }
