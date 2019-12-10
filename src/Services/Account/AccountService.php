@@ -168,4 +168,23 @@ class AccountService {
 
     }
 
+
+    /**
+     * Remove a user from an account.  Requires logged in user to be account owner.
+     *
+     * @param $accountId
+     * @param $userId
+     *
+     * @hasPrivilege ACCOUNT:*($accountId)
+     */
+    public function removeUserFromAccount($accountId, $userId) {
+
+        $matchingUserRoles = UserRole::filter("WHERE accountId = ? AND userId=?", $accountId, $userId);
+        foreach ($matchingUserRoles as $userRole) {
+            $userRole->remove();
+        }
+
+    }
+
+
 }

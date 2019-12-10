@@ -23,6 +23,7 @@ use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
 use Kinikit\Core\Validation\ValidationException;
+use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 
 include_once __DIR__ . "/../../autoloader.php";
@@ -316,5 +317,65 @@ class AccountServiceTest extends TestBase {
         $this->assertEquals(3, $newUser->getRoles()[0]->getRoleId());
 
     }
+
+
+    public function testCanRemoveUserFromAccountIfAccountSuperUserAndAllRolesAreRemovedForThatAccount() {
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $user = new User("existing2@test.com", "Password12345");
+        $user->setRoles([
+            new UserRole(Role::SCOPE_ACCOUNT, 1, 3, 1),
+            new UserRole(Role::SCOPE_ACCOUNT, 5, 3, 2),
+            new UserRole(Role::SCOPE_ACCOUNT, 6, 3, 3)
+        ]);
+        $user->setStatus(User::STATUS_ACTIVE);
+
+        $user->save();
+
+
+        $this->authenticationService->logout();
+
+        // Check can't delete user from account
+        try {
+            $this->accountService->removeUserFromAccount(1, $user->getId());
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            $this->assertTrue(true);
+        }
+
+
+        $this->authenticationService->login("regularuser@smartcoasting.org", "password");
+
+        // Check can't delete user from account
+        try {
+            $this->accountService->removeUserFromAccount(1, $user->getId());
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            $this->assertTrue(true);
+        }
+
+
+        // Check can delete user from account if superuser
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->accountService->removeUserFromAccount(1, $user->getId());
+
+        // Now try and get the user again
+        try {
+            User::fetch($user->getId());
+            $this->fail("Should no longer have access");
+        } catch (ObjectNotFoundException $e) {
+            $this->assertTrue(true);
+        }
+
+        // Now log in as super user
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $user = User::fetch($user->getId());
+        $this->assertEquals(2, sizeof($user->getRoles()));
+
+
+    }
+
 
 }
