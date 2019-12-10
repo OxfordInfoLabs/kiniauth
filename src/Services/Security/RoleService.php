@@ -11,6 +11,7 @@ use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kiniauth\ValueObjects\Security\ScopeRoles;
 use Kiniauth\ValueObjects\Security\ScopeObjectRoles;
 use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
@@ -189,12 +190,20 @@ class RoleService {
 
             // Grab the roles
             $roleIds = $scopeObjectRolesAssignment->getRoleIds();
-            $roles = Role::multiFetch($roleIds);
 
-            // Create and save new user roles
             $candidateRoles = [];
-            foreach ($roleIds as $roleId) {
 
+            $realRoleIds = [];
+            foreach ($roleIds as $roleId) {
+                if (is_numeric($roleId))
+                    $realRoleIds[] = $roleId;
+                else if (is_null($roleId))
+                    $candidateRoles[] = new UserRole($scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId(), null, $accountId, $userId);
+            }
+
+            $roles = sizeof($realRoleIds) > 0 ? Role::multiFetch($realRoleIds) : [];
+            // Create and save new user roles
+            foreach ($realRoleIds as $roleId) {
                 if (isset($roles[$roleId])) {
                     $role = $roles[$roleId];
                     $userRole = new UserRole($role->getScope(), $scopeObjectRolesAssignment->getScopeId(), $roleId, $accountId, $userId);

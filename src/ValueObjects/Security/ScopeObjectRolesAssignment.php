@@ -40,7 +40,7 @@ class ScopeObjectRolesAssignment {
      * @param int $scopeId
      * @param integer[] $roleIds
      */
-    public function __construct($scope, $scopeId, array $roleIds) {
+    public function __construct($scope, $scopeId, $roleIds) {
         $this->scope = $scope;
         $this->scopeId = $scopeId;
         $this->roleIds = $roleIds;

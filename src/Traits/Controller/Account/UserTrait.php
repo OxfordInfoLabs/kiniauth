@@ -7,6 +7,8 @@ use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\RoleService;
+use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
+use Kinikit\Core\Logging\Logger;
 
 trait UserTrait {
 
@@ -169,4 +171,15 @@ trait UserTrait {
         return $this->roleService->getFilteredUserAssignableAccountScopeRoles($userId, $scope, $filterString, $offset, $limit);
     }
 
+    /**
+     * Update the roles for a user scope
+     *
+     * @http POST /updateUserScope
+     *
+     * @param ScopeObjectRolesAssignment[] $scopeObjectRolesAssignments
+     * @param string $userId
+     */
+    public function updateAssignedScopeObjectRolesForUser($scopeObjectRolesAssignments, $userId) {
+        $this->roleService->updateAssignedScopeObjectRolesForUser($userId, $scopeObjectRolesAssignments);
+    }
 }
