@@ -95,7 +95,7 @@ class AccountServiceTest extends TestBase {
 
 
         try {
-            $this->accountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new AssignedRole(3, 1)]);
+            $this->accountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
             $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e) {
             $this->assertTrue(true);
@@ -105,7 +105,7 @@ class AccountServiceTest extends TestBase {
         $this->authenticationService->login("regularuser@smartcoasting.org", "password");
 
         try {
-            $this->accountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new AssignedRole(3, 1)]);
+            $this->accountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
             $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e) {
             $this->assertTrue(true);
@@ -121,7 +121,7 @@ class AccountServiceTest extends TestBase {
 
         try {
 
-            $this->mockedAccountService->inviteUserToAccount(1, "sam@samdavisdesign.co.uk", [new AssignedRole(3, 1)]);
+            $this->mockedAccountService->inviteUserToAccount(1, "sam@samdavisdesign.co.uk", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
             $this->fail("Should have thrown here");
         } catch (UserAlreadyAttachedToAccountException $e) {
             $this->assertTrue(true);
@@ -130,7 +130,7 @@ class AccountServiceTest extends TestBase {
 
         try {
 
-            $this->mockedAccountService->inviteUserToAccount(1, "regularuser@smartcoasting.org", [new AssignedRole(3, 1)]);
+            $this->mockedAccountService->inviteUserToAccount(1, "regularuser@smartcoasting.org", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
             $this->fail("Should have thrown here");
         } catch (UserAlreadyAttachedToAccountException $e) {
             $this->assertTrue(true);
@@ -147,19 +147,19 @@ class AccountServiceTest extends TestBase {
         $this->mockPendingActionService->returnValue("createPendingAction", "XXXYYYZZZ", ["USER_INVITE", 1,
             ["emailAddress" => "newuser@samdavisdesign.co.uk",
                 "initialRoles" => [
-                    new AssignedRole(3, 1)
+                    new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])
                 ],
                 "newUser" => true]]);
 
 
         // Should succeed.
-        $this->mockedAccountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new AssignedRole(3, 1)]);
+        $this->mockedAccountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
 
         // Check pending action was created
         $this->assertTrue($this->mockPendingActionService->methodWasCalled("createPendingAction", ["USER_INVITE", 1,
             ["emailAddress" => "newuser@samdavisdesign.co.uk",
                 "initialRoles" => [
-                    new AssignedRole(3, 1)
+                    new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])
                 ],
                 "newUser" => true]]));
 
@@ -183,8 +183,8 @@ class AccountServiceTest extends TestBase {
         $this->mockPendingActionService->returnValue("createPendingAction", "XXXYYYZZZ", ["USER_INVITE", 1,
             ["emailAddress" => "mary@shoppingonline.com",
                 "initialRoles" => [
-                    new AssignedRole(3, 1),
-                    new AssignedRole(4, 1)
+                    new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3]),
+                    new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [4])
                 ],
                 "newUser" => false]]);
 
@@ -195,8 +195,8 @@ class AccountServiceTest extends TestBase {
         // Simulate insecure - usually implemented by annotation.
         $interceptor->executeInsecure(function () {
             // Should succeed.
-            $this->mockedAccountService->inviteUserToAccount(1, "mary@shoppingonline.com", [new AssignedRole(3, 1),
-                new AssignedRole(4, 1)]);
+            $this->mockedAccountService->inviteUserToAccount(1, "mary@shoppingonline.com", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3]),
+                new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [4])]);
 
         });
 
@@ -205,8 +205,8 @@ class AccountServiceTest extends TestBase {
         $this->assertTrue($this->mockPendingActionService->methodWasCalled("createPendingAction", ["USER_INVITE", 1,
             ["emailAddress" => "mary@shoppingonline.com",
                 "initialRoles" => [
-                    new AssignedRole(3, 1),
-                    new AssignedRole(4, 1)
+                    new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3]),
+                    new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [4])
                 ],
                 "newUser" => false]]));
 
@@ -242,7 +242,7 @@ class AccountServiceTest extends TestBase {
         $invitationCode = $this->pendingActionService->createPendingAction("USER_INVITE", 1,
             ["emailAddress" => "newuser@samdavisdesign.co.uk",
                 "initialRoles" => [
-                    new AssignedRole(3, 1)
+                    new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])
                 ],
                 "newUser" => true]);
 
