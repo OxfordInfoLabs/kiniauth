@@ -16,6 +16,7 @@ use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Security\AssignedRole;
+use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
@@ -80,7 +81,7 @@ class AccountService {
      *
      * @param integer $accountId
      * @param string $emailAddress
-     * @param AssignedRole[] $initialAssignedRoles
+     * @param ScopeObjectRolesAssignment[] $initialAssignedRoles
      *
      * @hasPrivilege ACCOUNT:*($accountId)
      * @objectInterceptorDisabled
@@ -158,7 +159,7 @@ class AccountService {
 
             $objectBinder = Container::instance()->get(ObjectBinder::class);
 
-            $this->roleService->updateAssignedAccountRolesForUser($user->getId(), $objectBinder->bindFromArray($pendingData["initialRoles"], AssignedRole::class . "[]"), $pendingAction->getObjectId(), 1);
+            $this->roleService->updateAssignedScopeObjectRolesForUser($user->getId(), $objectBinder->bindFromArray($pendingData["initialRoles"], ScopeObjectRolesAssignment::class . "[]"), $pendingAction->getObjectId());
 
         } catch (ItemNotFoundException $e) {
             throw new ValidationException(["invitationCode" => new FieldValidationError("invitationCode", "invalid", "Invalid invitation code supplied for user invitation")]);

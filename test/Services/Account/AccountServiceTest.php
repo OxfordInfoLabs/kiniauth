@@ -17,6 +17,7 @@ use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Security\AssignedRole;
+use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Testing\MockObject;
@@ -261,7 +262,7 @@ class AccountServiceTest extends TestBase {
         $invitationCode = $this->pendingActionService->createPendingAction("USER_INVITE", 1,
             ["emailAddress" => "newuser@samdavisdesign.co.uk",
                 "initialRoles" => [
-                    new AssignedRole(3, 1)
+                    new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])
                 ],
                 "newUser" => true]);
 
@@ -298,7 +299,7 @@ class AccountServiceTest extends TestBase {
         $invitationCode = $this->pendingActionService->createPendingAction("USER_INVITE", 4,
             ["emailAddress" => "existing@test.com",
                 "initialRoles" => [
-                    new AssignedRole(3, 4)
+                    new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 4, [3])
                 ],
                 "newUser" => false]);
 
