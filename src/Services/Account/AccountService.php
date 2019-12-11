@@ -130,6 +130,25 @@ class AccountService {
 
 
     /**
+     * Get email address associated with an invitation code, or report an issue.
+     *
+     * @param $invitationCode
+     */
+    public function getInvitationDetails($invitationCode) {
+
+        try {
+            $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("USER_INVITE", $invitationCode);
+            return [
+                "emailAddress" => $pendingAction->getData()["emailAddress"],
+                "newUser" => $pendingAction->getData()["newUser"]
+            ];
+        } catch (ItemNotFoundException $e) {
+            throw new ValidationException(["invitationCode" => new FieldValidationError("invitationCode", "invalid", "Invalid invitation code supplied for user invitation")]);
+        }
+    }
+
+
+    /**
      * Accept a user invitation.  If this is a brand new user at least a password must also be supplied and optionally
      * a name for the user.
      *
@@ -151,6 +170,7 @@ class AccountService {
 
             if ($pendingData["newUser"]) {
                 $user = new User($pendingData["emailAddress"], $password, $name, $accountSummary->getParentAccountId());
+                $user->setStatus(User::STATUS_ACTIVE);
                 $user->save();
             } else {
                 // Get existing user if exists
@@ -160,6 +180,9 @@ class AccountService {
             $objectBinder = Container::instance()->get(ObjectBinder::class);
 
             $this->roleService->updateAssignedScopeObjectRolesForUser($user->getId(), $objectBinder->bindFromArray($pendingData["initialRoles"], ScopeObjectRolesAssignment::class . "[]"), $pendingAction->getObjectId());
+
+            // Remove the pending action once completed.
+            $this->pendingActionService->removePendingAction("USER_INVITE", $invitationCode);
 
         } catch (ItemNotFoundException $e) {
             throw new ValidationException(["invitationCode" => new FieldValidationError("invitationCode", "invalid", "Invalid invitation code supplied for user invitation")]);
