@@ -1,0 +1,40 @@
+[
+  {
+    "objectId": 1,
+    "type": "USER_INVITE",
+    "identifier": "XXXXXX",
+    "expiryOffset": "P1D",
+    "data": {
+      "emailAddress": "inviteduser@samdavisdesign.co.uk",
+      "initialRoles": [
+        {
+          "scope": "ACCOUNT",
+          "scopeId": 1,
+          "roleIds": [
+            3
+          ]
+        }
+      ],
+      "newUser": true
+    }
+  },
+  {
+    "objectId": 1,
+    "type": "USER_INVITE",
+    "identifier": "YYYYYY",
+    "expiryOffset": "P1D",
+    "data": {
+      "emailAddress": "simon@peterjonescarwash.com",
+      "initialRoles": [
+        {
+          "scope": "ACCOUNT",
+          "scopeId": 1,
+          "roleIds": [
+            3
+          ]
+        }
+      ],
+      "newUser": false
+    }
+  }
+]

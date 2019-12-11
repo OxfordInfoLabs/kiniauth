@@ -89,7 +89,7 @@ class PendingAction extends ActiveRecord {
      * @param integer $accountId
      * @param string $type
      * @param integer $objectId
-     * @param string $data
+     * @param mixed $data
      * @param string $expiryOffset
      * @param \DateTime $expiryDateTime
      */
