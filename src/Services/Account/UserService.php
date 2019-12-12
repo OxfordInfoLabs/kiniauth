@@ -103,7 +103,7 @@ class UserService {
 
         $account->save();
 
-        $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId(), null, $account->getAccountId())));
+        $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId(), 0, $account->getAccountId())));
         $user->save();
 
         // Create a pending activation action
@@ -134,7 +134,7 @@ class UserService {
             throw new ValidationException($validationErrors);
         }
 
-        $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, 0)));
+        $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, 0, 0)));
         $user->save();
 
         return $user;
@@ -435,7 +435,6 @@ class UserService {
 
 
     }
-
 
 
 }

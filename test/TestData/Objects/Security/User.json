@@ -7,7 +7,8 @@
     "status": "ACTIVE",
     "roles": [
       {
-        "scopeId": 0
+        "scopeId": 0,
+        "roleId": 0
       }
     ]
   },
@@ -22,7 +23,8 @@
     "roles": [
       {
         "scopeId": 1,
-        "accountId": 1
+        "accountId": 1,
+        "roleId": 0
       }
     ]
   },
@@ -35,7 +37,8 @@
     "roles": [
       {
         "scopeId": 2,
-        "accountId": 2
+        "accountId": 2,
+        "roleId": 0
       }
     ]
   },
@@ -49,11 +52,13 @@
     "roles": [
       {
         "scopeId": 2,
-        "accountId": 2
+        "accountId": 2,
+        "roleId": 0
       },
       {
         "scopeId": 3,
-        "accountId": 3
+        "accountId": 3,
+        "roleId": 0
       }
     ]
   },
@@ -113,7 +118,8 @@
     "roles": [
       {
         "scopeId": 5,
-        "accountId": 5
+        "accountId": 5,
+        "roleId": 0
       }
     ]
   },
@@ -140,7 +146,8 @@
     "roles": [
       {
         "scopeId": 1,
-        "accountId": 1
+        "accountId": 1,
+        "roleId": 0
       }
     ],
     "twoFactorData": "H5OW4O4TUP4W2CGP"

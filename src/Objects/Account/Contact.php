@@ -133,7 +133,7 @@ class Contact extends ActiveRecord {
      *
      * @var boolean
      */
-    private $defaultContact = false;
+    private $defaultContact = 0;
 
     const ADDRESS_TYPE_GENERAL = "GENERAL";
 
