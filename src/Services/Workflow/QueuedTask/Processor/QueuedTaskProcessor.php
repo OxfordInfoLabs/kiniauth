@@ -11,7 +11,6 @@ use Kiniauth\ValueObjects\QueuedTask\QueueItem;
  *
  * @implementationConfigParam queuedtask.processor
  * @implementation default \Kiniauth\Services\Workflow\QueuedTask\Processor\DefaultQueuedTaskProcessor
- * @implementation googlecloud \Kiniauth\Services\Workflow\QueuedTask\Processor\GoogleCloudQueuedTaskProcessor
  *
  * @defaultImplementation \Kiniauth\Services\Workflow\QueuedTask\Processor\DefaultQueuedTaskProcessor
  */
