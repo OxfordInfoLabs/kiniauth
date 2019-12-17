@@ -57,6 +57,21 @@ trait UserTrait {
     }
 
     /**
+     * Update the email and name for the supplied user
+     *
+     * @http GET /changeDetails
+     *
+     * @param $newEmailAddress
+     * @param $newName
+     * @param $password
+     * @param string $userId
+     * @return User|null
+     */
+    public function changeUserDetails($newEmailAddress, $newName, $password, $userId = User::LOGGED_IN_USER) {
+        return $this->userService->changeUserDetails($newEmailAddress, $newName, $password, $userId);
+    }
+
+    /**
      * Change the logged in users email
      *
      * @http GET /changeEmail

@@ -57,4 +57,30 @@ trait Account {
     public function getAllPossibleAccountScopeRoles() {
         return $this->roleService->getAllPossibleAccountScopeRoles();
     }
+
+    /**
+     * Remove a user from account
+     *
+     * @http GET /removeUser
+     *
+     * @param $userId
+     * @param string $accountId
+     */
+    public function removeUserFromAccount($userId, $accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
+        $this->accountService->removeUserFromAccount($accountId, $userId);
+    }
+
+    /**
+     * Invite a user to the logged in account
+     *
+     * @http POST /invite
+     *
+     * @param $emailAddress
+     * @param $initialAssignedRoles
+     * @param string $accountId
+     * @throws \Kiniauth\Exception\Security\UserAlreadyAttachedToAccountException
+     */
+    public function inviteUserToAccount($initialAssignedRoles, $emailAddress, $accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
+        $this->accountService->inviteUserToAccount($accountId, $emailAddress, $initialAssignedRoles);
+    }
 }

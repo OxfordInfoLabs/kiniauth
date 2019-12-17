@@ -332,6 +332,18 @@ class UserService {
         }
     }
 
+    public function changeUserDetails($newEmailAddress, $newName, $password, $userId) {
+        /** @var User $user */
+        $user = User::fetch($userId);
+        if ($this->authenticationService->validateUserPassword($user->getEmailAddress(), $password)) {
+            $user->setBackupEmailAddress($newEmailAddress);
+            $user->setName($newName);
+            $user->save();
+            return $user;
+        }
+        return null;
+    }
+
 
     public function generateTwoFactorSettings($userId = User::LOGGED_IN_USER) {
 
