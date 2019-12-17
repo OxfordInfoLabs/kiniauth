@@ -14,7 +14,7 @@ use Kinikit\Core\Object\SerialisableObject;
  *
  * @package Kiniauth\Objects\Application
  */
-class SessionData  {
+class SessionData {
 
     /**
      * @var User

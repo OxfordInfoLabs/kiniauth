@@ -80,4 +80,13 @@ class SessionData  {
     }
 
 
+    /**
+     * Client side boolean.
+     *
+     * @return int
+     */
+    public function getLoaded(){
+        return 1;
+    }
+
 }
