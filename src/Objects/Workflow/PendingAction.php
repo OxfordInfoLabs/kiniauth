@@ -76,6 +76,7 @@ class PendingAction extends ActiveRecord {
      *
      * @json
      * @var mixed
+     * @sqlType LONGTEXT
      */
     private $data;
 
