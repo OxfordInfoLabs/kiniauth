@@ -102,27 +102,20 @@ class AuthenticationService {
      * @throws InvalidLoginException
      * @throws \Kiniauth\Exception\Security\AccountSuspendedException
      * @throws \Kiniauth\Exception\Security\UserSuspendedException
+     *
+     * @objectInterceptorDisabled
      */
     public function authenticateTwoFactor($code) {
 
         $pendingUser = $this->session->__getPendingLoggedInUser();
         $secretKey = $pendingUser->getTwoFactorData();
 
-        if (!$secretKey) return false;
+        if (!$secretKey || !$pendingUser) return false;
 
         $authenticated = $this->twoFactorProvider->authenticate($secretKey, $code);
 
         if ($authenticated) {
-
-            /**
-             * @var ActiveRecordInterceptor $interceptor
-             */
-            $interceptor = Container::instance()->get(ActiveRecordInterceptor::class);
-
-            $interceptor->executeInsecure(function () use ($pendingUser) {
-                $this->securityService->logIn($pendingUser);
-            });
-
+            $this->securityService->logIn($pendingUser);
             return true;
         }
         return false;
