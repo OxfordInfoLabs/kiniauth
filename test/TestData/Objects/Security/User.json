@@ -141,7 +141,7 @@
   {
     "id": 11,
     "emailAddress": "bob@twofactor.com",
-    "name": "Bob Authenticator",
+    "name": "Sir Bob Authenticator",
     "hashedPassword": "5f4dcc3b5aa765d61d8327deb882cf99",
     "status": "ACTIVE",
     "roles": [
