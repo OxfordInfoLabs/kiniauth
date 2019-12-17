@@ -133,14 +133,19 @@ class AccountService {
      * Get email address associated with an invitation code, or report an issue.
      *
      * @param $invitationCode
+     * @objectInterceptorDisabled
      */
     public function getInvitationDetails($invitationCode) {
 
         try {
             $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("USER_INVITE", $invitationCode);
+
+            $account = $this->getAccountSummary($pendingAction->getObjectId());
+
             return [
                 "emailAddress" => $pendingAction->getData()["emailAddress"],
-                "newUser" => $pendingAction->getData()["newUser"]
+                "newUser" => $pendingAction->getData()["newUser"],
+                "accountName" => $account->getName()
             ];
         } catch (ItemNotFoundException $e) {
             throw new ValidationException(["invitationCode" => new FieldValidationError("invitationCode", "invalid", "Invalid invitation code supplied for user invitation")]);

@@ -307,7 +307,7 @@ class User extends UserSummary {
     }
 
     public function generateSummary() {
-        return new UserSummary($this->name, $this->status);
+        return new UserSummary($this->name, $this->status, $this->emailAddress);
     }
 
 

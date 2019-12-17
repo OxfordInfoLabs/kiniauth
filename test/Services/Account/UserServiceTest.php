@@ -77,7 +77,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(1, sizeof($newUser->getRoles()));
 
         $this->assertEquals($newUser->getActiveAccountId(), $newUser->getRoles()[0]->getScopeId());
-        $this->assertNull($newUser->getRoles()[0]->getRoleId());
+        $this->assertEquals(0, $newUser->getRoles()[0]->getRoleId());
 
 
         // Now do one with a users name, check propagation to account name.
@@ -228,7 +228,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(hash("md5", "Helloworld1"), $adminUser->getHashedPassword());
         $this->assertEquals(1, sizeof($adminUser->getRoles()));
         $this->assertEquals(0, $adminUser->getRoles()[0]->getScopeId());
-        $this->assertNull($adminUser->getRoles()[0]->getRoleId());
+        $this->assertEquals(0, $adminUser->getRoles()[0]->getRoleId());
 
 
         // Username, password and name one.
@@ -240,7 +240,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(hash("md5", "Helloworld1"), $adminUser->getHashedPassword());
         $this->assertEquals(1, sizeof($adminUser->getRoles()));
         $this->assertEquals(0, $adminUser->getRoles()[0]->getScopeId());
-        $this->assertNull($adminUser->getRoles()[0]->getRoleId());
+        $this->assertEquals(0, $adminUser->getRoles()[0]->getRoleId());
 
 
         // Check duplicate issue
