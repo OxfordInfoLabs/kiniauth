@@ -64,9 +64,10 @@ class UserSummary extends ActiveRecord {
      * @param null $name
      * @param null $status
      */
-    public function __construct($name = null, $status = null) {
+    public function __construct($name = null, $status = null, $emailAddress = null) {
         $this->name = $name;
         $this->status = $status;
+        $this->emailAddress = $emailAddress;
     }
 
     /**
