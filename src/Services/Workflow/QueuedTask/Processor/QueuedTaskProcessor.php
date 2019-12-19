@@ -22,10 +22,14 @@ interface QueuedTaskProcessor {
      * for this task if successful or should throw on failures.
      *
      * @param string $identifier
+     * @param string $taskIdentifier
+     * @param string $description
      * @param string[string] $configuration
+     * @param \DateTime $startTime
+     *
      * @parm return string
      */
-    public function queueTask($queueName, $taskIdentifier, $description, $configuration = []);
+    public function queueTask($queueName, $taskIdentifier, $description, $configuration = [], $startTime = null);
 
 
     /**

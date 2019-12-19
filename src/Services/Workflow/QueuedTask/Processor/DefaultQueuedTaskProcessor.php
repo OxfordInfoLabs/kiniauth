@@ -16,10 +16,11 @@ class DefaultQueuedTaskProcessor implements QueuedTaskProcessor {
      *
      * @param string $identifier
      * @param string[string] $configuration
+     * @param \DateTime $startTime
      * @parm return string
      */
-    public function queueTask($queueName, $taskIdentifier, $description, $configuration = []) {
-        $storedQueueItem = new StoredQueueItem($queueName, $taskIdentifier, $description, $configuration);
+    public function queueTask($queueName, $taskIdentifier, $description, $configuration = [], $startTime = null) {
+        $storedQueueItem = new StoredQueueItem($queueName, $taskIdentifier, $description, $configuration, $startTime);
         $storedQueueItem->save();
         return $storedQueueItem->getId();
     }
@@ -36,7 +37,7 @@ class DefaultQueuedTaskProcessor implements QueuedTaskProcessor {
         $queueItem = StoredQueueItem::fetch($taskInstanceIdentifier);
         return new QueueItem($queueItem->getQueueName(), $queueItem->getId(),
             $queueItem->getTaskIdentifier(), $queueItem->getDescription(),
-            $queueItem->getQueuedTime(), $queueItem->getStatus(), $queueItem->getConfiguration());
+            $queueItem->getQueuedTime(), $queueItem->getStatus(), $queueItem->getConfiguration(), $queueItem->getStartTime());
     }
 
 
@@ -68,7 +69,7 @@ class DefaultQueuedTaskProcessor implements QueuedTaskProcessor {
         foreach ($queueItems as $queueItem) {
             $items[] = new QueueItem($queueItem->getQueueName(), $queueItem->getId(),
                 $queueItem->getTaskIdentifier(), $queueItem->getDescription(),
-                $queueItem->getQueuedTime(), $queueItem->getStatus(), $queueItem->getConfiguration());
+                $queueItem->getQueuedTime(), $queueItem->getStatus(), $queueItem->getConfiguration(), $queueItem->getStartTime());
         }
 
         return $items;

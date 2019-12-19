@@ -5,6 +5,7 @@ namespace Kiniauth\Test\Objects\Communications\Email;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
+use Kiniauth\Objects\Communication\Email\SuperUserTemplatedEmail;
 use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\SettingsService;
@@ -138,6 +139,30 @@ class BrandedTemplatedEmailTest extends TestBase {
         $this->assertEquals(["James Smart Coasting <james@smartcoasting.org>"], $userTemplatedEmail->getRecipients());
 
 
+    }
+
+
+    public function testSuperUserTemplatedEmailsMergeTopLevelBrandSettingsIntoModel() {
+
+        $superUserEmail = new SuperUserTemplatedEmail("test", ["title" => "Mrs", "name" => "Jane"]);
+
+        $model = $superUserEmail->getModel();
+
+        // Check our custom model is still intact.
+        $this->assertEquals("Mrs", $model["title"]);
+        $this->assertEquals("Jane", $model["name"]);
+
+        // Check the additional models are there which we expect
+        $this->assertEquals($this->settingsService->getParentAccountSettingValues(null, null), $model["settings"]);
+
+        // Also check for header and footer convenience models
+        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/header.html"), $model), $model["header"]);
+        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/footer.html"), $model), $model["footer"]);
+
+        $this->assertEquals("Kiniauth Example <info@kiniauth.example>", $superUserEmail->getFrom());
+        $this->assertEquals("noreply@kiniauth.example", $superUserEmail->getReplyTo());
+        $this->assertEquals(["Administrator <admin@kinicart.com>"], $superUserEmail->getRecipients());
+        
     }
 
 

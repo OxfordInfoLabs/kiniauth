@@ -45,18 +45,27 @@ class QueuedTaskService {
      * @param $taskIdentifier
      * @param $description
      * @param string[string] $configuration
+     * @param \DateTime $runDateTime
+     * @param integer $runOffsetSeconds
      *
      * @return string
      */
-    public function queueTask($queueName, $taskIdentifier, $description, $configuration = []) {
-        return $this->queuedTaskProcessor->queueTask($queueName, $taskIdentifier, $description, $configuration);
+    public function queueTask($queueName, $taskIdentifier, $description, $configuration = [], $runDateTime = null, $runOffsetSeconds = null) {
+
+        $startTime = $runDateTime;
+        if ($runOffsetSeconds) {
+            $startTime = new \DateTime();
+            $startTime->add(new \DateInterval("PT" . $runOffsetSeconds . "S"));
+        }
+
+        return $this->queuedTaskProcessor->queueTask($queueName, $taskIdentifier, $description, $configuration, $startTime);
     }
 
 
     /**
      * List queued tasks
      */
-    public function listQueuedTasks($queueName){
+    public function listQueuedTasks($queueName) {
         return $this->queuedTaskProcessor->listQueuedTasks($queueName);
     }
 

@@ -60,10 +60,35 @@ class QueuedTaskServiceTest extends TestBase {
             "mylittlepony",
             "chillpill",
             "Take a chill pill",
-            ["hello" => "world"]
+            ["hello" => "world"],
+            null
         ]));
 
 
+        $scheduleDate = date_create_from_format("d/m/Y H:i:s", "01/01/2020 10:20:33");
+        $offsetDate = new \DateTime();
+        $offsetDate->add(new \DateInterval("PT300S"));
+
+        // Scheduled one.
+        $this->queuedTaskService->queueTask("newsite", "testing", "Testing", [], $scheduleDate);
+
+        $this->assertTrue($this->mockQueuedTaskProcessor->methodWasCalled("queueTask", [
+            "newsite",
+            "testing",
+            "Testing",
+            [],
+            $scheduleDate
+        ]));
+
+
+        // Offset one.
+        $this->mockQueuedTaskProcessor->resetMethodCallHistory("queueTask");
+        $this->queuedTaskService->queueTask("newsite", "testing", "Testing", [], null, 300);
+
+        $this->assertTrue($this->mockQueuedTaskProcessor->methodWasCalled("queueTask"));
+
+        $history = $this->mockQueuedTaskProcessor->getMethodCallHistory("queueTask");
+        $this->assertEquals($offsetDate->format("d/m/Y H:i:s"), $history[0][4]->format("d/m/Y H:i:s"));
     }
 
 

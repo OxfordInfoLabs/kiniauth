@@ -56,7 +56,7 @@ class AccountTemplatedEmail extends BrandedTemplatedEmail {
         if (!isset($data["to"])) {
 
             $userService = Container::instance()->get(UserService::class);
-            $users = $userService->getUsersWithRole(Role::SCOPE_ACCOUNT, $accountId);
+            $users = $userService->getUsersWithRole(Role::SCOPE_ACCOUNT, $accountId, 0);
             $recipients = [];
             foreach ($users as $user) {
                 $recipients[] = $user->getFullEmailAddress();

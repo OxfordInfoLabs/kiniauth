@@ -47,6 +47,11 @@ class QueueItem {
 
 
     /**
+     * @var \DateTime
+     */
+    private $startTime;
+
+    /**
      * @var string
      */
     private $status;
@@ -71,7 +76,7 @@ class QueueItem {
      * @param \DateTime $queuedTime
      * @param string $status
      */
-    public function __construct($queueName, $identifier, $taskIdentifier, $description, $queuedTime, $status, $configuration = []) {
+    public function __construct($queueName, $identifier, $taskIdentifier, $description, $queuedTime, $status, $configuration = [], $startTime = null) {
         $this->queueName = $queueName;
         $this->identifier = $identifier;
         $this->taskIdentifier = $taskIdentifier;
@@ -79,6 +84,7 @@ class QueueItem {
         $this->queuedTime = $queuedTime;
         $this->status = $status;
         $this->configuration = $configuration;
+        $this->startTime = $startTime;
     }
 
     /**
@@ -128,6 +134,13 @@ class QueueItem {
      */
     public function getConfiguration() {
         return $this->configuration;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getStartTime() {
+        return $this->startTime;
     }
 
 

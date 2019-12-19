@@ -34,6 +34,19 @@ class DefaultQueuedTaskProcessorTest extends TestBase {
         $this->assertEquals(["id" => 256], $object->getConfiguration());
         $this->assertEquals(QueueItem::STATUS_PENDING, $object->getStatus());
         $this->assertEquals(date("d/m/Y"), $object->getQueuedTime()->format("d/m/Y"));
+        $this->assertNull($object->getStartTime());
+
+
+        $identifier = $this->defaultQueuedTaskProcessor->queueTask("testqueue", "test", "New Queued Item", ["id" => 257], date_create_from_format("d/m/Y H:i:s", "01/01/2030 01:00:00"));
+
+        $object = StoredQueueItem::fetch($identifier);
+        $this->assertEquals("testqueue", $object->getQueueName());
+        $this->assertEquals("test", $object->getTaskIdentifier());
+        $this->assertEquals("New Queued Item", $object->getDescription());
+        $this->assertEquals(["id" => 257], $object->getConfiguration());
+        $this->assertEquals(QueueItem::STATUS_PENDING, $object->getStatus());
+        $this->assertEquals(date("d/m/Y"), $object->getQueuedTime()->format("d/m/Y"));
+        $this->assertEquals("01/01/2030 01:00:00", $object->getStartTime()->format("d/m/Y H:i:s"));
 
 
     }

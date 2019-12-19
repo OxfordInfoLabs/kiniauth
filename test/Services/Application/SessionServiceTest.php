@@ -6,6 +6,7 @@ use Kiniauth\Services\Application\SessionService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Test\TestBase;
+use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
 
 include_once __DIR__ . "/../../autoloader.php";

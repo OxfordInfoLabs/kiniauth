@@ -55,6 +55,12 @@ class StoredQueueItem extends ActiveRecord {
      */
     private $configuration;
 
+
+    /**
+     * @var \DateTime
+     */
+    private $startTime;
+
     /**
      * @var string
      */
@@ -66,12 +72,14 @@ class StoredQueueItem extends ActiveRecord {
      * @param string $taskIdentifier
      * @param string $description
      * @param string $configuration
+     * @param \DateTime $startTime
      */
-    public function __construct($queueName, $taskIdentifier, $description, $configuration) {
+    public function __construct($queueName, $taskIdentifier, $description, $configuration, $startTime) {
         $this->queueName = $queueName;
         $this->taskIdentifier = $taskIdentifier;
         $this->description = $description;
         $this->configuration = $configuration;
+        $this->startTime = $startTime;
         $this->queuedTime = new \DateTime();
     }
 
@@ -153,6 +161,21 @@ class StoredQueueItem extends ActiveRecord {
     public function setConfiguration($configuration) {
         $this->configuration = $configuration;
     }
+
+    /**
+     * @return \DateTime
+     */
+    public function getStartTime() {
+        return $this->startTime;
+    }
+
+    /**
+     * @param \DateTime $startTime
+     */
+    public function setStartTime($startTime) {
+        $this->startTime = $startTime;
+    }
+
 
     /**
      * @return string
