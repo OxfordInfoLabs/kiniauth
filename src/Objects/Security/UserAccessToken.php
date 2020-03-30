@@ -26,6 +26,7 @@ class UserAccessToken extends ActiveRecord {
     /**
      * @var string
      * @primaryKey
+     * @maxLength 100
      */
     private $tokenHash;
 

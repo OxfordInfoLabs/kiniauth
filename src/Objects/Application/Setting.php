@@ -31,6 +31,7 @@ class Setting extends ActiveRecord {
      * @var string
      * @primaryKey
      * @column setting_key
+     * @sqlType VARCHAR(50)
      */
     private $key;
 

@@ -29,6 +29,7 @@ class UserRole extends ActiveRecord {
      *
      * @var string
      * @primaryKey
+     * @maxLength 50
      */
     protected $scope = Role::SCOPE_ACCOUNT;
 
