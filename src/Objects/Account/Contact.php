@@ -354,7 +354,7 @@ class Contact extends ActiveRecord {
      * @param bool $defaultContact
      */
     public function setDefaultContact($defaultContact) {
-        $this->defaultContact = $defaultContact;
+        $this->defaultContact = $defaultContact ? 1 : 0;
     }
 
     /**
