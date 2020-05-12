@@ -23,10 +23,9 @@ class PasswordFieldValidator extends ObjectFieldValidator {
      * @param $fieldName
      * @param $targetObject SerialisableObject
      * @param $validatorParams array
-     * @param $validatorKey
      * @return mixed
      */
-    public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams, $validatorKey) {
+    public function validateObjectFieldValue($value, $fieldName, $targetObject, &$validatorParams) {
 
         if (!$value) return true;
 

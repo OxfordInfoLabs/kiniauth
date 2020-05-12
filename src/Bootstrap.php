@@ -69,7 +69,7 @@ class Bootstrap implements ApplicationBootstrap {
             Configuration::instance()->addParameter("default.decorator", "DefaultDecorator");
         }
 
-        $this->validator->addValidator("password", new PasswordFieldValidator("The password must be at least 8 characters with one capital, one lowercase and one number"));
+        $this->validator->addValidator(new PasswordFieldValidator("password", "The password must be at least 8 characters with one capital, one lowercase and one number"));
 
     }
 

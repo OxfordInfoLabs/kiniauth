@@ -41,7 +41,7 @@ class PasswordFieldValidatorTest extends TestBase {
 
     private function validate($value) {
         $params = [];
-        return $this->validator->validateObjectFieldValue($value, null, null, $params, null);
+        return $this->validator->validateObjectFieldValue($value, null, null, $params);
     }
 
 }
