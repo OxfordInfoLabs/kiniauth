@@ -169,6 +169,50 @@ class Session implements \Kinikit\MVC\Session\Session {
 
 
     /**
+     * Get the array of delayed captchas
+     *
+     * @return array|mixed
+     */
+    public function __getDelayedCaptchas() {
+        return $this->getValue("delayedCaptchas") ?? [];
+    }
+
+    public function __getDelayedCaptcha($url) {
+        $delayedCaptchas = $this->getValue("delayedCaptchas");
+        return $delayedCaptchas[$url] ?? 0;
+    }
+
+    /**
+     * Add a delayed captcha to the session
+     *
+     * @param $url
+     * @param int $failures
+     */
+    public function __addDelayedCaptcha($url, $failures = 1) {
+
+        $delayedCaptchas = $this->getValue("delayedCaptchas");
+        if (!$delayedCaptchas) {
+            $delayedCaptchas = [];
+        }
+        $delayedCaptchas[$url] = $failures;
+        $this->setValue("delayedCaptchas", $delayedCaptchas);
+    }
+
+    /**
+     * Remove a delayed captcha
+     *
+     * @param $url
+     */
+    public function __removeDelayedCaptcha($url) {
+
+        $delayedCaptchas = $this->getValue("delayedCaptchas");
+        if ($delayedCaptchas && isset($delayedCaptchas[$url])) {
+            unset($delayedCaptchas[$url]);
+        }
+        $this->setValue("delayedCaptchas", $delayedCaptchas);
+    }
+
+    /**
      * Set a session value for a string key.
      *
      * @param string $key

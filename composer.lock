@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fd32777ded8ab2d2f15ecde969f4027a",
+    "content-hash": "ec47e96e360803b53d7cb7950a74a486",
     "packages": [
         {
             "name": "cache/adapter-common",
@@ -292,6 +292,53 @@
             "time": "2019-03-12T22:27:26+00:00"
         },
         {
+            "name": "google/recaptcha",
+            "version": "1.2.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/google/recaptcha.git",
+                "reference": "614f25a9038be4f3f2da7cbfd778dc5b357d2419"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/google/recaptcha/zipball/614f25a9038be4f3f2da7cbfd778dc5b357d2419",
+                "reference": "614f25a9038be4f3f2da7cbfd778dc5b357d2419",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.2.20|^2.15",
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "^4.8.36|^5.7.27|^6.59|^7.5.11"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ReCaptcha\\": "src/ReCaptcha"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Client library for reCAPTCHA, a free service that protects websites from spam and abuse.",
+            "homepage": "https://www.google.com/recaptcha/",
+            "keywords": [
+                "Abuse",
+                "captcha",
+                "recaptcha",
+                "spam"
+            ],
+            "time": "2020-03-31T17:50:54+00:00"
+        },
+        {
             "name": "league/flysystem",
             "version": "1.0.55",
             "source": {
@@ -469,12 +516,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/OxfordInfoLabs/kinikit-mvc.git",
-                "reference": "b80eb86e2cfa0e2cfea303f7c4857718e693b260"
+                "reference": "8279355348d8f8548bbfbfb568aca8f172290b09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/OxfordInfoLabs/kinikit-mvc/zipball/b80eb86e2cfa0e2cfea303f7c4857718e693b260",
-                "reference": "b80eb86e2cfa0e2cfea303f7c4857718e693b260",
+                "url": "https://api.github.com/repos/OxfordInfoLabs/kinikit-mvc/zipball/8279355348d8f8548bbfbfb568aca8f172290b09",
+                "reference": "8279355348d8f8548bbfbfb568aca8f172290b09",
                 "shasum": ""
             },
             "require": {
@@ -498,7 +545,7 @@
                 "php",
                 "webservices"
             ],
-            "time": "2019-10-10T16:26:20+00:00"
+            "time": "2020-01-02T15:19:51+00:00"
         },
         {
             "name": "oxil/kinikit-persistence",
@@ -506,12 +553,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/OxfordInfoLabs/kinikit-persistence.git",
-                "reference": "adb51d1a8315f151ff14060b51f5f765344f9588"
+                "reference": "9d3989a51e6c4770db04edba8357444aa40eca92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/OxfordInfoLabs/kinikit-persistence/zipball/adb51d1a8315f151ff14060b51f5f765344f9588",
-                "reference": "adb51d1a8315f151ff14060b51f5f765344f9588",
+                "url": "https://api.github.com/repos/OxfordInfoLabs/kinikit-persistence/zipball/9d3989a51e6c4770db04edba8357444aa40eca92",
+                "reference": "9d3989a51e6c4770db04edba8357444aa40eca92",
                 "shasum": ""
             },
             "require": {
@@ -535,7 +582,7 @@
                 "php",
                 "webservices"
             ],
-            "time": "2019-10-10T16:26:42+00:00"
+            "time": "2020-03-17T14:17:26+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -985,5 +1032,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }

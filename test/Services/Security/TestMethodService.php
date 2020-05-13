@@ -83,4 +83,24 @@ class TestMethodService {
         return array($param1, $userId);
     }
 
+
+    /**
+     * @captcha
+     *
+     * @return string
+     */
+    public function captchaEveryTime() {
+        return "OK";
+    }
+
+
+    /**
+     * @captcha 1
+     */
+    public function captchaAfter1Failure($throw = false) {
+        if ($throw) {
+            throw new \InvalidArgumentException("Failed method");
+
+        } else return "OK";
+    }
 }

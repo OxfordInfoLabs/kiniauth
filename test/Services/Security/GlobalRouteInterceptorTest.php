@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiniauth\Test\WebServices\Security;
+namespace Kiniauth\Test\Services\Security;
 
 
 use Kiniauth\Exception\Security\InvalidAPICredentialsException;
@@ -204,6 +204,8 @@ class GlobalRouteInterceptorTest extends TestBase {
         $this->assertTrue(true);
 
     }
+
+
 
 
 }

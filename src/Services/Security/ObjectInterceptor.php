@@ -8,9 +8,11 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Security\Captcha\CaptchaProvider;
 use Kinikit\Core\DependencyInjection\ContainerInterceptor;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Reflection\Method;
+use Kinikit\MVC\Request\Request;
 
 /**
  * Generic method interceptor.  Currently allows for privilege based enforcement at the method level as well
@@ -23,12 +25,35 @@ class ObjectInterceptor extends ContainerInterceptor {
 
 
     /**
+     * @var CaptchaProvider
+     */
+    private $captchaProvider;
+
+    /**
+     * @var Request
+     */
+    private $request;
+
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+
+    /**
      * @param \Kiniauth\Services\Security\ActiveRecordInterceptor $objectInterceptor
      * @param \Kiniauth\Services\Security\SecurityService $securityService
+     * @param CaptchaProvider
+     * @param Request
+     * @param Session
      */
-    public function __construct($objectInterceptor, $securityService) {
+    public function __construct($objectInterceptor, $securityService, $captchaProvider, $request, $session) {
         $this->objectInterceptor = $objectInterceptor;
         $this->securityService = $securityService;
+        $this->captchaProvider = $captchaProvider;
+        $this->request = $request;
+        $this->session = $session;
     }
 
 
@@ -45,6 +70,7 @@ class ObjectInterceptor extends ContainerInterceptor {
      * @return string[string] - The params array either intact or modified if required.
      */
     public function beforeMethod($objectInstance, $methodName, $params, $methodInspector) {
+
 
         if ($matches =
             $methodInspector->getMethodAnnotations()["hasPrivilege"] ?? []
@@ -88,7 +114,7 @@ class ObjectInterceptor extends ContainerInterceptor {
         }
 
 
-        if ($key = array_search(Account::LOGGED_IN_ACCOUNT, $params,true)) {
+        if ($key = array_search(Account::LOGGED_IN_ACCOUNT, $params, true)) {
             list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
             if ($account) {
                 $params[$key] = $account->getAccountId();
@@ -106,9 +132,67 @@ class ObjectInterceptor extends ContainerInterceptor {
             }
         }
 
+
+        // Check for captchas
+        $captchas = $methodInspector->getMethodAnnotations()["captcha"] ?? null;
+        if ($captchas) {
+            $requiresCaptcha = false;
+            if ($captchas[0]->getValue()) {
+                $toleratedFailures = trim($captchas[0]->getValue());
+
+                // Grab the method path
+                $methodPath = $this->request->getUrl()->getPath();
+
+                $failures = $this->session->__getDelayedCaptcha($methodPath);
+                $failures++;
+                $this->session->__addDelayedCaptcha($methodPath, $failures);
+
+                $requiresCaptcha = ($failures > $toleratedFailures);
+
+            } else {
+                $requiresCaptcha = true;
+            }
+
+            // If we require a captcha - check we have one
+            if ($requiresCaptcha) {
+                $captchaData = $this->request->getParameter("captcha");
+                if ($captchaData) {
+                    $captchaSuccess = $this->captchaProvider->verifyCaptcha($captchaData, $this->request);
+                    if (!$captchaSuccess) {
+                        throw new AccessDeniedException("Invalid captcha supplied");
+                    }
+                } else {
+                    throw new AccessDeniedException("Captcha required but not supplied");
+                }
+            }
+
+        }
+
+
         return $params;
 
 
+    }
+
+    /**
+     * After method
+     *
+     * @param $objectInstance
+     * @param $methodName
+     * @param $params
+     * @param $returnValue
+     * @param Method $methodInspector
+     * @return mixed|void
+     */
+    public function afterMethod($objectInstance, $methodName, $params, $returnValue, $methodInspector) {
+
+        $captchas = $methodInspector->getMethodAnnotations()["captcha"] ?? null;
+        if ($captchas && $captchas[0]->getValue()) {
+            $methodPath = $this->request->getUrl()->getPath();
+            $this->session->__removeDelayedCaptcha($methodPath);
+        }
+
+        return $returnValue;
     }
 
 

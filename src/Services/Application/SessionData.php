@@ -17,7 +17,7 @@ use Kiniauth\Services\Security\SecurityService;
  * @package Kiniauth\Services\Application
  * @noGenerate
  */
-class SessionData  {
+class SessionData {
 
     /**
      * @var User
@@ -33,6 +33,11 @@ class SessionData  {
     private $privileges;
 
     /**
+     * @var string[]
+     */
+    private $delayedCaptchas;
+
+    /**
      * Get session data using user and account objects to seed the data.
      *
      * SessionData constructor.
@@ -44,7 +49,7 @@ class SessionData  {
          * @var $user User
          * @var $account Account
          */
-        list ($user, $account)  = $securityService->getLoggedInUserAndAccount();
+        list ($user, $account) = $securityService->getLoggedInUserAndAccount();
 
         if ($user) {
             $this->user = $user->generateSummary();
@@ -56,6 +61,8 @@ class SessionData  {
         if ($user || $account) {
             $this->privileges = $session->__getLoggedInPrivileges();
         }
+
+        $this->delayedCaptchas = $session->__getDelayedCaptchas();
     }
 
     /**
@@ -79,13 +86,20 @@ class SessionData  {
         return $this->privileges;
     }
 
+    /**
+     * @return string[]
+     */
+    public function getDelayedCaptchas() {
+        return $this->delayedCaptchas;
+    }
+
 
     /**
      * Client side boolean.
      *
      * @return int
      */
-    public function getLoaded(){
+    public function getLoaded() {
         return 1;
     }
 

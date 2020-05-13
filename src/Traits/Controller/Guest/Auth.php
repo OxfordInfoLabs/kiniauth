@@ -34,6 +34,8 @@ trait Auth {
      *
      * @param $emailAddress
      * @param $password
+     *
+     * @captcha 1
      */
     public function logIn($emailAddress, $password) {
         return $this->authenticationService->login($emailAddress, $password);

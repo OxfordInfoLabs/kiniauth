@@ -16,7 +16,7 @@ class PasswordFieldValidatorTest extends TestBase {
      * Set up
      */
     public function setUp(): void {
-        $this->validator = new PasswordFieldValidator();
+        $this->validator = new PasswordFieldValidator("password");
     }
 
     public function testPasswordMustBeAtLeast8Chars() {

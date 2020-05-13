@@ -78,6 +78,8 @@ class GlobalRouteInterceptor extends RouteInterceptor {
             }
         }
 
+        // Handle Recaptchas.
+
     }
 
 
