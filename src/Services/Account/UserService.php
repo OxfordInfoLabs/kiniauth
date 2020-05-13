@@ -91,7 +91,12 @@ class UserService {
         $parentAccountId = $parentAccountId === null ? $this->session->__getActiveParentAccountId() : $parentAccountId;
 
         // Create a new user, save it and return it back.
-        $user = new User($emailAddress, $password, $name, $parentAccountId);
+        $user = Container::instance()->new(User::class, false);
+        $user->setEmailAddress($emailAddress);
+        $user->setNewPassword($password);
+        $user->setName($name);
+        $user->setParentAccountId($parentAccountId);
+
         if ($validationErrors = $user->validate()) {
             throw new ValidationException($validationErrors);
         }

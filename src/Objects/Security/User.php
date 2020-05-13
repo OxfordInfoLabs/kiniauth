@@ -27,7 +27,7 @@ class User extends UserSummary {
      *
      * @var integer
      */
-    private $parentAccountId = 0;
+    protected $parentAccountId = 0;
 
 
     /**
@@ -36,7 +36,7 @@ class User extends UserSummary {
      * @var string
      * @required
      */
-    private $hashedPassword;
+    protected $hashedPassword;
 
 
     /**
@@ -45,7 +45,7 @@ class User extends UserSummary {
      * @var string
      * @regexp [0-9\+\. ]+
      */
-    private $mobileNumber;
+    protected $mobileNumber;
 
 
     /**
@@ -54,7 +54,7 @@ class User extends UserSummary {
      * @var string
      * @email
      */
-    private $backupEmailAddress;
+    protected $backupEmailAddress;
 
 
     /**
@@ -63,7 +63,7 @@ class User extends UserSummary {
      * @var string
      * @maxlength(2000)
      */
-    private $twoFactorData;
+    protected $twoFactorData;
 
 
     /**
@@ -72,7 +72,7 @@ class User extends UserSummary {
      *
      * @var integer
      */
-    private $activeAccountId;
+    protected $activeAccountId;
 
 
     /**
@@ -80,7 +80,7 @@ class User extends UserSummary {
      * @password
      * @unmapped
      */
-    private $newPassword;
+    protected $newPassword;
 
     const LOGGED_IN_USER = "LOGGED_IN_USER";
 
