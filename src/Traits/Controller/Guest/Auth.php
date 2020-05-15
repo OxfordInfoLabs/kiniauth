@@ -35,6 +35,7 @@ trait Auth {
      * @param $emailAddress
      * @param $password
      *
+     * @captcha 1
      */
     public function logIn($emailAddress, $password) {
         return $this->authenticationService->login($emailAddress, $password);
@@ -72,6 +73,8 @@ trait Auth {
      * @http GET /passwordReset
      *
      * @param $emailAddress
+     *
+     * @captcha
      */
     public function requestPasswordReset($emailAddress) {
         $this->userService->sendPasswordReset($emailAddress);
@@ -84,6 +87,8 @@ trait Auth {
      * @http POST /passwordReset
      *
      * @param NewPasswordDescriptor $newPasswordDescriptor
+     *
+     * @captcha
      */
     public function resetPassword($newPasswordDescriptor) {
         $this->userService->changePassword($newPasswordDescriptor->getResetCode(), $newPasswordDescriptor->getNewPassword());
