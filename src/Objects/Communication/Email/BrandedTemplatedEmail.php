@@ -27,6 +27,7 @@ abstract class BrandedTemplatedEmail extends TemplatedEmail {
         $settings = $model["settings"] = $settingsService->getParentAccountSettingValues($accountId, $userId);
 
         $templateData = $this->parseTemplate($templateName, $model);
+        $from = null;
         if (!isset($templateData["from"])) {
             $from = $settings["fromEmailAddress"] ?? null;
         }
