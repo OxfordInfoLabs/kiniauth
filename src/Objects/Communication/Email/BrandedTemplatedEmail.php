@@ -16,7 +16,7 @@ use Kinikit\Core\Template\TemplateParser;
  * Class BrandedTemplatedEmail
  * @package Kiniauth\Objects\Communication\Email
  */
-abstract class BrandedTemplatedEmail extends TemplatedEmail {
+class BrandedTemplatedEmail extends TemplatedEmail {
 
     public function __construct($templateName, $model = [], $accountId = null, $userId = null, $recipients = null, $attachments = []) {
 
