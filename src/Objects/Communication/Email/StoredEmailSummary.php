@@ -100,6 +100,7 @@ class StoredEmailSummary extends ActiveRecord {
      * An error string if an error occurred sending this email
      *
      * @var string
+     * @sqlType text
      */
     protected $errorMessage;
 

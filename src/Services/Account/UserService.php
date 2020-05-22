@@ -37,7 +37,7 @@ class UserService {
     /**
      * @var AuthenticationService
      */
-    private $authenticationService;
+    protected $authenticationService;
 
     /**
      * @var TwoFactorProvider
@@ -47,7 +47,7 @@ class UserService {
     /**
      * @var Session
      */
-    private $session;
+    protected $session;
 
     /**
      * @var PendingActionService
@@ -59,6 +59,8 @@ class UserService {
      * @var EmailService
      */
     private $emailService;
+
+
 
 
     /**
@@ -167,6 +169,8 @@ class UserService {
             $user->save();
 
             $this->pendingActionService->removePendingAction("USER_ACTIVATION", $activationCode);
+
+            return $user;
 
         } catch (ItemNotFoundException $e) {
             throw new ValidationException(["activationCode" => new FieldValidationError("activationCode", "invalid", "Invalid activation code supplied for user")]);
