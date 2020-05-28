@@ -16,6 +16,7 @@ class AccountSummary extends ActiveRecord {
      * The account name - optional
      *
      * @var string
+     * @maxLength 100
      */
     protected $name;
 

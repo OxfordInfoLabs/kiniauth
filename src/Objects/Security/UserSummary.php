@@ -29,6 +29,7 @@ class UserSummary extends ActiveRecord {
     /**
      * The full name for this user.  May or may not be required depending on the application.
      *
+     * @maxLength 100
      * @var string
      */
     protected $name;
@@ -37,7 +38,7 @@ class UserSummary extends ActiveRecord {
      * Status for this user.
      *
      * @var string
-     * @maxlength(30)
+     * @maxLength 30
      */
     protected $status = self::STATUS_PENDING;
 
@@ -47,6 +48,7 @@ class UserSummary extends ActiveRecord {
      * @var string
      * @required
      * @email
+     * @maxLength 200
      */
     protected $emailAddress;
 

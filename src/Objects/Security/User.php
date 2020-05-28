@@ -44,6 +44,7 @@ class User extends UserSummary {
      *
      * @var string
      * @regexp [0-9\+\. ]+
+     * @maxLength 30
      */
     protected $mobileNumber;
 
@@ -53,6 +54,7 @@ class User extends UserSummary {
      *
      * @var string
      * @email
+     * @maxLength 200
      */
     protected $backupEmailAddress;
 
@@ -61,7 +63,7 @@ class User extends UserSummary {
      * Optional two factor authentication data if this has been enabled.
      *
      * @var string
-     * @maxlength(2000)
+     * @maxLength 2000
      */
     protected $twoFactorData;
 
@@ -79,6 +81,7 @@ class User extends UserSummary {
      * @var string
      * @password
      * @unmapped
+     * @maxLength 100
      */
     protected $newPassword;
 
