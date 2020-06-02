@@ -148,9 +148,11 @@ class SecurityService {
          */
         $privileges = array();
 
+
         // Add account scope access
         $accountPrivileges = null;
         foreach ($this->scopeManager->getScopeAccesses() as $scopeAccess) {
+
             $scopePrivileges = $scopeAccess->generateScopePrivileges($user, $account, $accountPrivileges);
             $privileges[$scopeAccess->getScope()] = $scopePrivileges;
             if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT) $accountPrivileges = $scopePrivileges;
