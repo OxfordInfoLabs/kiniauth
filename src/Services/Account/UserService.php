@@ -61,8 +61,6 @@ class UserService {
     private $emailService;
 
 
-
-
     /**
      * UserService constructor.
      *
@@ -219,11 +217,15 @@ class UserService {
             $query .= " AND roles.account_id = ?";
             $filterValues[] = $accountId;
         }
-        $fullQuery = $query . " ORDER BY IFNULL(name, 'ZZZZZZ') LIMIT $limit OFFSET $offset";
 
-
-        $rawResults = UserSummary::filter($fullQuery, $filterValues);
         $totalRecords = UserSummary::values("COUNT(DISTINCT(id))", $query, $filterValues);
+
+        // Now run full query.
+        $fullQuery = $query . " ORDER BY IFNULL(name, 'ZZZZZZ') LIMIT ? OFFSET ?";
+        $filterValues[] = $limit;
+        $filterValues[] = $offset;
+        $rawResults = UserSummary::filter($fullQuery, $filterValues);
+
 
         return [
             "results" => $rawResults,
