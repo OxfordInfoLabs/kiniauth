@@ -109,17 +109,33 @@ class AuthenticationService {
      */
     public function authenticateTwoFactor($code) {
 
-        $pendingUser = $this->session->__getPendingLoggedInUser();
-        $secretKey = $pendingUser->getTwoFactorData();
+        if (strlen($code) === 6) {
+            $pendingUser = $this->session->__getPendingLoggedInUser();
+            $secretKey = $pendingUser->getTwoFactorData();
 
-        if (!$secretKey || !$pendingUser) return false;
+            if (!$secretKey || !$pendingUser) return false;
 
-        $authenticated = $this->twoFactorProvider->authenticate($secretKey, $code);
+            $authenticated = $this->twoFactorProvider->authenticate($secretKey, $code);
 
-        if ($authenticated) {
-            $this->securityService->logIn($pendingUser);
-            return true;
+            if ($authenticated) {
+                $this->securityService->logIn($pendingUser);
+                return true;
+            }
+        } else if (strlen($code) === 9) {
+            $pendingUser = $this->session->__getPendingLoggedInUser();
+            $backupCodes = $pendingUser->getBackupCodes();
+
+            if (($key = array_search($code, $backupCodes)) !== false) {
+                unset($backupCodes[$key]);
+                $user = User::fetch($pendingUser->getId());
+                $user->setBackupCodes(array_values($backupCodes));
+                $user->save();
+
+                $this->securityService->logIn($pendingUser);
+                return true;
+            }
         }
+
         return false;
     }
 

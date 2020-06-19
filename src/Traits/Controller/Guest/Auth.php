@@ -30,15 +30,14 @@ trait Auth {
     /**
      * Log in with an email address and password.
      *
-     * @http GET /login
+     * @http POST /login
      *
-     * @param $emailAddress
-     * @param $password
+     * @param $payload
      *
      * @captcha 1
      */
-    public function logIn($emailAddress, $password) {
-        return $this->authenticationService->login($emailAddress, $password);
+    public function logIn($payload) {
+        return $this->authenticationService->login($payload["emailAddress"], $payload["password"]);
     }
 
     /**

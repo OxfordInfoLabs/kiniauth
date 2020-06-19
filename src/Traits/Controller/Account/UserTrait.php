@@ -9,6 +9,7 @@ use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\RoleService;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\Logging\Logger;
+use VulnerableThings\ValueObjects\Security\UserExtended;
 
 trait UserTrait {
 
@@ -37,10 +38,11 @@ trait UserTrait {
      *
      * @param string $userId
      *
-     * @return User
+     * @return UserExtended
      */
     public function getUser($userId = User::LOGGED_IN_USER) {
-        return User::fetch($userId);
+        $user = User::fetch($userId);
+        return new UserExtended($user);
     }
 
     /**

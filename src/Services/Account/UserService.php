@@ -361,12 +361,19 @@ class UserService {
         /** @var User $user */
         $user = User::fetch($userId);
 
+        $backupCodes = [];
+        for ($i = 0; $i < 10; $i++) {
+            $backupCodes[] = StringUtils::generateRandomString(9, false);
+        }
+        $user->setBackupCodes($backupCodes);
+        $user->save();
+
         $this->twoFactorProvider->setAccountName($user->getEmailAddress());
 
         $secret = $this->twoFactorProvider->createSecretKey();
         $qrCode = $this->twoFactorProvider->generateQRCode($secret);
 
-        return array("secret" => $secret, "qrCode" => $qrCode);
+        return array("secret" => $secret, "qrCode" => $qrCode, "backupCodes" => $backupCodes);
     }
 
     public function authenticateNewTwoFactor($code, $secret, $userId = User::LOGGED_IN_USER) {
@@ -390,6 +397,7 @@ class UserService {
         $user = User::fetch($userId);
 
         $user->setTwoFactorData(null);
+        $user->setBackupCodes(null);
         $user->save();
         return $user;
     }

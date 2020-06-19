@@ -67,6 +67,15 @@ class User extends UserSummary {
      */
     protected $twoFactorData;
 
+    /**
+     * Set of backup emergency codes used for 2fa where the original method can't be used.
+     *
+     * @var string[]
+     * @json
+     * @sqlType LONGTEXT
+     */
+    protected $backupCodes;
+
 
     /**
      * Active account id.  This will default to the first account found for the
@@ -173,6 +182,20 @@ class User extends UserSummary {
      */
     public function setTwoFactorData($twoFactorData) {
         $this->twoFactorData = $twoFactorData;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getBackupCodes() {
+        return $this->backupCodes;
+    }
+
+    /**
+     * @param string[] $backupCodes
+     */
+    public function setBackupCodes($backupCodes) {
+        $this->backupCodes = $backupCodes;
     }
 
     /**
