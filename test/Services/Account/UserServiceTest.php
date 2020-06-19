@@ -237,6 +237,11 @@ class UserServiceTest extends TestBase {
 
         $this->authenticationService->login("admin@kinicart.com", "password");
 
+        // Set invalid login attempts to 5.
+        $user = User::fetch(2);
+        $user->setInvalidLoginAttempts(5);
+        $user->save();
+
         // Lock Sam Davis
         $unlockCode = $this->userService->lockUser(2);
 
@@ -248,9 +253,12 @@ class UserServiceTest extends TestBase {
 
         $this->assertEquals(User::STATUS_LOCKED, User::fetch(2)->getStatus());
 
+
         $this->userService->unlockUser($unlockCode);
 
         $this->assertEquals(User::STATUS_ACTIVE, User::fetch(2)->getStatus());
+        $this->assertEquals(0, User::fetch(2)->getInvalidLoginAttempts());
+
 
         try {
             $this->pendingActionService->getPendingActionByIdentifier("USER_LOCKED", $unlockCode);

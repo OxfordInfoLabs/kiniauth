@@ -9,7 +9,6 @@ use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\ValueObjects\Security\NewPasswordDescriptor;
 
 
-
 trait Auth {
 
     protected $authenticationService;
@@ -92,6 +91,16 @@ trait Auth {
      */
     public function resetPassword($newPasswordDescriptor) {
         $this->userService->changePassword($newPasswordDescriptor->getResetCode(), $newPasswordDescriptor->getNewPassword());
+    }
+
+
+    /**
+     * @http GET /unlockUser/$unlockCode
+     *
+     * @param $unlockCode
+     */
+    public function unlockUser($unlockCode) {
+        $this->userService->unlockUser($unlockCode);
     }
 
 

@@ -232,6 +232,7 @@ class UserService {
 
             $user = User::fetch($pendingAction->getObjectId());
             $user->setStatus(User::STATUS_ACTIVE);
+            $user->setInvalidLoginAttempts(0);
             $user->save();
 
             $this->pendingActionService->removePendingAction("USER_LOCKED", $unlockCode);
