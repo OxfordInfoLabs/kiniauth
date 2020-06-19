@@ -3,6 +3,8 @@
 
 namespace Kiniauth\Objects\Security;
 
+use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Util\StringUtils;
 use Kinikit\Persistence\ORM\ActiveRecord;
 
@@ -26,7 +28,7 @@ class UserAccessToken extends ActiveRecord {
     /**
      * @var string
      * @primaryKey
-     * @maxLength 100
+     * @maxLength 128
      */
     private $tokenHash;
 
@@ -38,7 +40,8 @@ class UserAccessToken extends ActiveRecord {
      */
     public function __construct($userId, $token) {
         $this->userId = $userId;
-        $this->tokenHash = md5($token);
+        $hashProvider = Container::instance()->get(HashProvider::class);
+        $this->tokenHash = $hashProvider->generateHash($token);
     }
 
     /**

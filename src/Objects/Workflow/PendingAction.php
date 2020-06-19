@@ -159,6 +159,13 @@ class PendingAction extends ActiveRecord {
     }
 
     /**
+     * @param mixed $data
+     */
+    public function setData($data) {
+        $this->data = $data;
+    }
+
+    /**
      * @return string
      */
     public function getObjectType() {

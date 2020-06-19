@@ -100,14 +100,13 @@ class SecurityService {
 
         if ($user) {
 
-
             // Throw suspended exception if user is suspended.
             if ($user->getStatus() == User::STATUS_SUSPENDED) {
                 throw new UserSuspendedException();
             }
 
             // Throw invalid login if still pending.
-            if ($user->getStatus() == User::STATUS_PENDING) {
+            if ($user->getStatus() == User::STATUS_PENDING || $user->getStatus() == User::STATUS_LOCKED) {
                 throw new InvalidLoginException();
             }
 
