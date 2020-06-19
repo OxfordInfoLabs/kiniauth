@@ -19,9 +19,11 @@ use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Security\AssignedRole;
+use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Validation\ValidationException;
 
 include_once __DIR__ . "/../../autoloader.php";
@@ -43,11 +45,15 @@ class UserServiceTest extends TestBase {
      */
     private $pendingActionService;
 
-
     /**
      * @var Session
      */
     private $session;
+
+    /**
+     * @var ObjectBinder
+     */
+    private $objectBinder;
 
 
     public function setUp(): void {
@@ -56,6 +62,7 @@ class UserServiceTest extends TestBase {
         $this->authenticationService = Container::instance()->get(\Kiniauth\Services\Security\AuthenticationService::class);
         $this->session = Container::instance()->get(Session::class);
         $this->pendingActionService = Container::instance()->get(PendingActionService::class);
+        $this->objectBinder = Container::instance()->get(ObjectBinder::class);
     }
 
     /**
@@ -66,52 +73,60 @@ class UserServiceTest extends TestBase {
         $this->authenticationService->logout();
 
         // Simple one with just email address and password.
-        $newUser = $this->userService->createWithAccount("john@test.com", "Helloworld1");
+        $activationCode = $this->userService->createPendingUserWithAccount("john@test.com", "Helloworld1");
 
-        $this->assertNotNull($newUser->getId());
+        $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
+
+        $newUser = $this->objectBinder->bindFromArray($pendingitem->getData()["user"], User::class, false);
+
+        $this->assertNull($newUser->getId());
         $this->assertEquals("john@test.com", $newUser->getEmailAddress());
-        $this->assertEquals(hash("md5", "Helloworld1"), $newUser->getHashedPassword());
+        $this->assertEquals(hash("sha512", "Helloworld1"), $newUser->getHashedPassword());
         $this->assertEquals(0, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
-
-        $this->assertEquals(1, sizeof($newUser->getRoles()));
-
-        $this->assertEquals($newUser->getActiveAccountId(), $newUser->getRoles()[0]->getScopeId());
-        $this->assertEquals(0, $newUser->getRoles()[0]->getRoleId());
+        $this->assertEquals(0, sizeof($newUser->getRoles()));
 
 
         // Now do one with a users name, check propagation to account name.
         // Simple one with just email address and password.
-        $newUser = $this->userService->createWithAccount("john2@test.com", "Helloworld1", "John Smith");
+        $activationCode = $this->userService->createPendingUserWithAccount("john2@test.com", "Helloworld1", "John Smith");
 
-        $this->assertNotNull($newUser->getId());
+        $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
+
+        $newUser = $this->objectBinder->bindFromArray($pendingitem->getData()["user"], User::class, false);
+
+
+        $this->assertNull($newUser->getId());
         $this->assertEquals("john2@test.com", $newUser->getEmailAddress());
         $this->assertEquals("John Smith", $newUser->getName());
-        $this->assertEquals(hash("md5", "Helloworld1"), $newUser->getHashedPassword());
+        $this->assertEquals(hash("sha512", "Helloworld1"), $newUser->getHashedPassword());
         $this->assertEquals(0, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
-
-        $this->assertEquals(1, sizeof($newUser->getRoles()));
+        $this->assertEquals(0, sizeof($newUser->getRoles()));
 
 
         // Now do one with a user and account name, check propagation to account name.
         // Simple one with just email address and password.
-        $newUser = $this->userService->createWithAccount("john3@test.com", "Helloworld1", "John Smith",
+        $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", "Helloworld1", "John Smith",
             "Smith Enterprises");
 
-        $this->assertNotNull($newUser->getId());
+        $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
+
+        $newUser = $this->objectBinder->bindFromArray($pendingitem->getData()["user"], User::class, false);
+
+
+        $this->assertNull($newUser->getId());
         $this->assertEquals("john3@test.com", $newUser->getEmailAddress());
         $this->assertEquals("John Smith", $newUser->getName());
-        $this->assertEquals(hash("md5", "Helloworld1"), $newUser->getHashedPassword());
+        $this->assertEquals(hash("sha512", "Helloworld1"), $newUser->getHashedPassword());
         $this->assertEquals(0, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
-
-        $this->assertEquals(1, sizeof($newUser->getRoles()));
+        $this->assertEquals(0, sizeof($newUser->getRoles()));
 
 
         // Check duplicate issue
         try {
-            $this->userService->createWithAccount("john3@test.com", "helloworld", "John Smith",
+            $this->userService->createPendingUserWithAccount("john3@test.com", "helloworld", "John Smith",
                 "Smith Enterprises");
 
             $this->fail("Should have thrown validation problems here");
@@ -122,17 +137,22 @@ class UserServiceTest extends TestBase {
 
         // Now do one with a user and account name and parent account id. check propagation to account name.
         // Simple one with just email address and password.
-        $newUser = $this->userService->createWithAccount("john3@test.com", "Helloworld1", "John Smith",
+        $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", "Helloworld1", "John Smith",
             "Smith Enterprises", 1);
 
-        $this->assertNotNull($newUser->getId());
+        $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
+
+        $newUser = $this->objectBinder->bindFromArray($pendingitem->getData()["user"], User::class, false);
+
+
+        $this->assertNull($newUser->getId());
         $this->assertEquals("john3@test.com", $newUser->getEmailAddress());
         $this->assertEquals("John Smith", $newUser->getName());
-        $this->assertEquals(hash("md5", "Helloworld1"), $newUser->getHashedPassword());
+        $this->assertEquals(hash("sha512", "Helloworld1"), $newUser->getHashedPassword());
         $this->assertEquals(1, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
 
-        $this->assertEquals(1, sizeof($newUser->getRoles()));
+        $this->assertEquals(0, sizeof($newUser->getRoles()));
 
 
     }
@@ -143,12 +163,12 @@ class UserServiceTest extends TestBase {
 
         $this->authenticationService->logout();
 
-        $newUser = $this->userService->createWithAccount("john4@test.com", "Helloworld1", "John Smith",
+        $newUser = $this->userService->createPendingUserWithAccount("john4@test.com", "Helloworld1", "John Smith",
             "Smythe Enterprises", 0);
 
 
         // Check for an action and grab the identifier
-        $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("USER_ACTIVATION", $newUser->getId());
+        $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("USER_ACTIVATION", "NEW");
         $this->assertTrue(sizeof($pendingActions) > 0);
         $identifier = $pendingActions[0]->getIdentifier();
 
@@ -175,10 +195,8 @@ class UserServiceTest extends TestBase {
 
         $this->authenticationService->logout();
 
-        $newUser = $this->userService->createWithAccount("john5@test.com", "Helloworld1", "John Smith",
+        $activationCode = $this->userService->createPendingUserWithAccount("john5@test.com", "Helloworld1", "John Smith",
             "Smythe Enterprises", 0);
-
-        $activationCode = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("USER_ACTIVATION", $newUser->getId())[0]->getIdentifier();
 
         try {
             $this->userService->activateAccount("BADCODE");
@@ -190,13 +208,17 @@ class UserServiceTest extends TestBase {
         // Activation should succeed.
         $this->userService->activateAccount($activationCode);
 
-        // Login as admin to ensure permissions.
-        $this->authenticationService->login("admin@kinicart.com", "password");
 
         // Check user is active
-        $reUser = User::fetch($newUser->getId());
-        $this->assertEquals(User::STATUS_ACTIVE, $reUser->getStatus());
+        $this->authenticationService->login("john5@test.com", "Helloworld1");
+        $user = $this->session->__getLoggedInUser();
+        $this->assertEquals("John Smith", $user->getName());
+        $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
+        $this->assertEquals(1, sizeof($user->getRoles()));
 
+        $account = $this->session->__getLoggedInAccount();
+        $this->assertEquals("Smythe Enterprises", $account->getName());
+        $this->assertEquals($user->getRoles()[0]->getAccountId(), $account->getAccountId());
 
         $this->authenticationService->logout();
 
@@ -206,6 +228,34 @@ class UserServiceTest extends TestBase {
             $this->fail("Should have thrown here");
         } catch (ValidationException $e) {
             // Success
+        }
+
+    }
+
+
+    public function testCanUnlockAccountIfValidUnlockCodeProvided() {
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        // Lock Sam Davis
+        $unlockCode = $this->userService->lockUser(2);
+
+        try {
+            $this->userService->unlockUser("fgjhsdkjgd");
+            $this->fail("Should have thrown here");
+        } catch (ValidationException $e) {
+        }
+
+        $this->assertEquals(User::STATUS_LOCKED, User::fetch(2)->getStatus());
+
+        $this->userService->unlockUser($unlockCode);
+
+        $this->assertEquals(User::STATUS_ACTIVE, User::fetch(2)->getStatus());
+
+        try {
+            $this->pendingActionService->getPendingActionByIdentifier("USER_LOCKED", $unlockCode);
+            $this->fail("Should have removed action");
+        } catch (ItemNotFoundException $e) {
         }
 
     }
@@ -225,7 +275,7 @@ class UserServiceTest extends TestBase {
 
         $this->assertNotNull($adminUser->getId());
         $this->assertEquals("marko@polo.com", $adminUser->getEmailAddress());
-        $this->assertEquals(hash("md5", "Helloworld1"), $adminUser->getHashedPassword());
+        $this->assertEquals(hash("sha512", "Helloworld1"), $adminUser->getHashedPassword());
         $this->assertEquals(1, sizeof($adminUser->getRoles()));
         $this->assertEquals(0, $adminUser->getRoles()[0]->getScopeId());
         $this->assertEquals(0, $adminUser->getRoles()[0]->getRoleId());
@@ -237,7 +287,7 @@ class UserServiceTest extends TestBase {
         $this->assertNotNull($adminUser->getId());
         $this->assertEquals("marko2@polo.com", $adminUser->getEmailAddress());
         $this->assertEquals("Marko Polo", $adminUser->getName());
-        $this->assertEquals(hash("md5", "Helloworld1"), $adminUser->getHashedPassword());
+        $this->assertEquals(hash("sha512", "Helloworld1"), $adminUser->getHashedPassword());
         $this->assertEquals(1, sizeof($adminUser->getRoles()));
         $this->assertEquals(0, $adminUser->getRoles()[0]->getScopeId());
         $this->assertEquals(0, $adminUser->getRoles()[0]->getRoleId());
@@ -329,7 +379,7 @@ class UserServiceTest extends TestBase {
 
         $lastEmail = StoredEmail::filter("ORDER BY id DESC")[0];
 
-        $this->assertEquals(["mary@shoppingonline.com"], $lastEmail->getRecipients());
+        $this->assertEquals(["Mary Shopping <mary@shoppingonline.com>"], $lastEmail->getRecipients());
         $this->assertStringContainsString($identifier, $lastEmail->getTextBody());
 
     }
@@ -465,7 +515,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(32, strlen($token));
 
         // Check it is stored
-        $userAccessToken = UserAccessToken::fetch([2, md5($token)]);
+        $userAccessToken = UserAccessToken::fetch([2, hash("sha512", $token)]);
         $this->assertTrue($userAccessToken instanceof UserAccessToken);
 
     }
@@ -531,7 +581,7 @@ class UserServiceTest extends TestBase {
         $this->userService->addSecondaryTokenToUserAccessToken($token, "WONDERFULWORLD");
 
         // Check the hash has been updated.
-        $userAccessToken = UserAccessToken::fetch([3, md5($token . "--" . "WONDERFULWORLD")]);
+        $userAccessToken = UserAccessToken::fetch([3, hash("sha512", $token . "--" . "WONDERFULWORLD")]);
         $this->assertTrue($userAccessToken instanceof UserAccessToken);
 
     }

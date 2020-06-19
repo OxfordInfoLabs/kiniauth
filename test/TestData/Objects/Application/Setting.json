@@ -24,6 +24,10 @@
     "value": "Kiniauth Example <info@kiniauth.example>"
   },
   {
+    "key": "unlockAccountURL",
+    "value": "http://localhost:5013/sign-in/unlock"
+  },
+  {
     "parentAccountId": 1,
     "key": "brandName",
     "value": "Sam Davis Retail Outlet"

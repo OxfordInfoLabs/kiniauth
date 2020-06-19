@@ -275,7 +275,7 @@ class AccountServiceTest extends TestBase {
         $newUsers = User::filter("WHERE emailAddress = ? AND parent_account_id = ?", "newuser@samdavisdesign.co.uk", 0);
         $newUser = $newUsers[0];
 
-        $this->assertEquals(md5("helloJeffrey1"), $newUser->getHashedPassword());
+        $this->assertEquals(hash("sha512", "helloJeffrey1"), $newUser->getHashedPassword());
         $this->assertEquals(1, sizeof($newUser->getRoles()));
         $this->assertEquals(3, $newUser->getRoles()[0]->getRoleId());
 

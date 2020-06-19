@@ -6,7 +6,9 @@ namespace Kiniauth\Objects\Security;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Application\Session;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ValidationException;
+use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 
@@ -75,6 +77,12 @@ class User extends UserSummary {
      * @var integer
      */
     protected $activeAccountId;
+
+
+    /**
+     * @var integer
+     */
+    protected $invalidLoginAttempts = 0;
 
 
     /**
@@ -154,7 +162,8 @@ class User extends UserSummary {
     public function setNewPassword($newPassword) {
         $this->newPassword = $newPassword;
         if ($newPassword) {
-            $this->hashedPassword = hash("md5", $newPassword);
+            $hashProvider = Container::instance()->get(HashProvider::class);
+            $this->hashedPassword = $hashProvider->generateHash($newPassword);
         } else {
             $this->hashedPassword = "";
         }
@@ -288,6 +297,24 @@ class User extends UserSummary {
     public function setStatus($status) {
         $this->status = $status;
     }
+
+    /**
+     * @return int
+     */
+    public function getInvalidLoginAttempts() {
+        return $this->invalidLoginAttempts;
+    }
+
+    /**
+     * @param int $invalidLoginAttempts
+     */
+    public function setInvalidLoginAttempts($invalidLoginAttempts) {
+        $this->invalidLoginAttempts = $invalidLoginAttempts;
+    }
+
+
+
+
 
     /**
      * Handle more advanced checking for no overlap of email addresses in same context

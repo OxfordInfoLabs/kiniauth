@@ -7,3 +7,4 @@ db.filename = DB/kiniauth-test.db
 db.logFile = DB/db.log
 
 recaptcha.secret.key = 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+

@@ -41,7 +41,7 @@ trait Registration {
      * @param NewUserAccountDescriptor $userAccountDescriptor
      */
     public function createUserWithAccount($userAccountDescriptor) {
-        $this->userService->createWithAccount($userAccountDescriptor->getEmailAddress(), $userAccountDescriptor->getPassword(), $userAccountDescriptor->getName(), $userAccountDescriptor->getAccountName());
+        $this->userService->createPendingUserWithAccount($userAccountDescriptor->getEmailAddress(), $userAccountDescriptor->getPassword(), $userAccountDescriptor->getName(), $userAccountDescriptor->getAccountName());
     }
 
 

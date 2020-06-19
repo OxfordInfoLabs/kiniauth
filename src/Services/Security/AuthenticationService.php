@@ -8,13 +8,18 @@ use Kiniauth\Exception\Security\InvalidAPICredentialsException;
 use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
+use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
+use Kiniauth\Services\Workflow\PendingActionService;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
+use Kinikit\Core\Security\Hash\HashProvider;
 
 
 /**
@@ -29,6 +34,12 @@ class AuthenticationService {
     private $session;
     private $securityService;
     private $twoFactorProvider;
+    private $userService;
+
+    /**
+     * @var HashProvider
+     */
+    private $hashProvider;
 
     const STATUS_LOGGED_IN = "LOGGED_IN";
     const STATUS_REQUIRES_2FA = "REQUIRES_2FA";
@@ -38,12 +49,16 @@ class AuthenticationService {
      * @param \Kiniauth\Services\Application\Session $session
      * @param \Kiniauth\Services\Security\SecurityService $securityService
      * @param TwoFactorProvider $twoFactorProvider
+     * @param HashProvider $hashProvider
+     * @param UserService $userService
      */
-    public function __construct($settingsService, $session, $securityService, $twoFactorProvider) {
+    public function __construct($settingsService, $session, $securityService, $twoFactorProvider, $hashProvider, $userService) {
         $this->settingsService = $settingsService;
         $this->session = $session;
         $this->securityService = $securityService;
         $this->twoFactorProvider = $twoFactorProvider;
+        $this->hashProvider = $hashProvider;
+        $this->userService = $userService;
     }
 
     /**
@@ -76,24 +91,46 @@ class AuthenticationService {
             $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
         }
 
-        $matchingUsers = User::filter("WHERE emailAddress = ? AND hashedPassword = ? AND parentAccountId = ?", $emailAddress, hash("md5", $password), $parentAccountId);
+        $matchingUsers = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $parentAccountId);
 
         // If there is a matching user, return it now.
         if (sizeof($matchingUsers) > 0) {
             /** @var User $user */
             $user = $matchingUsers[0];
-            if ($user->getTwoFactorData()) {
-                $this->session->__setPendingLoggedInUser($user);
-                return self::STATUS_REQUIRES_2FA;
+
+            if ($user->getHashedPassword() == $this->hashProvider->generateHash($password)) {
+
+                if ($user->getTwoFactorData()) {
+                    $this->session->__setPendingLoggedInUser($user);
+                    return self::STATUS_REQUIRES_2FA;
+                } else {
+                    $this->securityService->logIn($user);
+                    return self::STATUS_LOGGED_IN;
+                }
             } else {
-                $this->securityService->logIn($user);
-                return self::STATUS_LOGGED_IN;
+
+                // Invalid password
+                if ($user->getStatus() == User::STATUS_ACTIVE && $maxLoginAttempts = Configuration::readParameter("max.login.attempts")) {
+
+
+                    $existingLoginAttempts = $user->getInvalidLoginAttempts();
+                    $user->setInvalidLoginAttempts($existingLoginAttempts + 1);
+
+                    // Lock the user if we have exceeded max login attempts
+                    if ($existingLoginAttempts >= $maxLoginAttempts) {
+                        $this->userService->lockUser($user->getId());
+                    } else {
+                        $user->save();
+                    }
+                }
+
+                throw new InvalidLoginException();
             }
         } else {
+            // Invalid username
             throw new InvalidLoginException();
         }
     }
-
 
 
     /**
@@ -135,7 +172,7 @@ class AuthenticationService {
      */
     public function authenticateByUserToken($userAccessToken, $secondaryAccessToken = null) {
 
-        $hashValue = md5($userAccessToken . ($secondaryAccessToken ? "--" . $secondaryAccessToken : ""));
+        $hashValue = $this->hashProvider->generateHash($userAccessToken . ($secondaryAccessToken ? "--" . $secondaryAccessToken : ""));
 
         if ($hashValue != $this->session->__getLoggedInUserAccessTokenHash()) {
 
@@ -209,16 +246,6 @@ class AuthenticationService {
 
         }
 
-    }
-
-    public function validateUserPassword($emailAddress, $password, $parentAccountId = null) {
-        if ($parentAccountId === null) {
-            $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
-        }
-
-        $matchingUsers = User::filter("WHERE emailAddress = ? AND hashedPassword = ? AND parentAccountId = ?", $emailAddress, hash("md5", $password), $parentAccountId);
-
-        return sizeof($matchingUsers) > 0;
     }
 
 

@@ -17,7 +17,7 @@ class UserSummary extends ActiveRecord {
     const STATUS_PENDING = "PENDING";
     const STATUS_ACTIVE = "ACTIVE";
     const STATUS_SUSPENDED = "SUSPENDED";
-    const STATUS_PASSWORD_RESET = "PASSWORD_RESET";
+    const STATUS_LOCKED = "LOCKED";
 
     /**
      * Auto incremented id.
@@ -113,7 +113,6 @@ class UserSummary extends ActiveRecord {
     public function getEmailAddress() {
         return $this->emailAddress;
     }
-
 
 
 }

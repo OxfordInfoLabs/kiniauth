@@ -11,15 +11,20 @@ use Kiniauth\Exception\Security\UserSuspendedException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Account\UserAccountRole;
+use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\SettingsService;
+use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Application\BootstrapService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\SecurityService;
+use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\TestBase;
+use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Testing\MockObjectProvider;
 
 include_once __DIR__ . "/../../autoloader.php";
@@ -37,6 +42,12 @@ class AuthenticationServiceTest extends TestBase {
     private $session;
 
 
+    /**
+     * @var PendingActionService
+     */
+    private $pendingActionService;
+
+
     public function setUp(): void {
 
         parent::setUp();
@@ -44,6 +55,7 @@ class AuthenticationServiceTest extends TestBase {
         Container::instance()->get(Bootstrap::class);
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
         $this->session = Container::instance()->get(Session::class);
+        $this->pendingActionService = Container::instance()->get(PendingActionService::class);
     }
 
     public function testCanCheckWhetherEmailExistsOrNot() {
@@ -167,6 +179,140 @@ class AuthenticationServiceTest extends TestBase {
     }
 
 
+    public function testAccountLockedIfMaxLoginAttemptsDefinedAndAttemptsExceeded() {
+
+        try {
+            // Attempt multiple logins and confirm that no lockout by default
+            $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+        try {
+            // Attempt multiple logins and confirm that no lockout by default
+            $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+        try {
+            // Attempt multiple logins and confirm that no lockout by default
+            $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+        try {
+            // Attempt multiple logins and confirm that no lockout by default
+            $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+        try {
+            // Attempt multiple logins and confirm that no lockout by default
+            $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $user = User::fetch(7);
+        $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
+        $this->assertEquals(0, $user->getInvalidLoginAttempts());
+
+
+        // Add the config param and check lockout starts to happen
+        Configuration::instance()->addParameter("max.login.attempts", 3);
+
+        try {
+            $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+        $user = User::fetch(7);
+        $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
+        $this->assertEquals(1, $user->getInvalidLoginAttempts());
+
+
+        try {
+            $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+        $user = User::fetch(7);
+        $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
+        $this->assertEquals(2, $user->getInvalidLoginAttempts());
+
+
+        try {
+            $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+        $user = User::fetch(7);
+        $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
+        $this->assertEquals(3, $user->getInvalidLoginAttempts());
+
+
+        try {
+            $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+        $user = User::fetch(7);
+        $this->assertEquals(User::STATUS_LOCKED, $user->getStatus());
+        $this->assertEquals(3, $user->getInvalidLoginAttempts());
+
+
+        try {
+            $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+        $user = User::fetch(7);
+        $this->assertEquals(User::STATUS_LOCKED, $user->getStatus());
+        $this->assertEquals(3, $user->getInvalidLoginAttempts());
+
+
+        $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("USER_LOCKED", 7);
+        $this->assertEquals(1, sizeof($pendingActions));
+        $identifier = $pendingActions[0]->getIdentifier();
+
+        // Check for an email containing the identifier
+        $lastEmail = StoredEmail::filter("ORDER BY id DESC")[0];
+
+        $this->assertEquals(["Mary Shopping <mary@shoppingonline.com>"], $lastEmail->getRecipients());
+        $this->assertEquals("Your Kiniauth Example user account has been locked", $lastEmail->getSubject());
+        $this->assertStringContainsString($identifier, $lastEmail->getTextBody());
+        $this->assertStringContainsString("http://localhost:5013/sign-in/unlock", $lastEmail->getTextBody());
+
+
+        // Check we can't log in legitimately as we are locked.
+        try {
+            $this->authenticationService->login("mary@shoppingonline.com", "password");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+        }
+
+
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        $user->setStatus(User::STATUS_ACTIVE);
+        $user->setInvalidLoginAttempts(0);
+        $user->save();
+
+
+    }
+
+
     public function testExceptionRaisedIfInvalidUsernameOrPasswordSupplied() {
 
         try {
@@ -254,7 +400,7 @@ class AuthenticationServiceTest extends TestBase {
         $loggedInUser = $this->session->__getLoggedInUser();
         $this->assertTrue($loggedInUser instanceof User);
         $this->assertEquals(4, $loggedInUser->getId());
-        $this->assertEquals(md5("TESTTOKEN"), $this->session->__getLoggedInUserAccessTokenHash());
+        $this->assertEquals(hash("sha512", "TESTTOKEN"), $this->session->__getLoggedInUserAccessTokenHash());
 
         $this->authenticationService->logout();
 
@@ -273,7 +419,7 @@ class AuthenticationServiceTest extends TestBase {
         $this->assertTrue($loggedInUser instanceof User);
         $this->assertEquals(7, $loggedInUser->getId());
 
-        $this->assertEquals(md5("TESTTOKEN2--TESTSECONDARY"), $this->session->__getLoggedInUserAccessTokenHash());
+        $this->assertEquals(hash("sha512", "TESTTOKEN2--TESTSECONDARY"), $this->session->__getLoggedInUserAccessTokenHash());
 
 
     }
@@ -288,15 +434,18 @@ class AuthenticationServiceTest extends TestBase {
 
         $securityService = $mockObjectProvider->getMockInstance(SecurityService::class);
 
-        $authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class), $this->session, $securityService, null);
+        $authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class), $this->session, $securityService, null,
+            Container::instance()->get(HashProvider::class),
+            Container::instance()->get(EmailService::class), Container::instance()->get(PendingActionService::class));
 
-        $this->session->__setLoggedInUserAccessTokenHash(md5("TESTTOKEN"));
+        $this->session->__setLoggedInUserAccessTokenHash(hash("sha512", "TESTTOKEN"));
 
         $interceptor = Container::instance()->get(ActiveRecordInterceptor::class);
 
         $interceptor->executeInsecure(function () use ($authenticationService) {
             $authenticationService->authenticateByUserToken("TESTTOKEN");
         });
+
 
         $this->assertFalse($securityService->methodWasCalled("login"));
 
