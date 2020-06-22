@@ -6,6 +6,7 @@ namespace Kiniauth\Services\Security;
 
 use Kiniauth\Exception\Security\InvalidAPICredentialsException;
 use Kiniauth\Exception\Security\InvalidLoginException;
+use Kiniauth\Exception\Security\InvalidReferrerException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
@@ -20,6 +21,7 @@ use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
+use Kinikit\MVC\Request\URL;
 
 
 /**
@@ -231,37 +233,52 @@ class AuthenticationService {
     /**
      * Update the active parent URL according to a referring URL.
      *
-     * @param $referringURL
+     * @param URL $referringURL
      */
     public function updateActiveParentAccount($referringURL) {
 
-        // Check the referring URL to see whether or not we need to update our logged in state.
-        $splitReferrer = explode("//", $referringURL);
+        if (!$referringURL) {
+            $this->session->__setValidReferrer(false);
+        } else {
 
-        $referer = sizeof($splitReferrer) > 1 ? explode("/", $splitReferrer[1])[0] : $splitReferrer[0];
+            $referrer = $referringURL->getHost();
 
-        // If the referer differs from the session value, check some stuff.
-        if ($referer !== $this->session->__getReferringURL()) {
-            $this->session->__setReferringURL($referer);
 
-            // Now attempt to look up the setting by key and value
-            $setting = $this->settingsService->getSettingByKeyAndValue("referringDomains", $referer);
-            if ($setting) {
-                $parentAccountId = $setting->getParentAccountId();
-            } else {
-                $parentAccountId = 0;
+            // If the referer differs from the session value, check some stuff.
+            if ($referrer !== $this->session->__getReferringURL()) {
+
+                $this->session->__setReferringURL($referrer);
+
+                // Now attempt to look up the setting by key and value
+                $setting = $this->settingsService->getSettingByKeyAndValue("referringDomains", $referrer);
+                if ($setting) {
+                    $parentAccountId = $setting->getParentAccountId();
+                } else {
+                    $this->session->__setValidReferrer(false);
+                }
+
+                // Make sure we log out if the active parent account id has changed.
+                if ($this->session->__getActiveParentAccountId() != $parentAccountId) {
+                    $this->logOut();
+                }
+
+                $this->session->__setActiveParentAccountId($parentAccountId);
+                $this->session->__setValidReferrer(true);
+
             }
-
-            // Make sure we log out if the active parent account id has changed.
-            if ($this->session->__getActiveParentAccountId() != $parentAccountId) {
-                $this->logOut();
-            }
-
-            $this->session->__setActiveParentAccountId($parentAccountId);
-
-
         }
 
+        if (!$this->session->__getValidReferrer()) {
+            throw new InvalidReferrerException();
+        }
+
+    }
+
+    /**
+     * Get the active referrer
+     */
+    public function hasActiveReferrer() {
+        return $this->session->__getValidReferrer();
     }
 
 
@@ -270,6 +287,8 @@ class AuthenticationService {
      */
     public function logout() {
         $this->securityService->logOut();
+        $this->session->__setReferringURL(null);
+        $this->session->__setActiveParentAccountId(null);
     }
 
 

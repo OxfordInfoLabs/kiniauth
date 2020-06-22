@@ -28,6 +28,16 @@
     "value": "http://localhost:5013/sign-in/unlock"
   },
   {
+    "key": "referringDomains",
+    "value": "kinicart.example",
+    "valueIndex": 0
+  },
+  {
+    "key": "referringDomains",
+    "value": "kinicart.test",
+    "valueIndex": 1
+  },
+  {
     "parentAccountId": 1,
     "key": "brandName",
     "value": "Sam Davis Retail Outlet"

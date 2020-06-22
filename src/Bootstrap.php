@@ -11,6 +11,7 @@ use Kiniauth\Services\Security\ObjectInterceptor;
 use Kiniauth\Services\Security\RouteInterceptor\AccountRouteInterceptor;
 use Kiniauth\Services\Security\RouteInterceptor\AdminRouteInterceptor;
 use Kiniauth\Services\Security\RouteInterceptor\APIRouteInterceptor;
+use Kiniauth\Services\Security\RouteInterceptor\GuestRouteInterceptor;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\Validation\PasswordFieldValidator;
 use Kinikit\Core\ApplicationBootstrap;
@@ -73,12 +74,11 @@ class Bootstrap implements ApplicationBootstrap {
         Container::instance()->addInterceptor(new ObjectInterceptor($this->activeRecordInterceptor, $this->securityService, $this->captchaProvider, $this->request, $this->session));
 
         // Add the built in route interceptors
+        $this->routeInterceptorProcessor->addInterceptor("guest/*", GuestRouteInterceptor::class);
         $this->routeInterceptorProcessor->addInterceptor("account/*", AccountRouteInterceptor::class);
         $this->routeInterceptorProcessor->addInterceptor("admin/*", AdminRouteInterceptor::class);
         $this->routeInterceptorProcessor->addInterceptor("api/*", APIRouteInterceptor::class);
 
-        // Update the active parent account using the HTTP Referer.
-        $this->authenticationService->updateActiveParentAccount(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : "");
 
         if (!Configuration::readParameter("default.decorator")) {
             Configuration::instance()->addParameter("default.decorator", "DefaultDecorator");

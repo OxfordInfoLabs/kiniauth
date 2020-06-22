@@ -150,12 +150,31 @@ class Session implements \Kinikit\MVC\Session\Session {
 
 
     /**
-     * Get the active parent account Id.
+     * Get the valid referrer flag.
+     *
+     * @return boolean
+     */
+    public function __getValidReferrer() {
+        return $this->getValue("validReferrer");
+    }
+
+    /**
+     * Set thevalid referrer flag
+     *
+     * @param boolean $validReferrer
+     */
+    public function __setValidReferrer($validReferrer) {
+        $this->setValue("validReferrer", $validReferrer);
+    }
+
+
+    /**
+     * Get the active parent account Id - fall back to top level at this stage.
      *
      * @return integer
      */
     public function __getActiveParentAccountId() {
-        return $this->getValue("activeParentAccountId");
+        return $this->getValue("activeParentAccountId") ?? 0;
     }
 
 

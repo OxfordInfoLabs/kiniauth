@@ -33,7 +33,7 @@ class AccountRouteInterceptor extends WebRouteInterceptor {
      * @param \Kinikit\MVC\Response\Response $response
      * @return \Kinikit\MVC\Response\Response|void
      */
-    public function afterWebRoute($response) {
+    public function afterWebRoute($request, $response) {
         return $response;
     }
 }

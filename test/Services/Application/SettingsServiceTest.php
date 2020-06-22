@@ -8,6 +8,7 @@ use Kiniauth\Services\Application\SettingsService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\MVC\Request\URL;
 
 include_once __DIR__ . "/../../autoloader.php";
 
@@ -31,7 +32,7 @@ class SettingsServiceTest extends TestBase {
 
     public function testCanGetAllParentAccountSettingValuesForLoggedInUser() {
 
-        $this->authenticationService->updateActiveParentAccount("https://samdavis.org");
+        $this->authenticationService->updateActiveParentAccount(new URL("https://samdavis.org"));
 
         $this->authenticationService->login("james@smartcoasting.org", "password");
 
@@ -42,15 +43,16 @@ class SettingsServiceTest extends TestBase {
         $this->assertEquals(["samdavis.org"], $settings["referringDomains"]);
 
 
-        $this->authenticationService->updateActiveParentAccount("https://othersystem.com");
+        $this->authenticationService->updateActiveParentAccount(new URL("https://kinicart.example"));
 
         $this->authenticationService->login("james@smartcoasting.org", "password");
 
         $settings = $this->settingsService->getParentAccountSettingValues();
 
+
         $this->assertTrue(isset($settings["logo"]));
         $this->assertEquals("Kiniauth Example", $settings["brandName"]);
-        $this->assertFalse(isset($settings["referringDomains"]));
+        $this->assertEquals(["kinicart.example", "kinicart.test"], $settings["referringDomains"]);
 
     }
 
@@ -67,8 +69,7 @@ class SettingsServiceTest extends TestBase {
         $settings = $this->settingsService->getParentAccountSettingValues(2);
         $this->assertTrue(isset($settings["logo"]));
         $this->assertEquals("Kiniauth Example", $settings["brandName"]);
-        $this->assertFalse(isset($settings["referringDomains"]));
-
+        $this->assertEquals(["kinicart.example", "kinicart.test"], $settings["referringDomains"]);
 
         $settings = $this->settingsService->getParentAccountSettingValues(null, 9);
         $this->assertTrue(isset($settings["logo"]));
@@ -78,7 +79,7 @@ class SettingsServiceTest extends TestBase {
         $settings = $this->settingsService->getParentAccountSettingValues(null, 2);
         $this->assertTrue(isset($settings["logo"]));
         $this->assertEquals("Kiniauth Example", $settings["brandName"]);
-        $this->assertFalse(isset($settings["referringDomains"]));
+        $this->assertEquals(["kinicart.example", "kinicart.test"], $settings["referringDomains"]);
 
 
     }

@@ -6,6 +6,7 @@ use Kiniauth\Bootstrap;
 use Kiniauth\Exception\Security\AccountSuspendedException;
 use Kiniauth\Exception\Security\InvalidAPICredentialsException;
 use Kiniauth\Exception\Security\InvalidLoginException;
+use Kiniauth\Exception\Security\InvalidReferrerException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Exception\Security\UserSuspendedException;
 use Kiniauth\Objects\Account\Account;
@@ -26,6 +27,7 @@ use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Testing\MockObjectProvider;
+use Kinikit\MVC\Request\URL;
 
 include_once __DIR__ . "/../../autoloader.php";
 
@@ -153,7 +155,7 @@ class AuthenticationServiceTest extends TestBase {
 
 
         // Activate parent context.
-        $this->authenticationService->updateActiveParentAccount("http://samdavis.org/mark");
+        $this->authenticationService->updateActiveParentAccount(new URL("http://samdavis.org/mark"));
 
         $this->authenticationService->login("james@smartcoasting.org", "password");
 
@@ -173,7 +175,7 @@ class AuthenticationServiceTest extends TestBase {
         $this->assertEquals("Smart Coasting - Design Account", $loggedInAccount->getName());
 
         // Reset parent context.
-        $this->authenticationService->updateActiveParentAccount("https://www.google.com/hello/123");
+        $this->authenticationService->updateActiveParentAccount(new URL("https://kinicart.example/hello/123"));
 
 
     }
@@ -482,44 +484,45 @@ class AuthenticationServiceTest extends TestBase {
 
     }
 
-    public function testSessionReferrerAndParentAccountIsCorrectlyUpdatedWhenCallingUpdateParentAccount() {
+    public function testSessionReferrerAndParentAccountIsCorrectlyUpdatedWhenCallingUpdateParentAccountOrExceptionRaisedIfInvalidReferrer() {
 
 
-        $this->authenticationService->updateActiveParentAccount("https://www.google.com/hello/123");
+        $url = new URL("https://www.google.com/hello/123");
 
-        $this->assertEquals("www.google.com", $this->session->__getReferringURL());
+        try {
+            $this->authenticationService->updateActiveParentAccount($url);
+            $this->fail("Should have thrown here");
+        } catch (InvalidReferrerException $e) {
+            // Yes
+        }
+
+        $this->authenticationService->updateActiveParentAccount(new URL("http://kinicart.example/mark"));
+
+        $this->assertEquals("kinicart.example", $this->session->__getReferringURL());
         $this->assertEquals(0, $this->session->__getActiveParentAccountId());
 
-        $this->authenticationService->updateActiveParentAccount("http://apps.hello.org/mark");
 
-        $this->assertEquals("apps.hello.org", $this->session->__getReferringURL());
-        $this->assertEquals(0, $this->session->__getActiveParentAccountId());
-
-
-        $this->authenticationService->updateActiveParentAccount("http://samdavis.org/mark");
+        $this->authenticationService->updateActiveParentAccount(new URL("http://samdavis.org/mark"));
 
         $this->assertEquals("samdavis.org", $this->session->__getReferringURL());
         $this->assertEquals(1, $this->session->__getActiveParentAccountId());
-
-        $this->authenticationService->updateActiveParentAccount("");
 
     }
 
     public function testIfLoggedInAndParentAccountHasChangedOnUpdateUserUserLoggedOutForSecurity() {
 
-        $this->authenticationService->updateActiveParentAccount("https://www.google.com/hello/123");
+        $this->authenticationService->updateActiveParentAccount(new URL("https://kinicart.test/hello/123"));
 
         $this->authenticationService->login("simon@peterjonescarwash.com", "password");
 
         $this->assertNotNull($this->session->__getLoggedInUser());
         $this->assertNotNull($this->session->__getLoggedInAccount());
 
-        $this->authenticationService->updateActiveParentAccount("http://samdavis.org/mark");
+        $this->authenticationService->updateActiveParentAccount(new URL("http://samdavis.org/mark"));
 
         $this->assertNull($this->session->__getLoggedInUser());
         $this->assertNull($this->session->__getLoggedInAccount());
 
-        $this->authenticationService->updateActiveParentAccount("");
     }
 
 

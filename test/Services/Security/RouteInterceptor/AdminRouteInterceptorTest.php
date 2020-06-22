@@ -32,7 +32,7 @@ class AdminRouteInterceptorTest extends TestBase {
     public function setUp(): void {
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
         $this->securityService = Container::instance()->get(SecurityService::class);
-        $this->adminRouteInterceptor = new AdminRouteInterceptor($this->securityService);
+        $this->adminRouteInterceptor = new AdminRouteInterceptor($this->securityService, $this->authenticationService);
 
         $_SERVER["HTTP_HOST"] = "localhost";
     }
@@ -71,8 +71,6 @@ class AdminRouteInterceptorTest extends TestBase {
         $_SERVER["HTTP_X_CSRF_TOKEN"] = $this->securityService->getCSRFToken();
 
 
-
-
         // API login
         $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
         $_SERVER["HTTP_X_CSRF_TOKEN"] = $this->securityService->getCSRFToken();
@@ -88,8 +86,6 @@ class AdminRouteInterceptorTest extends TestBase {
         $this->assertTrue(true);
 
     }
-
-
 
 
 }

@@ -5,9 +5,11 @@ namespace Kiniauth\Services\Security\RouteInterceptor;
 use Kiniauth\Exception\Security\MissingCSRFHeaderException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
 use Kinikit\Core\Logging\Logger;
-use Kinikit\MVC\Response\JSONResponse;
+use Kinikit\MVC\Request\Request;
+use Kinikit\MVC\Response\Headers;
 use Kinikit\MVC\Response\SimpleResponse;
 use Kinikit\MVC\Routing\RouteInterceptor;
 
@@ -18,19 +20,38 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
      */
     protected $securityService;
 
+    /**
+     * @var AuthenticationService
+     */
+    protected $authenticationService;
+
+
+    /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
+     * Flag as to whether or not csrf is enforced - defaults to true
+     *
+     * @var bool
+     */
+    protected $csrf = true;
+
 
     /**
      * Construct with injected dependencies.
      *
-     * GlobalRouteInterceptor constructor.
      * @param SecurityService $securityService
+     * @param AuthenticationService $authenticationService
      */
-    public function __construct($securityService) {
+    public function __construct($securityService, $authenticationService) {
         $this->securityService = $securityService;
+        $this->authenticationService = $authenticationService;
     }
 
     /**
-     * Implemnet ths
+     * Implemnet this
      *
      * @param \Kinikit\MVC\Request\Request $request
      * @return \Kinikit\MVC\Response\Response|null
@@ -39,37 +60,61 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
 
         list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
 
-        // Shortcut the process if an options request made and return the header allowing the csrf token.
-        if (strtolower($request->getRequestMethod()) == "options") {
+        // Authenticate using referrer to ensure we are allowed in.
+        $this->authenticationService->updateActiveParentAccount($request->getReferringURL());
 
-            $response = new SimpleResponse("");
 
-            // Add the CSRF token as permitted for this route
-            $response->setHeader("Access-Control-Allow-Headers", "x-csrf-token");
+        // If enforcing csrf do the main job
+        if ($this->csrf) {
 
-            return $response;
+            // Shortcut the process if an options request made and return the header allowing the csrf token.
+            if (strtolower($request->getRequestMethod()) == "options") {
 
-        } else {
+                $response = new SimpleResponse("");
 
-            // Check for CSRF Tokens unless an options query.
-            $csrfToken = $request->getHeaders()->getCustomHeader("X_CSRF_TOKEN");
-            if (!$csrfToken || $csrfToken != $this->securityService->getCSRFToken()) {
-                throw new MissingCSRFHeaderException();
+                // Add the CSRF token as permitted for this route
+                $response->setHeader("Access-Control-Allow-Headers", "x-csrf-token");
+
+                return $response;
+
+            } else {
+
+                // Check for CSRF Tokens unless an options query.
+                $csrfToken = $request->getHeaders()->getCustomHeader("X_CSRF_TOKEN");
+                if (!$csrfToken || $csrfToken != $this->securityService->getCSRFToken()) {
+                    throw new MissingCSRFHeaderException();
+                }
+
+
+                // Call the custom logic.
+                return $this->beforeWebRoute($request, $user, $account);
             }
-
-            // Call the custom logic.
+        } else {
             return $this->beforeWebRoute($request, $user, $account);
         }
     }
 
     /**
+     * @param \Kinikit\MVC\Request\Request $request
      * @param \Kinikit\MVC\Response\Response $response
+     *
      * @return \Kinikit\MVC\Response\Response|void
      */
-    public function afterRoute($response) {
+    public function afterRoute($request, $response) {
+
+        $referrer = $request->getReferringURL();
+
+        // Check we have an active referrer - if so we can assume that the request referrer is valid.
+        if ($this->authenticationService->hasActiveReferrer() && $referrer) {
+            $accessControlOrigin = strtolower($referrer->getProtocol()) . "://" . $referrer->getHost() . ($referrer->getPort() != "80" && $referrer->getPort() != "443" ? ":" . $referrer->getPort() : "");
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, $accessControlOrigin);
+        }
+
+        Logger::log($response);
 
         // Call the custom logic
-        return $this->afterWebRoute($response);
+        return $this->afterWebRoute($request, $response);
 
     }
 
@@ -88,10 +133,11 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
     /**
      * Custom after route logic
      *
+     * @param \Kinikit\MVC\Request\Request $request
      * @param \Kinikit\MVC\Response\Response $response
      * @return \Kinikit\MVC\Response\Response
      */
-    public abstract function afterWebRoute($response);
+    public abstract function afterWebRoute($request, $response);
 
 
 }

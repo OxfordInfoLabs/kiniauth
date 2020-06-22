@@ -32,7 +32,7 @@ class AccountRouteInterceptorTest extends TestBase {
     public function setUp(): void {
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
         $this->securityService = Container::instance()->get(SecurityService::class);
-        $this->accountRouteInterceptor = new AccountRouteInterceptor($this->securityService);
+        $this->accountRouteInterceptor = new AccountRouteInterceptor($this->securityService, $this->authenticationService);
 
         $_SERVER["HTTP_HOST"] = "localhost";
     }
