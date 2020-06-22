@@ -1,0 +1,57 @@
+<?php
+
+
+namespace Kiniauth\Services\Security\RouteInterceptor;
+
+
+use Kiniauth\Exception\Security\MissingAPICredentialsException;
+use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Services\Security\SecurityService;
+use Kinikit\MVC\Routing\RouteInterceptor;
+
+class APIRouteInterceptor extends RouteInterceptor {
+
+    /**
+     * @var SecurityService
+     */
+    private $securityService;
+
+    /**
+     * @var AuthenticationService
+     */
+    private $authenticationService;
+
+    /**
+     * APIRouteInterceptor constructor.
+     * @param SecurityService $securityService
+     * @param AuthenticationService $authenticationService
+     */
+    public function __construct($securityService, $authenticationService) {
+        $this->securityService = $securityService;
+        $this->authenticationService = $authenticationService;
+    }
+
+    /**
+     * API Before route
+     *
+     * @param \Kinikit\MVC\Request\Request $request
+     * @return \Kinikit\MVC\Response\Response|void|null
+     */
+    public function beforeRoute($request) {
+
+        $apiKey = $request->getParameter("apiKey");
+        $apiSecret = $request->getParameter("apiSecret");
+        if (!$apiKey || !$apiSecret) {
+            throw new MissingAPICredentialsException();
+        }
+
+        list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
+        
+        if (!$account || $account->getApiKey() != $apiKey || $account->getApiSecret() != $apiSecret) {
+            $this->authenticationService->apiAuthenticate($apiKey, $apiSecret);
+        }
+
+    }
+
+
+}

@@ -20,6 +20,7 @@ use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 
+use Kinikit\Core\Util\StringUtils;
 use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 
 class SecurityService {
@@ -159,6 +160,8 @@ class SecurityService {
 
         $this->session->__setLoggedInPrivileges($privileges);
 
+        $this->session->__setCSRFToken(StringUtils::generateRandomString(32, true, true));
+
     }
 
 
@@ -171,6 +174,7 @@ class SecurityService {
         $this->session->__setLoggedInAccount(null);
         $this->session->__setLoggedInPrivileges(null);
         $this->session->__setLoggedInUserAccessTokenHash(null);
+        $this->session->__setCSRFToken(null);
     }
 
 
@@ -181,6 +185,16 @@ class SecurityService {
      */
     public function getLoggedInUserAndAccount() {
         return array($this->session->__getLoggedInUser(), $this->session->__getLoggedInAccount());
+    }
+
+
+    /**
+     * Get the current CSRF token
+     *
+     * @return mixed
+     */
+    public function getCSRFToken() {
+        return $this->session->__getCSRFToken();
     }
 
 

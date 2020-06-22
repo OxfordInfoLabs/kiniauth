@@ -38,6 +38,11 @@ class SessionData {
     private $delayedCaptchas;
 
     /**
+     * @var string
+     */
+    private $csrfToken;
+
+    /**
      * Get session data using user and account objects to seed the data.
      *
      * SessionData constructor.
@@ -63,6 +68,8 @@ class SessionData {
         }
 
         $this->delayedCaptchas = $session->__getDelayedCaptchas();
+
+        $this->csrfToken = $session->__getCSRFToken();
     }
 
     /**
@@ -93,6 +100,12 @@ class SessionData {
         return $this->delayedCaptchas;
     }
 
+    /**
+     * @return string
+     */
+    public function getCsrfToken() {
+        return $this->csrfToken;
+    }
 
     /**
      * Client side boolean.

@@ -26,6 +26,7 @@ class Session implements \Kinikit\MVC\Session\Session {
 
     /**
      * Session constructor.
+     *
      * @param \Kinikit\MVC\Session\Session $coreSession
      */
     public function __construct($coreSession) {
@@ -211,6 +212,27 @@ class Session implements \Kinikit\MVC\Session\Session {
         }
         $this->setValue("delayedCaptchas", $delayedCaptchas);
     }
+
+
+    /**
+     * Get CSRF Token
+     *
+     * @return mixed
+     */
+    public function __getCSRFToken() {
+        return $this->getValue("CSRFToken");
+    }
+
+
+    /**
+     * Set CSRF Token
+     *
+     * @param $csrfToken
+     */
+    public function __setCSRFToken($csrfToken) {
+        $this->setValue("CSRFToken", $csrfToken);
+    }
+
 
     /**
      * Set a session value for a string key.
