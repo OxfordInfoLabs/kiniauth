@@ -111,8 +111,7 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
             $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, $accessControlOrigin);
         }
 
-        Logger::log($response);
-
+     
         // Call the custom logic
         return $this->afterWebRoute($request, $response);
 
