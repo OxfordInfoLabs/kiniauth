@@ -300,4 +300,13 @@ class Session implements \Kinikit\MVC\Session\Session {
     }
 
 
+    /**
+     * Regenerate a session - generally called in authentication
+     * scenarios to prevent session fixation
+     *
+     * @return mixed
+     */
+    public function regenerate() {
+        $this->coreSession->regenerate();
+    }
 }

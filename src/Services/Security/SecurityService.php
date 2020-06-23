@@ -118,6 +118,10 @@ class SecurityService {
                 throw new AccountSuspendedException();
             }
 
+            // Regenerate the session to avoid session fixation
+            $this->session->regenerate();
+
+
             $this->session->__setLoggedInUser($user);
 
             if ($userAccessTokenHash) {
@@ -175,6 +179,10 @@ class SecurityService {
         $this->session->__setLoggedInPrivileges(null);
         $this->session->__setLoggedInUserAccessTokenHash(null);
         $this->session->__setCSRFToken(null);
+
+        // Regenerate the session to avoid session fixation
+        $this->session->regenerate();
+
     }
 
 
@@ -196,12 +204,6 @@ class SecurityService {
     public function getCSRFToken() {
         return $this->session->__getCSRFToken();
     }
-
-
-
-
-
-
 
 
     /**
