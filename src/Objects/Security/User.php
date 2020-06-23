@@ -180,6 +180,18 @@ class User extends UserSummary {
 
 
     /**
+     * Confirm whether the supplied password matches the hashed value
+     *
+     * @param $password
+     * @return boolean
+     */
+    public function passwordMatches($password) {
+        $hashProvider = Container::instance()->get(HashProvider::class);
+        return $hashProvider->verifyHash($password, $this->hashedPassword);
+    }
+
+
+    /**
      * @return string
      */
     public function getTwoFactorData() {
@@ -334,9 +346,6 @@ class User extends UserSummary {
     public function setInvalidLoginAttempts($invalidLoginAttempts) {
         $this->invalidLoginAttempts = $invalidLoginAttempts;
     }
-
-
-
 
 
     /**

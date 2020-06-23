@@ -81,7 +81,7 @@ class UserServiceTest extends TestBase {
 
         $this->assertNull($newUser->getId());
         $this->assertEquals("john@test.com", $newUser->getEmailAddress());
-        $this->assertEquals(hash("sha512", "Helloworld1"), $newUser->getHashedPassword());
+        $this->assertTrue(password_verify("Helloworld1", $newUser->getHashedPassword()));
         $this->assertEquals(0, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
         $this->assertEquals(0, sizeof($newUser->getRoles()));
@@ -99,7 +99,7 @@ class UserServiceTest extends TestBase {
         $this->assertNull($newUser->getId());
         $this->assertEquals("john2@test.com", $newUser->getEmailAddress());
         $this->assertEquals("John Smith", $newUser->getName());
-        $this->assertEquals(hash("sha512", "Helloworld1"), $newUser->getHashedPassword());
+        $this->assertTrue(password_verify("Helloworld1", $newUser->getHashedPassword()));
         $this->assertEquals(0, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
         $this->assertEquals(0, sizeof($newUser->getRoles()));
@@ -118,7 +118,7 @@ class UserServiceTest extends TestBase {
         $this->assertNull($newUser->getId());
         $this->assertEquals("john3@test.com", $newUser->getEmailAddress());
         $this->assertEquals("John Smith", $newUser->getName());
-        $this->assertEquals(hash("sha512", "Helloworld1"), $newUser->getHashedPassword());
+        $this->assertTrue(password_verify("Helloworld1", $newUser->getHashedPassword()));
         $this->assertEquals(0, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
         $this->assertEquals(0, sizeof($newUser->getRoles()));
@@ -148,7 +148,7 @@ class UserServiceTest extends TestBase {
         $this->assertNull($newUser->getId());
         $this->assertEquals("john3@test.com", $newUser->getEmailAddress());
         $this->assertEquals("John Smith", $newUser->getName());
-        $this->assertEquals(hash("sha512", "Helloworld1"), $newUser->getHashedPassword());
+        $this->assertTrue(password_verify("Helloworld1", $newUser->getHashedPassword()));
         $this->assertEquals(1, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
 
@@ -283,7 +283,7 @@ class UserServiceTest extends TestBase {
 
         $this->assertNotNull($adminUser->getId());
         $this->assertEquals("marko@polo.com", $adminUser->getEmailAddress());
-        $this->assertEquals(hash("sha512", "Helloworld1"), $adminUser->getHashedPassword());
+        $this->assertTrue(password_verify("Helloworld1", $adminUser->getHashedPassword()));
         $this->assertEquals(1, sizeof($adminUser->getRoles()));
         $this->assertEquals(0, $adminUser->getRoles()[0]->getScopeId());
         $this->assertEquals(0, $adminUser->getRoles()[0]->getRoleId());
@@ -295,7 +295,7 @@ class UserServiceTest extends TestBase {
         $this->assertNotNull($adminUser->getId());
         $this->assertEquals("marko2@polo.com", $adminUser->getEmailAddress());
         $this->assertEquals("Marko Polo", $adminUser->getName());
-        $this->assertEquals(hash("sha512", "Helloworld1"), $adminUser->getHashedPassword());
+        $this->assertTrue(password_verify("Helloworld1", $adminUser->getHashedPassword()));
         $this->assertEquals(1, sizeof($adminUser->getRoles()));
         $this->assertEquals(0, $adminUser->getRoles()[0]->getScopeId());
         $this->assertEquals(0, $adminUser->getRoles()[0]->getRoleId());

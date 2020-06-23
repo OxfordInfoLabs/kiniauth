@@ -29,6 +29,7 @@ use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
+use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
@@ -521,13 +522,14 @@ class UserService {
      */
     public function addSecondaryTokenToUserAccessToken($existingUserAccessToken, $secondaryToken) {
 
-        $existingEntry = UserAccessToken::filter("WHERE tokenHash = ?", $this->hashProvider->generateHash($existingUserAccessToken));
+        $hashProvider = new SHA512HashProvider();
+        $existingEntry = UserAccessToken::filter("WHERE tokenHash = ?", $hashProvider->generateHash($existingUserAccessToken));
 
         if (sizeof($existingEntry) > 0) {
 
             // Update token hash with secondary entry.
             $token = $existingEntry[0];
-            $token->setTokenHash($this->hashProvider->generateHash($existingUserAccessToken . "--" . $secondaryToken));
+            $token->setTokenHash($hashProvider->generateHash($existingUserAccessToken . "--" . $secondaryToken));
             $token->save();
 
         } else {
@@ -576,9 +578,9 @@ class UserService {
             $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
         }
 
-        $matchingUsers = User::filter("WHERE emailAddress = ? AND hashedPassword = ? AND parentAccountId = ?", $emailAddress, $this->hashProvider->generateHash($password), $parentAccountId);
+        $matchingUsers = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $parentAccountId);
 
-        return sizeof($matchingUsers) > 0;
+        return sizeof($matchingUsers) > 0 && $matchingUsers[0]->passwordMatches($password);
     }
 
 

@@ -35,6 +35,7 @@ class AccountRouteInterceptorTest extends TestBase {
         $this->accountRouteInterceptor = new AccountRouteInterceptor($this->securityService, $this->authenticationService);
 
         $_SERVER["HTTP_HOST"] = "localhost";
+        $_SERVER["HTTP_REFERER"] = "https://kinicart.test/hello";
     }
 
 

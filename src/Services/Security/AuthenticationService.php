@@ -21,6 +21,7 @@ use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
+use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\MVC\Request\URL;
 
 
@@ -100,7 +101,7 @@ class AuthenticationService {
             /** @var User $user */
             $user = $matchingUsers[0];
 
-            if ($user->getHashedPassword() == $this->hashProvider->generateHash($password)) {
+            if ($user->passwordMatches($password)) {
 
                 if ($user->getTwoFactorData()) {
                     $this->session->__setPendingLoggedInUser($user);
@@ -190,7 +191,8 @@ class AuthenticationService {
      */
     public function authenticateByUserToken($userAccessToken, $secondaryAccessToken = null) {
 
-        $hashValue = $this->hashProvider->generateHash($userAccessToken . ($secondaryAccessToken ? "--" . $secondaryAccessToken : ""));
+        $hashProvider = new SHA512HashProvider();
+        $hashValue = $hashProvider->generateHash($userAccessToken . ($secondaryAccessToken ? "--" . $secondaryAccessToken : ""));
 
         if ($hashValue != $this->session->__getLoggedInUserAccessTokenHash()) {
 
@@ -249,13 +251,17 @@ class AuthenticationService {
 
                 $this->session->__setReferringURL($referrer);
 
+
                 // Now attempt to look up the setting by key and value
                 $setting = $this->settingsService->getSettingByKeyAndValue("referringDomains", $referrer);
                 if ($setting) {
                     $parentAccountId = $setting->getParentAccountId();
+                    $this->session->__setValidReferrer(true);
                 } else {
+                    $parentAccountId = null;
                     $this->session->__setValidReferrer(false);
                 }
+
 
                 // Make sure we log out if the active parent account id has changed.
                 if ($this->session->__getActiveParentAccountId() != $parentAccountId) {
@@ -263,7 +269,6 @@ class AuthenticationService {
                 }
 
                 $this->session->__setActiveParentAccountId($parentAccountId);
-                $this->session->__setValidReferrer(true);
 
             }
         }
@@ -287,8 +292,6 @@ class AuthenticationService {
      */
     public function logout() {
         $this->securityService->logOut();
-        $this->session->__setReferringURL(null);
-        $this->session->__setActiveParentAccountId(null);
     }
 
 

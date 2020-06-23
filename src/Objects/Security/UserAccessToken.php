@@ -5,6 +5,7 @@ namespace Kiniauth\Objects\Security;
 
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Security\Hash\HashProvider;
+use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\Core\Util\StringUtils;
 use Kinikit\Persistence\ORM\ActiveRecord;
 
@@ -40,7 +41,7 @@ class UserAccessToken extends ActiveRecord {
      */
     public function __construct($userId, $token) {
         $this->userId = $userId;
-        $hashProvider = Container::instance()->get(HashProvider::class);
+        $hashProvider = new SHA512HashProvider();
         $this->tokenHash = $hashProvider->generateHash($token);
     }
 

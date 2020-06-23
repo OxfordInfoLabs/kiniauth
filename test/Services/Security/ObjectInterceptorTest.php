@@ -61,6 +61,8 @@ class ObjectInterceptorTest extends TestBase {
 
         $this->session = Container::instance()->get(Session::class);
 
+        $this->authenticationService->updateActiveParentAccount(new URL("https://kinicart.test/hello"));
+
     }
 
 
