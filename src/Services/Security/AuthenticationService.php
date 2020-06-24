@@ -113,7 +113,7 @@ class AuthenticationService {
             } else {
 
                 // Invalid password
-                if ($user->getStatus() == User::STATUS_ACTIVE && $maxLoginAttempts = Configuration::readParameter("max.login.attempts")) {
+                if ($user->getStatus() == User::STATUS_ACTIVE && $maxLoginAttempts = Configuration::readParameter("login.max.attempts")) {
 
 
                     $existingLoginAttempts = $user->getInvalidLoginAttempts();

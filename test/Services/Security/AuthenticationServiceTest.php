@@ -227,7 +227,7 @@ class AuthenticationServiceTest extends TestBase {
 
 
         // Add the config param and check lockout starts to happen
-        Configuration::instance()->addParameter("max.login.attempts", 3);
+        Configuration::instance()->addParameter("login.max.attempts", 3);
 
         try {
             $this->authenticationService->login("mary@shoppingonline.com", "BADPASS");
