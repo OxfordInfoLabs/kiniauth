@@ -114,25 +114,33 @@ class UserService {
         $user->setName($name);
         $user->setParentAccountId($parentAccountId);
 
-        if ($validationErrors = $user->validate()) {
-            throw new ValidationException($validationErrors);
+        // Check for duplication across parent accounts
+        $matchingUsers = User::values("COUNT(*)", "WHERE emailAddress = ? AND parent_account_id = ?",
+            $emailAddress,
+            $parentAccountId);
+
+
+        if ($matchingUsers[0] > 0) {
+            $this->emailService->send(new BrandedTemplatedEmail("security/duplicate-account", ["name" => $name], null, null, [$user->getFullEmailAddress()]));
+        } else {
+
+
+            // Create an account to match with any name we can find.
+            $account = Container::instance()->new(Account::class, false);
+            $account->setName($accountName ? $accountName : ($name ? $name : $emailAddress));
+            $account->setParentAccountId($parentAccountId);
+
+            // Create a pending activation action
+            $actionIdentifier = $this->pendingActionService->createPendingAction("USER_ACTIVATION", "NEW", [
+                "user" => $user,
+                "account" => $account
+            ]);
+
+            $this->emailService->send(new BrandedTemplatedEmail("security/activate-account", ["code" => $actionIdentifier, "name" => $name], null, null, [$user->getFullEmailAddress()]));
+
+            return $actionIdentifier;
         }
 
-        // Create an account to match with any name we can find.
-        $account = Container::instance()->new(Account::class, false);
-        $account->setName($accountName ? $accountName : ($name ? $name : $emailAddress));
-        $account->setParentAccountId($parentAccountId);
-
-        // Create a pending activation action
-        $actionIdentifier = $this->pendingActionService->createPendingAction("USER_ACTIVATION", "NEW", [
-            "user" => $user,
-            "account" => $account
-        ]);
-
-        $this->emailService->send(new BrandedTemplatedEmail("security/activate-account", ["code" => $actionIdentifier, "name" => $name], null, null, [$user->getFullEmailAddress()]));
-
-
-        return $actionIdentifier;
 
     }
 

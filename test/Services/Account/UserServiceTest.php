@@ -123,17 +123,31 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
         $this->assertEquals(0, sizeof($newUser->getRoles()));
 
+        // Activate john3
+        $this->userService->activateAccount($activationCode);
 
-        // Check duplicate issue
-        try {
-            $this->userService->createPendingUserWithAccount("john3@test.com", "helloworld", "John Smith",
-                "Smith Enterprises");
 
-            $this->fail("Should have thrown validation problems here");
+        $pendingItems = PendingAction::values("COUNT(*)")[0];
 
-        } catch (ValidationException $e) {
-            // Success
-        }
+        // Check duplicate fails silently and sends email to user
+        $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", "helloworld", "John Smith",
+            "Smith Enterprises");
+
+        // Check no code returned and no pending item created
+        $this->assertNull($activationCode);
+        $this->assertEquals($pendingItems, PendingAction::values("COUNT(*)")[0]);
+
+        // Login as admin to ensure permissions.
+        $this->authenticationService->login("admin@kinicart.com", "password");
+
+        // Check for an account exists email
+        $lastEmail = StoredEmail::filter("ORDER BY id DESC")[0];
+
+        $this->assertEquals(["John Smith <john3@test.com>"], $lastEmail->getRecipients());
+        $this->assertEquals("Registration for a Kiniauth Example account", $lastEmail->getSubject());
+
+        $this->authenticationService->logout();
+
 
         // Now do one with a user and account name and parent account id. check propagation to account name.
         // Simple one with just email address and password.
