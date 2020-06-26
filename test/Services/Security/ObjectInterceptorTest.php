@@ -196,7 +196,6 @@ class ObjectInterceptorTest extends TestBase {
 
         $this->assertEquals(0, $this->session->__getDelayedCaptcha("guest/service/bing"));
 
-        echo "Attempting first failure";
 
         try {
             $this->testMethodService->captchaAfter1Failure(true);

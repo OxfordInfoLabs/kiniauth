@@ -126,6 +126,11 @@ class SecurityService {
 
             if ($userAccessTokenHash) {
                 $this->session->__setLoggedInUserAccessTokenHash($userAccessTokenHash);
+            } else {
+
+                // If regular interactive login, record this as a logged in session
+
+
             }
 
 

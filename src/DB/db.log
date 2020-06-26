@@ -5310,3 +5310,1133 @@ PRAGMA table_info('ka_email')
 Completed in 0.0001 seconds
 SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
 Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0006 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0002 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0002 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0.0002 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_role')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_role' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0.0001 seconds
+PRAGMA table_info('ka_account')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_account' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user')
+Completed in 0.0001 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_user' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds
+PRAGMA table_info('ka_user_session_profile')
+Completed in 0 seconds
+PRAGMA table_info('ka_email')
+Completed in 0 seconds
+SELECT 'is-autoincrement' FROM sqlite_master WHERE tbl_name='ka_email' AND sql LIKE '%AUTOINCREMENT%'
+Completed in 0 seconds

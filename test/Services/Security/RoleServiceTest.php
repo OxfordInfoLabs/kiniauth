@@ -64,6 +64,7 @@ class RoleServiceTest extends TestBase {
         $this->assertTrue($accountScopeRoles instanceof ScopeRoles);
         $this->assertEquals("ACCOUNT", $accountScopeRoles->getScope());
         $this->assertEquals("Account", $accountScopeRoles->getScopeDescription());
+
         $this->assertEquals(3, sizeof($accountScopeRoles->getRoles()));
         $accountRoles = $accountScopeRoles->getRoles();
         $this->assertEquals("Viewer", $accountRoles[0]->getName());

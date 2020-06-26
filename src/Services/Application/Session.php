@@ -307,6 +307,38 @@ class Session implements \Kinikit\MVC\Session\Session {
      * @return mixed
      */
     public function regenerate() {
-        $this->coreSession->regenerate();
+        return $this->coreSession->regenerate();
     }
+
+
+    /**
+     * Get the current session id
+     *
+     * @return mixed
+     */
+    public function getId() {
+        return $this->coreSession->getId();
+    }
+
+    /**
+     * Return a boolean determining whether or not the passed session is active
+     *
+     * @param $id
+     * @return boolean
+     */
+    public function isActive($id) {
+        return $this->coreSession->isActive($id);
+    }
+
+
+    /**
+     * Destroy the session for the passed id.
+     *
+     * @param $id
+     * @return mixed|void
+     */
+    public function destroy($id) {
+        $this->coreSession->destroy($id);
+    }
+
 }
