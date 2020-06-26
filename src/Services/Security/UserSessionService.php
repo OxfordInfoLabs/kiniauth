@@ -7,6 +7,7 @@ use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\UserSession;
 use Kiniauth\Objects\Security\UserSessionProfile;
 use Kiniauth\Services\Communication\Email\EmailService;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\MVC\Request\Request;
 use Kinikit\MVC\Session\Session;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
@@ -48,7 +49,11 @@ class UserSessionService {
      * @param integer $userId
      * @param Request $request
      */
-    public function registerNewAuthenticatedSession($userId, $request) {
+    public function registerNewAuthenticatedSession($userId, $request = null) {
+
+        if (!$request) {
+            $request = Container::instance()->get(Request::class);
+        }
 
         // Grab the key fields
         $ipAddress = $request->getRemoteIPAddress();

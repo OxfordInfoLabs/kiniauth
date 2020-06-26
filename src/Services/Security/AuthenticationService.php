@@ -39,13 +39,21 @@ class AuthenticationService {
     private $twoFactorProvider;
     private $userService;
 
+
     /**
      * @var HashProvider
      */
     private $hashProvider;
 
+
+    /**
+     * @var UserSessionService
+     */
+    private $userSessionService;
+
     const STATUS_LOGGED_IN = "LOGGED_IN";
     const STATUS_REQUIRES_2FA = "REQUIRES_2FA";
+    const STATUS_ACTIVE_SESSION = "ACTIVE_SESSION";
 
     /**
      * @param \Kiniauth\Services\Application\SettingsService $settingsService
@@ -54,14 +62,16 @@ class AuthenticationService {
      * @param TwoFactorProvider $twoFactorProvider
      * @param HashProvider $hashProvider
      * @param UserService $userService
+     * @param UserSessionService $userSessionService
      */
-    public function __construct($settingsService, $session, $securityService, $twoFactorProvider, $hashProvider, $userService) {
+    public function __construct($settingsService, $session, $securityService, $twoFactorProvider, $hashProvider, $userService, $userSessionService) {
         $this->settingsService = $settingsService;
         $this->session = $session;
         $this->securityService = $securityService;
         $this->twoFactorProvider = $twoFactorProvider;
         $this->hashProvider = $hashProvider;
         $this->userService = $userService;
+        $this->userSessionService = $userSessionService;
     }
 
     /**
@@ -103,6 +113,16 @@ class AuthenticationService {
 
             if ($user->passwordMatches($password)) {
 
+                // If we are single sessioning, ensure we
+                if (Configuration::readParameter("login.single.session")) {
+                    $otherSessions = $this->userSessionService->listAuthenticatedSessions($user->getId());
+
+                    if (sizeof($otherSessions) > 0) {
+                        $this->session->__setPendingLoggedInUser($user);
+                        return self::STATUS_ACTIVE_SESSION;
+                    }
+                }
+
                 if ($user->getTwoFactorData()) {
                     $this->session->__setPendingLoggedInUser($user);
                     return self::STATUS_REQUIRES_2FA;
@@ -135,6 +155,34 @@ class AuthenticationService {
         }
     }
 
+    /**
+     * Close any active sessions and continue with the login process - this should be called
+     * after a STATUS_ACTIVE_SESSION is returned from login method.
+     *
+     * @objectInterceptorDisabled
+     */
+    public function closeActiveSessionsAndLogin() {
+        if ($pendingUser = $this->session->__getPendingLoggedInUser()) {
+
+            // Read and terminate all authenticated sessions
+            $activeSessions = $this->userSessionService->listAuthenticatedSessions($pendingUser->getId());
+            foreach ($activeSessions as $activeSession) {
+                $this->userSessionService->terminateAuthenticatedSession($pendingUser->getId(), $activeSession->getSessionId());
+            }
+
+            if ($pendingUser->getTwoFactorData()) {
+                $this->session->__setPendingLoggedInUser($pendingUser);
+                return self::STATUS_REQUIRES_2FA;
+            } else {
+                $this->session->__setPendingLoggedInUser(null);
+                $this->securityService->logIn($pendingUser);
+                return self::STATUS_LOGGED_IN;
+            }
+
+        } else {
+            throw new InvalidLoginException("No pending login");
+        }
+    }
 
     /**
      * Check the supplied two factor code and authenticate the login if correct.
@@ -149,8 +197,17 @@ class AuthenticationService {
      */
     public function authenticateTwoFactor($code) {
 
+        $pendingUser = $this->session->__getPendingLoggedInUser();
+
+        if (Configuration::readParameter("login.single.session")) {
+            $otherSessions = $this->userSessionService->listAuthenticatedSessions($pendingUser->getId());
+            if (sizeof($otherSessions) > 0) {
+                throw new InvalidLoginException("Active session exists");
+            }
+        }
+
         if (strlen($code) === 6) {
-            $pendingUser = $this->session->__getPendingLoggedInUser();
+
             $secretKey = $pendingUser->getTwoFactorData();
 
             if (!$secretKey || !$pendingUser) return false;
@@ -158,11 +215,12 @@ class AuthenticationService {
             $authenticated = $this->twoFactorProvider->authenticate($secretKey, $code);
 
             if ($authenticated) {
+                $this->session->__setPendingLoggedInUser(null);
+
                 $this->securityService->logIn($pendingUser);
                 return true;
             }
         } else if (strlen($code) === 9) {
-            $pendingUser = $this->session->__getPendingLoggedInUser();
             $backupCodes = $pendingUser->getBackupCodes();
 
             if (($key = array_search($code, $backupCodes)) !== false) {
@@ -170,6 +228,8 @@ class AuthenticationService {
                 $user = User::fetch($pendingUser->getId());
                 $user->setBackupCodes(array_values($backupCodes));
                 $user->save();
+
+                $this->session->__setPendingLoggedInUser(null);
 
                 $this->securityService->logIn($pendingUser);
                 return true;

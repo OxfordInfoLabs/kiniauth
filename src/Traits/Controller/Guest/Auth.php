@@ -50,6 +50,15 @@ trait Auth {
 
 
     /**
+     * Close active sessions (when working with single session logins)
+     *
+     * @http GET /closeActiveSessions
+     */
+    public function closeActiveSessions() {
+        return $this->authenticationService->closeActiveSessionsAndLogin();
+    }
+
+    /**
      * Authenticate the two fa code prior to login
      *
      * @http GET /twoFactor

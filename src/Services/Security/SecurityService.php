@@ -65,20 +65,28 @@ class SecurityService {
     private $databaseConnection;
 
     /**
+     * @var UserSessionService
+     */
+    private $userSessionService;
+
+
+    /**
      * @param Session $session
      * @param ScopeManager $scopeManager
      * @param ClassInspectorProvider $classInspectorProvider
      * @param FileResolver $fileResolver
      * @param ObjectBinder $objectBinder
      * @param DatabaseConnection $databaseConnection
+     * @param UserSessionService $userSessionService
      */
-    public function __construct($session, $scopeManager, $classInspectorProvider, $fileResolver, $objectBinder, $databaseConnection) {
+    public function __construct($session, $scopeManager, $classInspectorProvider, $fileResolver, $objectBinder, $databaseConnection, $userSessionService) {
         $this->session = $session;
         $this->classInspectorProvider = $classInspectorProvider;
         $this->fileResolver = $fileResolver;
         $this->objectBinder = $objectBinder;
         $this->databaseConnection = $databaseConnection;
         $this->scopeManager = $scopeManager;
+        $this->userSessionService = $userSessionService;
     }
 
 
@@ -129,7 +137,7 @@ class SecurityService {
             } else {
 
                 // If regular interactive login, record this as a logged in session
-
+                $this->userSessionService->registerNewAuthenticatedSession($user->getId());
 
             }
 

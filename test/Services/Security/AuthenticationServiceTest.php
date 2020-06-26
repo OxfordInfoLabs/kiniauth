@@ -14,6 +14,9 @@ use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Account\UserAccountRole;
 use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserSession;
+use Kiniauth\Objects\Security\UserSessionProfile;
+use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\SettingsService;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
@@ -21,6 +24,7 @@ use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Application\BootstrapService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\SecurityService;
+use Kiniauth\Services\Security\UserSessionService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\Configuration\Configuration;
@@ -438,7 +442,8 @@ class AuthenticationServiceTest extends TestBase {
 
         $authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class), $this->session, $securityService, null,
             Container::instance()->get(HashProvider::class),
-            Container::instance()->get(EmailService::class), Container::instance()->get(PendingActionService::class));
+            Container::instance()->get(EmailService::class), Container::instance()->get(PendingActionService::class),
+            Container::instance()->get(UserSessionService::class));
 
         $this->session->__setLoggedInUserAccessTokenHash(hash("sha512", "TESTTOKEN"));
 
@@ -526,6 +531,98 @@ class AuthenticationServiceTest extends TestBase {
     }
 
 
+    public function testIfSingleSessionLoginSpecifiedActiveSessionStatusIsReturnedIfSessionExistsAndPendingObjectAddedToSession() {
+
+        $this->authenticationService->logout();
+
+        Configuration::instance()->addParameter("login.single.session", true);
+
+
+        $activeRecordInterceptor = Container::instance()->get(ActiveRecordInterceptor::class);
+
+
+        $activeRecordInterceptor->executeInsecure(function () {
+
+            /**
+             * @var MockObjectProvider $mockObjectProvider
+             */
+            $mockObjectProvider = Container::instance()->get(MockObjectProvider::class);
+            $mockUserSessionService = $mockObjectProvider->getMockInstance(UserSessionService::class);
+
+
+            $mockUserSessionService->returnValue("listAuthenticatedSessions", [
+                new UserSession(2, "ABCDEFG", new UserSessionProfile("1.1.1.1", "html/1.1", 2))], [2]);
+
+            $authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class),
+                $this->session,
+                Container::instance()->get(SecurityService::class),
+                null,
+                Container::instance()->get(HashProvider::class),
+                Container::instance()->get(UserService::class),
+                $mockUserSessionService);
+
+            $authenticationService->updateActiveParentAccount(new URL("http://kinicart.example/mark"));
+
+
+            // Do a regular user
+
+            $result = $authenticationService->login("sam@samdavisdesign.co.uk", "password");
+            $this->assertEquals(AuthenticationService::STATUS_ACTIVE_SESSION, $result);
+
+
+            $pendingUser = $this->session->__getPendingLoggedInUser();
+            $this->assertTrue($pendingUser instanceof User);
+            $this->assertEquals(2, $pendingUser->getId());
+
+
+            // Close active sessions for the pending user and continue with login.
+            $result = $authenticationService->closeActiveSessionsAndLogin();
+
+            $this->assertEquals(AuthenticationService::STATUS_LOGGED_IN, $result);
+            $this->assertNull($this->session->__getPendingLoggedInUser());
+            $this->assertEquals(2, $this->session->__getLoggedInUser()->getId());
+
+            $this->assertTrue($mockUserSessionService->methodWasCalled("terminateAuthenticatedSession",
+                [2, "ABCDEFG"]));
+
+
+            $authenticationService->logout();
+
+            // Now try a 2fa user
+            $mockUserSessionService->returnValue("listAuthenticatedSessions", [
+                new UserSession(11, "XXXYYY", new UserSessionProfile("1.1.1.1", "html/1.1", 11))], [11]);
+
+
+            $result = $authenticationService->login("bob@twofactor.com", "password");
+            $this->assertEquals(AuthenticationService::STATUS_ACTIVE_SESSION, $result);
+
+
+            $pendingUser = $this->session->__getPendingLoggedInUser();
+            $this->assertTrue($pendingUser instanceof User);
+            $this->assertEquals(11, $pendingUser->getId());
+
+
+            // Close active sessions for the pending user and continue with login.
+            $result = $authenticationService->closeActiveSessionsAndLogin();
+
+            $this->assertTrue($mockUserSessionService->methodWasCalled("terminateAuthenticatedSession",
+                [11, "XXXYYY"]));
+
+
+            // Check we still have pending user ready for 2fa
+            $this->assertEquals(AuthenticationService::STATUS_REQUIRES_2FA, $result);
+            $pendingUser = $this->session->__getPendingLoggedInUser();
+            $this->assertTrue($pendingUser instanceof User);
+            $this->assertEquals(11, $pendingUser->getId());
+            $this->assertNull($this->session->__getLoggedInUser());
+
+
+        });
+
+
+        Configuration::instance()->addParameter("login.single.session", false);
+
+    }
 
 
 }

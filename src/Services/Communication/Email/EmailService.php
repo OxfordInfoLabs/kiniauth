@@ -12,6 +12,7 @@ use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kinikit\Core\Communication\Email\Email;
 use Kinikit\Core\Communication\Email\EmailSendResult;
 use Kinikit\Core\Communication\Email\Provider\EmailProvider;
+use Kinikit\Core\DependencyInjection\Container;
 
 /**
  * Service for sending and querying for sent emails.
@@ -24,20 +25,14 @@ class EmailService {
      */
     private $provider;
 
-    /**
-     * @var ActiveRecordInterceptor
-     */
-    private $activeRecordInterceptor;
 
     /**
      * Construct with the current provider.
      *
      * @param EmailProvider $provider
-     * @param ActiveRecordInterceptor $activeRecordInterceptor
      */
-    public function __construct($provider, $activeRecordInterceptor) {
+    public function __construct($provider) {
         $this->provider = $provider;
-        $this->activeRecordInterceptor = $activeRecordInterceptor;
     }
 
 
@@ -56,7 +51,9 @@ class EmailService {
         // Save the email
         $storedEmail = new StoredEmail($email, $accountId, $userId, $response->getStatus(), $response->getErrorMessage());
 
-        $this->activeRecordInterceptor->executeInsecure(function () use ($storedEmail, $email, $accountId) {
+        $activeRecordInterceptor = Container::instance()->get(ActiveRecordInterceptor::class);
+
+        $activeRecordInterceptor->executeInsecure(function () use ($storedEmail, $email, $accountId) {
             $storedEmail->save();
 
             if (is_array($email->getAttachments())) {
