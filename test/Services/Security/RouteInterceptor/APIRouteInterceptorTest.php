@@ -8,6 +8,7 @@ use Kiniauth\Exception\Security\InvalidAPICredentialsException;
 use Kiniauth\Exception\Security\MissingAPICredentialsException;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\MVC\Request\Headers;
@@ -52,7 +53,7 @@ class APIRouteInterceptorTest extends TestBase {
         }
 
         // Account user
-        $this->authenticationService->login("simon@peterjonescarwash.com", "password");
+        $this->authenticationService->login("simon@peterjonescarwash.com", AuthenticationHelper::encryptPasswordForLogin("password"));
         try {
             $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
             $this->fail("Should have thrown here");
@@ -62,7 +63,7 @@ class APIRouteInterceptorTest extends TestBase {
 
 
         // Root user
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
         try {
             $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
             $this->fail("Should have thrown here");

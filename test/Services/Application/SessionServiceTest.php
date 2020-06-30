@@ -5,6 +5,7 @@ namespace Kiniauth\Test\Services\Application;
 use Kiniauth\Services\Application\SessionService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
@@ -44,7 +45,7 @@ class SessionServiceTest extends TestBase {
     public function testCanGetSessionData() {
 
         // Super Admin
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
         $sessionData = $this->sessionService->getSessionData();
         $loggedIn = $this->securityService->getLoggedInUserAndAccount();
         $this->assertEquals($loggedIn[0], $sessionData->getUser());
@@ -52,7 +53,7 @@ class SessionServiceTest extends TestBase {
 
 
         // Account admin
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $sessionData = $this->sessionService->getSessionData();
         $loggedIn = $this->securityService->getLoggedInUserAndAccount();

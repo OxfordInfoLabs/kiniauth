@@ -86,7 +86,7 @@ class RoleServiceTest extends TestBase {
 
     public function testCanGetAllUserAccountRoles() {
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $userRole1 = new UserRole("EXAMPLE", 1, 4, 1, 2);
         $userRole2 = new UserRole("EXAMPLE", 2, 5, 1, 2);
@@ -120,7 +120,7 @@ class RoleServiceTest extends TestBase {
     public function testCanGetFilteredUserAssignableAccountScopeRolesAndAppropriateCallsAreMade() {
 
         // Log in as real user
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $scopeRoles = $this->roleService->getFilteredUserAssignableAccountScopeRoles(2, "ACCOUNT");
 
@@ -168,9 +168,9 @@ class RoleServiceTest extends TestBase {
 
     public function testCanUpdateAssignedScopeObjectRolesForUser() {
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
-        $user = new User("crossaccount@test.com", "Password12345");
+        $user = new User("crossaccount@test.com", AuthenticationHelper::hashNewPassword("Password12345"));
         $user->setRoles([
             new UserRole(Role::SCOPE_ACCOUNT, 1, 3, 1),
             new UserRole(Role::SCOPE_ACCOUNT, 2, 3, 2),
@@ -185,7 +185,7 @@ class RoleServiceTest extends TestBase {
 
 
         // Log in as real user
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
 
         $scopeObjectRoles = [
@@ -196,7 +196,7 @@ class RoleServiceTest extends TestBase {
 
 
         // Now recheck the roles have been updated
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $userRoles = UserRole::filter("WHERE user_id = ?", $user->getId());
         $this->assertEquals(6, sizeof($userRoles));

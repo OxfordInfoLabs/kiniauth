@@ -15,6 +15,7 @@ use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
@@ -103,7 +104,7 @@ class AccountServiceTest extends TestBase {
         }
 
 
-        $this->authenticationService->login("regularuser@smartcoasting.org", "password");
+        $this->authenticationService->login("regularuser@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         try {
             $this->accountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
@@ -118,7 +119,7 @@ class AccountServiceTest extends TestBase {
 
     public function testCannotInviteExistingAccountUserToJoinAccount() {
 
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         try {
 
@@ -142,7 +143,7 @@ class AccountServiceTest extends TestBase {
 
     public function testCanInviteNewUsersToJoinAccountIfLoggedInAsSuperUserForAccountWithPendingActionAndEmailSent() {
 
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Program an identifier return value when creating a pending action.
         $this->mockPendingActionService->returnValue("createPendingAction", "XXXYYYZZZ", ["USER_INVITE", 1,
@@ -178,7 +179,7 @@ class AccountServiceTest extends TestBase {
 
     public function testCanInviteExistingUsersOfOtherAccountsToJoinAccountIfLoggedInAsSuperUserForAccountWithPendingActionAndEmailSent() {
 
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Program an identifier return value when creating a pending action.
         $this->mockPendingActionService->returnValue("createPendingAction", "XXXYYYZZZ", ["USER_INVITE", 1,
@@ -268,14 +269,14 @@ class AccountServiceTest extends TestBase {
                 "newUser" => true]);
 
 
-        $this->accountService->acceptUserInvitationForAccount($invitationCode, "helloJeffrey1");
+        $this->accountService->acceptUserInvitationForAccount($invitationCode, AuthenticationHelper::hashNewPassword("helloJeffrey1"));
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $newUsers = User::filter("WHERE emailAddress = ? AND parent_account_id = ?", "newuser@samdavisdesign.co.uk", 0);
         $newUser = $newUsers[0];
 
-        $this->assertTrue(password_verify( "helloJeffrey1", $newUser->getHashedPassword()));
+        $this->assertEquals(AuthenticationHelper::hashNewPassword("helloJeffrey1"), $newUser->getHashedPassword());
         $this->assertEquals(1, sizeof($newUser->getRoles()));
         $this->assertEquals(3, $newUser->getRoles()[0]->getRoleId());
 
@@ -284,9 +285,9 @@ class AccountServiceTest extends TestBase {
 
     public function testExistingUserAddedToAccountCorrectlyIfValidInvitationCodeAndPassword() {
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
-        $user = new User("existing@test.com", "Password12345");
+        $user = new User("existing@test.com", AuthenticationHelper::hashNewPassword("Password12345"));
         $user->setRoles([
             new UserRole(Role::SCOPE_ACCOUNT, 5, 3, 2),
             new UserRole(Role::SCOPE_ACCOUNT, 6, 3, 3)
@@ -307,7 +308,7 @@ class AccountServiceTest extends TestBase {
 
         $this->accountService->acceptUserInvitationForAccount($invitationCode);
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $newUsers = User::filter("WHERE emailAddress = ? AND parent_account_id = ?", "existing@test.com", 0);
         $newUser = $newUsers[0];
@@ -321,9 +322,9 @@ class AccountServiceTest extends TestBase {
 
     public function testCanRemoveUserFromAccountIfAccountSuperUserAndAllRolesAreRemovedForThatAccount() {
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
-        $user = new User("existing2@test.com", "Password12345");
+        $user = new User("existing2@test.com", AuthenticationHelper::hashNewPassword("Password12345"));
         $user->setRoles([
             new UserRole(Role::SCOPE_ACCOUNT, 1, 3, 1),
             new UserRole(Role::SCOPE_ACCOUNT, 5, 3, 2),
@@ -345,7 +346,7 @@ class AccountServiceTest extends TestBase {
         }
 
 
-        $this->authenticationService->login("regularuser@smartcoasting.org", "password");
+        $this->authenticationService->login("regularuser@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Check can't delete user from account
         try {
@@ -357,7 +358,7 @@ class AccountServiceTest extends TestBase {
 
 
         // Check can delete user from account if superuser
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->accountService->removeUserFromAccount(1, $user->getId());
 
         // Now try and get the user again
@@ -369,7 +370,7 @@ class AccountServiceTest extends TestBase {
         }
 
         // Now log in as super user
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $user = User::fetch($user->getId());
         $this->assertEquals(2, sizeof($user->getRoles()));

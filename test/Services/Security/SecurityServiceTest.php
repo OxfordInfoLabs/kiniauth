@@ -41,14 +41,14 @@ class SecurityServiceTest extends TestBase {
 
 
         // Super user.
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 1));
         $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 2));
 
 
         // Account admin
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 1));
         $this->assertEquals(array(), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 2));
@@ -56,7 +56,7 @@ class SecurityServiceTest extends TestBase {
 
 
         // User with dual account admin access.
-        $this->authenticationService->login("mary@shoppingonline.com", "password");
+        $this->authenticationService->login("mary@shoppingonline.com", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertEquals(array(), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 1));
         $this->assertEquals(array("viewdata", "editdata", "deletedata"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 2));
         $this->assertEquals(array(), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 3));
@@ -64,7 +64,7 @@ class SecurityServiceTest extends TestBase {
 
 
         // User with sub accounts.
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 5));
 
 
@@ -86,11 +86,11 @@ class SecurityServiceTest extends TestBase {
         $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
 
         // Super user
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
 
         // User with different account access
-        $this->authenticationService->login("mary@shoppingonline.com", "password");
+        $this->authenticationService->login("mary@shoppingonline.com", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
 
         // API login
@@ -129,7 +129,7 @@ class SecurityServiceTest extends TestBase {
         $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access", 5));
 
         // Super user
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access"));
         $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"viewdata"));
         $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata"));
@@ -137,7 +137,7 @@ class SecurityServiceTest extends TestBase {
         $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"deletedata", 7));
 
         // Administrator
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access"));
         $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"viewdata"));
         $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata"));
@@ -146,7 +146,7 @@ class SecurityServiceTest extends TestBase {
         $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata", 2));
 
         // User with selective roles
-        $this->authenticationService->login("regularuser@smartcoasting.org", "password");
+        $this->authenticationService->login("regularuser@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata"));
         $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"deletedata"));
         $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata", 2));

@@ -10,6 +10,7 @@ use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\SettingsService;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Template\TemplateParser;
@@ -46,7 +47,7 @@ class BrandedTemplatedEmailTest extends TestBase {
 
     public function testAccountTemplatedEmailsMergeParentBrandSettingsAndAccountIntoModel() {
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $accountTemplatedEmail = new AccountTemplatedEmail(2, "test", ["title" => "Mr", "name" => "Bob"]);
 
@@ -95,7 +96,7 @@ class BrandedTemplatedEmailTest extends TestBase {
 
     public function testUserTemplatedEmailsMergeParentBrandSettingsAndUserIntoModel() {
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $userTemplatedEmail = new UserTemplatedEmail(2, "test", ["title" => "Mrs", "name" => "Jane"]);
 

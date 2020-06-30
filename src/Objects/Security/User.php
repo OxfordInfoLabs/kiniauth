@@ -36,6 +36,7 @@ class User extends UserSummary {
      * Hashed password for interactive login checks
      *
      * @var string
+     * @minLength 64
      * @required
      */
     protected $hashedPassword;
@@ -94,27 +95,23 @@ class User extends UserSummary {
     protected $invalidLoginAttempts = 0;
 
 
-    /**
-     * @var string
-     * @password
-     * @unmapped
-     * @maxLength 100
-     */
-    protected $newPassword;
-
     const LOGGED_IN_USER = "LOGGED_IN_USER";
+
+    // Salt prefix for password - BLOWFISH bcrypt
+    const PASSWORD_SALT_PREFIX = "$2a$10$";
+
 
     /**
      * Create a new user with basic data.
      *
      * @param string $emailAddress
-     * @param string $password
+     * @param string $hashedPassword
      * @param string $name
      */
-    public function __construct($emailAddress = null, $password = null, $name = null, $parentAccountId = 0) {
+    public function __construct($emailAddress = null, $hashedPassword = null, $name = null, $parentAccountId = 0) {
         $this->emailAddress = $emailAddress;
-        if ($password) {
-            $this->setNewPassword($password);
+        if ($hashedPassword) {
+            $this->setHashedPassword($hashedPassword);
 
         }
         $this->name = $name;
@@ -166,28 +163,16 @@ class User extends UserSummary {
     }
 
     /**
-     * @param string $newPassword
-     */
-    public function setNewPassword($newPassword) {
-        $this->newPassword = $newPassword;
-        if ($newPassword) {
-            $hashProvider = Container::instance()->get(HashProvider::class);
-            $this->hashedPassword = $hashProvider->generateHash($newPassword);
-        } else {
-            $this->hashedPassword = "";
-        }
-    }
-
-
-    /**
      * Confirm whether the supplied password matches the hashed value
      *
      * @param $password
      * @return boolean
      */
-    public function passwordMatches($password) {
-        $hashProvider = Container::instance()->get(HashProvider::class);
-        return $hashProvider->verifyHash($password, $this->hashedPassword);
+    public function passwordMatches($password, $clientSalt) {
+
+        $comparison = crypt($this->hashedPassword, self::PASSWORD_SALT_PREFIX . $clientSalt);
+        return $password == $comparison;
+
     }
 
 

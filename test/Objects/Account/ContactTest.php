@@ -5,6 +5,7 @@ namespace Kiniauth\Test\Objects\Account;
 
 use Kiniauth\Objects\Account\Contact;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
 
@@ -24,7 +25,7 @@ class ContactTest extends TestBase {
     public function testWhenNoDefaultContactForAccountFirstContactIsMarkedAsDefault() {
 
         // Log in as a user
-        $this->authenticationService->login("simon@peterjonescarwash.com", "password");
+        $this->authenticationService->login("simon@peterjonescarwash.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Save a contact
         $contact = new Contact("Jeff Smith", "Jeff inc", "3 My house", "", "Oxford", "Oxon", "OX4 2RR", "GB");

@@ -110,7 +110,7 @@ class UserService {
         // Create a new user, save it and return it back.
         $user = Container::instance()->new(User::class, false);
         $user->setEmailAddress($emailAddress);
-        $user->setNewPassword($password);
+        $user->setHashedPassword($password);
         $user->setName($name);
         $user->setParentAccountId($parentAccountId);
 
@@ -361,7 +361,7 @@ class UserService {
              * @var User $user
              */
             $user = User::fetch($pendingAction->getObjectId());
-            $user->setNewPassword($newPassword);
+            $user->setHashedPassword($newPassword);
             $user->save();
 
             $this->pendingActionService->removePendingAction("PASSWORD_RESET", $resetCode);

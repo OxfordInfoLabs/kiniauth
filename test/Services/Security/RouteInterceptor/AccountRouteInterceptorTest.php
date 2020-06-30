@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Security\RouteInterceptor;
 use Kiniauth\Exception\Security\MissingCSRFHeaderException;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
@@ -54,7 +55,7 @@ class AccountRouteInterceptorTest extends TestBase {
         }
 
         // Account user
-        $this->authenticationService->login("simon@peterjonescarwash.com", "password");
+        $this->authenticationService->login("simon@peterjonescarwash.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         try {
             $this->accountRouteInterceptor->beforeRoute(new Request(new Headers()));
@@ -65,7 +66,7 @@ class AccountRouteInterceptorTest extends TestBase {
 
 
         // Root user
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
         $_SERVER["HTTP_X_CSRF_TOKEN"] = $this->securityService->getCSRFToken();
         $this->accountRouteInterceptor->beforeRoute(new Request(new Headers()));
 

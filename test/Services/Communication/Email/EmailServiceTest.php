@@ -7,6 +7,7 @@ use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Communication\Email\StoredEmailSendResult;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\Communication\Email\Attachment\FileEmailAttachment;
 use Kinikit\Core\Communication\Email\Email;
@@ -27,7 +28,7 @@ class EmailServiceTest extends TestBase {
         parent::setUp();
 
         $authenticationService = Container::instance()->get(AuthenticationService::class);
-        $authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $this->emailService = Container::instance()->get(EmailService::class);
     }

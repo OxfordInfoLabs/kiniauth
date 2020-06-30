@@ -111,7 +111,7 @@ class AuthenticationService {
             /** @var User $user */
             $user = $matchingUsers[0];
 
-            if ($user->passwordMatches($password)) {
+            if ($user->passwordMatches($password, $this->session->__getSessionSalt())) {
 
                 // If we are single sessioning, ensure we
                 if (Configuration::readParameter("login.single.session")) {

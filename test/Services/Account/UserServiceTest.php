@@ -17,6 +17,7 @@ use Kiniauth\Objects\Workflow\PendingAction;
 use Kiniauth\Services\Application\BootstrapService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Workflow\PendingActionService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kinikit\Core\Binding\ObjectBinder;
@@ -73,7 +74,7 @@ class UserServiceTest extends TestBase {
         $this->authenticationService->logout();
 
         // Simple one with just email address and password.
-        $activationCode = $this->userService->createPendingUserWithAccount("john@test.com", "Helloworld1");
+        $activationCode = $this->userService->createPendingUserWithAccount("john@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"));
 
         $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
 
@@ -81,7 +82,7 @@ class UserServiceTest extends TestBase {
 
         $this->assertNull($newUser->getId());
         $this->assertEquals("john@test.com", $newUser->getEmailAddress());
-        $this->assertTrue(password_verify("Helloworld1", $newUser->getHashedPassword()));
+        $this->assertEquals(AuthenticationHelper::hashNewPassword("Helloworld1"), $newUser->getHashedPassword());
         $this->assertEquals(0, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
         $this->assertEquals(0, sizeof($newUser->getRoles()));
@@ -89,7 +90,7 @@ class UserServiceTest extends TestBase {
 
         // Now do one with a users name, check propagation to account name.
         // Simple one with just email address and password.
-        $activationCode = $this->userService->createPendingUserWithAccount("john2@test.com", "Helloworld1", "John Smith");
+        $activationCode = $this->userService->createPendingUserWithAccount("john2@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "John Smith");
 
         $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
 
@@ -99,7 +100,7 @@ class UserServiceTest extends TestBase {
         $this->assertNull($newUser->getId());
         $this->assertEquals("john2@test.com", $newUser->getEmailAddress());
         $this->assertEquals("John Smith", $newUser->getName());
-        $this->assertTrue(password_verify("Helloworld1", $newUser->getHashedPassword()));
+        $this->assertEquals(AuthenticationHelper::hashNewPassword("Helloworld1"), $newUser->getHashedPassword());
         $this->assertEquals(0, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
         $this->assertEquals(0, sizeof($newUser->getRoles()));
@@ -107,7 +108,7 @@ class UserServiceTest extends TestBase {
 
         // Now do one with a user and account name, check propagation to account name.
         // Simple one with just email address and password.
-        $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", "Helloworld1", "John Smith",
+        $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "John Smith",
             "Smith Enterprises");
 
         $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
@@ -118,7 +119,7 @@ class UserServiceTest extends TestBase {
         $this->assertNull($newUser->getId());
         $this->assertEquals("john3@test.com", $newUser->getEmailAddress());
         $this->assertEquals("John Smith", $newUser->getName());
-        $this->assertTrue(password_verify("Helloworld1", $newUser->getHashedPassword()));
+        $this->assertEquals(AuthenticationHelper::hashNewPassword("Helloworld1"), $newUser->getHashedPassword());
         $this->assertEquals(0, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
         $this->assertEquals(0, sizeof($newUser->getRoles()));
@@ -138,7 +139,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals($pendingItems, PendingAction::values("COUNT(*)")[0]);
 
         // Login as admin to ensure permissions.
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Check for an account exists email
         $lastEmail = StoredEmail::filter("ORDER BY id DESC")[0];
@@ -151,7 +152,7 @@ class UserServiceTest extends TestBase {
 
         // Now do one with a user and account name and parent account id. check propagation to account name.
         // Simple one with just email address and password.
-        $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", "Helloworld1", "John Smith",
+        $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "John Smith",
             "Smith Enterprises", 1);
 
         $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
@@ -162,7 +163,7 @@ class UserServiceTest extends TestBase {
         $this->assertNull($newUser->getId());
         $this->assertEquals("john3@test.com", $newUser->getEmailAddress());
         $this->assertEquals("John Smith", $newUser->getName());
-        $this->assertTrue(password_verify("Helloworld1", $newUser->getHashedPassword()));
+        $this->assertEquals(AuthenticationHelper::hashNewPassword("Helloworld1"), $newUser->getHashedPassword());
         $this->assertEquals(1, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
 
@@ -177,7 +178,7 @@ class UserServiceTest extends TestBase {
 
         $this->authenticationService->logout();
 
-        $newUser = $this->userService->createPendingUserWithAccount("john4@test.com", "Helloworld1", "John Smith",
+        $newUser = $this->userService->createPendingUserWithAccount("john4@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "John Smith",
             "Smythe Enterprises", 0);
 
 
@@ -188,7 +189,7 @@ class UserServiceTest extends TestBase {
 
 
         // Login as admin to ensure permissions.
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Check for an email containing the identifier
         $lastEmail = StoredEmail::filter("ORDER BY id DESC")[0];
@@ -209,7 +210,7 @@ class UserServiceTest extends TestBase {
 
         $this->authenticationService->logout();
 
-        $activationCode = $this->userService->createPendingUserWithAccount("john5@test.com", "Helloworld1", "John Smith",
+        $activationCode = $this->userService->createPendingUserWithAccount("john5@test.com", AuthenticationHelper::hashNewPassword(AuthenticationHelper::hashNewPassword("Helloworld1")), "John Smith",
             "Smythe Enterprises", 0);
 
         try {
@@ -224,7 +225,7 @@ class UserServiceTest extends TestBase {
 
 
         // Check user is active
-        $this->authenticationService->login("john5@test.com", "Helloworld1");
+        $this->authenticationService->login("john5@test.com", AuthenticationHelper::encryptPasswordForLogin(AuthenticationHelper::hashNewPassword("Helloworld1")));
         $user = $this->session->__getLoggedInUser();
         $this->assertEquals("John Smith", $user->getName());
         $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
@@ -249,7 +250,7 @@ class UserServiceTest extends TestBase {
 
     public function testCanUnlockAccountIfValidUnlockCodeProvided() {
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Set invalid login attempts to 5.
         $user = User::fetch(2);
@@ -290,26 +291,26 @@ class UserServiceTest extends TestBase {
         $this->authenticationService->logout();
 
         // Log in as super user.
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Simple username / password one.
-        $adminUser = $this->userService->createAdminUser("marko@polo.com", "Helloworld1");
+        $adminUser = $this->userService->createAdminUser("marko@polo.com", AuthenticationHelper::hashNewPassword("Helloworld1"));
 
         $this->assertNotNull($adminUser->getId());
         $this->assertEquals("marko@polo.com", $adminUser->getEmailAddress());
-        $this->assertTrue(password_verify("Helloworld1", $adminUser->getHashedPassword()));
+        $this->assertEquals(AuthenticationHelper::hashNewPassword("Helloworld1"), $adminUser->getHashedPassword());
         $this->assertEquals(1, sizeof($adminUser->getRoles()));
         $this->assertEquals(0, $adminUser->getRoles()[0]->getScopeId());
         $this->assertEquals(0, $adminUser->getRoles()[0]->getRoleId());
 
 
         // Username, password and name one.
-        $adminUser = $this->userService->createAdminUser("marko2@polo.com", "Helloworld1", "Marko Polo");
+        $adminUser = $this->userService->createAdminUser("marko2@polo.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "Marko Polo");
 
         $this->assertNotNull($adminUser->getId());
         $this->assertEquals("marko2@polo.com", $adminUser->getEmailAddress());
         $this->assertEquals("Marko Polo", $adminUser->getName());
-        $this->assertTrue(password_verify("Helloworld1", $adminUser->getHashedPassword()));
+        $this->assertEquals(AuthenticationHelper::hashNewPassword("Helloworld1"), $adminUser->getHashedPassword());
         $this->assertEquals(1, sizeof($adminUser->getRoles()));
         $this->assertEquals(0, $adminUser->getRoles()[0]->getScopeId());
         $this->assertEquals(0, $adminUser->getRoles()[0]->getRoleId());
@@ -332,7 +333,7 @@ class UserServiceTest extends TestBase {
     public function testCanSearchForAccountUsers() {
 
         // Attempt a login. We need to be logged in to generate settings.
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Default search
         $users = $this->userService->searchForUsers("");
@@ -373,7 +374,7 @@ class UserServiceTest extends TestBase {
 
     public function testCanGenerateTwoFactorSettingsForDefaultProvider() {
         // Attempt a login. We need to be logged in to generate settings.
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Check the user
         $loggedInUser = $this->session->__getLoggedInUser();
@@ -393,7 +394,7 @@ class UserServiceTest extends TestBase {
 
         $this->userService->sendPasswordReset("mary@shoppingonline.com");
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("PASSWORD_RESET", 7);
         $this->assertEquals(1, sizeof($pendingActions));
@@ -412,7 +413,7 @@ class UserServiceTest extends TestBase {
         $this->authenticationService->logout();
 
         try {
-            $this->userService->changePassword("BADRESET", "Helloworld1");
+            $this->userService->changePassword("BADRESET", AuthenticationHelper::hashNewPassword("Helloworld1"));
             $this->fail("Should have thrown here");
         } catch (ValidationException $e) {
             // Success
@@ -449,14 +450,14 @@ class UserServiceTest extends TestBase {
 
     public function testCanChangePasswordIfValidPasswordAndCodeSupplied() {
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         // Check old password still valid
-        $user = new User("passwordchange@test.com", "Helloworld0", "Password Change");
+        $user = new User("passwordchange@test.com", AuthenticationHelper::hashNewPassword("Helloworld0"), "Password Change");
         $user->setStatus(User::STATUS_ACTIVE);
         $user->save();
 
-        $this->authenticationService->login("passwordchange@test.com", "Helloworld0");
+        $this->authenticationService->login("passwordchange@test.com", AuthenticationHelper::encryptPasswordForLogin("Helloworld0"));
 
         // Logout
         $this->authenticationService->logout();
@@ -468,10 +469,10 @@ class UserServiceTest extends TestBase {
         $identifier = $pendingActions[0]->getIdentifier();
 
         // Now change password
-        $this->userService->changePassword($identifier, "Helloworld1");
+        $this->userService->changePassword($identifier, AuthenticationHelper::hashNewPassword("Helloworld1"));
 
         // Now confirm login
-        $this->authenticationService->login("passwordchange@test.com", "Helloworld1");
+        $this->authenticationService->login("passwordchange@test.com", AuthenticationHelper::encryptPasswordForLogin("Helloworld1"));
 
 
         // Now ensure we can't reuse the identifier.
@@ -489,7 +490,7 @@ class UserServiceTest extends TestBase {
 
     public function testCanGetAllUsersWithRole() {
 
-        $this->authenticationService->login("admin@kinicart.com", "password");
+        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
 
         $accountUsers = $this->userService->getUsersWithRole(Role::SCOPE_ACCOUNT, 2);
@@ -518,7 +519,7 @@ class UserServiceTest extends TestBase {
         }
 
         try {
-            $this->userService->createUserAccessToken("bob@twofactor.com", "password");
+            $this->userService->createUserAccessToken("bob@twofactor.com", AuthenticationHelper::encryptPasswordForLogin("password"));
             $this->fail("Should have thrown here");
         } catch (TwoFactorAuthenticationRequiredException $e) {
             // Success
@@ -532,12 +533,12 @@ class UserServiceTest extends TestBase {
     public function testCanCreateUserAccessTokenForAccountWithValidLogin() {
 
         // Get the token
-        $token = $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+        $token = $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $this->assertEquals(32, strlen($token));
 
         // Check it is stored
-        $userAccessToken = UserAccessToken::fetch([2, hash("sha512", $token)]);
+        $userAccessToken = UserAccessToken::fetch([2, AuthenticationHelper::hashNewPassword($token)]);
         $this->assertTrue($userAccessToken instanceof UserAccessToken);
 
     }
@@ -548,7 +549,7 @@ class UserServiceTest extends TestBase {
         Configuration::instance()->addParameter("max.useraccess.tokens", 1);
 
         try {
-            $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+            $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
             $this->fail("Should have thrown here");
         } catch (TooManyUserAccessTokensException $e) {
             // Success
@@ -558,9 +559,9 @@ class UserServiceTest extends TestBase {
         Configuration::instance()->addParameter("max.useraccess.tokens", 2);
 
         // Should be able to create one more
-        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
         try {
-            $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+            $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
             $this->fail("Should have thrown here");
         } catch (TooManyUserAccessTokensException $e) {
             // Success
@@ -572,12 +573,12 @@ class UserServiceTest extends TestBase {
 
 
         // Should be able to create three more
-        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
-        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
-        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
+        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
+        $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         try {
-            $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", "password");
+            $this->userService->createUserAccessToken("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
             $this->fail("Should have thrown here");
         } catch (TooManyUserAccessTokensException $e) {
             // Success
@@ -590,7 +591,7 @@ class UserServiceTest extends TestBase {
 
     public function testCanAddSecondaryTokenToExistingUserAccessToken() {
 
-        $token = $this->userService->createUserAccessToken("simon@peterjonescarwash.com", "password");
+        $token = $this->userService->createUserAccessToken("simon@peterjonescarwash.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         try {
             $this->userService->addSecondaryTokenToUserAccessToken("BADTOKEN", "NEWSECONDARY");
@@ -603,7 +604,7 @@ class UserServiceTest extends TestBase {
         $this->userService->addSecondaryTokenToUserAccessToken($token, "WONDERFULWORLD");
 
         // Check the hash has been updated.
-        $userAccessToken = UserAccessToken::fetch([3, hash("sha512", $token . "--" . "WONDERFULWORLD")]);
+        $userAccessToken = UserAccessToken::fetch([3, AuthenticationHelper::hashNewPassword($token . "--" . "WONDERFULWORLD")]);
         $this->assertTrue($userAccessToken instanceof UserAccessToken);
 
     }

@@ -6,6 +6,7 @@ namespace Kiniauth\Test\Services\Application;
 
 use Kiniauth\Services\Application\SettingsService;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\MVC\Request\URL;
@@ -34,7 +35,7 @@ class SettingsServiceTest extends TestBase {
 
         $this->authenticationService->updateActiveParentAccount(new URL("https://samdavis.org"));
 
-        $this->authenticationService->login("james@smartcoasting.org", "password");
+        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $settings = $this->settingsService->getParentAccountSettingValues();
 
@@ -45,7 +46,7 @@ class SettingsServiceTest extends TestBase {
 
         $this->authenticationService->updateActiveParentAccount(new URL("https://kinicart.example"));
 
-        $this->authenticationService->login("james@smartcoasting.org", "password");
+        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $settings = $this->settingsService->getParentAccountSettingValues();
 

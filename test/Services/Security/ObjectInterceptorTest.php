@@ -6,6 +6,7 @@ namespace Kiniauth\Test\Services\Application;
 
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\Services\Security\TestMethodService;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
@@ -97,7 +98,7 @@ class ObjectInterceptorTest extends TestBase {
         }
 
         // Now try logging in as a user without the delete data privilege
-        $this->authenticationService->login("regularuser@smartcoasting.org", "password");
+        $this->authenticationService->login("regularuser@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         try {
             $this->testMethodService->accountPermissionRestricted();
@@ -107,11 +108,11 @@ class ObjectInterceptorTest extends TestBase {
         }
 
         // Now try a user with delete data privilege
-        $this->authenticationService->login("mary@shoppingonline.com", "password");
+        $this->authenticationService->login("mary@shoppingonline.com", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertEquals("OK", $this->testMethodService->accountPermissionRestricted());
 
         // Now try logging in as an administrator
-        $this->authenticationService->login("james@smartcoasting.org", "password");
+        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertEquals("OK", $this->testMethodService->accountPermissionRestricted());
 
 
@@ -125,7 +126,7 @@ class ObjectInterceptorTest extends TestBase {
         }
 
         // Now try logging in as an administrator
-        $this->authenticationService->login("james@smartcoasting.org", "password");
+        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertEquals("DONE", $this->testMethodService->otherAccountPermissionRestricted(2, "Heydude"));
         $this->assertEquals("DONE", $this->testMethodService->otherAccountPermissionRestricted(3, "Heydude"));
 
@@ -145,7 +146,7 @@ class ObjectInterceptorTest extends TestBase {
         $this->assertEquals(array("Mark", null), $this->testMethodService->loggedInAccountInjection("Mark"));
 
         // Now try logging in as a user without the delete data privilege
-        $this->authenticationService->login("regularuser@smartcoasting.org", "password");
+        $this->authenticationService->login("regularuser@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertEquals(array("Mark", 1), $this->testMethodService->loggedInAccountInjection("Mark"));
 
     }
@@ -157,7 +158,7 @@ class ObjectInterceptorTest extends TestBase {
         $this->assertEquals(array("Mark", null), $this->testMethodService->loggedInUserInjection("Mark"));
 
         // Now try logging in as a user without the delete data privilege
-        $this->authenticationService->login("regularuser@smartcoasting.org", "password");
+        $this->authenticationService->login("regularuser@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
         $this->assertEquals(array("Mark", 10), $this->testMethodService->loggedInUserInjection("Mark"));
 
     }

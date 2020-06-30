@@ -28,6 +28,7 @@ class BrandedTemplatedEmail extends TemplatedEmail {
 
         $templateData = $this->parseTemplate($templateName, $model);
         $from = null;
+        $replyTo = null;
         if (!isset($templateData["from"])) {
             $from = $settings["fromEmailAddress"] ?? null;
         }

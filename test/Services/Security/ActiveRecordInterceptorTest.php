@@ -7,6 +7,7 @@ namespace Kiniauth\Test\Services\Application;
 use Kiniauth\Objects\Account\Contact;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\Services\Security\TestNonAccountObject;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
@@ -71,7 +72,7 @@ class ActiveRecordInterceptorTest extends TestBase {
 
 
         // Now log in as a different account and confirm that interceptors fail.
-        $this->authenticationService->login("simon@peterjonescarwash.com", "password");
+        $this->authenticationService->login("simon@peterjonescarwash.com", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         try {
             $this->objectInterceptor->preSave($contact);
@@ -91,7 +92,7 @@ class ActiveRecordInterceptorTest extends TestBase {
 
 
         // Now log in as an account with authority and confirm that interceptors succeed.
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", "password");
+        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
 
         $this->assertTrue($this->objectInterceptor->preSave($contact));
         $this->assertTrue($this->objectInterceptor->preDelete($contact));
