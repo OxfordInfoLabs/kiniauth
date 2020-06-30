@@ -6,6 +6,7 @@ namespace Kiniauth\Services\Application;
 use Kiniauth\Objects\Account\Account;
 
 use Kiniauth\Objects\Security\User;
+use Kinikit\Core\Util\StringUtils;
 
 
 /**
@@ -252,6 +253,12 @@ class Session implements \Kinikit\MVC\Session\Session {
         $this->setValue("CSRFToken", $csrfToken);
     }
 
+    public function __getSessionSalt() {
+        if (!$this->getValue("sessionSalt")) {
+            $this->setValue("sessionSalt", StringUtils::generateRandomString(22));
+        }
+        return $this->getValue("sessionSalt");
+    }
 
     /**
      * Set a session value for a string key.

@@ -9,6 +9,7 @@ use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Security\SecurityService;
+use Kinikit\Core\Configuration\Configuration;
 
 /**
  * Simple container containing common session data for return back to the
@@ -43,6 +44,11 @@ class SessionData {
     private $csrfToken;
 
     /**
+     * @var string
+     */
+    private $sessionSalt;
+
+    /**
      * Get session data using user and account objects to seed the data.
      *
      * SessionData constructor.
@@ -70,6 +76,8 @@ class SessionData {
         $this->delayedCaptchas = $session->__getDelayedCaptchas();
 
         $this->csrfToken = $session->__getCSRFToken();
+
+        $this->sessionSalt = $session->__getSessionSalt();
     }
 
     /**
@@ -114,6 +122,13 @@ class SessionData {
      */
     public function getLoaded() {
         return 1;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSessionSalt() {
+        return $this->sessionSalt;
     }
 
 }
