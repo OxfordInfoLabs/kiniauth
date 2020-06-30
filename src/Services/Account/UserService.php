@@ -588,7 +588,7 @@ class UserService {
 
         $matchingUsers = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $parentAccountId);
 
-        return sizeof($matchingUsers) > 0 && $matchingUsers[0]->passwordMatches($password);
+        return sizeof($matchingUsers) > 0 && $matchingUsers[0]->passwordMatches($password, $this->session->__getSessionSalt());
     }
 
 
