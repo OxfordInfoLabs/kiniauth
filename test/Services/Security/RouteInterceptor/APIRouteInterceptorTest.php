@@ -53,7 +53,7 @@ class APIRouteInterceptorTest extends TestBase {
         }
 
         // Account user
-        $this->authenticationService->login("simon@peterjonescarwash.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
         try {
             $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
             $this->fail("Should have thrown here");
@@ -63,7 +63,7 @@ class APIRouteInterceptorTest extends TestBase {
 
 
         // Root user
-        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("admin@kinicart.com", "password");
         try {
             $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
             $this->fail("Should have thrown here");

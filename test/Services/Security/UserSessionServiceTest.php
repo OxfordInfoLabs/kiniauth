@@ -55,8 +55,8 @@ class UserSessionServiceTest extends TestBase {
 
         $this->userSessionService = new UserSessionService($this->session, $this->emailService);
 
-        $authenticationService = Container::instance()->get(AuthenticationService::class);
-        $authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
 
         $databaseConnection = Container::instance()->get(DatabaseConnection::class);
         $databaseConnection->execute("DELETE FROM ka_user_session");

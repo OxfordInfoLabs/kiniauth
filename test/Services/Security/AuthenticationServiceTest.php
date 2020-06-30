@@ -80,7 +80,7 @@ class AuthenticationServiceTest extends TestBase {
     public function testCanLoginAsSuperUser() {
 
         // Attempt a login.
-        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("admin@kinicart.com", "password");
 
         // Confirm that we are now logged in
         $this->assertNull($this->session->__getLoggedInAccount());
@@ -101,7 +101,7 @@ class AuthenticationServiceTest extends TestBase {
     public function testCanLoginAsRegularAccount() {
 
         // Attempt a login.
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
         // Check the user
         $loggedInUser = $this->session->__getLoggedInUser();
@@ -124,7 +124,7 @@ class AuthenticationServiceTest extends TestBase {
 
     public function testTwoFactorInterruptsLoginFlow() {
         // Attempt a login.
-        $attemptedLogin = $this->authenticationService->login("bob@twofactor.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        $attemptedLogin = AuthenticationHelper::login("bob@twofactor.com", "password");
 
         $this->assertEquals("REQUIRES_2FA", $attemptedLogin);
 
@@ -136,7 +136,7 @@ class AuthenticationServiceTest extends TestBase {
 
     public function testCanLoginAsUserWithPrescribedActiveAccount() {
 
-        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("james@smartcoasting.org", "password");
 
         // Check the user
         $loggedInUser = $this->session->__getLoggedInUser();
@@ -162,7 +162,7 @@ class AuthenticationServiceTest extends TestBase {
         // Activate parent context.
         $this->authenticationService->updateActiveParentAccount(new URL("http://samdavis.org/mark"));
 
-        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("james@smartcoasting.org", "password");
 
         // Check the user
         $loggedInUser = $this->session->__getLoggedInUser();
@@ -224,7 +224,7 @@ class AuthenticationServiceTest extends TestBase {
         }
 
 
-        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("admin@kinicart.com", "password");
 
         $user = User::fetch(7);
         $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
@@ -304,13 +304,13 @@ class AuthenticationServiceTest extends TestBase {
 
         // Check we can't log in legitimately as we are locked.
         try {
-            $this->authenticationService->login("mary@shoppingonline.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+            AuthenticationHelper::login("mary@shoppingonline.com", "password");
             $this->fail("Should have thrown here");
         } catch (InvalidLoginException $e) {
         }
 
 
-        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("admin@kinicart.com", "password");
 
         $user->setStatus(User::STATUS_ACTIVE);
         $user->setInvalidLoginAttempts(0);
@@ -344,14 +344,14 @@ class AuthenticationServiceTest extends TestBase {
 
 
         try {
-            $this->authenticationService->login("suspended@suspendeduser.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+            AuthenticationHelper::login("suspended@suspendeduser.com", "password");
             $this->fail("Should have thrown here");
         } catch (UserSuspendedException $e) {
             // Success
         }
 
         try {
-            $this->authenticationService->login("pending@myfactoryoutlet.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+            AuthenticationHelper::login("pending@myfactoryoutlet.com", "password");
             $this->fail("Should have thrown here");
         } catch (InvalidLoginException $e) {
             // Success
@@ -367,7 +367,7 @@ class AuthenticationServiceTest extends TestBase {
 
         // Test one where the user is attached to a single account which is suspended.
         try {
-            $this->authenticationService->login("john@shoppingonline.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+            AuthenticationHelper::login("john@shoppingonline.com", "password");
             $this->fail("Should have thrown here");
         } catch (AccountSuspendedException $e) {
             // Success
@@ -375,7 +375,7 @@ class AuthenticationServiceTest extends TestBase {
 
 
         // now test one with an active account which is suspended.  Check that the active account is set to the alternative account.
-        $this->authenticationService->login("mary@shoppingonline.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("mary@shoppingonline.com", "password");
 
         $loggedInUser = $this->session->__getLoggedInUser();
         $this->assertTrue($loggedInUser instanceof User);
@@ -480,7 +480,7 @@ class AuthenticationServiceTest extends TestBase {
 
 
     public function testCanLogOut() {
-        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("james@smartcoasting.org", "password");
         $this->assertNotNull($this->session->__getLoggedInAccount());
         $this->assertNotNull($this->session->__getLoggedInUser());
 
@@ -519,7 +519,7 @@ class AuthenticationServiceTest extends TestBase {
 
         $this->authenticationService->updateActiveParentAccount(new URL("https://kinicart.test/hello/123"));
 
-        $this->authenticationService->login("simon@peterjonescarwash.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
 
         $this->assertNotNull($this->session->__getLoggedInUser());
         $this->assertNotNull($this->session->__getLoggedInAccount());
@@ -567,7 +567,7 @@ class AuthenticationServiceTest extends TestBase {
 
             // Do a regular user
 
-            $result = $authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
+            $result = $authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("passwordsam@samdavisdesign.co.uk"));
             $this->assertEquals(AuthenticationService::STATUS_ACTIVE_SESSION, $result);
 
 
@@ -594,7 +594,7 @@ class AuthenticationServiceTest extends TestBase {
                 new UserSession(11, "XXXYYY", new UserSessionProfile("1.1.1.1", "html/1.1", 11))], [11]);
 
 
-            $result = $authenticationService->login("bob@twofactor.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+            $result = $authenticationService->login("bob@twofactor.com", AuthenticationHelper::encryptPasswordForLogin("passwordbob@twofactor.com"));
             $this->assertEquals(AuthenticationService::STATUS_ACTIVE_SESSION, $result);
 
 

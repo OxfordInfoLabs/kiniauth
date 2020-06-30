@@ -28,7 +28,7 @@ class EmailServiceTest extends TestBase {
         parent::setUp();
 
         $authenticationService = Container::instance()->get(AuthenticationService::class);
-        $authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
+        $authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("passwordsam@samdavisdesign.co.uk"));
 
         $this->emailService = Container::instance()->get(EmailService::class);
     }

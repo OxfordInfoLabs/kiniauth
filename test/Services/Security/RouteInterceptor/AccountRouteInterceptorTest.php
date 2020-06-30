@@ -55,7 +55,7 @@ class AccountRouteInterceptorTest extends TestBase {
         }
 
         // Account user
-        $this->authenticationService->login("simon@peterjonescarwash.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
 
         try {
             $this->accountRouteInterceptor->beforeRoute(new Request(new Headers()));
@@ -66,7 +66,7 @@ class AccountRouteInterceptorTest extends TestBase {
 
 
         // Root user
-        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("admin@kinicart.com", "password");
         $_SERVER["HTTP_X_CSRF_TOKEN"] = $this->securityService->getCSRFToken();
         $this->accountRouteInterceptor->beforeRoute(new Request(new Headers()));
 

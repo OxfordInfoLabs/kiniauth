@@ -72,7 +72,7 @@ class ActiveRecordInterceptorTest extends TestBase {
 
 
         // Now log in as a different account and confirm that interceptors fail.
-        $this->authenticationService->login("simon@peterjonescarwash.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
 
         try {
             $this->objectInterceptor->preSave($contact);
@@ -92,7 +92,7 @@ class ActiveRecordInterceptorTest extends TestBase {
 
 
         // Now log in as an account with authority and confirm that interceptors succeed.
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
         $this->assertTrue($this->objectInterceptor->preSave($contact));
         $this->assertTrue($this->objectInterceptor->preDelete($contact));

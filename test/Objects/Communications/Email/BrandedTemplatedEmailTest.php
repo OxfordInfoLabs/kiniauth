@@ -47,7 +47,7 @@ class BrandedTemplatedEmailTest extends TestBase {
 
     public function testAccountTemplatedEmailsMergeParentBrandSettingsAndAccountIntoModel() {
 
-        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("admin@kinicart.com", "password");
 
         $accountTemplatedEmail = new AccountTemplatedEmail(2, "test", ["title" => "Mr", "name" => "Bob"]);
 
@@ -96,7 +96,7 @@ class BrandedTemplatedEmailTest extends TestBase {
 
     public function testUserTemplatedEmailsMergeParentBrandSettingsAndUserIntoModel() {
 
-        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("admin@kinicart.com", "password");
 
         $userTemplatedEmail = new UserTemplatedEmail(2, "test", ["title" => "Mrs", "name" => "Jane"]);
 

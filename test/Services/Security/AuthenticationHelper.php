@@ -6,9 +6,34 @@ namespace Kiniauth\Test\Services\Security;
 
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Security\AuthenticationService;
 use Kinikit\Core\DependencyInjection\Container;
 
 class AuthenticationHelper {
+
+
+    /**
+     * Login as a user - handles mapping to correct password format
+     *
+     * @param $username
+     * @param $password
+     */
+    public static function login($emailAddress, $password) {
+        $authenticationService = Container::instance()->get(AuthenticationService::class);
+        return $authenticationService->login($emailAddress, self::encryptPasswordForLogin($password . $emailAddress));
+    }
+
+
+    /**
+     * Logout function
+     *
+     * @return mixed
+     */
+    public static function logout() {
+        $authenticationService = Container::instance()->get(AuthenticationService::class);
+        return $authenticationService->logout();
+    }
+
 
     /**
      * Encrypt a plain text password ready for login.

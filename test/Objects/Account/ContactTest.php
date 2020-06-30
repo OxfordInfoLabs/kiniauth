@@ -25,7 +25,7 @@ class ContactTest extends TestBase {
     public function testWhenNoDefaultContactForAccountFirstContactIsMarkedAsDefault() {
 
         // Log in as a user
-        $this->authenticationService->login("simon@peterjonescarwash.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
 
         // Save a contact
         $contact = new Contact("Jeff Smith", "Jeff inc", "3 My house", "", "Oxford", "Oxon", "OX4 2RR", "GB");

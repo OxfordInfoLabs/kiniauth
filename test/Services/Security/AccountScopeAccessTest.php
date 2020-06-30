@@ -31,7 +31,7 @@ class AccountScopeAccessTest extends TestBase {
         $this->accountScopeAccess = new AccountScopeAccess();
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
 
-        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("admin@kinicart.com", "password");
     }
 
 

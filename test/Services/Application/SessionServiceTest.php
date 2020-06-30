@@ -45,7 +45,7 @@ class SessionServiceTest extends TestBase {
     public function testCanGetSessionData() {
 
         // Super Admin
-        $this->authenticationService->login("admin@kinicart.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("admin@kinicart.com", "password");
         $sessionData = $this->sessionService->getSessionData();
         $loggedIn = $this->securityService->getLoggedInUserAndAccount();
         $this->assertEquals($loggedIn[0], $sessionData->getUser());
@@ -53,7 +53,7 @@ class SessionServiceTest extends TestBase {
 
 
         // Account admin
-        $this->authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
         $sessionData = $this->sessionService->getSessionData();
         $loggedIn = $this->securityService->getLoggedInUserAndAccount();

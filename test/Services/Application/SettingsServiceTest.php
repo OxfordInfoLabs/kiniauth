@@ -35,7 +35,7 @@ class SettingsServiceTest extends TestBase {
 
         $this->authenticationService->updateActiveParentAccount(new URL("https://samdavis.org"));
 
-        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("james@smartcoasting.org", "password");
 
         $settings = $this->settingsService->getParentAccountSettingValues();
 
@@ -46,7 +46,7 @@ class SettingsServiceTest extends TestBase {
 
         $this->authenticationService->updateActiveParentAccount(new URL("https://kinicart.example"));
 
-        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("james@smartcoasting.org", "password");
 
         $settings = $this->settingsService->getParentAccountSettingValues();
 

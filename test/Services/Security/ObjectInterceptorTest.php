@@ -98,7 +98,7 @@ class ObjectInterceptorTest extends TestBase {
         }
 
         // Now try logging in as a user without the delete data privilege
-        $this->authenticationService->login("regularuser@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("regularuser@smartcoasting.org", "password");
 
         try {
             $this->testMethodService->accountPermissionRestricted();
@@ -108,11 +108,11 @@ class ObjectInterceptorTest extends TestBase {
         }
 
         // Now try a user with delete data privilege
-        $this->authenticationService->login("mary@shoppingonline.com", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("mary@shoppingonline.com", "password");
         $this->assertEquals("OK", $this->testMethodService->accountPermissionRestricted());
 
         // Now try logging in as an administrator
-        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("james@smartcoasting.org", "password");
         $this->assertEquals("OK", $this->testMethodService->accountPermissionRestricted());
 
 
@@ -126,7 +126,7 @@ class ObjectInterceptorTest extends TestBase {
         }
 
         // Now try logging in as an administrator
-        $this->authenticationService->login("james@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("james@smartcoasting.org", "password");
         $this->assertEquals("DONE", $this->testMethodService->otherAccountPermissionRestricted(2, "Heydude"));
         $this->assertEquals("DONE", $this->testMethodService->otherAccountPermissionRestricted(3, "Heydude"));
 
@@ -146,7 +146,7 @@ class ObjectInterceptorTest extends TestBase {
         $this->assertEquals(array("Mark", null), $this->testMethodService->loggedInAccountInjection("Mark"));
 
         // Now try logging in as a user without the delete data privilege
-        $this->authenticationService->login("regularuser@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("regularuser@smartcoasting.org", "password");
         $this->assertEquals(array("Mark", 1), $this->testMethodService->loggedInAccountInjection("Mark"));
 
     }
@@ -158,7 +158,7 @@ class ObjectInterceptorTest extends TestBase {
         $this->assertEquals(array("Mark", null), $this->testMethodService->loggedInUserInjection("Mark"));
 
         // Now try logging in as a user without the delete data privilege
-        $this->authenticationService->login("regularuser@smartcoasting.org", AuthenticationHelper::encryptPasswordForLogin("password"));
+        AuthenticationHelper::login("regularuser@smartcoasting.org", "password");
         $this->assertEquals(array("Mark", 10), $this->testMethodService->loggedInUserInjection("Mark"));
 
     }
