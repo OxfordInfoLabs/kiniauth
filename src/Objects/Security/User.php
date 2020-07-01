@@ -9,6 +9,7 @@ use Kiniauth\Objects\Application\Session;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ValidationException;
 use Kinikit\Core\Security\Hash\HashProvider;
+use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 
@@ -170,8 +171,13 @@ class User extends UserSummary {
      */
     public function passwordMatches($password, $clientSalt) {
 
-        $comparison = crypt($this->hashedPassword, self::PASSWORD_SALT_PREFIX . $clientSalt);
-        return $password == $comparison;
+        /**
+         * @var SHA512HashProvider $hashProvider
+         */
+        $hashProvider = Container::instance()->get(SHA512HashProvider::class);
+
+        $expectedHash = $hashProvider->generateHash($this->hashedPassword . $clientSalt);
+        return $password == $expectedHash;
 
     }
 

@@ -8,6 +8,7 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Security\Hash\SHA512HashProvider;
 
 class AuthenticationHelper {
 
@@ -43,7 +44,13 @@ class AuthenticationHelper {
      */
     public static function encryptPasswordForLogin($password) {
         $session = Container::instance()->get(Session::class);
-        return crypt(hash('sha512', $password), User::PASSWORD_SALT_PREFIX . $session->__getSessionSalt());
+
+        /**
+         * @var SHA512HashProvider $hashProvider
+         */
+        $hashProvider = Container::instance()->get(SHA512HashProvider::class);
+
+        return $hashProvider->generateHash($hashProvider->generateHash($password) . $session->__getSessionSalt());
     }
 
 
