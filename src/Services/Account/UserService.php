@@ -376,23 +376,28 @@ class UserService {
     /**
      * @param $newEmailAddress
      * @param $password
+     * @param null $hashedPassword
      * @param string $userId
      */
-    public function changeUserEmail($newEmailAddress, $password, $userId = User::LOGGED_IN_USER) {
+    public function changeUserEmail($newEmailAddress, $password, $hashedPassword = null, $userId = User::LOGGED_IN_USER) {
         /** @var User $user */
         $user = User::fetch($userId);
         if ($this->validateUserPassword($user->getEmailAddress(), $password)) {
             $user->setEmailAddress($newEmailAddress);
+            if ($hashedPassword) {
+                $user->setHashedPassword($hashedPassword);
+            }
             $user->save();
-            return $user;
+            return true;
         }
+        return false;
     }
 
     /**
      * @param $newMobile
      * @param $password
      * @param string $userId
-     * @return User
+     * @return bool
      */
     public function changeUserMobile($newMobile, $password, $userId = User::LOGGED_IN_USER) {
         /** @var User $user */
@@ -400,15 +405,16 @@ class UserService {
         if ($this->validateUserPassword($user->getEmailAddress(), $password)) {
             $user->setMobileNumber($newMobile);
             $user->save();
-            return $user;
+            return true;
         }
+        return false;
     }
 
     /**
      * @param $newEmailAddress
      * @param $password
      * @param string $userId
-     * @return User
+     * @return bool
      */
     public function changeUserBackupEmail($newEmailAddress, $password, $userId = User::LOGGED_IN_USER) {
         /** @var User $user */
@@ -416,8 +422,9 @@ class UserService {
         if ($this->validateUserPassword($user->getEmailAddress(), $password)) {
             $user->setBackupEmailAddress($newEmailAddress);
             $user->save();
-            return $user;
+            return true;
         }
+        return false;
     }
 
     public function changeUserDetails($newEmailAddress, $newName, $password, $userId) {
@@ -427,9 +434,9 @@ class UserService {
             $user->setBackupEmailAddress($newEmailAddress);
             $user->setName($newName);
             $user->save();
-            return $user;
+            return true;
         }
-        return null;
+        return false;
     }
 
 
