@@ -408,6 +408,26 @@ class UserServiceTest extends TestBase {
     }
 
 
+    public function testCanGetEmailForPasswordResetCodeOrExceptionIfNoneExists() {
+
+        $this->userService->sendPasswordReset("mary@shoppingonline.com");
+
+        $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("PASSWORD_RESET", 7);
+        $identifier = $pendingActions[0]->getIdentifier();
+
+        $email = $this->userService->getEmailForPasswordResetCode($identifier);
+        $this->assertEquals("mary@shoppingonline.com", $email);
+
+        try {
+            $this->userService->getEmailForPasswordResetCode("BADCODE");
+            $this->fail("Should have thrown here");
+        } catch (ValidationException $e) {
+            // Success
+        }
+
+    }
+
+
     public function testChangePasswordThrowsValidationExceptionIfInvalidResetCodeOrPasswordSupplied() {
 
         $this->authenticationService->logout();

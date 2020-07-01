@@ -89,6 +89,19 @@ trait Auth {
 
 
     /**
+     * Get a reset code for an email address
+     *
+     * @http GET /passwordReset/$resetCode
+     *
+     * @param $resetCode
+     * @return string
+     */
+    public function getEmailAddressForResetCode($resetCode) {
+        return $this->userService->getEmailForPasswordResetCode($resetCode);
+    }
+
+
+    /**
      * Reset the password using a new password descriptor
      *
      * @http POST /passwordReset

@@ -51,7 +51,7 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
     }
 
     /**
-     * Implemnet this
+     * Implement this
      *
      * @param \Kinikit\MVC\Request\Request $request
      * @return \Kinikit\MVC\Response\Response|null
@@ -62,7 +62,6 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
 
         // Authenticate using referrer to ensure we are allowed in.
         $this->authenticationService->updateActiveParentAccount($request->getReferringURL());
-
 
         // If enforcing csrf do the main job
         if ($this->csrf) {

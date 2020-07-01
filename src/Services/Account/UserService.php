@@ -334,13 +334,31 @@ class UserService {
 
             // Create a pending action
             $userId = $matchingUsers[0]->getId();
-            $identifier = $this->pendingActionService->createPendingAction("PASSWORD_RESET", $userId);
+            $identifier = $this->pendingActionService->createPendingAction("PASSWORD_RESET", $userId, $emailAddress);
 
             // Send the email
             $this->emailService->send(new UserTemplatedEmail($userId, "security/password-reset", ["code" => $identifier]), null, $userId);
         }
 
 
+    }
+
+
+    /**
+     * Return the email address for verification code or null if none matches
+     *
+     * @param $resetCode
+     *
+     * @objectInterceptorDisabled
+     */
+    public function getEmailForPasswordResetCode($resetCode) {
+        try {
+            $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("PASSWORD_RESET", $resetCode);
+            return $pendingAction->getData();
+        } catch (ItemNotFoundException $e) {
+            throw new ValidationException(["resetCode" => new FieldValidationError("resetCode", "invalid", "Invalid reset code supplied for password reset")]);
+
+        }
     }
 
 
