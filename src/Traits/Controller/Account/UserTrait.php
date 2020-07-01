@@ -80,10 +80,12 @@ trait UserTrait {
      *
      * @param $newEmailAddress
      * @param $password
+     * @param null $hashedPassword
+     * @param string $userId
      * @return \Kiniauth\Objects\Security\User
      */
-    public function changeUserEmail($newEmailAddress, $password, $userId = User::LOGGED_IN_USER) {
-        return $this->userService->changeUserEmail($newEmailAddress, $password, $userId);
+    public function changeUserEmail($newEmailAddress, $password, $hashedPassword = null, $userId = User::LOGGED_IN_USER) {
+        return $this->userService->changeUserEmail($newEmailAddress, $password, $hashedPassword, $userId);
     }
 
     /**
@@ -93,6 +95,7 @@ trait UserTrait {
      *
      * @param $newEmailAddress
      * @param $password
+     * @param string $userId
      * @return \Kiniauth\Objects\Security\User
      */
     public function changeUserBackupEmail($newEmailAddress, $password, $userId = User::LOGGED_IN_USER) {
@@ -106,6 +109,7 @@ trait UserTrait {
      *
      * @param $newMobile
      * @param $password
+     * @param string $userId
      * @return \Kiniauth\Objects\Security\User
      */
     public function changeUserMobile($newMobile, $password, $userId = User::LOGGED_IN_USER) {
