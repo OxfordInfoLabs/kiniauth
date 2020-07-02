@@ -7,6 +7,7 @@ namespace Kiniauth\Traits\Controller\Guest;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\ValueObjects\Security\NewPasswordDescriptor;
+use Kinikit\Core\Logging\Logger;
 
 
 trait Auth {
