@@ -13,6 +13,7 @@ use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Reflection\ClassInspector;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
+use Kinikit\MVC\Request\Headers;
 use Kinikit\MVC\Request\Request;
 use Kinikit\MVC\Request\URL;
 
@@ -164,7 +165,7 @@ class ObjectInterceptorTest extends TestBase {
     }
 
 
-    public function testForMethodsWithCaptchaEveryTimeWeExpectACaptchaRequestParameter() {
+    public function testForMethodsWithCaptchaEveryTimeWeExpectACaptchaHeader() {
 
         try {
             $this->testMethodService->captchaEveryTime();
@@ -174,8 +175,11 @@ class ObjectInterceptorTest extends TestBase {
         }
 
 
+        $_SERVER["HTTP_X_CAPTCHA_TOKEN"] = "1234565";
+
+
         $this->requestInspector->setPropertyData($this->request,
-            ["captcha" => "54646436543"], "parameters", false);
+            new Headers(), "headers", false);
 
 
         // This should succeed
@@ -188,8 +192,10 @@ class ObjectInterceptorTest extends TestBase {
     public function testForMethodsWithCaptchaDelayParameterParameterOnlyRequiredAfterSpecifiedAttempts() {
 
         // Remove parameters
+        unset($_SERVER["HTTP_X_CAPTCHA_TOKEN"]);
+
         $this->requestInspector->setPropertyData($this->request,
-            [], "parameters", false);
+            new Headers(), "headers", false);
 
         $this->requestInspector->setPropertyData($this->request,
             new URL("https://myone.test/guest/service/bing"), "url", false);
@@ -200,6 +206,7 @@ class ObjectInterceptorTest extends TestBase {
 
         try {
             $this->testMethodService->captchaAfter1Failure(true);
+            $this->fail("Should have thrown here");
         } catch (\InvalidArgumentException $e) {
             // Success
         }
@@ -208,6 +215,7 @@ class ObjectInterceptorTest extends TestBase {
 
         try {
             $this->testMethodService->captchaAfter1Failure();
+            $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e) {
             // Success
         }
@@ -215,9 +223,11 @@ class ObjectInterceptorTest extends TestBase {
         $this->assertEquals(2, $this->session->__getDelayedCaptcha("guest/service/bing"));
 
 
-        $this->requestInspector->setPropertyData($this->request,
-            ["captcha" => "54646436543"], "parameters", false);
+        $_SERVER["HTTP_X_CAPTCHA_TOKEN"] = "1234565";
 
+
+        $this->requestInspector->setPropertyData($this->request,
+            new Headers(), "headers", false);
 
         // This should succeed
         $this->testMethodService->captchaAfter1Failure();
