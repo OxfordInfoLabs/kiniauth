@@ -63,31 +63,34 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
         // Authenticate using referrer to ensure we are allowed in.
         $this->authenticationService->updateActiveParentAccount($request->getReferringURL());
 
+
+        // Handle options requests to allow headers
+        if (strtolower($request->getRequestMethod()) == "options") {
+            $response = new SimpleResponse("");
+
+            // Add the capcha token as permitted in all cases
+            $response->setHeader("Access-Control-Allow-Headers", "x-captcha-token");
+
+            // Add the CSRF token as permitted for this route if we are enforcing csrf
+            if ($this->csrf)
+                $response->setHeader("Access-Control-Allow-Headers", "x-csrf-token");
+
+
+            return $response;
+        }
+
         // If enforcing csrf do the main job
         if ($this->csrf) {
 
-            // Shortcut the process if an options request made and return the header allowing the csrf token.
-            if (strtolower($request->getRequestMethod()) == "options") {
-
-                $response = new SimpleResponse("");
-
-                // Add the CSRF token as permitted for this route
-                $response->setHeader("Access-Control-Allow-Headers", "x-csrf-token");
-
-                return $response;
-
-            } else {
-
-                // Check for CSRF Tokens unless an options query.
-                $csrfToken = $request->getHeaders()->getCustomHeader("X_CSRF_TOKEN");
-                if (!$csrfToken || $csrfToken != $this->securityService->getCSRFToken()) {
-                    throw new MissingCSRFHeaderException();
-                }
-
-
-                // Call the custom logic.
-                return $this->beforeWebRoute($request, $user, $account);
+            // Check for CSRF Tokens unless an options query.
+            $csrfToken = $request->getHeaders()->getCustomHeader("X_CSRF_TOKEN");
+            if (!$csrfToken || $csrfToken != $this->securityService->getCSRFToken()) {
+                throw new MissingCSRFHeaderException();
             }
+
+            // Call the custom logic.
+            return $this->beforeWebRoute($request, $user, $account);
+
         } else {
             return $this->beforeWebRoute($request, $user, $account);
         }

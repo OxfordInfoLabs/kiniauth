@@ -153,9 +153,9 @@ class ObjectInterceptor extends ContainerInterceptor {
                 $requiresCaptcha = true;
             }
 
-            // If we require a captcha - check we have one
+            // If we require a captcha - check we have one as a header
             if ($requiresCaptcha) {
-                $captchaData = $this->request->getParameter("captcha");
+                $captchaData = $this->request->getHeaders()->getCustomHeader("X_CAPTCHA_TOKEN");
                 if ($captchaData) {
                     $captchaSuccess = $this->captchaProvider->verifyCaptcha($captchaData, $this->request);
                     if (!$captchaSuccess) {
