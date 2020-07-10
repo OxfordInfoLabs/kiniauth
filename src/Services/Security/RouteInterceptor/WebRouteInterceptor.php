@@ -9,6 +9,7 @@ use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\MVC\Request\Request;
+use Kinikit\MVC\Request\URL;
 use Kinikit\MVC\Response\Headers;
 use Kinikit\MVC\Response\SimpleResponse;
 use Kinikit\MVC\Routing\RouteInterceptor;
@@ -60,8 +61,8 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
 
         list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
 
-        // Authenticate using referrer to ensure we are allowed in.
-        $this->authenticationService->updateActiveParentAccount($request->getReferringURL());
+        // Authenticate using referrer / origin to ensure we are allowed in.
+        $this->authenticationService->updateActiveParentAccount($this->getReferrer($request));
 
 
         // Handle options requests to allow headers
@@ -104,7 +105,7 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
      */
     public function afterRoute($request, $response) {
 
-        $referrer = $request->getReferringURL();
+        $referrer = $this->getReferrer($request);
 
         // Check we have an active referrer - if so we can assume that the request referrer is valid.
         if ($this->authenticationService->hasActiveReferrer() && $referrer) {
@@ -138,6 +139,18 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
      * @return \Kinikit\MVC\Response\Response
      */
     public abstract function afterWebRoute($request, $response);
+
+
+    // Get normalised referrer
+    private function getReferrer($request) {
+        $referrer = null;
+        if ($request->getReferringURL()) {
+            $referrer = $request->getReferringURL();
+        } else if ($request->getHeaders()->getCustomHeader("ORIGIN")) {
+            $referrer = new URL($request->getHeaders()->getCustomHeader("ORIGIN"));
+        }
+        return $referrer;
+    }
 
 
 }
