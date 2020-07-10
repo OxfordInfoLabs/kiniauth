@@ -186,6 +186,7 @@ class SecurityService {
      * Log out implementation.  Usually called from authentication service.
      */
     public function logout() {
+
         // Clean down the session to remove any previously logged in state
         $this->session->__setLoggedInUser(null);
         $this->session->__setLoggedInAccount(null);
