@@ -1,0 +1,56 @@
+<div class="user-roles">
+    <div class="actionpanel sixtyforty" [ngClass]="{edit: editDetails}">
+
+        <div class="actioninfo p2w p1m">
+            <h4 class="mb1 mt0">User Details</h4>
+
+            <p>
+                <b>Name: </b>{{user.name}}<br>
+                <b>Email Address: </b>{{user.emailAddress}}
+            </p>
+
+        </div>
+        <div class="actions flex flex-col align-center justify-center p1">
+            <button class="button small-button white-button" (click)="editDetails = true">Edit Details</button>
+        </div>
+
+    </div>
+
+    <div class="roles-container mx1" *ngIf="Object.keys(userRoles).length">
+
+        <table>
+            <tbody *ngFor="let scopeKey of Object.keys(userRoles)">
+            <tr class="thead">
+                <th>{{scopeKey}}</th>
+                <th></th>
+                <th style="text-align: right">
+                    <button mat-button color="primary"
+                            *ngIf="userCanEditRoles(scopeKey)"
+                            (click)="editRolesForScope(userRoles[scopeKey], scopeKey)">
+                        Edit {{scopeKey}} Roles
+                        <mat-icon>launch</mat-icon>
+                    </button>
+                </th>
+            </tr>
+            <tr *ngFor="let scope of userRoles[scopeKey]">
+                <td>{{scope.scopeObjectDescription}}</td>
+                <td>{{roleDisplayString(scope)}}</td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+
+
+    </div>
+
+    <ka-inline-modal *ngIf="editRoles" (closed)="closeEditRoles(true)">
+        <ka-edit-roles [scopeKey]="scopeKey" [scope]="scopeEdit" [user]="user"
+                       (closed)="closeEditRoles(true)"></ka-edit-roles>
+    </ka-inline-modal>
+
+    <ka-inline-modal *ngIf="editDetails" (closed)="closeEditDetails()">
+        <ka-edit-details [authenticationService]="authService" (saved)="closeEditDetails()"
+                         [user]="user"></ka-edit-details>
+    </ka-inline-modal>
+
+</div>

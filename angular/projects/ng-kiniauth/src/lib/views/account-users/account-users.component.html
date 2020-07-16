@@ -1,0 +1,88 @@
+<div class="account-users">
+    <div class="flex align-center justify-between flex-wrap ">
+
+        <input type="text" (keyup)="search($event.target.value)"
+               placeholder="Search users" class="flex1 mr050 mt0 desktop-table-view invite-user">
+
+        <button class="but" [routerLink]="['/invite-user']">Invite User</button>
+
+    </div>
+
+    <div class="mobile-list-view pb1">
+
+        <input type="text" (keyup)="search($event.target.value)"
+               placeholder="Search users" class="full mt050">
+
+        <div class="list-items">
+            <div class="list-item flex align-center" *ngFor="let user of users; let i = index"
+                 (click)="viewUser(user)">
+                <div *ngIf="!user.selected" (click)="toggleUsersSelected(user)"
+                     class="item-selection flex align-center justify-center mr1"></div>
+
+                <div *ngIf="user.selected" (click)="toggleUsersSelected(user)"
+                     class="item-selection flex align-center justify-center mr1 selected">
+                    <span>&#10004;</span>
+                </div>
+                <div>
+                    <h3>{{user.name}}</h3>
+                    <p>{{user.buyerName}} • {{user.status}}</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="desktop-table-view">
+
+        <table class="mt1">
+            <thead>
+            <tr>
+                <!--            <th class="pl1">-->
+                <!--                <div *ngIf="!allSelected" (click)="toggleSelectAllUsers()"-->
+                <!--                     class="item-selection flex align-center justify-center mr1"></div>-->
+
+                <!--                <div *ngIf="allSelected" (click)="toggleSelectAllUsers()"-->
+                <!--                     class="item-selection flex align-center justify-center mr1 selected">-->
+                <!--                    <span>&#10004;</span>-->
+                <!--                </div>-->
+                <!--            </th>-->
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let user of users; let i = index" class="{{user.status}}">
+                <!--            <td class="pl1">-->
+                <!--                <div *ngIf="!user.selected" (click)="toggleUsersSelected(user)"-->
+                <!--                     class="item-selection flex align-center justify-center mr1"></div>-->
+
+                <!--                <div *ngIf="user.selected" (click)="toggleUsersSelected(user)"-->
+                <!--                     class="item-selection flex align-center justify-center mr1 selected">-->
+                <!--                    <span>&#10004;</span>-->
+                <!--                </div>-->
+                <!--            </td>-->
+                <td (click)="viewUser(user)"><b>{{user.name}}</b></td>
+                <td (click)="viewUser(user)">{{user.emailAddress}}</td>
+                <td class="status" (click)="viewUser(user)">
+                    <span class="{{user.status}}">{{user.status}}</span>
+                </td>
+                <td class="actions text-right">
+                    <button mat-button [matMenuTriggerFor]="menu" color="primary">
+                        Actions <mat-icon>keyboard_arrow_down</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="removeUser(user)">Remove</button>
+                    </mat-menu>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <mat-paginator class="user-paginator flex1 pl050 mb0"
+                   [length]="usersSize" [pageSize]="pageSize.getValue()"
+                   [pageSizeOptions]="[10, 25, 50, 100]"
+                   (page)="updatePage($event)"></mat-paginator>
+
+</div>

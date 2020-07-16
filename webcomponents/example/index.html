@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kiniauth Example File</title>
+</head>
+<body>
+
+
+<ka-bind data-model='{"test": [{"test": {"test": "mark"}}]}'>
+
+    <h1>Binding</h1>
+
+    {test[0].test['school']}
+
+
+    <input type="text"
+           kb-value="test[0].test['school']">
+
+</ka-bind>
+
+
+
+<script type="text/javascript" src="../dist/kiniauth.js"></script>
+
+<script type="text/javascript">
+    new Kiniauth({
+        "endpoint": "http://test"
+    });
+</script>
+
+</body>
+</html>

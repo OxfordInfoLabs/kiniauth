@@ -1,0 +1,39 @@
+<div class="login">
+
+    <div class="login-container" *ngIf="!twoFA">
+
+        <h1>Login</h1>
+
+        <label>Enter your username or email address</label>
+        <input type="text" placeholder="Username" name="email" [(ngModel)]="email" required
+               (change)="checkUsername()">
+
+        <label>Enter your password <a href="#">I've forgotten my password</a></label>
+        <input type="password" placeholder="Password" name="password" [(ngModel)]="password"
+               (keyup.enter)="login()" required>
+
+        <p class="error" *ngIf="loginError">Email or password incorrect, please check and try again.</p>
+
+        <button class="button small-button login-button" *ngIf="!loading" (click)="login()"
+                [disabled]="!email || !password">Sign in
+        </button>
+    </div>
+
+    <div class="two-fa-container" *ngIf="twoFA">
+
+        <h4>Two Factor Authentication</h4>
+
+        <p>Enter your second factor authentication code.</p>
+
+        <input placeholder="Verification code" [(ngModel)]="twoFACode"
+               (keyup.enter)="authenticate()">
+
+        <p class="error" *ngIf="twoFAError">Invalid code, please try again.</p>
+
+        <button class="button small-button login-button" *ngIf="!loading" (click)="authenticate()"
+                [disabled]="!twoFACode">Login
+        </button>
+
+    </div>
+
+</div>

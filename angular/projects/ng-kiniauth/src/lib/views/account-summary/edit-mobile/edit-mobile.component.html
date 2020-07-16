@@ -1,0 +1,27 @@
+<p class="mb2">
+    Change your mobile number. You will be required to confirm you identity by entering your password
+    prior to saving the new number.
+</p>
+
+<div class="mb2">
+    <label>Enter the new mobile number you want to use.</label>
+    <input type="text" placeholder="New mobile number" [(ngModel)]="newMobile" maxlength="30">
+</div>
+
+<div class="mb2">
+    <label>Enter current password to confirm change.</label>
+    <input type="password" placeholder="Enter password" [(ngModel)]="currentPassword" maxlength="100">
+</div>
+
+<div class="flex align-center justify-between">
+    <div></div>
+    <button type="button" class="but butsm"
+            [disabled]="!newMobile || !currentPassword"
+            (click)="saveMobileNumber()">
+        Update mobile number
+    </button>
+</div>
+
+<p *ngIf="saveError" class="mt2 flex align-center error">
+    {{saveError}}
+</p>

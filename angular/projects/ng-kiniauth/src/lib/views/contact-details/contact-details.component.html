@@ -1,0 +1,71 @@
+<form class="px2 py2 whitebk mb1" kbForm [model]="contact"
+      [source]="source" [sourceParams]="sourceParams" [store]="store" #contactForm="ngForm"
+      (onSave)="saved()">
+
+    <div *ngIf="contact.data">
+
+        <label>
+            <input class="full" type="text" name="name" [(ngModel)]="contact.data.name" required>
+            <span>Full Name <span style="color: rgba(139,0,0,.5)">*</span></span>
+        </label>
+
+        <label>
+            <input class="full" type="text" name="organisation" [(ngModel)]="contact.data.organisation">
+            Name of Business / Organisation
+        </label>
+
+        <label>
+            <input type="text" class="full" name="addressStreet1"
+                   [(ngModel)]="contact.data.street1" required>
+            <span>Address 1 <span style="color: rgba(139,0,0,.5)">*</span></span>
+        </label>
+
+        <label>
+            <input type="text" class="full" name="addressStreet2"
+                   [(ngModel)]="contact.data.street2">
+            Address 2
+        </label>
+
+        <div class="flex align-center flex-wrap">
+            <label>
+                <input type="text" class="full" name="addressCity"
+                       [(ngModel)]="contact.data.city" required>
+                <span>Town / City <span style="color: rgba(139,0,0,.5)">*</span></span>
+            </label>
+
+            <label>
+                <input type="text" class="full" name="addressCounty"
+                       [(ngModel)]="contact.data.county" required>
+                <span>State / County / Region <span style="color: rgba(139,0,0,.5)">*</span></span>
+            </label>
+        </div>
+
+        <label>
+            <select name="country" required [(ngModel)]="contact.data.countryCode">
+                <option *ngFor="let country of countries" [value]="country.code">
+                    {{country.name}}
+                </option>
+            </select>
+            <span>Country <span style="color: rgba(139,0,0,.5)">*</span></span>
+        </label>
+
+        <label>
+            <input type="text" name="postcode"
+                   [(ngModel)]="contact.data.postcode" required>
+            <span>Postcode <span style="color: rgba(139,0,0,.5)">*</span></span>
+        </label>
+
+        <label>
+            <input type="number" name="telephoneNumber" [(ngModel)]="contact.data.telephoneNumber">
+            Telephone Number
+        </label>
+
+    </div>
+
+    <div class="flex justify-end mt2">
+        <button type="submit" class="mt2 but butsm" [disabled]="contactForm.invalid">
+            SAVE CHANGES
+        </button>
+    </div>
+
+</form>

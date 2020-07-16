@@ -1,0 +1,26 @@
+<h4>Google Authenticator</h4>
+<ng-template [ngIf]="settings">
+
+    <p>After downloading and installing the Google Authenticator app, scan the QR code below
+        to link your account. If you are unable to scan the QR code below, please enter the following code
+        <strong>{{settings.secret}}</strong></p>
+
+
+    <img [src]="settings.qrCode" alt="">
+    <br><br>
+    <p>Once linked, please enter the verification code you see in the Google Authenticator app below.</p>
+
+    <input placeholder="Enter verification code" [(ngModel)]="twoFACode" maxlength="10">
+
+    <button class="but butsm m0" (click)="verifyCode()">
+        Verify Code
+    </button>
+
+    <h5 class="mt2">Backup Codes</h5>
+    <p>The following one-time codes can be used if you need to gain access to your account in an emergency.</p>
+
+    <p *ngFor="let code of settings.backupCodes"><b>{{code}}</b></p>
+
+
+</ng-template>
+

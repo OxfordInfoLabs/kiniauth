@@ -1,0 +1,66 @@
+table
+    border-style: none
+    border-top-width: 0
+    width: 100%
+    border-spacing: 0
+    border-collapse: collapse
+table tr
+    border-style: none
+    border-bottom-width: 0
+
+table th, table td
+    border-style: none
+    padding-right: 1em
+    padding-top: 1em
+    padding-bottom: 1em
+    text-align: left
+    vertical-align: top
+
+table th.tool, table td.tool
+    padding: 0 1em
+
+table th + th,
+table th + td,
+table td + th,
+table td + td
+    border-left-width: 1px
+
+table thead tr:last-child
+    border-bottom-width: 2px
+
+table thead th,
+table tr.index th
+    font-weight: 600
+
+table thead th
+    border-bottom: 1px solid
+    padding-bottom: .25em
+    border-color: #ddd
+
+table tr.index th
+    font-size: 1.33333em
+    line-height: 1.2em
+
+table tbody:first-of-type tr.index th
+    padding-top: 1em
+
+table tbody th
+    font-weight: normal
+
+table tbody td
+    border-bottom: 1px solid
+    border-color: #eee
+    vertical-align: middle
+.item-selection
+    width: 20px
+    height: 20px
+    border: 2px solid #dddddd
+    border-radius: 4px
+    font-size: 1rem
+    cursor: pointer
+    user-select: none
+    &.selected
+        background-color: #bcbcbc
+        border-color: #bcbcbc
+        color: white
+

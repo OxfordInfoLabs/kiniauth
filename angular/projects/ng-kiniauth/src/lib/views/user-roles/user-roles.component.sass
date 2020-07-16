@@ -1,0 +1,38 @@
+@import "../../sass/table"
+.user-roles
+    .roles-container
+        background-color: white
+        padding: 1rem
+
+    table
+        background-color: white
+
+    tbody
+        tr
+            &.thead
+                th
+                    border-bottom: 1px solid
+                    padding-bottom: .25em
+                    border-color: #ddd
+                    font-weight: 600
+                    padding-top: 2rem
+            &:not(.thead)
+                &:hover
+                    background-color: whitesmoke
+                    cursor: pointer
+        &:first-of-type
+            tr.thead
+                th
+                    padding-top: 1rem
+
+    .actionpanel
+        &.edit
+            margin-bottom: 0
+
+    .changes-panel
+        margin: 0 1rem 2rem 1rem
+        background-color: white
+        padding: 1rem 2rem
+        border-top: 1px solid whitesmoke
+        p
+            margin: 0

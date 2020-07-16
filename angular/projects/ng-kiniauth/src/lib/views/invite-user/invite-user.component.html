@@ -1,0 +1,44 @@
+<ng-template [ngIf]="inviteComplete">
+
+    <div class="flex align-center justify-center p3 invite-sent">
+
+        <h3 class="mb3"><mat-icon color="primary">check</mat-icon> Invitation Sent</h3>
+
+        <p class="mb3">A confirmation email has been sent to <b>{{emailAddress}}</b>, the user will need to click on the confirmation
+            link in order to activate their account.</p>
+
+        <button class="but" (click)="back()">Return to list</button>
+    </div>
+
+</ng-template>
+
+<ng-template [ngIf]="!inviteComplete">
+
+    <div class="mb2">
+        <p class="thin">User email address</p>
+        <input type="text" placeholder="Email address" class="flex1 mr050 mt0 full"
+               [(ngModel)]="emailAddress">
+    </div>
+
+    <p class="thin">Account permissions</p>
+
+    <div class="mb2">
+        <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'"
+                       [updatedScopes]="scopeRoles['ACCOUNT']" [hideApply]="true"></ka-edit-roles>
+        <p style="color: red" *ngIf="accountError">{{accountError}}</p>
+    </div>
+
+    <p class="thin">Other permissions</p>
+
+    <mat-tab-group animationDuration="0">
+        <mat-tab *ngFor="let scopeAccess of scopeAccesses" [label]="scopeAccess.scopeDescription">
+            <ka-edit-roles [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope"
+                           [updatedScopes]="scopeRoles[scopeAccess.scope]" [hideApply]="true"></ka-edit-roles>
+        </mat-tab>
+    </mat-tab-group>
+
+    <div class="flex align-center justify-between mt2">
+        <div></div>
+        <button class="but butsm" (click)="save()" [disabled]="!emailAddress">Invite User</button>
+    </div>
+</ng-template>

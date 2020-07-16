@@ -1,0 +1,28 @@
+.list-items
+    background-color: white
+    .list-item
+        position: relative
+        border-bottom: 1px solid #ddd
+        padding-left: 1rem
+        &::after
+            content: "\232a"
+            position: absolute
+            font-size: 1.8rem
+            color: #ccc
+            right: 0
+            top: 25%
+        h3
+            margin: .3rem 0
+        p
+            margin: .3rem 0
+            color: #838383
+            font-size: .9rem
+            &:first-of-type
+                margin-bottom: 0
+            &:last-of-type
+                margin-top: 0
+        @media only screen and (max-width: 320px)
+            h3
+                font-size: 1.2rem
+            p
+                font-size: .85rem

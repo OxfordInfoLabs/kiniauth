@@ -1,0 +1,50 @@
+{
+  "name": "kiniauth",
+  "version": "0.0.43",
+  "description": "Kiniauth Web Components",
+  "main": "index.js",
+  "files": [
+    "dist",
+    "ts"
+  ],
+  "scripts": {
+    "watch": "webpack --config webpack.config.js --watch",
+    "build:production": "webpack --config webpack.config.js -p --display-modules",
+    "sass": "node-sass -w sass --output dist",
+    "publish:project": "npm run build:production; bump patch; npm publish",
+    "publish:tree": "npm run update:dev; npm run publish:dependent:tree;npm run update:packages; npm run publish:project",
+    "publish:dependent:tree": "cd node_modules/kinibind; npm run publish:project",
+    "update:dev": "npm run update:packages && npm run update:symlinks",
+    "update:packages": "npm i; npm i kinibind@latest",
+    "update:symlinks": "npm link ../../kinibind"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OxfordInfoLabs/kiniauth-js.git"
+  },
+  "author": "support@oxil.co.uk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OxfordInfoLabs/kiniauth-js/issues"
+  },
+  "homepage": "https://github.com/OxfordInfoLabs/kiniauth-js#readme",
+  "devDependencies": {
+    "@types/node": "^10.11.3",
+    "source-map-loader": "0.2.3",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.4.1",
+    "uglify-template-string-loader": "^1.1.1",
+    "uglifyjs-webpack-plugin": "^2.1.2",
+    "version-bump-prompt": "^5.0.1",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "@webcomponents/custom-elements": "^1.2.2",
+    "@webcomponents/webcomponentsjs": "^2.4.3",
+    "js-sha512": "^0.8.0",
+    "kinibind": "0.0.88",
+    "whatwg-fetch": "github:github/fetch"
+  }
+}

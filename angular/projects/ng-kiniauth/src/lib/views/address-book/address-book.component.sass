@@ -1,0 +1,53 @@
+.contacts-wrapper
+    display: flex
+    flex-wrap: wrap
+    padding: 1rem
+    .contact-block
+        position: relative
+        width: 100%
+        padding: 1rem
+        max-width: 40%
+        min-width: 290px
+        background-color: white
+        height: 300px
+        border: 1px solid #eee
+        margin: 1%
+        display: flex
+        flex-direction: column
+        align-items: center
+        .delete-method
+            font-size: 1.4rem
+            text-decoration: none
+            color: darkred
+        &.new
+            justify-content: center
+            &:hover
+                cursor: pointer
+                background-color: whitesmoke
+        &.add
+            button
+                position: absolute
+                top: 0
+                right: 0
+        &.existing
+            flex-direction: column
+            justify-content: space-between
+            align-items: flex-start
+            .default
+                color: #3a3ec4
+                padding: 5px 10px
+            .edit
+                align-self: flex-end
+            .verified
+                align-self: flex-end
+        .contact-loading
+            position: absolute
+            top: 0
+            bottom: 0
+            right: 0
+            left: 0
+            display: flex
+            justify-content: center
+            align-items: center
+            background-color: rgba(0,0,0,0.2)
+            z-index: 9

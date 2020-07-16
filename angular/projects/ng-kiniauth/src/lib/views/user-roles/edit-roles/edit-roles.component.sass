@@ -1,0 +1,29 @@
+@import "../../../sass/table"
+
+table.edit-roles
+    background-color: white
+    tbody
+        tr
+            td
+                padding-left: 1rem
+            &.thead
+                th
+                    border-bottom: 1px solid
+                    padding-bottom: .25em
+                    border-color: #ddd
+                    font-weight: 600
+            &:not(.thead)
+                &:hover
+                    background-color: whitesmoke
+                    cursor: pointer
+        .role-checkbox
+            height: auto
+            margin: 0 .25rem 0 0
+
+.apply-bar
+    position: fixed
+    bottom: 0
+    right: 0
+    left: 0
+    background-color: white
+    border-top: 2px solid #dddddd

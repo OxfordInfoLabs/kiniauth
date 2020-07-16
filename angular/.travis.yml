@@ -1,0 +1,17 @@
+dist: trusty
+sudo: false
+language: node_js
+node_js:
+- '8'
+addons:
+  chrome: stable
+cache:
+  directories:
+  - "./node_modules"
+install:
+- npm install
+script:
+- npm run test -- --no-watch --no-progress --browsers=ChromeHeadless
+notifications:
+  slack:
+    secure: i3vfIiw48hViK9shVugdSnvPuGDp7EGc3OI8zOmhNg/ZTcUfP1v7P0k3FsHGu8WYtNVOyeFI0vyMf9HcRT/cQtaKvovuBQl/RUIBz9Bt24tPKh74IncxjvsGsO901vcZiif4k2+p/xagLMoNjDG7TvL8jazwHW5LxpT9fEpJ3QQaBBEj8JeDRvSVNKizxLQJzrWXCLGSaUO8NWhLWXozlRqnr0dDrlxwZVIYoCcdtoGPzmJ5ckLJCUmuElVtv/VT+j/IhXBJr9v9II89imxSZsTPWKzMVdC8uWpp3fppwrJQ/AVrRqpvAapp0WFN0KlTl75moyuShKoy1Ra75DvM9BAG1BN5vOVfr4eQTAcBTrp7zBIOS3vmX/mnkacxAf3Wonumv5kZQFBigF4gqOQHFvlSsAuqhYxaaAIjoPaWtXsis2QdsXWxNdvaQExcMdwqhzDaAu9C4n1C8bI8iTiJTAChsjLRlzUHG5c8Umj2aWlEDGkRBPKUf+bKPMLKnZXd2GDitaqqv/aQQhPhsjPVcEeh3QZy3oQ/KFDe/GDjxHMvSeYLmwHJpV5Dp5JeQrRQC1GH7UnxjtY1Nt1fMDnXMMacVAc4pqAaAjlKH39sDSlaixZ1cZIV6WQ7bGELO++sN2l5D3jB7i/dq9dfipuR8tkciwH6eyarbOIyu04arto=

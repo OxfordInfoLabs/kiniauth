@@ -1,0 +1,50 @@
+@import "../../sass/table"
+@import "../../sass/list"
+.account-users
+    @media only screen and (max-width: 768px)
+        .desktop-table-view
+            display: none
+        .mobile-list-view
+            display: block
+
+    @media only screen and (min-width: 768px)
+        .desktop-table-view
+            display: block
+            padding: 1rem
+        .mobile-list-view
+            display: none
+
+    .desktop-table-view, .mobile-list-view
+        background-color: white
+
+    table
+        background-color: white
+
+    tbody
+        tr
+            &.PENDING
+                td
+                    &:not(.actions)
+                        opacity: .6
+            &:not(.PENDING)
+                &:hover
+                    background-color: whitesmoke
+                    cursor: pointer
+            td.status
+                span
+                    padding: .25rem .4rem
+                    text-transform: lowercase
+                    font-size: .9rem
+                    border-radius: 2px
+                    &.PENDING
+                        background-color: gray
+                        color: white
+                    &.ACTIVE
+                        background-color: #12a6d3
+                        color: white
+
+    .invite-user
+        margin-bottom: 0
+
+    .user-paginator
+        background: transparent

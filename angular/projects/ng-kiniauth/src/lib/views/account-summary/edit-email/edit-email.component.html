@@ -1,0 +1,30 @@
+<p class="mb2">
+    Change your email address. You will be required to confirm you identity by entering your password
+    prior to saving the new email address.
+</p>
+
+<div class="mb2">
+    <label>Enter the new email address you want to use.</label>
+    <input type="email" placeholder="New email address" [(ngModel)]="newEmailAddress"
+           (change)="checkEmail()" email #email="ngModel" maxlength="200">
+    <span style="color: red" *ngIf="!emailAvailable">An account already exists with this email address</span>
+    <span style="color: red" *ngIf="email.invalid">Not a valid email address</span>
+</div>
+
+<div class="mb2">
+    <label>Enter current password to confirm email change.</label>
+    <input type="password" placeholder="Enter password" [(ngModel)]="currentPassword" maxlength="100">
+</div>
+
+<div class="flex align-center justify-between">
+    <div></div>
+    <button type="button" class="but butsm"
+            [disabled]="!emailAvailable || !newEmailAddress || !currentPassword || email.invalid"
+            (click)="saveEmailAddress()">
+        Update email address
+    </button>
+</div>
+
+<p *ngIf="saveError" class="mt2 flex align-center error">
+    {{saveError}}
+</p>
