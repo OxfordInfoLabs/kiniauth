@@ -27,6 +27,7 @@ export default class AuthKinibind extends Kinibind {
         // Merge together and bind this element
         model = {...model, ...coreParams};
 
+
         // Initialise the combined model
         super(element, model);
 

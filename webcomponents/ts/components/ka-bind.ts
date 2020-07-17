@@ -55,7 +55,6 @@ export default class KaBind extends HTMLElement {
         let source = this.getAttribute("data-source");
         let sourceKey = this.getAttribute("data-source-key");
 
-
         if (source && !sourceKey) {
             alert("You must supply a source key when supplying a source for a bind");
         }
@@ -97,9 +96,7 @@ export default class KaBind extends HTMLElement {
         let sourceKey = this.getAttribute("data-source-key");
 
         if (this.getAttribute("data-proxy")) {
-
-            this.view.model[sourceKey] = AuthArrayProxy.create(url);
-
+            this.view.addNewProperty(this.view.model, sourceKey, new AuthArrayProxy(url));
         } else {
 
             let api = new Api();
