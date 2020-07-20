@@ -75,7 +75,10 @@ export default class KaBind extends HTMLElement {
             data = model ? model : {};
 
 
-        this.view = new AuthKinibind(this, data);
+        let joinElement = this.hasAttribute("data-join-element") ? this.getAttribute("data-join-element") : null;
+
+
+        this.view = new AuthKinibind(this, data, joinElement);
 
         if (source && !this.getAttribute("defer-load")) {
             this.load();

@@ -10,7 +10,7 @@ export default class AuthArrayProxy extends ArrayProxy {
     private _sourceUrl;
 
     // Running queries
-    private static lastQueryStart = 0;
+    private static lastQueryStarts = {};
 
     constructor(sourceUrl: string) {
         super();
@@ -37,7 +37,7 @@ export default class AuthArrayProxy extends ArrayProxy {
             Object.keys(passedFilters.filters).forEach(key => {
                 if (key !== "__rv") {
                     let filterValue = passedFilters.filters[key];
-                    if ((typeof filterValue != "string") && filterValue.type) {
+                    if ((typeof filterValue != "string") && filterValue && filterValue.type) {
                         strippedFilters[key] = filterValue.value ? filterValue.value : "";
                     } else {
                         strippedFilters[key] = filterValue;
@@ -59,11 +59,11 @@ export default class AuthArrayProxy extends ArrayProxy {
             let api = new Api();
 
             let myStartTime = dayjs().valueOf();
-            AuthArrayProxy.lastQueryStart = myStartTime;
+            AuthArrayProxy.lastQueryStarts[filters.hash] = myStartTime;
 
             api.callAPI(this._sourceUrl, passedFilters, "POST").then((response => {
 
-                if (AuthArrayProxy.lastQueryStart <= myStartTime) {
+                if (AuthArrayProxy.lastQueryStarts[filters.hash] <= myStartTime) {
 
                     if (response.ok) {
                         response.json().then(result => {

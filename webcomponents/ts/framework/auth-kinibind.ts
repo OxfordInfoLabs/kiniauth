@@ -14,7 +14,7 @@ export default class AuthKinibind extends Kinibind {
      * @param element
      * @param params
      */
-    constructor(element, model = {}) {
+    constructor(element, model = {}, joinElement = null) {
 
         // Add core params
         let coreParams = {
@@ -29,7 +29,7 @@ export default class AuthKinibind extends Kinibind {
 
 
         // Initialise the combined model
-        super(element, model);
+        super(element, model, joinElement);
 
 
         // Pump in the session once loaded provided we are not inheriting
