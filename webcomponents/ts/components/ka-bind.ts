@@ -41,7 +41,7 @@ export default class KaBind extends HTMLElement {
      */
     attributeChangedCallback(name, oldValue, newValue) {
 
-        if (name == 'data-source' && newValue)
+        if (name == 'data-source' && oldValue && newValue)
             this.load();
     }
 
@@ -87,7 +87,7 @@ export default class KaBind extends HTMLElement {
     }
 
     // Load the source
-    private load() {
+    public load() {
 
         let url = this.getAttribute("data-source");
         url = url.replace(/\{request\.([a-zA-Z]+?)\}/g,
