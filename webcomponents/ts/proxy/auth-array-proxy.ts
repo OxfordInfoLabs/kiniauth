@@ -12,6 +12,10 @@ export default class AuthArrayProxy extends ArrayProxy {
     // Running queries
     private static lastQueryStarts = {};
 
+    // Last Results
+    private lastResults = [];
+
+
     constructor(sourceUrl: string) {
         super();
         this._sourceUrl = sourceUrl;
@@ -68,13 +72,16 @@ export default class AuthArrayProxy extends ArrayProxy {
                     if (response.ok) {
                         response.json().then(result => {
                             if (result instanceof Array) {
+                                this.lastResults = result ;
                                 done(new FilteredResults(result, null));
                             } else if (result && result.results) {
+                                this.lastResults = result.results;
                                 done(new FilteredResults(result.results, result.totalCount));
                             }
                         });
 
                     } else {
+                        this.lastResults = [];
                         done(new FilteredResults([], 0));
                     }
                 }
