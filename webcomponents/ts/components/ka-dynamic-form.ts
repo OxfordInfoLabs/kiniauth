@@ -20,8 +20,6 @@ export default class KaDynamicForm extends HTMLElement {
     // Kinibind view
     protected view;
 
-    private errorsGenerated = false;
-
 
     // Construct a dynamic form dynamically
     constructor(extraData = {}, extraMethods = {}) {
@@ -65,6 +63,7 @@ export default class KaDynamicForm extends HTMLElement {
             dateTime: new Date().toDateString() + " " + new Date().toLocaleTimeString(),
             date: new Date().toDateString(),
             valid: false,
+            validated: false,
             submitted: false
         };
 
@@ -334,14 +333,10 @@ export default class KaDynamicForm extends HTMLElement {
         }
 
 
-        let modelErrors = this.view.model.errors;
+        this.view.model.errors = errors;
 
-        if (generateErrors) {
-            this.view.model.errors = errors;
-            this.errorsGenerated = true;
-        } else {
-            this.view.model.errors = {};
-        }
+        if (generateErrors)
+            this.view.model.validated = true;
 
         this.view.model.valid = valid;
 
