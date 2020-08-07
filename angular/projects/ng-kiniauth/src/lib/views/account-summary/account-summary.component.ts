@@ -20,6 +20,7 @@ export class AccountSummaryComponent extends BaseComponent implements OnInit, On
     public reloadTwoFactor: Subject<boolean> = new Subject();
     public isLoading = true;
 
+    public editName = false;
     public editEmail = false;
     public editMobile = false;
     public editBackup = false;

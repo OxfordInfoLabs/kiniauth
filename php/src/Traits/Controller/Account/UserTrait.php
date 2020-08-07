@@ -8,8 +8,8 @@ use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\RoleService;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
+use Kiniauth\ValueObjects\Security\UserExtended;
 use Kinikit\Core\Logging\Logger;
-use VulnerableThings\ValueObjects\Security\UserExtended;
 
 trait UserTrait {
 
@@ -67,10 +67,24 @@ trait UserTrait {
      * @param $newName
      * @param $password
      * @param string $userId
-     * @return User|null
+     * @return boolean
      */
     public function changeUserDetails($newEmailAddress, $newName, $password, $userId = User::LOGGED_IN_USER) {
         return $this->userService->changeUserDetails($newEmailAddress, $newName, $password, $userId);
+    }
+
+
+    /**
+     * Update the name of the logged in user
+     *
+     * @http GET /changeName
+     *
+     * @param $newName
+     * @param $password
+     * @return bool
+     */
+    public function changeUserName($newName, $password) {
+        return $this->userService->changeUserName($newName, $password);
     }
 
     /**
@@ -82,7 +96,7 @@ trait UserTrait {
      * @param $password
      * @param null $hashedPassword
      * @param string $userId
-     * @return \Kiniauth\Objects\Security\User
+     * @return boolean
      */
     public function changeUserEmail($newEmailAddress, $password, $hashedPassword = null, $userId = User::LOGGED_IN_USER) {
         return $this->userService->changeUserEmail($newEmailAddress, $password, $hashedPassword, $userId);
@@ -96,7 +110,7 @@ trait UserTrait {
      * @param $newEmailAddress
      * @param $password
      * @param string $userId
-     * @return \Kiniauth\Objects\Security\User
+     * @return boolean
      */
     public function changeUserBackupEmail($newEmailAddress, $password, $userId = User::LOGGED_IN_USER) {
         return $this->userService->changeUserBackupEmail($newEmailAddress, $password, $userId);
@@ -110,7 +124,7 @@ trait UserTrait {
      * @param $newMobile
      * @param $password
      * @param string $userId
-     * @return \Kiniauth\Objects\Security\User
+     * @return boolean
      */
     public function changeUserMobile($newMobile, $password, $userId = User::LOGGED_IN_USER) {
         return $this->userService->changeUserMobile($newMobile, $password, $userId);

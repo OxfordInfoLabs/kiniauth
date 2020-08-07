@@ -67,7 +67,7 @@ export class AuthenticationService {
 
     public generateTwoFactorSettings() {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/twoFactorSettings')
-            .toPromise()
+            .toPromise();
     }
 
     public authenticateNewTwoFactor(code, secret) {
@@ -128,6 +128,19 @@ export class AuthenticationService {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/changeDetails', {
             params: {
                 newEmailAddress,
+                newName,
+                password: this.getHashedPassword(password)
+            }
+        }).toPromise().then(res => {
+            if (res) {
+                return this.getLoggedInUser();
+            }
+        });
+    }
+
+    public changeUserName(newName, password) {
+        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/changeName', {
+            params: {
                 newName,
                 password: this.getHashedPassword(password)
             }

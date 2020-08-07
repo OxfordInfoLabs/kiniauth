@@ -1,6 +1,22 @@
 <div class="actionpanel sixtyforty mx1 mb2">
 
     <div class="actioninfo p2w p1m">
+        <h4 class="mb1 mt0">Account Name</h4>
+
+        <p class="mb0" *ngIf="security">If you need to update your account name, you can do so here.
+            <strong>{{security.name}}</strong></p>
+
+    </div>
+    <div class="actions flex flex-col align-center justify-center p1">
+        <button class="button small-button white-button" (click)="editName = true;">Edit Account Name
+        </button>
+    </div>
+
+</div>
+
+<div class="actionpanel sixtyforty mx1 mb2">
+
+    <div class="actioninfo p2w p1m">
         <h4 class="mb1 mt0">Email Address</h4>
 
         <p class="mb0" *ngIf="security">Your account email address is currently set to
@@ -104,6 +120,11 @@
     </div>
 
 </div>
+
+<ka-inline-modal *ngIf="editName" (closed)="editName = false">
+    <h3>Edit Account Name</h3>
+    <ka-edit-name [authenticationService]="authService" (saved)="editName = false;"></ka-edit-name>
+</ka-inline-modal>
 
 <ka-inline-modal *ngIf="editEmail" (closed)="editEmail = false">
     <h3>Edit Email Address</h3>

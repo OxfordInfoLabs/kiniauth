@@ -21,6 +21,7 @@ use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Security\AssignedRole;
+use Kiniauth\ValueObjects\Security\UserExtended;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Communication\Email\TemplatedEmail;
 use Kinikit\Core\Configuration\Configuration;
@@ -412,6 +413,23 @@ class UserService {
     }
 
     /**
+     * @param $newName
+     * @param $password
+     * @param string $userId
+     * @return bool
+     */
+    public function changeUserName($newName, $password, $userId = User::LOGGED_IN_USER) {
+        /** @var User $user */
+        $user = User::fetch($userId);
+        if ($this->validateUserPassword($user->getEmailAddress(), $password)) {
+            $user->setName($newName);
+            $user->save();
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param $newMobile
      * @param $password
      * @param string $userId
@@ -488,7 +506,7 @@ class UserService {
         if ($authenticated) {
             $user->setTwoFactorData($secret);
             $user->save();
-            return $user;
+            return new UserExtended($user);
         }
         return false;
     }
@@ -501,7 +519,7 @@ class UserService {
         $user->setTwoFactorData(null);
         $user->setBackupCodes(null);
         $user->save();
-        return $user;
+        return new UserExtended($user);
     }
 
 

@@ -25,10 +25,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { InviteUserComponent } from './lib/views/invite-user/invite-user.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { EditDetailsComponent } from './lib/views/account-summary/edit-details/edit-details.component';
+import { EditNameComponent } from './lib/views/account-summary/edit-name/edit-name.component';
 
 @NgModule({
     declarations: [
         AccountSummaryComponent,
+        EditNameComponent,
         EditEmailComponent,
         TwoFactorComponent,
         LoginComponent,
