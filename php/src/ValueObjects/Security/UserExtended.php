@@ -14,7 +14,6 @@ class UserExtended {
     protected $name;
     protected $status;
     protected $roles;
-    protected $userData;
     protected $twoFactorData;
 
     /**
@@ -30,7 +29,6 @@ class UserExtended {
         $this->name = $user->getName();
         $this->status = $user->getStatus();
         $this->roles = $user->getRoles();
-        $this->userData = $user->getUserData();
         $this->twoFactorData = $user->getTwoFactorData();
     }
 
@@ -88,13 +86,6 @@ class UserExtended {
      */
     public function getRoles() {
         return $this->roles;
-    }
-
-    /**
-     * @return \VulnerableThings\Objects\Security\UserData
-     */
-    public function getUserData() {
-        return $this->userData;
     }
 
     /**
