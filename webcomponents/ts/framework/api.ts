@@ -25,11 +25,16 @@ export default class Api {
 
             let url = '/guest/auth/login';
 
+            // trim the password
+            password = password.trim();
+
+            let encryptedPassword = sessionData.sessionSalt ?
+                sha512(sha512(password + emailAddress) + sessionData.sessionSalt) :
+                password;
+
             const params: any = {
-                emailAddress,
-                password: sessionData.sessionSalt ?
-                    sha512(sha512(password + emailAddress) + sessionData.sessionSalt) :
-                    password
+                emailAddress: emailAddress.trim(),
+                password: encryptedPassword
             }
 
 
