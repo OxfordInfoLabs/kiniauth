@@ -17,6 +17,26 @@
 <div class="actionpanel sixtyforty mx1 mb2">
 
     <div class="actioninfo p2w p1m">
+        <h4 class="mb1 mt0">Account Icon</h4>
+
+        <div class="flex align-center" *ngIf="security">
+            <img src="https://www.gravatar.com/avatar/{{security.hashedEmail}}?d=mp" height="40" alt="user-gravatar"
+                 class="mr1">
+
+            <p class="mb0">Your account icon is based on your <a href="https://gravatar.com" target="_blank">Gravatar</a>
+                image. You can easily create/edit your image by visiting the Gravatar website.</p>
+        </div>
+
+    </div>
+    <div class="actions flex flex-col align-center justify-center p1">
+        <button class="button small-button white-button" (click)="editGravatar()">Edit Gravatar</button>
+    </div>
+
+</div>
+
+<div class="actionpanel sixtyforty mx1 mb2">
+
+    <div class="actioninfo p2w p1m">
         <h4 class="mb1 mt0">Email Address</h4>
 
         <p class="mb0" *ngIf="security">Your account email address is currently set to

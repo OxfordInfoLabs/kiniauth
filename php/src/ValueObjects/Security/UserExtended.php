@@ -15,6 +15,7 @@ class UserExtended {
     protected $status;
     protected $roles;
     protected $twoFactorData;
+    protected $hashedEmail;
 
     /**
      * UserExtended constructor.
@@ -30,6 +31,8 @@ class UserExtended {
         $this->status = $user->getStatus();
         $this->roles = $user->getRoles();
         $this->twoFactorData = $user->getTwoFactorData();
+
+        $this->hashedEmail = md5( strtolower( trim( $user->getEmailAddress() ) ) );
     }
 
     /**
@@ -93,6 +96,13 @@ class UserExtended {
      */
     public function getTwoFactorData() {
         return $this->twoFactorData;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHashedEmail() {
+        return $this->hashedEmail;
     }
 
 

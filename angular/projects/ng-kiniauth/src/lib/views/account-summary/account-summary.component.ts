@@ -59,5 +59,8 @@ export class AccountSummaryComponent extends BaseComponent implements OnInit, On
         }
     }
 
+    public editGravatar() {
+        window.open('https://gravatar.com', '_blank');
+    }
 
 }
