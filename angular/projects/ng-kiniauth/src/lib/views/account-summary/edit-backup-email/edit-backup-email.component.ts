@@ -44,11 +44,7 @@ export class EditBackupEmailComponent extends BaseComponent implements OnInit {
                 this.saved.emit(user);
             })
             .catch(err => {
-                if (err.error.validationErrors.backupEmailAddress.email.errorMessage) {
-                    this.saveError = 'Email error: ' + err.error.validationErrors.backupEmailAddress.email.errorMessage;
-                } else {
-                    this.saveError = 'There was a problem changing the email address, please check and try again.'
-                }
+                this.saveError = 'There was a problem changing the email address, please check and try again.';
             });
     }
 

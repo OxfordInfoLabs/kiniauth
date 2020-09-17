@@ -3,6 +3,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { Subject } from 'rxjs/internal/Subject';
 import { AuthenticationService } from '../../services/authentication.service';
 import { BaseComponent } from '../base-component';
+import { KinibindModel } from 'ng-kinibind';
+import { AccountService } from '../../services/account.service';
 
 @Component({
     selector: 'ka-account-summary',
@@ -16,11 +18,13 @@ export class AccountSummaryComponent extends BaseComponent implements OnInit, On
     @Input() showPasswordReset = true;
 
     public security: any;
+    public account: any;
     public twoFactorConfig: any;
     public reloadTwoFactor: Subject<boolean> = new Subject();
     public isLoading = true;
 
     public editName = false;
+    public editAccountName = false;
     public editEmail = false;
     public editMobile = false;
     public editBackup = false;
@@ -28,18 +32,28 @@ export class AccountSummaryComponent extends BaseComponent implements OnInit, On
 
     private userSub: Subscription;
 
-    constructor(kcAuthService: AuthenticationService) {
+    constructor(kcAuthService: AuthenticationService,
+                private accountService: AccountService) {
         super(kcAuthService);
     }
 
     ngOnInit() {
         super.ngOnInit();
+        this.loadAccount();
         this.userSub = this.authService.authUser.subscribe(user => this.security = user);
         return this.authService.getLoggedInUser();
     }
 
     ngOnDestroy(): void {
         this.userSub.unsubscribe();
+    }
+
+    public loadAccount() {
+        this.editAccountName = false;
+        this.accountService.getAccount().then(account => {
+            console.log(account);
+            this.account = account;
+        });
     }
 
     public resetAccountPassword() {
@@ -57,10 +71,6 @@ export class AccountSummaryComponent extends BaseComponent implements OnInit, On
                 this.reloadTwoFactor.next(true);
             });
         }
-    }
-
-    public editGravatar() {
-        window.open('https://gravatar.com', '_blank');
     }
 
 }

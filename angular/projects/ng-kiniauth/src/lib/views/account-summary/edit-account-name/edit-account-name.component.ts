@@ -1,14 +1,15 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { BaseComponent } from '../../base-component';
 import { AuthenticationService } from '../../../services/authentication.service';
+import { AccountService } from '../../../services/account.service';
 
 @Component({
-    selector: 'ka-edit-name',
-    templateUrl: './edit-name.component.html',
-    styleUrls: ['./edit-name.component.sass'],
+    selector: 'ka-edit-account-name',
+    templateUrl: './edit-account-name.component.html',
+    styleUrls: ['./edit-account-name.component.sass'],
     encapsulation: ViewEncapsulation.None
 })
-export class EditNameComponent extends BaseComponent implements OnInit, OnDestroy {
+export class EditAccountNameComponent extends BaseComponent implements OnInit, OnDestroy {
 
     @Output('saved') saved: EventEmitter<any> = new EventEmitter();
 
@@ -17,7 +18,8 @@ export class EditNameComponent extends BaseComponent implements OnInit, OnDestro
     public saveError: string;
     public user: any;
 
-    constructor(kcAuthService: AuthenticationService) {
+    constructor(kcAuthService: AuthenticationService,
+                private accountService: AccountService) {
         super(kcAuthService);
     }
 
@@ -34,13 +36,13 @@ export class EditNameComponent extends BaseComponent implements OnInit, OnDestro
 
     public saveNewName() {
         this.saveError = '';
-        this.authService.changeUserName(this.newName, this.currentPassword)
+        this.accountService.changeAccountName(this.newName, this.currentPassword)
             .then(user => {
                 this.user = user;
                 this.saved.emit(user);
             })
             .catch(err => {
-                this.saveError = 'There was a problem updating your details, please check and try again.';
+                this.saveError = 'There was a problem changing the account name, please check and try again.';
             });
     }
 

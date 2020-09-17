@@ -37,6 +37,19 @@ trait Account {
     }
 
     /**
+     * Update the name of the logged in user
+     *
+     * @http GET /changeName
+     *
+     * @param $newName
+     * @param $password
+     * @return bool
+     */
+    public function changeAccountName($newName, $password) {
+        return $this->accountService->changeAccountName($newName, $password);
+    }
+
+    /**
      * Get a user object by userId (optional), defaults to the logged in user
      *
      * @http GET /user

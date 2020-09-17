@@ -57,11 +57,7 @@ export class EditDetailsComponent extends BaseComponent implements OnInit, OnDes
                 this.saved.emit(user);
             })
             .catch(err => {
-                if (err.error.validationErrors.emailAddress.email.errorMessage) {
-                    this.saveError = 'Email error: ' + err.error.validationErrors.emailAddress.email.errorMessage;
-                } else {
-                    this.saveError = 'There was a problem updating your details, please check and try again.'
-                }
+                this.saveError = 'There was a problem updating your details, please check and try again.';
             });
     }
 
