@@ -1,16 +1,16 @@
 <ng-template [ngIf]="!editName && !editEmail && !editBackup && !editMobile && !enableTwoFa">
 
-    <div class="actionpanel sixtyforty mx1 mb2">
+    <div class="actionpanel sixtyforty mx1 mb2" *ngIf="account">
 
         <div class="actioninfo p2w p1m">
-            <h4 class="mb1 mt0">Account Name</h4>
+            <h4 class="mb1 mt0">Account Details</h4>
 
-            <p class="mb0" *ngIf="security">If you need to update your account name, you can do so here.
-                <strong>{{security.name}}</strong></p>
+            <p class="mb0" *ngIf="security">Your account name is currently set to
+                <strong>{{account.name}}</strong></p>
 
         </div>
         <div class="actions flex flex-col align-center justify-center p1">
-            <button class="button small-button white-button" (click)="editName = true;">Edit Account Name
+            <button class="button small-button white-button" (click)="editAccountName = true;">Edit Account Name
             </button>
         </div>
 
@@ -19,22 +19,28 @@
     <div class="actionpanel sixtyforty mx1 mb2">
 
         <div class="actioninfo p2w p1m">
-            <h4 class="mb1 mt0">Account Icon</h4>
-
-            <div class="flex align-center" *ngIf="security">
+            <h4 class="mb1 mt0 flex align-center">
                 <img src="https://www.gravatar.com/avatar/{{security.hashedEmail}}?d=mp" height="40" alt="user-gravatar"
                      class="mr1">
+                {{security.name}}
+            </h4>
 
-                <p class="mb0">Your account icon is based on your <a href="https://gravatar.com" target="_blank">Gravatar</a>
-                    image. You can easily create/edit your image by visiting the Gravatar website.</p>
+            <div class="mb1">
+                <p *ngIf="security">If you need to update your name, you can do so here.</p>
+            </div>
+
+            <div *ngIf="security">
+                <p class="mb0">Your user icon is based on your Gravatar image. You can easily create/edit your image by visiting the <a href="https://gravatar.com" target="_blank">Gravatar website.</a></p>
             </div>
 
         </div>
         <div class="actions flex flex-col align-center justify-center p1">
-            <button class="button small-button white-button" (click)="editGravatar()">Edit Gravatar</button>
+            <button class="button small-button white-button" (click)="editName = true;">Edit Name
+            </button>
         </div>
 
     </div>
+
 
     <div class="actionpanel sixtyforty mx1 mb2">
 
@@ -145,8 +151,13 @@
 
 </ng-template>
 <ka-inline-modal *ngIf="editName" (closed)="editName = false">
-    <h3>Edit Account Name</h3>
+    <h3>Edit User Name</h3>
     <ka-edit-name [authenticationService]="authService" (saved)="editName = false;"></ka-edit-name>
+</ka-inline-modal>
+
+<ka-inline-modal *ngIf="editAccountName" (closed)="editAccountName = false">
+    <h3>Edit Account Name</h3>
+    <ka-edit-account-name [authenticationService]="authService" (saved)="loadAccount()"></ka-edit-account-name>
 </ka-inline-modal>
 
 <ka-inline-modal *ngIf="editEmail" (closed)="editEmail = false">

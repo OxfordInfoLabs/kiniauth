@@ -26,6 +26,7 @@ import { InviteUserComponent } from './lib/views/invite-user/invite-user.compone
 import { MatTabsModule } from '@angular/material/tabs';
 import { EditDetailsComponent } from './lib/views/account-summary/edit-details/edit-details.component';
 import { EditNameComponent } from './lib/views/account-summary/edit-name/edit-name.component';
+import { EditAccountNameComponent } from './lib/views/account-summary/edit-account-name/edit-account-name.component';
 
 @NgModule({
     declarations: [
@@ -46,7 +47,8 @@ import { EditNameComponent } from './lib/views/account-summary/edit-name/edit-na
         UserRolesComponent,
         EditRolesComponent,
         InviteUserComponent,
-        EditDetailsComponent
+        EditDetailsComponent,
+        EditAccountNameComponent
     ],
     imports: [
         NgKinibindModule,
@@ -71,6 +73,7 @@ import { EditNameComponent } from './lib/views/account-summary/edit-name/edit-na
         UserRolesComponent,
         EditRolesComponent,
         InviteUserComponent,
+        EditAccountNameComponent
     ]
 })
 export class NgKiniAuthModule {

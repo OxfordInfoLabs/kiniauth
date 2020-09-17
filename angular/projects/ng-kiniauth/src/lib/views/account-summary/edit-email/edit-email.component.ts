@@ -53,7 +53,7 @@ export class EditEmailComponent extends BaseComponent implements OnInit, OnDestr
                 if (err.error.validationErrors.emailAddress.email.errorMessage) {
                     this.saveError = 'Email error: ' + err.error.validationErrors.emailAddress.email.errorMessage;
                 } else {
-                    this.saveError = 'There was a problem changing the email address, please check and try again.'
+                    this.saveError = 'There was a problem changing the email address, please check and try again.';
                 }
             });
     }

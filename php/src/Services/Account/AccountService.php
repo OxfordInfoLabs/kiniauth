@@ -74,6 +74,25 @@ class AccountService {
         return $accountSummary;
     }
 
+    /**
+     * @param $newName
+     * @param $password
+     * @return bool
+     */
+    public function changeAccountName($newName, $password) {
+        list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
+
+        $accountObject = Account::fetch($account->getAccountId());
+
+        if ($this->securityService->validateUserPassword($user->getEmailAddress(), $password)) {
+            $accountObject->setName($newName);
+            $accountObject->save();
+            $this->securityService->reloadLoggedInObjects();
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Invite a user to join an account.  In order to do this the user must be a super user for the account.

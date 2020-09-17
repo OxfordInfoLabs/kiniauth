@@ -418,4 +418,14 @@ class SecurityService {
     }
 
 
+    public function validateUserPassword($emailAddress, $password, $parentAccountId = null) {
+        if ($parentAccountId === null) {
+            $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
+        }
+
+        $matchingUsers = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $parentAccountId);
+
+        return sizeof($matchingUsers) > 0 && $matchingUsers[0]->passwordMatches($password, $this->session->__getSessionSalt());
+    }
+
 }

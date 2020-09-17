@@ -231,7 +231,7 @@ export class AuthenticationService {
             });
     }
 
-    private getHashedPassword(password) {
+    public getHashedPassword(password) {
         let hashedPassword;
         const sessionData = this.sessionData.getValue();
         const loggedInUser = this.authUser.getValue();
