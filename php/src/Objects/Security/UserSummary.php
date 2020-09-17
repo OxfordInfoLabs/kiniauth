@@ -61,15 +61,23 @@ class UserSummary extends ActiveRecord {
      */
     protected $roles = array();
 
+
+    /**
+     * @var integer
+     */
+    protected $successfulLogins = 0;
+
+
     /**
      * UserSummary constructor.
      * @param null $name
      * @param null $status
      */
-    public function __construct($name = null, $status = null, $emailAddress = null) {
+    public function __construct($name = null, $status = null, $emailAddress = null, $successfulLogins = 0) {
         $this->name = $name;
         $this->status = $status;
         $this->emailAddress = $emailAddress;
+        $this->successfulLogins = $successfulLogins;
     }
 
     /**
@@ -112,6 +120,14 @@ class UserSummary extends ActiveRecord {
      */
     public function getEmailAddress() {
         return $this->emailAddress;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getSuccessfulLogins() {
+        return $this->successfulLogins;
     }
 
 

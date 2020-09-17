@@ -320,6 +320,35 @@ class AuthenticationServiceTest extends TestBase {
     }
 
 
+    public function testSuccessfulLoginsIsIncrementedIfLoginSucceeds() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $user = User::fetch(2);
+        $successfulLogins = $user->getSuccessfulLogins();
+
+
+        // Attempt a login.
+        try {
+            AuthenticationHelper::login("sam@samdavisdesign.co.uk", "badpass");
+        } catch (\Exception $e) {
+            // Fine
+        }
+
+        $user = User::fetch(2);
+        $this->assertEquals($successfulLogins, $user->getSuccessfulLogins());
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $user = User::fetch(2);
+        $this->assertEquals($successfulLogins + 1, $user->getSuccessfulLogins());
+
+        $this->assertEquals($successfulLogins + 1, $this->session->__getLoggedInUser()->getSuccessfulLogins());
+
+
+    }
+
+
     public function testExceptionRaisedIfInvalidUsernameOrPasswordSupplied() {
 
         try {

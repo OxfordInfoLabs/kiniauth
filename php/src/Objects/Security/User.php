@@ -96,6 +96,7 @@ class User extends UserSummary {
     protected $invalidLoginAttempts = 0;
 
 
+
     const LOGGED_IN_USER = "LOGGED_IN_USER";
 
     // Salt prefix for password - BLOWFISH bcrypt
@@ -338,6 +339,13 @@ class User extends UserSummary {
         $this->invalidLoginAttempts = $invalidLoginAttempts;
     }
 
+    /**
+     * @param int $successfulLogins
+     */
+    public function setSuccessfulLogins($successfulLogins) {
+        $this->successfulLogins = $successfulLogins;
+    }
+
 
     /**
      * Handle more advanced checking for no overlap of email addresses in same context
@@ -360,7 +368,7 @@ class User extends UserSummary {
     }
 
     public function generateSummary() {
-        return new UserSummary($this->name, $this->status, $this->emailAddress);
+        return new UserSummary($this->name, $this->status, $this->emailAddress, $this->successfulLogins);
     }
 
 

@@ -9,12 +9,12 @@ export default class Session {
     /**
      * Get session data once
      */
-    public static getSessionData(): Promise<any> {
+    public static getSessionData(reload = false): Promise<any> {
         if (!this.sessionData) {
             let api = new Api();
             this.sessionData = new Promise<any>(done => {
 
-                let sessionReload = RequestParams.get()["sessionReload"];
+                let sessionReload = reload || RequestParams.get()["sessionReload"];
 
                 let sessionData = sessionStorage.getItem("kaSession");
                 let sessionExpiry = sessionStorage.getItem("kaSessionExpiry");

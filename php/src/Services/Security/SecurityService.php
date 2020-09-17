@@ -129,15 +129,20 @@ class SecurityService {
             // Regenerate the session to avoid session fixation
             $this->session->regenerate();
 
-
             $this->session->__setLoggedInUser($user);
 
             if ($userAccessTokenHash) {
                 $this->session->__setLoggedInUserAccessTokenHash($userAccessTokenHash);
             } else {
-
                 // If regular interactive login, record this as a logged in session
+                // And update successful logins.
                 $this->userSessionService->registerNewAuthenticatedSession($user->getId());
+
+                // Update the user and re-store in session to prevent inconsistencies.
+                $user->setSuccessfulLogins($user->getSuccessfulLogins() + 1);
+                $this->session->__setLoggedInUser($user);
+                $user->save();
+
 
             }
 
