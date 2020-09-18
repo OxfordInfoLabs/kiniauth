@@ -6,6 +6,7 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": false,
-    "preserveSymlinks": true
+    "preserveSymlinks": true,
+    "moduleResolution": "node"
   }
 }

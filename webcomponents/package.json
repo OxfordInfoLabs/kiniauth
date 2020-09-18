@@ -1,6 +1,6 @@
 {
   "name": "kiniauth",
-  "version": "0.0.52",
+  "version": "0.0.56",
   "description": "Kiniauth Web Components",
   "main": "index.js",
   "files": [
@@ -11,7 +11,7 @@
     "watch": "webpack --config webpack.config.js --watch",
     "build:production": "webpack --config webpack.config.js -p --display-modules",
     "sass": "node-sass -w sass --output dist",
-    "publish:project": "npm run build:production; bump patch; npm publish",
+    "publish:project": "npm run build:production && bump patch && npm publish",
     "publish:tree": "npm run update:dev; npm run publish:dependent:tree;npm run update:packages; npm run publish:project",
     "publish:dependent:tree": "cd node_modules/kinibind; npm run publish:project",
     "update:dev": "npm run update:packages && npm run update:symlinks",
@@ -44,7 +44,7 @@
     "@webcomponents/custom-elements": "^1.2.2",
     "@webcomponents/webcomponentsjs": "^2.4.3",
     "js-sha512": "^0.8.0",
-    "kinibind": "0.0.97",
+    "kinibind": "0.0.100",
     "whatwg-fetch": "github:github/fetch"
   }
 }
