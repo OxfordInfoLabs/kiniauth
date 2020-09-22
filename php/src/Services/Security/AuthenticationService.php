@@ -301,10 +301,10 @@ class AuthenticationService {
 
         if (!$referringURL) {
             $this->session->__setValidReferrer(false);
+            $this->session->__setReferringURL(null);
         } else {
 
             $referrer = $referringURL->getHost();
-
 
             // If the referer differs from the session value, check some stuff.
             if ($referrer !== $this->session->__getReferringURL()) {
@@ -320,6 +320,7 @@ class AuthenticationService {
                 } else {
                     $parentAccountId = null;
                     $this->session->__setValidReferrer(false);
+                    $this->session->__setReferringURL(null);
                 }
 
 
