@@ -7,6 +7,7 @@ use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Exception\Security\TooManyUserAccessTokensException;
 use Kiniauth\Exception\Security\TwoFactorAuthenticationRequiredException;
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Objects\Communication\Email\BrandedTemplatedEmail;
 use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\Role;
@@ -191,6 +192,8 @@ class UserService {
             $user->save();
 
             $this->pendingActionService->removePendingAction("USER_ACTIVATION", $activationCode);
+
+            $this->emailService->send(new AccountTemplatedEmail($account->getAccountId(),"account/account-welcome"));
 
             return User::fetch($user->getId());
 

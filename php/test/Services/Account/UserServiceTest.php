@@ -220,9 +220,16 @@ class UserServiceTest extends TestBase {
             // Success
         }
 
+
+        // Login as admin to ensure permissions.
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        // Check for an email containing the identifier
+        $lastEmail = StoredEmail::filter("ORDER BY id DESC")[0];
+        $this->assertNotEquals("Welcome to your Kiniauth Example account", $lastEmail->getSubject());
+
         // Activation should succeed.
         $this->userService->activateAccount($activationCode);
-
 
         // Check user is active
         $this->authenticationService->login("john5@test.com", AuthenticationHelper::encryptPasswordForLogin(AuthenticationHelper::hashNewPassword("Helloworld1")));
@@ -234,6 +241,16 @@ class UserServiceTest extends TestBase {
         $account = $this->session->__getLoggedInAccount();
         $this->assertEquals("Smythe Enterprises", $account->getName());
         $this->assertEquals($user->getRoles()[0]->getAccountId(), $account->getAccountId());
+
+
+        // Login as admin to ensure permissions.
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        // Check that welcome email was sent
+        $lastEmail = StoredEmail::filter("ORDER BY id DESC")[0];
+        $this->assertEquals("Welcome to your Kiniauth Example account", $lastEmail->getSubject());
+        $this->assertEquals(["John Smith <john5@test.com>"], $lastEmail->getRecipients());
+
 
         $this->authenticationService->logout();
 
