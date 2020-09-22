@@ -61,7 +61,7 @@ class UserService {
     /**
      * @var EmailService
      */
-    private $emailService;
+    protected $emailService;
 
     /**
      * @var HashProvider
@@ -177,7 +177,7 @@ class UserService {
      *
      * @objectInterceptorDisabled
      */
-    public function activateAccount($activationCode) {
+    public function activateAccount($activationCode, $sendEmail = true) {
 
         try {
 
@@ -193,7 +193,8 @@ class UserService {
 
             $this->pendingActionService->removePendingAction("USER_ACTIVATION", $activationCode);
 
-            $this->emailService->send(new AccountTemplatedEmail($account->getAccountId(),"account/account-welcome"));
+            if ($sendEmail)
+                $this->emailService->send(new AccountTemplatedEmail($account->getAccountId(), "account/account-welcome"));
 
             return User::fetch($user->getId());
 
