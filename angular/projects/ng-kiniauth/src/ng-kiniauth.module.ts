@@ -27,6 +27,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { EditDetailsComponent } from './lib/views/account-summary/edit-details/edit-details.component';
 import { EditNameComponent } from './lib/views/account-summary/edit-name/edit-name.component';
 import { EditAccountNameComponent } from './lib/views/account-summary/edit-account-name/edit-account-name.component';
+import { RecaptchaModule } from 'ng-recaptcha';
 
 @NgModule({
     declarations: [
@@ -60,7 +61,8 @@ import { EditAccountNameComponent } from './lib/views/account-summary/edit-accou
         MatIconModule,
         MatButtonModule,
         MatMenuModule,
-        MatTabsModule
+        MatTabsModule,
+        RecaptchaModule
     ],
     exports: [
         AccountSummaryComponent,

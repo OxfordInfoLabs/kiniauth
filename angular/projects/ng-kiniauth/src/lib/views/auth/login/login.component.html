@@ -14,6 +14,8 @@
 
         <p class="error" *ngIf="loginError">Email or password incorrect, please check and try again.</p>
 
+        <re-captcha class="mt1" *ngIf="showRecaptcha" (resolved)="recaptchaResolved($event)" [siteKey]="recaptchaKey"></re-captcha>
+
         <button class="button small-button login-button" *ngIf="!loading" (click)="login()"
                 [disabled]="!email || !password">Sign in
         </button>

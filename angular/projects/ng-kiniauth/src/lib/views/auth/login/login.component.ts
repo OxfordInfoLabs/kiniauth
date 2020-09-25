@@ -12,6 +12,7 @@ import { BaseComponent } from '../../base-component';
 export class LoginComponent extends BaseComponent implements OnInit {
 
     @Input() loginRoute: string;
+    @Input() recaptchaKey: string;
 
     public email: string;
     public password: string;
@@ -20,6 +21,8 @@ export class LoginComponent extends BaseComponent implements OnInit {
     public twoFA = false;
     public twoFACode: string;
     public twoFAError = false;
+    public showRecaptcha = false;
+    public recaptchaResponse: string;
 
     constructor(private router: Router,
                 kcAuthService: AuthenticationService) {
@@ -28,14 +31,25 @@ export class LoginComponent extends BaseComponent implements OnInit {
 
     ngOnInit() {
         super.ngOnInit();
+
+        this.kcAuthService.sessionData.subscribe(session => {
+            if (session && session.delayedCaptchas && session.delayedCaptchas['guest/auth/login']) {
+                this.showRecaptcha = true;
+            }
+        });
+
         return Promise.resolve(true);
+    }
+
+    public recaptchaResolved(response) {
+        this.recaptchaResponse = response;
     }
 
     public login() {
         this.loginError = false;
         if (this.email && this.password) {
             this.loading = true;
-            return this.authService.login(this.email, this.password)
+            return this.authService.login(this.email, this.password, (this.showRecaptcha ? this.recaptchaResponse : null))
                 .then((res: any) => {
                     this.loading = false;
                     if (res === 'REQUIRES_2FA') {

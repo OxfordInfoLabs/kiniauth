@@ -4,6 +4,7 @@ import { KinibindRequestService } from 'ng-kinibind';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import * as _ from 'lodash';
 import * as sha512 from 'js-sha512' ;
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'
@@ -52,9 +53,16 @@ export class AuthenticationService {
         });
     }
 
-    public login(username: string, password: string) {
-        const request = this.config.guestHttpURL + `/auth/login?emailAddress=${username}&password=${password}`;
-        return this.kbRequest.makeGetRequest(request).toPromise().then((user: any) => {
+    public login(username: string, password: string, recaptcha?) {
+        const request = this.config.guestHttpURL + `/auth/login`;
+        return this.kbRequest.makePostRequest(request, {
+            emailAddress: username,
+            password: this.getHashedPassword(password, username)
+        }, {
+            headers: new HttpHeaders({
+                'X-CAPTCHA-TOKEN': recaptcha || null
+            })
+        }).toPromise().then((user: any) => {
             if (user === 'REQUIRES_2FA') {
                 return user;
             } else {
@@ -215,7 +223,7 @@ export class AuthenticationService {
         this.loadingRequests.next(value);
     }
 
-    private getSessionData() {
+    public getSessionData() {
         return this.kbRequest.makeGetRequest(this.config.guestHttpURL + '/session')
             .toPromise()
             .then(sessionData => {
@@ -231,12 +239,15 @@ export class AuthenticationService {
             });
     }
 
-    public getHashedPassword(password) {
+    public getHashedPassword(password, emailAddress?) {
         let hashedPassword;
         const sessionData = this.sessionData.getValue();
         const loggedInUser = this.authUser.getValue();
-        if (loggedInUser && sessionData && sessionData.sessionSalt) {
-            const hash = sha512.sha512(password + loggedInUser.emailAddress);
+
+        const email = emailAddress ? emailAddress : (loggedInUser ? loggedInUser.emailAddress : '');
+
+        if (email && sessionData && sessionData.sessionSalt) {
+            const hash = sha512.sha512(password + email);
             hashedPassword = sha512.sha512(hash + sessionData.sessionSalt);
         }
         return hashedPassword || password;
