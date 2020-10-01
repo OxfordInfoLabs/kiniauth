@@ -4,6 +4,7 @@ namespace Kiniauth\Traits\Controller\Admin;
 
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Account\UserService;
+use Kiniauth\Services\Application\Session;
 
 trait UserTrait {
 
@@ -68,4 +69,19 @@ trait UserTrait {
     public function changeUserMobile($newMobile, $password) {
         return $this->userService->changeUserMobile($newMobile, $password);
     }
+
+    /**
+     * Search for account users
+     *
+     * @http GET /search
+     *
+     * @param string $searchString
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     */
+    public function searchForAccountUsers($searchString = "", $offset = 0, $limit = 10) {
+        return $this->userService->searchForUsers($searchString, $offset, $limit);
+    }
+
 }

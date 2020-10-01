@@ -55,14 +55,14 @@ export class AuthenticationService {
 
     public login(username: string, password: string, recaptcha?) {
         const request = this.config.guestHttpURL + `/auth/login`;
+
+        const headers = new HttpHeaders({ 'X-CAPTCHA-TOKEN': recaptcha || '' });
+        const options: any = { headers };
+
         return this.kbRequest.makePostRequest(request, {
             emailAddress: username,
             password: this.getHashedPassword(password, username)
-        }, {
-            headers: new HttpHeaders({
-                'X-CAPTCHA-TOKEN': recaptcha || null
-            })
-        }).toPromise().then((user: any) => {
+        }, options).toPromise().then((user: any) => {
             if (user === 'REQUIRES_2FA') {
                 return user;
             } else {
@@ -71,6 +71,15 @@ export class AuthenticationService {
                 });
             }
         });
+    }
+
+    public closeActiveSession() {
+        return this.kbRequest.makeGetRequest('/guest/auth/closeActiveSessions').toPromise()
+            .then(res => {
+                return this.getSessionData().then(() => {
+                    return res;
+                });
+            });
     }
 
     public generateTwoFactorSettings() {

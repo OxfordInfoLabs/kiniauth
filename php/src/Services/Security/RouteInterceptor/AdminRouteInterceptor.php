@@ -31,6 +31,6 @@ class AdminRouteInterceptor extends WebRouteInterceptor {
      * @return \Kinikit\MVC\Response\Response|void
      */
     public function afterWebRoute($request, $response) {
-        // TODO: Implement afterWebRoute() method.
+        return $response;
     }
 }

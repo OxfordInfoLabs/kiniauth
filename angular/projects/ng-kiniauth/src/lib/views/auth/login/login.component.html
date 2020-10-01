@@ -1,6 +1,6 @@
 <div class="login">
 
-    <div class="login-container" *ngIf="!twoFA">
+    <div class="login-container" *ngIf="!twoFA && !activeSession">
 
         <h1>Login</h1>
 
@@ -14,10 +14,20 @@
 
         <p class="error" *ngIf="loginError">Email or password incorrect, please check and try again.</p>
 
-        <re-captcha class="mt1" *ngIf="showRecaptcha" (resolved)="recaptchaResolved($event)" [siteKey]="recaptchaKey"></re-captcha>
+        <re-captcha class="mt1" *ngIf="showRecaptcha" (resolved)="recaptchaResolved($event)"
+                    [siteKey]="recaptchaKey"></re-captcha>
 
         <button class="button small-button login-button" *ngIf="!loading" (click)="login()"
                 [disabled]="!email || !password">Sign in
+        </button>
+    </div>
+
+    <div class="two-fa-container" *ngIf="activeSession">
+        <p class="text-center">We have detected other active logged in sessions for your user account. To continue with
+            this login and terminate any other active sessions please click the button below.</p>
+
+        <button class="button small-button session-button" (click)="closeActiveSession()">Close my other sessions and
+            continue
         </button>
     </div>
 

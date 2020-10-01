@@ -23,6 +23,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     public twoFAError = false;
     public showRecaptcha = false;
     public recaptchaResponse: string;
+    public activeSession = false;
 
     constructor(private router: Router,
                 kcAuthService: AuthenticationService) {
@@ -32,7 +33,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     ngOnInit() {
         super.ngOnInit();
 
-        this.kcAuthService.sessionData.subscribe(session => {
+        this.authService.sessionData.subscribe(session => {
             if (session && session.delayedCaptchas && session.delayedCaptchas['guest/auth/login']) {
                 this.showRecaptcha = true;
             }
@@ -55,6 +56,8 @@ export class LoginComponent extends BaseComponent implements OnInit {
                     if (res === 'REQUIRES_2FA') {
                         this.twoFA = true;
                         return true;
+                    } else if (res === 'ACTIVE_SESSION') {
+                        this.activeSession = true;
                     } else {
                         return this.router.navigate([this.loginRoute || '/']);
                     }
@@ -64,6 +67,21 @@ export class LoginComponent extends BaseComponent implements OnInit {
                     this.loading = false;
                 });
         }
+    }
+
+    public closeActiveSession() {
+        this.authService.closeActiveSession().then(res => {
+            if (res === 'REQUIRES_2FA') {
+                this.activeSession = false;
+                this.twoFA = true;
+                return true;
+            } else if (res === 'ACTIVE_SESSION') {
+                this.activeSession = true;
+            } else {
+                this.activeSession = false;
+                return this.router.navigate([this.loginRoute || '/']);
+            }
+        });
     }
 
     public checkUsername() {
