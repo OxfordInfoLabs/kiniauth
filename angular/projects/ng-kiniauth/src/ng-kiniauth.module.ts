@@ -28,8 +28,6 @@ import { EditDetailsComponent } from './lib/views/account-summary/edit-details/e
 import { EditNameComponent } from './lib/views/account-summary/edit-name/edit-name.component';
 import { EditAccountNameComponent } from './lib/views/account-summary/edit-account-name/edit-account-name.component';
 import { RecaptchaModule } from 'ng-recaptcha';
-import { SessionInterceptor } from './session.interceptor';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
     declarations: [
@@ -78,13 +76,6 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
         EditRolesComponent,
         InviteUserComponent,
         EditAccountNameComponent
-    ],
-    providers: [
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: SessionInterceptor,
-            multi: true
-        }
     ]
 })
 export class NgKiniAuthModule {

@@ -1,6 +1,4 @@
-<form class="px2 py2 whitebk mb1" kbForm [model]="contact"
-      [source]="source" [sourceParams]="sourceParams" [store]="store" #contactForm="ngForm"
-      (onSave)="saved()">
+<!--<form class="px2 py2 whitebk mb1" #contactForm="ngForm" (ngSubmit)="saveContact()">-->
 
     <div *ngIf="contact.data">
 
@@ -63,9 +61,9 @@
     </div>
 
     <div class="flex justify-end mt2">
-        <button type="submit" class="mt2 but butsm" [disabled]="contactForm.invalid">
-            SAVE CHANGES
-        </button>
+<!--        <button type="submit" class="mt2 but butsm" [disabled]="contactForm.invalid">-->
+<!--            SAVE CHANGES-->
+<!--        </button>-->
     </div>
 
-</form>
+<!--</form>-->

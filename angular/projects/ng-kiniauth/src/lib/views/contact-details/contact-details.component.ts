@@ -3,6 +3,7 @@ import { KinibindModel, KinibindRequestService } from 'ng-kinibind';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { Location } from '@angular/common';
+import { ContactService } from '../../services/contact.service';
 
 @Component({
     selector: 'ka-contact-details',
@@ -11,16 +12,12 @@ import { Location } from '@angular/common';
 })
 export class ContactDetailsComponent implements OnInit {
 
-    @Input() source: string;
-    @Input() sourceParams: any;
-    @Input() store: string;
-    @Input() storeParams: any;
-    @Input() storeObjectParam: string;
+    @Input() contactId: any;
     @Input() savedRoute: any;
     @Input() readOnlyAddress = true;
     @Input() hiddenFields: any = [];
 
-    @ViewChild('contactForm') public contactForm: NgForm;
+    // @ViewChild('contactForm') public contactForm: NgForm;
 
     @Output() loaded: EventEmitter<any> = new EventEmitter<any>();
     @Output() contactSaved: EventEmitter<any> = new EventEmitter<any>();
@@ -30,11 +27,16 @@ export class ContactDetailsComponent implements OnInit {
 
     constructor(private kbRequest: KinibindRequestService,
                 private location: Location,
-                private router: Router) {
+                private router: Router,
+                private contactService: ContactService) {
 
     }
 
     ngOnInit() {
+        this.contactService.getContact(this.contactId).then(contact => {
+            this.contact.data = contact;
+        });
+
         this.setCountries();
     }
 

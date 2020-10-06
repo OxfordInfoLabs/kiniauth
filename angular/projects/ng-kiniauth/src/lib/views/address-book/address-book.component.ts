@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { KinibindModel, KinibindRequestService } from 'ng-kinibind';
 import { ContactService } from '../../services/contact.service';
 
@@ -8,7 +8,7 @@ import { ContactService } from '../../services/contact.service';
     styleUrls: ['./address-book.component.sass'],
     encapsulation: ViewEncapsulation.None
 })
-export class AddressBookComponent {
+export class AddressBookComponent implements OnInit {
 
     @Input() editContactURL: string;
     @Input() deleteContactURL: string;
@@ -23,25 +23,23 @@ export class AddressBookComponent {
                 private kbRequest: KinibindRequestService) {
     }
 
+    ngOnInit() {
+        this.contactService.getContacts().then(contacts => {
+            this.contacts.data = contacts;
+        });
+    }
+
     public deleteContact(contactId) {
         const message = 'Are you sure you would like to delete this contact?';
         if (window.confirm(message)) {
-            return this.kbRequest.makeGetRequest(this.deleteContactURL, {
-                params: {
-                    contactId: contactId
-                }
-            }).toPromise().then(() => {
+            return this.contactService.deleteContact(contactId).then(() => {
                 this.reload.next(true);
             });
         }
     }
 
     public makeDefault(contactId) {
-        return this.kbRequest.makeGetRequest(this.defaultContactURL, {
-            params: {
-                contactId: contactId
-            }
-        }).toPromise().then(() => {
+        return this.contactService.setDefaultContact(contactId).then(() => {
             this.reload.next(true);
         });
     }
