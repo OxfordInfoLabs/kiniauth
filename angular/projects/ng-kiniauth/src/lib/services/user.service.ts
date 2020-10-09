@@ -18,6 +18,12 @@ export class UserService {
         }).toPromise();
     }
 
+    public getUserExtended(userId) {
+        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user', {
+            params: { userId }
+        }).toPromise();
+    }
+
     public getAccountUsers(searchString?, limit?, offset?) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/search', {
             params: _.pickBy({ searchString, limit, offset }, _.identity)
@@ -43,6 +49,24 @@ export class UserService {
 
     public removeUserFromAccount(userId) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/account/removeUser', {
+            params: { userId }
+        }).toPromise();
+    }
+
+    public requestPasswordReset(emailAddress) {
+        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/passwordReset', {
+            params: { emailAddress }
+        }).toPromise();
+    }
+
+    public unlockUser(userId) {
+        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/unlock', {
+            params: { userId }
+        }).toPromise();
+    }
+
+    public suspendUser(userId) {
+        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/suspend', {
             params: { userId }
         }).toPromise();
     }

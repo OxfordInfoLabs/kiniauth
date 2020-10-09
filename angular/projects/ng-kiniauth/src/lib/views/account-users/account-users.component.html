@@ -8,6 +8,18 @@
 
     </div>
 
+    <p class="text-center flex align-center mt1" *ngIf="passwordReset">
+        <mat-icon class="mr1">mail</mat-icon> Password reset email sent. Please check your email for further instructions
+    </p>
+
+    <p class="text-center flex align-center mt1" *ngIf="userUnlocked">
+        <mat-icon class="mr1">lock_open</mat-icon> This user has been successfully unlocked.
+    </p>
+
+    <p class="text-center flex align-center mt1" *ngIf="userSuspended">
+        <mat-icon class="mr1">block</mat-icon> This user has been suspended.
+    </p>
+
     <div class="mobile-list-view pb1">
 
         <input type="text" (keyup)="search($event.target.value)"
@@ -74,15 +86,21 @@
                     </button>
                     <mat-menu #menu="matMenu">
                         <button mat-menu-item (click)="removeUser(user)">Remove</button>
+                        <button mat-menu-item (click)="resetPassword(user)">Reset Password</button>
+                        <button mat-menu-item (click)="unlockUser(user.id)">Unlock</button>
+                        <button mat-menu-item (click)="suspendUser(user.id)">Suspend</button>
                     </mat-menu>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
-    <mat-paginator class="user-paginator flex1 pl050 mb0"
-                   [length]="usersSize" [pageSize]="pageSize.getValue()"
-                   [pageSizeOptions]="[10, 25, 50, 100]"
-                   (page)="updatePage($event)"></mat-paginator>
+
+    <mat-paginator class="user-paginator flex1 pl050 mb0" [length]="resultSize"
+                   [pageSize]="limit.getValue()"
+                   [pageIndex]="pageIndex"
+                   [pageSizeOptions]="[5, 10, 25, 100]"
+                   (page)="updatePage($event)">
+    </mat-paginator>
 
 </div>

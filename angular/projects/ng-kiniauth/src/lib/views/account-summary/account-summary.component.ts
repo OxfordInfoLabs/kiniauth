@@ -51,7 +51,6 @@ export class AccountSummaryComponent extends BaseComponent implements OnInit, On
     public loadAccount() {
         this.editAccountName = false;
         this.accountService.getAccount().then(account => {
-            console.log(account);
             this.account = account;
         });
     }

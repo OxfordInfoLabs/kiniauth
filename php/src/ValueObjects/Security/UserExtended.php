@@ -17,6 +17,7 @@ class UserExtended {
     protected $twoFactorData;
     protected $hashedEmail;
     protected $activeAccountId;
+    protected $userData;
 
     /**
      * UserExtended constructor.

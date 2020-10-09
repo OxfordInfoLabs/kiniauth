@@ -258,6 +258,28 @@ class UserService {
 
     }
 
+    /**
+     * Used by Admin to unlock an account
+     *
+     * @param $userId
+     */
+    public function unlockUserByUserId($userId) {
+        $user = User::fetch($userId);
+        $user->setStatus(User::STATUS_ACTIVE);
+        $user->setInvalidLoginAttempts(0);
+        $user->save();
+    }
+
+    /**
+     * Suspend a user
+     *
+     * @param $userId
+     */
+    public function suspendUser($userId) {
+        $user = User::fetch($userId);
+        $user->setStatus(User::STATUS_SUSPENDED);
+        $user->save();
+    }
 
     /**
      * Get all users matching a specific role scope and scope id, optionally limited to roles

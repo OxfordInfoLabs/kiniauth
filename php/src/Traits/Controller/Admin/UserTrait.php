@@ -3,8 +3,10 @@
 namespace Kiniauth\Traits\Controller\Admin;
 
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\Session;
+use Kiniauth\ValueObjects\Security\UserExtended;
 
 trait UserTrait {
 
@@ -25,10 +27,24 @@ trait UserTrait {
      *
      * @param string $userId
      *
-     * @return User
+     * @return UserExtended
      */
     public function getUser($userId = User::LOGGED_IN_USER) {
-        return User::fetch($userId);
+        $user = User::fetch($userId);
+        return new UserExtended($user);
+    }
+
+    /**
+     * Get a user object by userId (optional), defaults to the logged in user
+     *
+     * @http GET /summary
+     *
+     * @param string $userId
+     *
+     * @return UserSummary
+     */
+    public function getUserSummary($userId = User::LOGGED_IN_USER) {
+        return UserSummary::fetch($userId);
     }
 
     /**
@@ -84,4 +100,37 @@ trait UserTrait {
         return $this->userService->searchForUsers($searchString, $offset, $limit);
     }
 
+    /**
+     * Request a password reset
+     *
+     * @http GET /passwordReset
+     *
+     * @param $emailAddress
+     *
+     */
+    public function requestPasswordReset($emailAddress) {
+        $this->userService->sendPasswordReset($emailAddress);
+    }
+
+    /**
+     * Unlock a user account
+     *
+     * @http GET /unlock
+     *
+     * @param $userId
+     */
+    public function unlockUser($userId) {
+        $this->userService->unlockUserByUserId($userId);
+    }
+
+    /**
+     * Suspend a user
+     *
+     * @http GET /suspend
+     *
+     * @param $userId
+     */
+    public function suspendUser($userId) {
+        $this->userService->suspendUser($userId);
+    }
 }

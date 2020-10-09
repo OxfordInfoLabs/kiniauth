@@ -18,13 +18,17 @@ export class AccountUsersComponent implements OnInit {
 
     public users: any[];
     public searchText = new BehaviorSubject<string>('');
-    public pageSize = new BehaviorSubject<number>(10);
-    public page = new BehaviorSubject<number>(0);
+    public limit = new BehaviorSubject<number>(10);
+    public offset = new BehaviorSubject<number>(0);
+    public pageIndex = 0;
+    public resultSize = 0;
     public reloadUsers = new Subject();
     public allSelected = false;
     public selectionMade = false;
-    public usersSize: number;
     public lodash = _;
+    public passwordReset = false;
+    public userUnlocked = false;
+    public userSuspended = false;
 
     private moment = moment;
 
@@ -33,7 +37,7 @@ export class AccountUsersComponent implements OnInit {
     }
 
     ngOnInit() {
-        merge(this.searchText, this.pageSize, this.page, this.reloadUsers)
+        merge(this.searchText, this.limit, this.offset, this.reloadUsers)
             .pipe(
                 debounceTime(300),
                 distinctUntilChanged(),
@@ -72,12 +76,15 @@ export class AccountUsersComponent implements OnInit {
     }
 
     public updatePage(pageEvent) {
-        const pageSize = this.pageSize.getValue();
+        const limit = this.limit.getValue();
 
-        if (pageEvent.pageSize !== pageSize) {
-            this.pageSize.next(pageEvent.pageSize);
+        if (pageEvent.pageSize !== limit) {
+            this.offset.next(0);
+            this.limit.next(pageEvent.pageSize);
+            this.pageIndex = 0;
         } else {
-            this.page.next(pageEvent.pageIndex + 1);
+            this.offset.next(pageEvent.pageSize * (pageEvent.pageIndex));
+            this.pageIndex = pageEvent.pageIndex;
         }
     }
 
@@ -90,13 +97,40 @@ export class AccountUsersComponent implements OnInit {
         }
     }
 
+    public resetPassword(user) {
+        this.userService.requestPasswordReset(user.emailAddress).then(() => {
+            this.passwordReset = true;
+            setTimeout(() => {
+                this.passwordReset = false;
+            }, 3000);
+        });
+    }
+
+    public unlockUser(userId) {
+        this.userService.unlockUser(userId).then(() => {
+            this.userUnlocked = true;
+            setTimeout(() => {
+                this.userUnlocked = false;
+            }, 3000);
+        });
+    }
+
+    public suspendUser(userId) {
+        this.userService.suspendUser(userId).then(() => {
+            this.userSuspended = true;
+            setTimeout(() => {
+                this.userSuspended = false;
+            }, 3000);
+        });
+    }
+
     private getUsers() {
         return this.userService.getAccountUsers(
             this.searchText.getValue(),
-            this.pageSize.getValue(),
-            this.pageSize.getValue() * this.page.getValue()
+            this.limit.getValue(),
+            this.offset.getValue()
         ).pipe(map((data: any) => {
-            this.usersSize = data.totalRecords;
+            this.resultSize = data.totalRecords;
             return data.results;
         }));
     }
