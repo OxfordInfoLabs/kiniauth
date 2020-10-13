@@ -93,6 +93,33 @@ class UserSessionServiceTest extends TestBase {
     }
 
 
+    public function testIfMoreThanOneIPAddressPassedOnlyFirstIsStoredForReference() {
+
+        $_SERVER["REMOTE_ADDR"] = "7.7.7.7, 1.2.3.4, 5.4.3.2";
+        $_SERVER['HTTP_USER_AGENT'] = "mytestagent/1.1";
+        $request = new Request(new Headers());
+
+        $this->session->returnValue("getId", "1234567");
+
+        // Register a new authenticated session
+        $this->userSessionService->registerNewAuthenticatedSession(2, $request);
+
+        $sessions = UserSession::filter("ORDER BY created_date_time DESC");
+        $this->assertTrue(sizeof($sessions) > 0);
+
+        /**
+         * @var UserSession $lastSession
+         */
+        $lastSession = $sessions[0];
+        $this->assertEquals(2, $lastSession->getUserId());
+        $this->assertEquals("1234567", $lastSession->getSessionId());
+        $this->assertNotNull($lastSession->getCreatedDateTime());
+        $this->assertEquals(new UserSessionProfile("7.7.7.7", "mytestagent/1.1", 2), $lastSession->getProfile());
+
+
+    }
+
+
     public function testIfNewProfileCreatedForUserEmailIsSentProvidedNotFirstTimeEntry() {
 
 

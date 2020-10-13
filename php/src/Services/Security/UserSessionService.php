@@ -57,6 +57,11 @@ class UserSessionService {
 
         // Grab the key fields
         $ipAddress = $request->getRemoteIPAddress();
+
+        if ($ipAddress)
+            $ipAddress = trim(explode(",", $ipAddress)[0]);
+
+
         $userAgent = $request->getHeaders()->getUserAgent();
 
         // Create the profile
