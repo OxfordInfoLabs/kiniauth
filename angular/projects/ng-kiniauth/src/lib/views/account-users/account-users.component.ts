@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 export class AccountUsersComponent implements OnInit {
 
     @Input() userRoleRoute: string;
+    @Input() disableInvite: boolean;
 
     public users: any[];
     public searchText = new BehaviorSubject<string>('');
