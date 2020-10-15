@@ -3,10 +3,12 @@
 
 namespace Kiniauth\Services\Account;
 
+use Kiniauth\Exception\Security\InvalidAccountForUserException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Exception\Security\TooManyUserAccessTokensException;
 use Kiniauth\Exception\Security\TwoFactorAuthenticationRequiredException;
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Objects\Communication\Email\BrandedTemplatedEmail;
 use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
@@ -15,6 +17,7 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Objects\Security\UserSummary;
+use Kiniauth\Services\Application\ActivityLogger;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\AuthenticationService;
@@ -206,6 +209,44 @@ class UserService {
 
 
     /**
+     * Get accounts for the user passed by id
+     *
+     * @param $userId
+     */
+    public function getUserAccounts($userId = User::LOGGED_IN_USER) {
+        return AccountSummary::filter("WHERE accountId IN (SELECT r.account_id FROM ka_user_role r WHERE r.user_id = ?) ORDER BY name", $userId);
+    }
+
+
+    /**
+     * Switch active account for a user
+     *
+     * @param $accountId
+     * @param string $userId
+     */
+    public function switchActiveAccount($accountId, $userId = User::LOGGED_IN_USER) {
+
+        // Get the user
+        $user = User::fetch($userId);
+
+        $accounts = AccountSummary::filter("WHERE accountId IN 
+            (SELECT r.account_id FROM ka_user_role r WHERE r.user_id = ? AND r.account_id = ?) ORDER BY name", $userId, $accountId);
+
+        if (sizeof($accounts) > 0) {
+
+            // Update active account.
+            $user->setActiveAccountId($accountId);
+            $user->save();
+
+            Container::instance()->get(SecurityService::class)->reloadLoggedInObjects();
+        } else {
+            throw new InvalidAccountForUserException();
+        }
+
+    }
+
+
+    /**
      * Lock a user by id
      *
      * @param $userId
@@ -227,6 +268,8 @@ class UserService {
         // Save the user
         $user->save();
 
+        ActivityLogger::log("User Locked", null, null, [], $userId);
+
         return $unlockCode;
 
     }
@@ -244,10 +287,7 @@ class UserService {
         try {
             $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("USER_LOCKED", $unlockCode);
 
-            $user = User::fetch($pendingAction->getObjectId());
-            $user->setStatus(User::STATUS_ACTIVE);
-            $user->setInvalidLoginAttempts(0);
-            $user->save();
+            $this->unlockUserByUserId($pendingAction->getObjectId());
 
             $this->pendingActionService->removePendingAction("USER_LOCKED", $unlockCode);
 
@@ -268,6 +308,9 @@ class UserService {
         $user->setStatus(User::STATUS_ACTIVE);
         $user->setInvalidLoginAttempts(0);
         $user->save();
+
+        ActivityLogger::log("User Unlocked", null, null, [], $user->getId());
+
     }
 
     /**
@@ -279,6 +322,9 @@ class UserService {
         $user = User::fetch($userId);
         $user->setStatus(User::STATUS_SUSPENDED);
         $user->save();
+
+        ActivityLogger::log("User Suspended", null, null, [], $user->getId());
+
     }
 
     /**
@@ -365,6 +411,9 @@ class UserService {
 
             // Send the email
             $this->emailService->send(new UserTemplatedEmail($userId, "security/password-reset", ["code" => $identifier]), null, $userId);
+
+            ActivityLogger::log("Password Reset Requested", null, null, [], $userId);
+
         }
 
 
@@ -409,6 +458,10 @@ class UserService {
             $user->setHashedPassword($newPassword);
             $user->save();
 
+
+            ActivityLogger::log("Password changed", null, null, [], $user->getId());
+
+
             $this->pendingActionService->removePendingAction("PASSWORD_RESET", $resetCode);
 
         } catch (ItemNotFoundException $e) {
@@ -428,11 +481,20 @@ class UserService {
         /** @var User $user */
         $user = User::fetch($userId);
         if ($this->validateUserPassword($user->getEmailAddress(), $password)) {
+
+            $from = $user->getEmailAddress();
+
             $user->setEmailAddress($newEmailAddress);
             if ($hashedPassword) {
                 $user->setHashedPassword($hashedPassword);
             }
             $user->save();
+
+            ActivityLogger::log("Email address changed", null, null, [
+                "From" => $from,
+                "To" => $newEmailAddress
+            ], $userId);
+
             return true;
         }
         return false;
@@ -448,8 +510,17 @@ class UserService {
         /** @var User $user */
         $user = User::fetch($userId);
         if ($this->validateUserPassword($user->getEmailAddress(), $password)) {
+
+            $from = $user->getName();
+
             $user->setName($newName);
             $user->save();
+
+            ActivityLogger::log("User name changed", null, null, [
+                "From" => $from,
+                "To" => $newName
+            ], $userId);
+
             return true;
         }
         return false;
@@ -465,8 +536,17 @@ class UserService {
         /** @var User $user */
         $user = User::fetch($userId);
         if ($this->validateUserPassword($user->getEmailAddress(), $password)) {
+
+            $from = $user->getMobileNumber();
+
             $user->setMobileNumber($newMobile);
             $user->save();
+
+            ActivityLogger::log("User mobile number changed", null, null, [
+                "From" => $from,
+                "To" => $newMobile
+            ], $userId);
+
             return true;
         }
         return false;
@@ -482,8 +562,18 @@ class UserService {
         /** @var User $user */
         $user = User::fetch($userId);
         if ($this->validateUserPassword($user->getEmailAddress(), $password)) {
+
+            $from = $user->getBackupEmailAddress();
+
             $user->setBackupEmailAddress($newEmailAddress);
             $user->save();
+
+            ActivityLogger::log("User backup email changed", null, null, [
+                "From" => $from,
+                "To" => $newEmailAddress
+            ], $userId);
+
+
             return true;
         }
         return false;
@@ -532,6 +622,10 @@ class UserService {
         if ($authenticated) {
             $user->setTwoFactorData($secret);
             $user->save();
+
+            ActivityLogger::log("User 2FA enabled", null, null, [], $userId);
+
+
             return new UserExtended($user);
         }
         return false;
@@ -545,6 +639,10 @@ class UserService {
         $user->setTwoFactorData(null);
         $user->setBackupCodes(null);
         $user->save();
+
+        ActivityLogger::log("User 2FA disabled", null, null, [], $userId);
+
+
         return new UserExtended($user);
     }
 
@@ -584,6 +682,9 @@ class UserService {
         // Create the user access token
         $userAccessToken = new UserAccessToken($loggedIn->getId(), $token);
         $userAccessToken->save();
+
+        ActivityLogger::log("User access token generated", null, null, []);
+
 
         return $token;
 

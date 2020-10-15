@@ -13,6 +13,7 @@ use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
+use Kiniauth\Services\Application\ActivityLogger;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
@@ -22,6 +23,7 @@ use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
+use Kinikit\MVC\Request\Request;
 use Kinikit\MVC\Request\URL;
 
 
@@ -128,6 +130,7 @@ class AuthenticationService {
                     return self::STATUS_REQUIRES_2FA;
                 } else {
                     $this->securityService->logIn($user);
+                    ActivityLogger::log("Logged in");
                     return self::STATUS_LOGGED_IN;
                 }
             } else {
@@ -138,6 +141,8 @@ class AuthenticationService {
 
                     $existingLoginAttempts = $user->getInvalidLoginAttempts();
                     $user->setInvalidLoginAttempts($existingLoginAttempts + 1);
+
+                    ActivityLogger::log("Failed Login (Invalid Password)", null, null, [], $user->getId());
 
                     // Lock the user if we have exceeded max login attempts
                     if ($existingLoginAttempts >= $maxLoginAttempts) {
@@ -150,6 +155,12 @@ class AuthenticationService {
                 throw new InvalidLoginException();
             }
         } else {
+            /**
+             * @var Request $request
+             */
+            $request = Container::instance()->get(Request::class);
+            ActivityLogger::log("Unknown Login Attempt", null, null, ["ipAddress" =>
+                $request->getRemoteIPAddress()]);
             // Invalid username
             throw new InvalidLoginException();
         }
@@ -176,6 +187,7 @@ class AuthenticationService {
             } else {
                 $this->session->__setPendingLoggedInUser(null);
                 $this->securityService->logIn($pendingUser);
+                ActivityLogger::log("Logged in");
                 return self::STATUS_LOGGED_IN;
             }
 
@@ -218,6 +230,7 @@ class AuthenticationService {
                 $this->session->__setPendingLoggedInUser(null);
 
                 $this->securityService->logIn($pendingUser);
+                ActivityLogger::log("Logged in");
                 return true;
             }
         } else if (strlen($code) === 9) {
@@ -232,9 +245,13 @@ class AuthenticationService {
                 $this->session->__setPendingLoggedInUser(null);
 
                 $this->securityService->logIn($pendingUser);
+                ActivityLogger::log("Logged in");
                 return true;
             }
         }
+
+        ActivityLogger::log("Failed Login (Invalid 2FA)", null, null, [], $pendingUser->getId());
+
 
         return false;
     }
@@ -261,6 +278,7 @@ class AuthenticationService {
             if (sizeof($matches) > 0) {
                 $user = User::fetch($matches[0]->getUserId());
                 $this->securityService->login($user, null, $hashValue);
+                ActivityLogger::log("User Token Login");
             } else {
                 throw new InvalidUserAccessTokenException();
             }
@@ -284,6 +302,7 @@ class AuthenticationService {
         // If there is a matching user, return it now.
         if (sizeof($matchingAccounts) > 0) {
             $this->securityService->login(null, $matchingAccounts[0]);
+            ActivityLogger::log("API Login");
         } else {
             throw new InvalidAPICredentialsException();
         }

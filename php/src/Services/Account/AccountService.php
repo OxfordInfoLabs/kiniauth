@@ -11,6 +11,7 @@ use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
+use Kiniauth\Services\Application\ActivityLogger;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\SecurityService;
@@ -85,8 +86,17 @@ class AccountService {
         $accountObject = Account::fetch($account->getAccountId());
 
         if ($this->securityService->validateUserPassword($user->getEmailAddress(), $password)) {
+
+            $oldName = $accountObject->getName();
+
             $accountObject->setName($newName);
             $accountObject->save();
+
+            ActivityLogger::log("Account name changed", null, null, [
+                "From" => $oldName,
+                "To" => $newName
+            ], null, $accountObject->getAccountId());
+
             $this->securityService->reloadLoggedInObjects();
             return true;
         }

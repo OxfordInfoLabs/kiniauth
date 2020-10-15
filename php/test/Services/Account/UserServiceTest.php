@@ -3,11 +3,13 @@
 namespace Kiniauth\Test\Services\Account;
 
 use Kiniauth\Bootstrap;
+use Kiniauth\Exception\Security\InvalidAccountForUserException;
 use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Exception\Security\TooManyUserAccessTokensException;
 use Kiniauth\Exception\Security\TwoFactorAuthenticationRequiredException;
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
@@ -261,6 +263,97 @@ class UserServiceTest extends TestBase {
         } catch (ValidationException $e) {
             // Success
         }
+
+    }
+
+
+    public function testCanGetAccountsForUser() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $newUser = new User("bobby@trials.com", "ashdjfhksalfjahfdgdgsdgsdfgfgddfgdsgsdgdsgdsgsdggfsdgsdgdgdgfgds", "Bobby Test", 0);
+        $newUser->save();
+
+        $newAccount = new Account("Trials inc", 0);
+        $newAccount->save();
+
+        $newAccount2 = new Account("Bongo LTD", 0);
+        $newAccount2->save();
+
+        $this->assertEquals([], $this->userService->getUserAccounts($newUser->getId()));
+
+        $role = new UserRole(Role::SCOPE_ACCOUNT, $newAccount->getAccountId(), 0, $newAccount->getAccountId(), $newUser->getId());
+        $role->save();
+        $this->assertEquals([new AccountSummary($newAccount->getAccountId(), "Trials inc", 0)], $this->userService->getUserAccounts($newUser->getId()));
+
+        $role = new UserRole(Role::SCOPE_ACCOUNT, $newAccount2->getAccountId(), 0, $newAccount2->getAccountId(), $newUser->getId());
+        $role->save();
+        $this->assertEquals([new AccountSummary($newAccount2->getAccountId(), "Bongo LTD", 0), new AccountSummary($newAccount->getAccountId(), "Trials inc", 0)], $this->userService->getUserAccounts($newUser->getId()));
+
+
+        $newAccount->remove();
+        $newAccount2->remove();
+        $newUser->remove();
+
+    }
+
+
+    public function testCanSwitchAccountForUserProvidedAccessToAccount() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $newUser = new User("bobby@trials.com", hash("sha512", "passwordbobby@trials.com"), "Bobby Test", 0);
+        $newUser->setStatus(User::STATUS_ACTIVE);
+        $newUser->save();
+
+
+        $newAccount = new Account("Trials inc", 0);
+        $newAccount->save();
+
+        $newAccount2 = new Account("Bongo LTD", 0);
+        $newAccount2->save();
+
+        $role = new UserRole(Role::SCOPE_ACCOUNT, $newAccount->getAccountId(), 0, $newAccount->getAccountId(), $newUser->getId());
+        $role->save();
+
+        $role = new UserRole(Role::SCOPE_ACCOUNT, $newAccount2->getAccountId(), 0, $newAccount2->getAccountId(), $newUser->getId());
+        $role->save();
+
+
+        AuthenticationHelper::login("bobby@trials.com", "password");
+
+        try {
+            $this->userService->switchActiveAccount(1, $newUser->getId());
+            $this->fail("Should have thrown here");
+        } catch (InvalidAccountForUserException $e) {
+
+        }
+
+        $this->userService->switchActiveAccount($newAccount2->getAccountId(), $newUser->getId());
+
+        /**
+         * @var User $reUser
+         */
+        $reUser = User::fetch($newUser->getId());
+        $this->assertEquals($newAccount2->getAccountId(), $reUser->getActiveAccountId());
+        $this->assertEquals($newAccount2->getAccountId(), $this->session->__getLoggedInUser()->getActiveAccountId());
+        $this->assertEquals($newAccount2->getAccountId(), $this->session->__getLoggedInAccount()->getAccountId());
+
+
+        $this->userService->switchActiveAccount($newAccount->getAccountId(), $newUser->getId());
+
+        /**
+         * @var User $reUser
+         */
+        $reUser = User::fetch($newUser->getId());
+        $this->assertEquals($newAccount->getAccountId(), $reUser->getActiveAccountId());
+        $this->assertEquals($newAccount->getAccountId(), $this->session->__getLoggedInUser()->getActiveAccountId());
+        $this->assertEquals($newAccount->getAccountId(), $this->session->__getLoggedInAccount()->getAccountId());
+
+
+        $newAccount->remove();
+        $newAccount2->remove();
+        $newUser->remove();
 
     }
 

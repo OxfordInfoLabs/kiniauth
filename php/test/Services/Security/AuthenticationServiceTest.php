@@ -351,6 +351,9 @@ class AuthenticationServiceTest extends TestBase {
 
     public function testExceptionRaisedIfInvalidUsernameOrPasswordSupplied() {
 
+
+        AuthenticationHelper::logout();
+
         try {
             $this->authenticationService->login("bobby@wrong.test", "helloworld");
             $this->fail("Should have thrown here");

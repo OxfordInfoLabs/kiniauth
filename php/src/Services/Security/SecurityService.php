@@ -415,9 +415,10 @@ class SecurityService {
     public function reloadLoggedInObjects() {
         list($user, $account) = $this->getLoggedInUserAndAccount();
         if ($user) {
-            $this->session->__setLoggedInUser(User::fetch($user->getId()));
-        }
-        if ($account) {
+            $newUser = User::fetch($user->getId());
+            $this->session->__setLoggedInUser($newUser);
+            $this->session->__setLoggedInAccount(Account::fetch($newUser->getActiveAccountId()));
+        } else if ($account) {
             $this->session->__setLoggedInAccount(Account::fetch($account->getAccountId()));
         }
     }
