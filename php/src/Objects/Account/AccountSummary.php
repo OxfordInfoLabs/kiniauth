@@ -2,6 +2,7 @@
 
 
 namespace Kiniauth\Objects\Account;
+
 use Kinikit\Persistence\ORM\ActiveRecord;
 
 
@@ -44,9 +45,10 @@ class AccountSummary extends ActiveRecord {
      * @var string
      * @maxLength 30
      */
-    protected $status = self::STATUS_ACTIVE;
+    protected $status = self::STATUS_PENDING;
 
 
+    const STATUS_PENDING = "PENDING";
     const STATUS_ACTIVE = "ACTIVE";
     const STATUS_SUSPENDED = "SUSPENDED";
 

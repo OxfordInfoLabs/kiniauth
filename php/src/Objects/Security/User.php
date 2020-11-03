@@ -96,6 +96,11 @@ class User extends UserSummary {
     protected $invalidLoginAttempts = 0;
 
 
+    /**
+     * @var \DateTime
+     */
+    protected $createdDate;
+
 
     const LOGGED_IN_USER = "LOGGED_IN_USER";
 
@@ -118,6 +123,7 @@ class User extends UserSummary {
         }
         $this->name = $name;
         $this->parentAccountId = $parentAccountId ? $parentAccountId : 0;
+
     }
 
 
@@ -322,6 +328,10 @@ class User extends UserSummary {
      * @param string $status
      */
     public function setStatus($status) {
+        if ($status == User::STATUS_ACTIVE && !$this->createdDate) {
+            $this->createdDate = new \DateTime();
+        }
+
         $this->status = $status;
     }
 
@@ -344,6 +354,13 @@ class User extends UserSummary {
      */
     public function setSuccessfulLogins($successfulLogins) {
         $this->successfulLogins = $successfulLogins;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedDate() {
+        return $this->createdDate;
     }
 
 

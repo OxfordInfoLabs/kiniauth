@@ -239,10 +239,14 @@ class UserServiceTest extends TestBase {
         $this->assertEquals("John Smith", $user->getName());
         $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
         $this->assertEquals(1, sizeof($user->getRoles()));
+        $this->assertNotNull($user->getCreatedDate());
+
 
         $account = $this->session->__getLoggedInAccount();
         $this->assertEquals("Smythe Enterprises", $account->getName());
         $this->assertEquals($user->getRoles()[0]->getAccountId(), $account->getAccountId());
+        $this->assertEquals(Account::STATUS_ACTIVE, $account->getStatus());
+        $this->assertNotNull($account->getCreatedDate());
 
 
         // Login as admin to ensure permissions.
@@ -307,10 +311,10 @@ class UserServiceTest extends TestBase {
         $newUser->save();
 
 
-        $newAccount = new Account("Trials inc", 0);
+        $newAccount = new Account("Trials inc", 0, Account::STATUS_ACTIVE);
         $newAccount->save();
 
-        $newAccount2 = new Account("Bongo LTD", 0);
+        $newAccount2 = new Account("Bongo LTD", 0, Account::STATUS_ACTIVE);
         $newAccount2->save();
 
         $role = new UserRole(Role::SCOPE_ACCOUNT, $newAccount->getAccountId(), 0, $newAccount->getAccountId(), $newUser->getId());

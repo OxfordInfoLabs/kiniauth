@@ -187,6 +187,7 @@ class UserService {
             list($user, $account) = $this->getPendingUserAndAccount($activationCode);
 
             // Simply save the account
+            $account->setStatus(Account::STATUS_ACTIVE);
             $account->save();
 
             // Activate and save the user

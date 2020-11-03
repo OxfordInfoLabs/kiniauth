@@ -42,6 +42,12 @@ class Account extends AccountSummary {
     protected $apiSecret;
 
 
+    /**
+     * @var \DateTime
+     */
+    protected $createdDate;
+
+
     // Logged in account constant for default value usage.
     const LOGGED_IN_ACCOUNT = "LOGGED_IN_ACCOUNT";
 
@@ -51,12 +57,13 @@ class Account extends AccountSummary {
      *
      * Account constructor.
      */
-    public function __construct($name = null, $parentAccountId = 0) {
+    public function __construct($name = null, $parentAccountId = 0, $status = self::STATUS_PENDING) {
         $this->name = $name;
         $this->parentAccountId = $parentAccountId;
 
         $this->apiKey = StringUtils::generateRandomString(10, true, true, false);
         $this->apiSecret = StringUtils::generateRandomString(10, true, true, false);
+        $this->status = $status;
     }
 
     /**
@@ -101,6 +108,9 @@ class Account extends AccountSummary {
      */
     public function setStatus($status) {
         $this->status = $status;
+        if ($status == self::STATUS_ACTIVE && !$this->createdDate) {
+            $this->createdDate = new \DateTime();
+        }
     }
 
     /**
@@ -129,6 +139,13 @@ class Account extends AccountSummary {
      */
     public function setApiSecret($apiSecret) {
         $this->apiSecret = $apiSecret;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedDate() {
+        return $this->createdDate;
     }
 
 
