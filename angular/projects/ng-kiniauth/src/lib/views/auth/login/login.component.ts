@@ -63,6 +63,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
                     }
                 })
                 .catch(err => {
+                    this.authService.getSessionData();
                     this.loginError = true;
                     this.loading = false;
                 });
@@ -99,6 +100,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
                     return user;
                 })
                 .catch(error => {
+                    this.authService.getSessionData();
                     this.twoFAError = true;
                     this.loading = false;
                     return error;
