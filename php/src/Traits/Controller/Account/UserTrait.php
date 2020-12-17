@@ -217,4 +217,29 @@ trait UserTrait {
     public function updateAssignedScopeObjectRolesForUser($scopeObjectRolesAssignments, $userId) {
         $this->roleService->updateAssignedScopeObjectRolesForUser($userId, $scopeObjectRolesAssignments);
     }
+
+    /**
+     * Return the accounts this user is associated with
+     *
+     * @http GET /accounts
+     *
+     * @param string $userId
+     * @return mixed
+     */
+    public function getUserAccounts($userId = User::LOGGED_IN_USER) {
+        return $this->userService->getUserAccounts($userId);
+    }
+
+    /**
+     * Switch accounts for the user
+     *
+     * @http GET /switchAccount
+     *
+     * @param $accountId
+     * @param string $userId
+     * @throws \Kiniauth\Exception\Security\InvalidAccountForUserException
+     */
+    public function switchActiveAccount($accountId, $userId = User::LOGGED_IN_USER) {
+        $this->userService->switchActiveAccount($accountId, $userId);
+    }
 }

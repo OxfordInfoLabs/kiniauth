@@ -70,4 +70,16 @@ export class UserService {
             params: { userId }
         }).toPromise();
     }
+
+    public getAccounts(userId) {
+        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/accounts', {
+            params: { userId }
+        }).toPromise();
+    }
+
+    public switchAccount(accountId, userId) {
+        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/switchAccount', {
+            params: { accountId, userId }
+        }).toPromise();
+    }
 }
