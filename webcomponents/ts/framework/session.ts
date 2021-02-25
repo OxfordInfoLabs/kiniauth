@@ -10,7 +10,9 @@ export default class Session {
      * Get session data once
      */
     public static getSessionData(reload = false): Promise<any> {
+
         if (!this.sessionData) {
+
             let api = new Api();
             this.sessionData = new Promise<any>(done => {
 

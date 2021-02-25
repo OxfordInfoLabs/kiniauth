@@ -31,7 +31,6 @@ export default class AuthKinibind extends Kinibind {
         // Initialise the combined model
         super(element, model, joinElement);
 
-
         // Pump in the session once loaded provided we are not inheriting
         if (!model["_kinibindInherit"])
             Session.getSessionData().then((session => {

@@ -278,8 +278,8 @@ class User extends UserSummary {
     public function getAccountIds() {
         $accountIds = array();
         foreach ($this->roles as $role) {
-            if ($role->getScopeId())
-                $accountIds[$role->getScopeId()] = 1;
+            if ($role->getAccountId())
+                $accountIds[$role->getAccountId()] = 1;
         }
         return array_keys($accountIds);
     }
