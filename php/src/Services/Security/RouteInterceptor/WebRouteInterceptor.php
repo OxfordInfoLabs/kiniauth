@@ -11,6 +11,7 @@ use Kinikit\Core\Logging\Logger;
 use Kinikit\MVC\Request\Request;
 use Kinikit\MVC\Request\URL;
 use Kinikit\MVC\Response\Headers;
+use Kinikit\MVC\Response\Response;
 use Kinikit\MVC\Response\SimpleResponse;
 use Kinikit\MVC\Routing\RouteInterceptor;
 
@@ -70,12 +71,13 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
             $response = new SimpleResponse("");
 
             // Add the capcha token as permitted in all cases
-            $response->setHeader("Access-Control-Allow-Headers", "x-captcha-token");
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "x-captcha-token");
 
-            // Add the CSRF token as permitted for this route if we are enforcing csrf
-            if ($this->csrf)
-                $response->setHeader("Access-Control-Allow-Headers", "x-csrf-token");
+            // Add the CSRF token as permitted for this route
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "x-csrf-token");
 
+            // Allow methods
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,DELETE,PUT,PATCH,OPTIONS");
 
             return $response;
         }

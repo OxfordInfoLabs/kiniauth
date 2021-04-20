@@ -27,7 +27,7 @@ class ActiveRecordInterceptorTest extends TestBase {
      */
     private $authenticationService;
 
-    public function setUp():void {
+    public function setUp(): void {
         parent::setUp();
         $this->objectInterceptor = Container::instance()->get(ActiveRecordInterceptor::class);
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
