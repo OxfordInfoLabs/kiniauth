@@ -11,7 +11,6 @@ use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
  */
 class SettingInterceptor extends DefaultORMInterceptor {
 
-
     /**
      * Attach the definition to a setting object
      *
