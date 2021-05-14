@@ -2,3 +2,5 @@ node_modules
 dist
 .idea
 vendor
+db.log
+kiniauth-test.db

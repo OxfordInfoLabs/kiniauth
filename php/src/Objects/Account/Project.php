@@ -58,10 +58,10 @@ class Project extends ProjectSummary {
     }
 
     /**
-     * @param int $number
+     * @param string $key
      */
-    public function setNumber($number) {
-        $this->number = $number;
+    public function setKey($key) {
+        $this->key = $key;
     }
 
 

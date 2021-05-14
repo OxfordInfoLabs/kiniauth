@@ -1,0 +1,26 @@
+[
+  {
+    "key": "global",
+    "tag": "Global",
+    "description": "A truly global tag available to whole system"
+  },
+  {
+    "key": "account1",
+    "accountId": 1,
+    "tag": "Account1",
+    "description": "An account wide tag available to account 1"
+  },
+  {
+    "key": "account2",
+    "accountId": 2,
+    "tag": "Account2",
+    "description": "An account wide tag available to account 2"
+  },
+  {
+    "key": "project",
+    "accountId": 2,
+    "projectKey": "soapSuds",
+    "tag": "Project",
+    "description": "A project level tag available to just one project"
+  }
+]

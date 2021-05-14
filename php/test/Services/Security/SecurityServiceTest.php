@@ -23,7 +23,7 @@ class SecurityServiceTest extends TestBase {
     private $securityService;
     private $authenticationService;
 
-    public function setUp():void {
+    public function setUp(): void {
         parent::setUp();
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
         $this->securityService = Container::instance()->get(SecurityService::class);
@@ -89,9 +89,14 @@ class SecurityServiceTest extends TestBase {
         AuthenticationHelper::login("admin@kinicart.com", "password");
         $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
 
+
         // User with different account access
         AuthenticationHelper::login("mary@shoppingonline.com", "password");
         $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // Useer login
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
 
         // API login
         $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
@@ -99,6 +104,78 @@ class SecurityServiceTest extends TestBase {
 
 
     }
+
+
+    public function testObjectsWithAccountIdOfZeroAreSuperUserAccessibleOnly() {
+
+        $contact = new Contact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
+            "Oxon", "OX4 7YY", "GB", null, "test@test.com", 0, Contact::ADDRESS_TYPE_GENERAL);
+
+
+        // Logged out
+        $this->authenticationService->logout();
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // Super user
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // User login
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // API login
+        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
+
+
+    }
+
+
+    public function testObjectsWithNullAccountIdAreAccessibleToAllLoggedInUsersInReadAccessMode() {
+        $contact = new Contact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
+            "Oxon", "OX4 7YY", "GB", null, "test@test.com", null, Contact::ADDRESS_TYPE_GENERAL);
+
+
+        // Logged out
+        $this->authenticationService->logout();
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // Super user
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // User login
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // API login
+        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
+    }
+
+    public function testObjectsWithNullAccountIdAreOnlyAccessibleToSuperUsersInWriteAccessMode() {
+        $contact = new Contact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
+            "Oxon", "OX4 7YY", "GB", null, "test@test.com", null, Contact::ADDRESS_TYPE_GENERAL);
+
+
+        // Logged out
+        $this->authenticationService->logout();
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
+
+        // Super user
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
+
+        // User login
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
+
+        // API login
+        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
+    }
+
 
     public function testCanGetAllPrivileges() {
 
@@ -125,36 +202,33 @@ class SecurityServiceTest extends TestBase {
 
         // Logged out
         $this->authenticationService->logout();
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access"));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access", 5));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "access"));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "access", 5));
 
         // Super user
         AuthenticationHelper::login("admin@kinicart.com", "password");
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"viewdata"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"deletedata"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"deletedata", 7));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "access"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "viewdata"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "editdata"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "deletedata"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "deletedata", 7));
 
         // Administrator
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"viewdata"));
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata"));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"access", 2));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"viewdata", 2));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata", 2));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "access"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "viewdata"));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "editdata"));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "access", 2));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "viewdata", 2));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "editdata", 2));
 
         // User with selective roles
         AuthenticationHelper::login("regularuser@smartcoasting.org", "password");
-        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata"));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"deletedata"));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT,"editdata", 2));
+        $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "editdata"));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "deletedata"));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "editdata", 2));
 
     }
-
-
-
 
 
 }

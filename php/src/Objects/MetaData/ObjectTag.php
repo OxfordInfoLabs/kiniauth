@@ -22,21 +22,56 @@ class ObjectTag {
     private $objectType;
 
     /**
-     * Assume related object has integer id
+     * Assume related object has single pk
      *
-     * @var integer
+     * @var string
      * @primaryKey
      */
     private $objectId;
 
 
     /**
+     * @var string
+     * @primaryKey
+     */
+    private $tagKey = "";
+
+    /**
+     * @var integer
+     * @primaryKey
+     */
+    private $tagAccountId = "";
+
+
+    /**
+     * @var string
+     * @primaryKey
+     */
+    private $tagProjectKey = "";
+
+    /**
      * @manyToOne
-     * @parentJoinColumns tag_id
+     * @parentJoinColumns tag_key,[tag_account_id],[tag_project_key]
      *
      * @var Tag
      */
     private $tag;
+
+
+    /**
+     * ObjectTag constructor.
+     *
+     * @param Tag $tag
+     * @param string $objectType
+     * @param string $objectId
+     *
+     */
+    public function __construct($tag, $objectType = null, $objectId = null) {
+        $this->objectType = $objectType;
+        $this->objectId = $objectId;
+        $this->tag = $tag;
+    }
+
 
     /**
      * @return string

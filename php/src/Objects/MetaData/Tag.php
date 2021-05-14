@@ -4,104 +4,57 @@
 namespace Kiniauth\Objects\MetaData;
 
 
-use Kinikit\Persistence\ORM\ActiveRecord;
+use Kiniauth\Traits\Account\AccountProject;
+
 
 /**
  * @table ka_tag
  * @generate
+ * @interceptor \Kiniauth\Objects\MetaData\TagInterceptor
  */
-class Tag extends ActiveRecord {
+class Tag extends TagSummary {
+
+    use AccountProject;
 
     /**
-     * @var integer
+     * @var string
+     * @primaryKey
      */
-    protected $id;
+    protected $key;
 
     /**
      * @var integer
+     * @primaryKey
      */
     protected $accountId;
 
 
     /**
-     * Project number within the account
+     * @var string
+     * @primaryKey
+     */
+    protected $projectKey;
+
+
+    /**
+     * TagSummary constructor.
      *
-     * @var integer
-     */
-    protected $projectNumber;
-
-    /**
-     * @var string
-     */
-    private $tag;
-
-    /**
-     * @var string
-     */
-    private $description;
-
-    /**
-     * @return int
-     */
-    public function getId() {
-        return $this->id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getAccountId() {
-        return $this->accountId;
-    }
-
-    /**
-     * @param int $accountId
-     */
-    public function setAccountId($accountId) {
-        $this->accountId = $accountId;
-    }
-
-    /**
-     * @return int
-     */
-    public function getProjectNumber() {
-        return $this->projectNumber;
-    }
-
-    /**
-     * @param int $projectNumber
-     */
-    public function setProjectNumber($projectNumber) {
-        $this->projectNumber = $projectNumber;
-    }
-
-
-    /**
-     * @return string
-     */
-    public function getTag() {
-        return $this->tag;
-    }
-
-    /**
+     * @param TagSummary $tagSummary
      * @param string $tag
-     */
-    public function setTag($tag) {
-        $this->tag = $tag;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription() {
-        return $this->description;
-    }
-
-    /**
      * @param string $description
      */
-    public function setDescription($description) {
-        $this->description = $description;
+    public function __construct($tagSummary = null, $accountId = null, $projectKey = null) {
+        if ($tagSummary instanceof TagSummary)
+            parent::__construct($tagSummary->getTag(), $tagSummary->getDescription(), $tagSummary->getKey());
+        $this->accountId = $accountId;
+        $this->projectKey = $projectKey;
+    }
+
+    /**
+     * @param string $key
+     */
+    public function setKey($key) {
+        $this->key = $key;
     }
 
 

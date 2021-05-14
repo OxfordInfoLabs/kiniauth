@@ -38,11 +38,11 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
     }
 
     public function preSave($object = null, $upfInstance = null) {
-        return $this->disabled || $this->resolveAccessForObject($object);
+        return $this->disabled || $this->resolveAccessForObject($object, true, SecurityService::ACCESS_WRITE);
     }
 
     public function preDelete($object = null, $upfInstance = null) {
-        return $this->disabled || $this->resolveAccessForObject($object);
+        return $this->disabled || $this->resolveAccessForObject($object, true, SecurityService::ACCESS_WRITE);
     }
 
 
@@ -76,10 +76,10 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
      * @param mixed $object
      * @return bool
      */
-    private function resolveAccessForObject($object, $throwException = true) {
+    private function resolveAccessForObject($object, $throwException = true, $accessMode = SecurityService::ACCESS_READ) {
 
 
-        if ($this->securityService->checkLoggedInObjectAccess($object))
+        if ($this->securityService->checkLoggedInObjectAccess($object, $accessMode))
             return true;
         else {
             if ($throwException)

@@ -119,9 +119,11 @@ class AccountScopeAccess extends ScopeAccess {
      * Return labels matching each scope id.  This enables the generic role assignment screen
      * to show sensible values.
      *
+     * @param $scopeIds
+     * @param null $accountId
      * @return mixed
      */
-    public function getScopeObjectDescriptionsById($scopeIds) {
+    public function getScopeObjectDescriptionsById($scopeIds, $accountId = null) {
 
         $accounts = AccountSummary::multiFetch($scopeIds);
         return ObjectArrayUtils::getMemberValueArrayForObjects("name", $accounts);

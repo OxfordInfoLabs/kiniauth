@@ -3,5 +3,10 @@
     "key": "access",
     "description": "Basic access to an account.",
     "scope": "ACCOUNT"
+  },
+  {
+    "key": "access",
+    "description": "Basic access to a project.",
+    "scope": "PROJECT"
   }
 ]

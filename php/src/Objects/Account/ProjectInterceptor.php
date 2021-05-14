@@ -4,6 +4,7 @@
 namespace Kiniauth\Objects\Account;
 
 
+use Kinikit\Core\Util\StringUtils;
 use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
 
@@ -36,12 +37,25 @@ class ProjectInterceptor extends DefaultORMInterceptor {
      */
     public function preSave($object) {
 
+        if (!$object->getKey() && $object->getAccountId()) {
 
+            $compressedKey = StringUtils::convertToCamelCase($object->getName());
+            $proposedKey = $compressedKey;
+            $index = 1;
+            do {
+                $response = $this->databaseConnection->query("SELECT COUNT(*) existing FROM ka_project WHERE account_id = ? AND key = ?", $object->getAccountId(), $proposedKey);
+                $existing = $response->fetchAll()[0]["existing"];
 
-        if (!$object->getNumber() && $object->getAccountId()) {
-            $results = $this->databaseConnection->query("SELECT MAX(number) highest FROM ka_project WHERE account_id = ?", $object->getAccountId());
-            $highest = $results->fetchAll()[0]["highest"] ?? 0;
-            $object->setNumber($highest + 1);
+                if ($existing == 0)
+                    break;
+
+                $index++;
+                $proposedKey = $compressedKey . $index;
+
+            } while (true);
+
+            $object->setKey($proposedKey);
+
         }
     }
 

@@ -153,7 +153,7 @@ class RoleService {
             if (sizeof($scopeObjectRoles) > 0) {
 
                 // Grab all object descriptions
-                $scopeObjectDescriptions = $scopeAccess->getScopeObjectDescriptionsById(array_keys($scopeObjectRoles));
+                $scopeObjectDescriptions = $scopeAccess->getScopeObjectDescriptionsById(array_keys($scopeObjectRoles), $accountId);
 
 
                 foreach ($scopeObjectRoles as $scopeId => $userRoles) {

@@ -70,6 +70,11 @@ class SecurityService {
     private $userSessionService;
 
 
+    // Access mode constants for permission checking
+    const ACCESS_READ = "READ";
+    const ACCESS_WRITE = "WRITE";
+
+
     /**
      * @param Session $session
      * @param ScopeManager $scopeManager
@@ -258,17 +263,20 @@ class SecurityService {
      *
      * @param $object
      */
-    public function checkLoggedInObjectAccess($object) {
+    public function checkLoggedInObjectAccess($object, $accessMode = self::ACCESS_READ) {
 
         // If super user, shortcut the process.
         if ($this->isSuperUserLoggedIn())
             return true;
 
+
+        // Shortcut if we are the logged in user
+        $loggedInUser = $this->session->__getLoggedInUser();
+        $loggedInAccount = $this->session->__getLoggedInAccount();
+
+
         // Handle user as a special case
         if ($object instanceof User) {
-
-            // Shortcut if we are the logged in user
-            $loggedInUser = $this->session->__getLoggedInUser();
 
             if ($loggedInUser) {
                 if ($loggedInUser->getId() == $object->getId())
@@ -295,7 +303,16 @@ class SecurityService {
                 $objectMember = $scopeAccess->getObjectMember();
                 if ($objectMember && $classInspector->hasAccessor($objectMember)) {
                     $scopeId = $classInspector->getPropertyData($object, $objectMember);
-                    $access = $access && $this->getLoggedInScopePrivileges($scopeAccess->getScope(), $scopeId);
+
+                    // Handle special null scope id case separately.  Here we assume that any missing account_id
+                    // objects become read only, other objects are fine as they are downstream and controlled separately
+                    if ($scopeId === null) {
+                        if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT)
+                            $access = $access && ($accessMode == self::ACCESS_READ && ($loggedInUser || $loggedInAccount));
+                    } else {
+                        $access = $access && $this->getLoggedInScopePrivileges($scopeAccess->getScope(),
+                                $scopeId);
+                    }
                 }
                 if (!$access)
                     break;

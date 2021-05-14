@@ -102,6 +102,56 @@ class ActiveRecordInterceptorTest extends TestBase {
     }
 
 
+    public function testObjectsWithNullAccountIdAreAllowedForLoggedInReadButNotForWriteOrDelete() {
+
+        $contact = new Contact("Mark", "Hello World", "1 This Lane", "This town", "London",
+            "London", "LH1 4YY", "GB", null, null, null);
+
+
+        // Start logged out and confirm that interceptors fail.
+        $this->authenticationService->logout();
+
+        try {
+            $this->objectInterceptor->preSave($contact);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+        try {
+            $this->objectInterceptor->preDelete($contact);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+
+        $this->assertFalse($this->objectInterceptor->postMap($contact));
+
+        // Now log in as an account
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
+
+        try {
+            $this->objectInterceptor->preSave($contact);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+        try {
+            $this->objectInterceptor->preDelete($contact);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+        // Should be able to read this one
+        $this->assertTrue($this->objectInterceptor->postMap($contact));
+
+
+    }
+
+
     public function testCanExecuteABlockInsecurelyWhichWillAlwaysReturnTrueForInterceptors() {
 
         $contact = new Contact("Mark", "Hello World", "1 This Lane", "This town", "London",

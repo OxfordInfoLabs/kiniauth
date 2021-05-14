@@ -96,9 +96,11 @@ abstract class ScopeAccess {
      * Return labels matching each scope id.  This enables the generic role assignment screen
      * to show sensible values.
      *
+     * @param $scopeIds
+     * @param null $accountId
      * @return mixed
      */
-    public abstract function getScopeObjectDescriptionsById($scopeIds);
+    public abstract function getScopeObjectDescriptionsById($scopeIds, $accountId = null);
 
 
     /**

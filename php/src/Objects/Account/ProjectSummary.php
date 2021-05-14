@@ -13,9 +13,9 @@ use Kinikit\Persistence\ORM\ActiveRecord;
 class ProjectSummary extends ActiveRecord {
 
     /**
-     * @var int
+     * @var string
      */
-    protected $number;
+    protected $key;
 
     /**
      * @var string
@@ -34,19 +34,19 @@ class ProjectSummary extends ActiveRecord {
      *
      * @param string $name
      * @param string $description \
-     * @param int $number
+     * @param string $key
      */
-    public function __construct($name, $description = null, $number = null) {
+    public function __construct($name, $description = null, $key = null) {
         $this->name = $name;
         $this->description = $description;
-        $this->number = $number;
+        $this->key = $key;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getNumber() {
-        return $this->number;
+    public function getKey() {
+        return $this->key;
     }
 
 

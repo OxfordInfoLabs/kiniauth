@@ -58,7 +58,7 @@ class RoleServiceTest extends TestBase {
 
 
         $allScopeRoles = $this->roleService->getAllPossibleAccountScopeRoles();
-        $this->assertEquals(2, sizeof($allScopeRoles));
+        $this->assertEquals(3, sizeof($allScopeRoles));
 
         $accountScopeRoles = $allScopeRoles[0];
         $this->assertTrue($accountScopeRoles instanceof ScopeRoles);
@@ -71,7 +71,7 @@ class RoleServiceTest extends TestBase {
         $this->assertEquals("Editor", $accountRoles[1]->getName());
         $this->assertEquals("Super Editor", $accountRoles[2]->getName());
 
-        $exampleScopeRoles = $allScopeRoles[1];
+        $exampleScopeRoles = $allScopeRoles[2];
         $this->assertTrue($exampleScopeRoles instanceof ScopeRoles);
         $this->assertEquals("EXAMPLE", $exampleScopeRoles->getScope());
         $this->assertEquals("Example", $exampleScopeRoles->getScopeDescription());
@@ -98,7 +98,7 @@ class RoleServiceTest extends TestBase {
 
         $allUserRoles = $this->roleService->getAllUserAccountRoles(2, 1);
 
-        $this->assertEquals(2, sizeof($allUserRoles));
+        $this->assertEquals(3, sizeof($allUserRoles));
         $accountUserRoles = $allUserRoles["Account"];
         $exampleUserRoles = $allUserRoles["Example"];
 

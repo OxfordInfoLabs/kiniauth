@@ -38,7 +38,7 @@ class UserRole extends ActiveRecord {
      * The id of the scope object for which this role is being attached.  If set to blank this is assumed to
      * refer to all objects (i.e. superuser).
      *
-     * @var integer
+     * @var string
      * @primaryKey
      *
      */
@@ -88,7 +88,7 @@ class UserRole extends ActiveRecord {
      * Construct a new user account role object.
      *
      * @param string $scope
-     * @param integer $scopeId
+     * @param string $scopeId
      * @param integer $roleId
      * @param integer $userId
      */
@@ -116,7 +116,7 @@ class UserRole extends ActiveRecord {
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getScopeId() {
         return $this->scopeId;
@@ -158,6 +158,15 @@ class UserRole extends ActiveRecord {
      */
     public function getAccountStatus() {
         return $this->account ? $this->account->getStatus() : null;
+    }
+
+    /**
+     * For testing purposes
+     *
+     * @param Role $role
+     */
+    public function setRole($role) {
+        $this->role = $role;
     }
 
 

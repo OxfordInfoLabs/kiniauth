@@ -31,9 +31,9 @@ class ProjectServiceTest extends TestBase {
 
         AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
         $this->assertEquals([
-            new ProjectSummary("Pressure Washing", "Pressure washing project", 3),
-            new ProjectSummary("Soap Suds", "Soap suds project", 1),
-            new ProjectSummary("Wiper Blades", "Wiper blades project", 2),
+            new ProjectSummary("Pressure Washing", "Pressure washing project", "pressureWashing"),
+            new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds"),
+            new ProjectSummary("Wiper Blades", "Wiper blades project", "wiperBlades"),
         ], $this->service->listProjects());
 
 
@@ -46,25 +46,25 @@ class ProjectServiceTest extends TestBase {
         $project = new ProjectSummary("My New Project", "A new project for testing purposes");
 
         // Save the project summary
-        $projectNumber = $this->service->saveProject($project);
+        $projectKey = $this->service->saveProject($project);
 
-        $this->assertEquals(1, $projectNumber);
+        $this->assertEquals("myNewProject", $projectKey);
 
-        $reProject = $this->service->getProject($projectNumber);
-        $this->assertEquals(new ProjectSummary("My New Project", "A new project for testing purposes", $projectNumber), $reProject);
+        $reProject = $this->service->getProject($projectKey);
+        $this->assertEquals(new ProjectSummary("My New Project", "A new project for testing purposes", $projectKey), $reProject);
 
         // Update the project
         $reProject->setName("Updated Project Name", "Updated Project Description");
         $this->service->saveProject($reProject);
 
-        $reReProject = $this->service->getProject($projectNumber);
+        $reReProject = $this->service->getProject($projectKey);
         $this->assertEquals($reProject, $reReProject);
 
         // Remove the project
-        $this->service->removeProject($projectNumber);
+        $this->service->removeProject($projectKey);
 
         try {
-            $this->service->getProject($projectNumber);
+            $this->service->getProject($projectKey);
             $this->fail("Should have thrown here");
         } catch (ObjectNotFoundException $e) {
             $this->assertTrue(true);
@@ -74,13 +74,29 @@ class ProjectServiceTest extends TestBase {
     }
 
 
+    public function testUniqueKeyCreatedIfTwoProjectsWithSameNameCreated() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $project = new ProjectSummary("Duplicate Project", "A new project for testing purposes");
+
+        // Save the project summary
+        $projectKey = $this->service->saveProject($project);
+        $this->assertEquals("duplicateProject", $projectKey);
+
+        // Save the project summary
+        $projectKey = $this->service->saveProject($project);
+        $this->assertEquals("duplicateProject2", $projectKey);
+    }
+
+
     public function testCanListProjectsForExplicitAccount() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
         $this->assertEquals([
-            new ProjectSummary("Pressure Washing", "Pressure washing project", 3),
-            new ProjectSummary("Soap Suds", "Soap suds project", 1),
-            new ProjectSummary("Wiper Blades", "Wiper blades project", 2),
+            new ProjectSummary("Pressure Washing", "Pressure washing project", "pressureWashing"),
+            new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds"),
+            new ProjectSummary("Wiper Blades", "Wiper blades project", "wiperBlades"),
         ], $this->service->listProjects(2));
 
 
@@ -93,25 +109,25 @@ class ProjectServiceTest extends TestBase {
         $project = new ProjectSummary("My New Project", "A new project for testing purposes");
 
         // Save the project summary
-        $projectNumber = $this->service->saveProject($project, 2);
+        $projectKey = $this->service->saveProject($project, 2);
 
-        $this->assertEquals(4, $projectNumber);
+        $this->assertEquals("myNewProject", $projectKey);
 
-        $reProject = $this->service->getProject($projectNumber, 2);
-        $this->assertEquals(new ProjectSummary("My New Project", "A new project for testing purposes", $projectNumber), $reProject);
+        $reProject = $this->service->getProject($projectKey, 2);
+        $this->assertEquals(new ProjectSummary("My New Project", "A new project for testing purposes", $projectKey), $reProject);
 
         // Update the project
         $reProject->setName("Updated Project Name", "Updated Project Description");
         $this->service->saveProject($reProject, 2);
 
-        $reReProject = $this->service->getProject($projectNumber, 2);
+        $reReProject = $this->service->getProject($projectKey, 2);
         $this->assertEquals($reProject, $reReProject);
 
         // Remove the project
-        $this->service->removeProject($projectNumber, 2);
+        $this->service->removeProject($projectKey, 2);
 
         try {
-            $this->service->getProject($projectNumber);
+            $this->service->getProject($projectKey);
             $this->fail("Should have thrown here");
         } catch (ObjectNotFoundException $e) {
             $this->assertTrue(true);
@@ -119,5 +135,57 @@ class ProjectServiceTest extends TestBase {
 
 
     }
+
+
+    public function testCanGetMultipleProjectsByKey() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $projects = $this->service->getMultipleProjects([
+            "soapSuds",
+            "pressureWashing"
+        ], 2);
+
+        $this->assertEquals([
+            new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds"),
+            new ProjectSummary("Pressure Washing", "Pressure washing project", "pressureWashing"),
+        ], $projects);
+
+
+    }
+
+
+    public function testCanFilterProjectsUsingStringAndOffsetAndLimits() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        // Open search
+        $this->assertEquals([
+            new ProjectSummary("Pressure Washing", "Pressure washing project", "pressureWashing"),
+            new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds"),
+            new ProjectSummary("Wiper Blades", "Wiper blades project", "wiperBlades"),
+        ], $this->service->filterProjects("", 0, 10, 2));
+
+        // Filter
+        $this->assertEquals([
+            new ProjectSummary("Pressure Washing", "Pressure washing project", "pressureWashing"),
+            new ProjectSummary("Wiper Blades", "Wiper blades project", "wiperBlades"),
+        ], $this->service->filterProjects("e", 0, 10, 2));
+
+
+        // Limit
+        $this->assertEquals([
+            new ProjectSummary("Pressure Washing", "Pressure washing project", "pressureWashing"),
+            new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds"),
+        ], $this->service->filterProjects("", 0, 2, 2));
+
+        // Offset
+        $this->assertEquals([
+            new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds"),
+            new ProjectSummary("Wiper Blades", "Wiper blades project", "wiperBlades"),
+        ], $this->service->filterProjects("", 1, 10, 2));
+
+    }
+
 
 }

@@ -18,7 +18,6 @@ class TestBase extends \PHPUnit\Framework\TestCase {
         $bootstrap = Container::instance()->get(Bootstrap::class);
         $bootstrap->setup();
 
-
         if (!self::$run) {
 
             $activeRecordInterceptor = Container::instance()->get(ActiveRecordInterceptor::class);

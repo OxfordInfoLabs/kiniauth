@@ -18,9 +18,11 @@ class ScopeManager {
      * ScopeManager constructor.
      *
      * @param AccountScopeAccess $accountScopeAccess
+     * @param ProjectScopeAccess $projectScopeAccess
      */
-    public function __construct($accountScopeAccess) {
+    public function __construct($accountScopeAccess, $projectScopeAccess) {
         $this->scopeAccesses[$accountScopeAccess->getScope()] = $accountScopeAccess;
+        $this->scopeAccesses[$projectScopeAccess->getScope()] = $projectScopeAccess;
     }
 
 

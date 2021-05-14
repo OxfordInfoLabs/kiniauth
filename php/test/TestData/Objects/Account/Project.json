@@ -1,19 +1,19 @@
 [
   {
     "accountId": 2,
-    "number": 1,
+    "key": "soapSuds",
     "name": "Soap Suds",
     "description": "Soap suds project"
   },
   {
     "accountId": 2,
-    "number": 2,
+    "key": "wiperBlades",
     "name": "Wiper Blades",
     "description": "Wiper blades project"
   },
   {
     "accountId": 2,
-    "number": 3,
+    "key": "pressureWashing",
     "name": "Pressure Washing",
     "description": "Pressure washing project"
   }
