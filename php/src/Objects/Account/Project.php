@@ -28,8 +28,8 @@ class Project extends ProjectSummary {
      * @param string $name
      * @param string $description
      */
-    public function __construct($name, $accountId, $number = null, $description = null, $id = null) {
-        parent::__construct($name, $description, $number);
+    public function __construct($name, $accountId, $projectProjectKey = null, $description = null, $id = null) {
+        parent::__construct($name, $description, $projectProjectKey);
         $this->accountId = $accountId;
         $this->id = $id;
     }
@@ -58,10 +58,10 @@ class Project extends ProjectSummary {
     }
 
     /**
-     * @param string $key
+     * @param string $projectKey
      */
-    public function setKey($key) {
-        $this->key = $key;
+    public function setProjectKey($projectKey) {
+        $this->projectKey = $projectKey;
     }
 
 

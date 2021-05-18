@@ -15,7 +15,7 @@ class ProjectSummary extends ActiveRecord {
     /**
      * @var string
      */
-    protected $key;
+    protected $projectKey;
 
     /**
      * @var string
@@ -33,20 +33,20 @@ class ProjectSummary extends ActiveRecord {
      * Project summary constructor.
      *
      * @param string $name
-     * @param string $description \
-     * @param string $key
+     * @param string $description
+     * @param string $projectKey
      */
-    public function __construct($name, $description = null, $key = null) {
+    public function __construct($name, $description = null, $projectKey = null) {
         $this->name = $name;
         $this->description = $description;
-        $this->key = $key;
+        $this->projectKey = $projectKey;
     }
 
     /**
      * @return string
      */
-    public function getKey() {
-        return $this->key;
+    public function getProjectKey() {
+        return $this->projectKey;
     }
 
 

@@ -25,7 +25,7 @@ class ProjectService {
      */
     public function getProject($projectKey, $accountId = Account::LOGGED_IN_ACCOUNT) {
         $project = $this->getFullProject($accountId, $projectKey);
-        return new ProjectSummary($project->getName(), $project->getDescription(), $project->getKey());
+        return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey());
     }
 
 
@@ -37,11 +37,11 @@ class ProjectService {
      */
     public function getMultipleProjects($projectKeys, $accountId = Account::LOGGED_IN_ACCOUNT) {
         $values = array_merge([$accountId], $projectKeys);
-        $results = Project::filter("WHERE account_id = ? AND key IN (?" . str_repeat(",?", sizeof($projectKeys) - 1) . ")",
+        $results = Project::filter("WHERE account_id = ? AND project_key IN (?" . str_repeat(",?", sizeof($projectKeys) - 1) . ")",
             $values);
 
         return array_map(function ($project) {
-            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getKey());
+            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey());
         }, $results);
     }
 
@@ -54,7 +54,7 @@ class ProjectService {
     public function listProjects($accountId = Account::LOGGED_IN_ACCOUNT) {
         $projects = Project::filter("WHERE account_id = ? ORDER BY name", $accountId);
         return array_map(function ($project) {
-            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getKey());
+            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey());
         }, $projects);
     }
 
@@ -71,7 +71,7 @@ class ProjectService {
         $projects = Project::filter("WHERE account_id = ? AND name LIKE ? ORDER BY name LIMIT $limit OFFSET $offset", $accountId,
             "%$filterString%");
         return array_map(function ($project) {
-            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getKey());
+            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey());
         }, $projects);
     }
 
@@ -85,17 +85,17 @@ class ProjectService {
 
         $projectId = null;
         try {
-            $project = $this->getFullProject($accountId, $projectSummary->getKey());
+            $project = $this->getFullProject($accountId, $projectSummary->getProjectKey());
             $projectId = $project->getId();
         } catch (ObjectNotFoundException $e) {
         }
 
-        $project = new Project($projectSummary->getName(), $accountId, $projectSummary->getKey(),
+        $project = new Project($projectSummary->getName(), $accountId, $projectSummary->getProjectKey(),
             $projectSummary->getDescription(), $projectId);
 
         $project->save();
 
-        return $project->getKey();
+        return $project->getProjectKey();
 
     }
 
@@ -122,7 +122,7 @@ class ProjectService {
      * @throws ObjectNotFoundException
      */
     private function getFullProject($accountId, $projectNumber) {
-        $matches = Project::filter("WHERE account_id = ? AND key = ?", $accountId, $projectNumber);
+        $matches = Project::filter("WHERE account_id = ? AND project_key = ?", $accountId, $projectNumber);
         if (sizeof($matches) > 0) {
             return $matches[0];
         } else {
