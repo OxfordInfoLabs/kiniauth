@@ -70,6 +70,9 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
         if (strtolower($request->getRequestMethod()) == "options") {
             $response = new SimpleResponse("");
 
+            // Allow content type
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "content-type");
+
             // Add the capcha token as permitted in all cases
             $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "x-captcha-token");
 

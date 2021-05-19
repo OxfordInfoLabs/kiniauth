@@ -70,6 +70,8 @@ trait Project {
     /**
      * Remove a project by key
      *
+     * @http DELETE /$projectKey
+     *
      * @param $projectKey
      */
     public function removeProject($projectKey) {
