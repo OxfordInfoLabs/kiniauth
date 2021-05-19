@@ -25,22 +25,23 @@ trait Project {
 
 
     /**
-     * @http GET /
-     */
-    public function filterProjects($filterString = 0, $limit = 10, $offset = 0) {
-        return $this->projectService->filterProjects($filterString, $offset, $limit);
-    }
-
-
-    /**
      * @http GET /$projectKey
      *
      * @param $projectKey
+     * @return ProjectSummary
      */
     public function getProject($projectKey) {
         return $this->projectService->getProject($projectKey);
     }
 
+
+    /**
+     * @http GET /
+     * @return ProjectSummary[]
+     */
+    public function filterProjects($filterString = "", $limit = 10, $offset = 0) {
+        return $this->projectService->filterProjects($filterString, $offset, $limit);
+    }
 
     /**
      * @http POST /

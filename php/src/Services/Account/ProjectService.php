@@ -67,7 +67,7 @@ class ProjectService {
      * @param int $limit
      * @param string $accountId
      */
-    public function filterProjects($filterString, $offset = 0, $limit = 0, $accountId = Account::LOGGED_IN_ACCOUNT) {
+    public function filterProjects($filterString = "", $offset = 0, $limit = 10, $accountId = Account::LOGGED_IN_ACCOUNT) {
         $projects = Project::filter("WHERE account_id = ? AND name LIKE ? ORDER BY name LIMIT $limit OFFSET $offset", $accountId,
             "%$filterString%");
         return array_map(function ($project) {
