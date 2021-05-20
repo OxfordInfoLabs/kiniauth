@@ -27,12 +27,12 @@ class MetaDataServiceTest extends TestBase {
         $this->service = Container::instance()->get(MetaDataService::class);
     }
 
-    public function testCanGetAllGlobalTagsWhereNoAccountOrProjectSupplied() {
+    public function testCanFilterAllGlobalTagsWhereNoAccountOrProjectSupplied() {
 
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
         // Get global tags
-        $globalTags = $this->service->getAvailableTags(null);
+        $globalTags = $this->service->filterAvailableTags("", null, 0, 10, null);
 
         $this->assertEquals([
             new TagSummary("Global", "A truly global tag available to whole system", "global")
@@ -41,12 +41,12 @@ class MetaDataServiceTest extends TestBase {
 
     }
 
-    public function testCanGetAllTagsIncludingGlobalOnesWhenAccountSupplied() {
+    public function testCanGetFilterTagsIncludingGlobalOnesWhenAccountSupplied() {
 
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
         // Get global tags
-        $globalTags = $this->service->getAvailableTags(1);
+        $globalTags = $this->service->filterAvailableTags("", null, 0, 10, 1);
 
         $this->assertEquals([
             new TagSummary("Account1", "An account wide tag available to account 1", "account1"),
@@ -54,18 +54,52 @@ class MetaDataServiceTest extends TestBase {
 
         ], $globalTags);
 
+        // Check one with a title filter applied
+        // Get global tags
+        $globalTags = $this->service->filterAvailableTags("lob", null, 0, 10, 1);
+
+        $this->assertEquals([
+            new TagSummary("Global", "A truly global tag available to whole system", "global"),
+
+        ], $globalTags);
+
 
     }
 
-    public function testCanGetAllTagsIncludingProjectOnesWhenProjectNumberSupplied() {
+    public function testCanFilterAllTagsIncludingProjectOnesWhenProjectNumberSupplied() {
 
         AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
 
         // Get global tags
-        $tags = $this->service->getAvailableTags(2, "soapSuds");
+        $tags = $this->service->filterAvailableTags("", "soapSuds", 0, 10, 2);
 
         $this->assertEquals([
             new TagSummary("Account2", "An account wide tag available to account 2", "account2"),
+            new TagSummary("Global", "A truly global tag available to whole system", "global"),
+            new TagSummary("Project", "A project level tag available to just one project", "project")],
+            $tags);
+
+
+        // Check one with a title filter applied
+        $tags = $this->service->filterAvailableTags("t", "soapSuds", 0, 10, 2);
+
+        $this->assertEquals([
+            new TagSummary("Account2", "An account wide tag available to account 2", "account2"),
+            new TagSummary("Project", "A project level tag available to just one project", "project")],
+            $tags);
+
+        // Limit
+        $tags = $this->service->filterAvailableTags("", "soapSuds", 0, 2, 2);
+
+        $this->assertEquals([
+            new TagSummary("Account2", "An account wide tag available to account 2", "account2"),
+            new TagSummary("Global", "A truly global tag available to whole system", "global")],
+            $tags);
+
+        // Offset
+        $tags = $this->service->filterAvailableTags("", "soapSuds", 1, 10, 2);
+
+        $this->assertEquals([
             new TagSummary("Global", "A truly global tag available to whole system", "global"),
             new TagSummary("Project", "A project level tag available to just one project", "project")],
             $tags);
@@ -80,7 +114,7 @@ class MetaDataServiceTest extends TestBase {
 
         try {
             $tagSummary = new TagSummary("Peanut Butter", "Peanut Butter Tag");
-            $this->service->saveTag($tagSummary, null);
+            $this->service->saveTag($tagSummary, null, null);
             $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e) {
             $this->assertTrue(true);
@@ -93,7 +127,7 @@ class MetaDataServiceTest extends TestBase {
         $this->assertEquals("peanutButter", $key);
 
         // Get global tags
-        $globalTags = $this->service->getAvailableTags(null);
+        $globalTags = $this->service->filterAvailableTags("", null, 0, 10, null);
 
         $this->assertEquals([
             new TagSummary("Global", "A truly global tag available to whole system", "global"),
@@ -112,15 +146,15 @@ class MetaDataServiceTest extends TestBase {
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
         $tagSummary = new TagSummary("Account Tag", "Account Tag");
-        $key = $this->service->saveTag($tagSummary, 1);
+        $key = $this->service->saveTag($tagSummary, null, 1);
         $this->assertEquals("accountTag", $key);
 
-        $accountTags = $this->service->getAvailableTags(1);
+        $accountTags = $this->service->filterAvailableTags("", null, 0, 10, 1);
         $this->assertEquals(new TagSummary("Account Tag", "Account Tag", "accountTag"), $accountTags[0]);
 
         // Check duplicate one
         $tagSummary = new TagSummary("Account Tag", "Account Tag");
-        $key = $this->service->saveTag($tagSummary, 1);
+        $key = $this->service->saveTag($tagSummary, null, 1);
         $this->assertEquals("accountTag2", $key);
 
     }
@@ -129,21 +163,21 @@ class MetaDataServiceTest extends TestBase {
         AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
 
         $tagSummary = new TagSummary("Project Tag", "Project Tag");
-        $key = $this->service->saveTag($tagSummary, 2, "wiperBlades");
+        $key = $this->service->saveTag($tagSummary, "wiperBlades", 2);
         $this->assertEquals("projectTag", $key);
 
-        $projectTags = $this->service->getAvailableTags(2, "wiperBlades");
+        $projectTags = $this->service->filterAvailableTags("", "wiperBlades", 0, 10, 2);
         $this->assertEquals(new TagSummary("Project Tag", "Project Tag", "projectTag"), array_pop($projectTags));
 
 
         // Check duplicate one
         $tagSummary = new TagSummary("Project Tag", "Project Tag");
-        $key = $this->service->saveTag($tagSummary, 2, "wiperBlades");
+        $key = $this->service->saveTag($tagSummary, "wiperBlades", 2);
         $this->assertEquals("projectTag2", $key);
 
         // Check different project same tag name
         $tagSummary = new TagSummary("Project Tag", "Project Tag");
-        $key = $this->service->saveTag($tagSummary, 2, "pressureWashing");
+        $key = $this->service->saveTag($tagSummary, "pressureWashing", 2);
         $this->assertEquals("projectTag", $key);
     }
 
@@ -156,16 +190,16 @@ class MetaDataServiceTest extends TestBase {
         $this->service->saveTag($tagSummary);
 
         $tagSummary = new TagSummary("Shared Account");
-        $this->service->saveTag($tagSummary, 1);
+        $this->service->saveTag($tagSummary, null, 1);
 
         $tagSummary = new TagSummary("Shared Account");
-        $this->service->saveTag($tagSummary, 2);
+        $this->service->saveTag($tagSummary, null, 2);
 
         $tagSummary = new TagSummary("Shared Project");
-        $this->service->saveTag($tagSummary, 2, "wiperBlades");
+        $this->service->saveTag($tagSummary, "wiperBlades", 2);
 
         $tagSummary = new TagSummary("Shared Project");
-        $this->service->saveTag($tagSummary, 2, "pressureWashing");
+        $this->service->saveTag($tagSummary, "pressureWashing", 2);
 
         // Check removal of top level tag
         $this->assertEquals(1, sizeof(Tag::filter("WHERE key = 'topLevel'")));
@@ -174,16 +208,16 @@ class MetaDataServiceTest extends TestBase {
 
         // Check removal of account level tag
         $this->assertEquals(2, sizeof(Tag::filter("WHERE key = 'sharedAccount'")));
-        $this->service->removeTag("sharedAccount", 1);
+        $this->service->removeTag("sharedAccount", null, 1);
         $this->assertEquals(1, sizeof(Tag::filter("WHERE key = 'sharedAccount'")));
-        $this->service->removeTag("sharedAccount", 2);
+        $this->service->removeTag("sharedAccount", null, 2);
         $this->assertEquals(0, sizeof(Tag::filter("WHERE key = 'sharedAccount'")));
 
         // Check removal of project level tag
         $this->assertEquals(2, sizeof(Tag::filter("WHERE key = 'sharedProject'")));
-        $this->service->removeTag("sharedProject", 2, "wiperBlades");
+        $this->service->removeTag("sharedProject", "wiperBlades", 2);
         $this->assertEquals(1, sizeof(Tag::filter("WHERE key = 'sharedProject'")));
-        $this->service->removeTag("sharedProject", 2, "pressureWashing");
+        $this->service->removeTag("sharedProject", "pressureWashing", 2);
         $this->assertEquals(0, sizeof(Tag::filter("WHERE key = 'sharedProject'")));
 
     }
@@ -197,20 +231,20 @@ class MetaDataServiceTest extends TestBase {
         $this->service->saveTag($tagSummary);
 
         $tagSummary = new TagSummary("Shared Account");
-        $this->service->saveTag($tagSummary, 1);
+        $this->service->saveTag($tagSummary, null, 1);
 
         $tagSummary = new TagSummary("Shared Account");
-        $this->service->saveTag($tagSummary, 2);
+        $this->service->saveTag($tagSummary, null, 2);
 
         $tagSummary = new TagSummary("Shared Project");
-        $this->service->saveTag($tagSummary, 2, "wiperBlades");
+        $this->service->saveTag($tagSummary, "wiperBlades", 2);
 
         $tagSummary = new TagSummary("Shared Project");
-        $this->service->saveTag($tagSummary, 2, "pressureWashing");
+        $this->service->saveTag($tagSummary, "pressureWashing", 2);
 
 
         $fullTags = $this->service->getObjectTagsFromSummaries([
-            new TagSummary("topLevel","", "topLevel"),
+            new TagSummary("topLevel", "", "topLevel"),
             new TagSummary("sharedAccount", "", "sharedAccount"),
             new TagSummary("sharedProject", "", "sharedProject")
         ], 2, "wiperBlades");
@@ -228,7 +262,7 @@ class MetaDataServiceTest extends TestBase {
 
 
         $fullTags = $this->service->getObjectTagsFromSummaries([
-            new TagSummary("topLevel","", "topLevel"),
+            new TagSummary("topLevel", "", "topLevel"),
             new TagSummary("sharedAccount", "", "sharedAccount"),
             new TagSummary("sharedProject", "", "sharedProject")
         ], 2, "pressureWashing");

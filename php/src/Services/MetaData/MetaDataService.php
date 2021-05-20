@@ -15,16 +15,19 @@ class MetaDataService {
 
 
     /**
-     * Get available tags - optionally scoped to account and project
+     * Filter available tags - optionally scoped to account and project.
      *
-     * @param integer $accountId
+     * @param string $filterString
      * @param string $projectKey
+     * @param int $offset
+     * @param int $limit
+     * @param integer $accountId
      * @return TagSummary[]
      */
-    public function getAvailableTags($accountId = Account::LOGGED_IN_ACCOUNT, $projectKey = null) {
+    public function filterAvailableTags($filterString = "", $projectKey = null, $offset = 0, $limit = 10, $accountId = Account::LOGGED_IN_ACCOUNT) {
         return array_map(function ($tag) {
             return new TagSummary($tag->getTag(), $tag->getDescription(), $tag->getKey());
-        }, $this->getRawAvailableTags($accountId, $projectKey));
+        }, $this->filterRawAvailableTags($filterString, $projectKey, $accountId, $offset, $limit));
     }
 
 
@@ -41,7 +44,7 @@ class MetaDataService {
     public function getObjectTagsFromSummaries($tagSummaries, $accountId = Account::LOGGED_IN_ACCOUNT, $projectKey = null) {
 
         // Get the available tags
-        $availableTags = ObjectArrayUtils::indexArrayOfObjectsByMember("key", $this->getRawAvailableTags($accountId, $projectKey));
+        $availableTags = ObjectArrayUtils::indexArrayOfObjectsByMember("key", $this->filterRawAvailableTags("", $projectKey, $accountId, 0, PHP_INT_MAX));
 
         $matches = [];
         foreach ($tagSummaries as $summary) {
@@ -59,12 +62,12 @@ class MetaDataService {
      * Save a tag and return the tag key
      *
      * @param $tagSummary
-     * @param string $accountId
      * @param string $projectKey
+     * @param string $accountId
      *
      * @return string
      */
-    public function saveTag($tagSummary, $accountId = Account::LOGGED_IN_ACCOUNT, $projectKey = null) {
+    public function saveTag($tagSummary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
         // Create new tag
         $tag = new Tag($tagSummary, $accountId, $projectKey);
@@ -78,10 +81,10 @@ class MetaDataService {
      * Remove a tag at the specified scope
      *
      * @param $key
-     * @param string $accountId
      * @param null $projectKey
+     * @param string $accountId
      */
-    public function removeTag($key, $accountId = Account::LOGGED_IN_ACCOUNT, $projectKey = null) {
+    public function removeTag($key, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
         $clause = "key = ?";
         $params = [$key];
@@ -110,14 +113,23 @@ class MetaDataService {
     /**
      * Raw version of get available tags for internal application use
      *
-     * @param string $accountId
+     * @param string $filterString
      * @param null $projectKey
+     * @param string $accountId
+     * @param int $offset
+     * @param int $limit
      * @return mixed
      */
-    private function getRawAvailableTags($accountId = Account::LOGGED_IN_ACCOUNT, $projectKey = null) {
+    private function filterRawAvailableTags($filterString = "", $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT, $offset = 0, $limit = 10) {
 
         $clauses = [];
         $params = [];
+
+        if ($filterString) {
+            $clauses[] = "tag LIKE ?";
+            $params[] = "%$filterString%";
+        }
+
         if ($accountId) {
             $clauses[] = "(accountId = ? OR accountId IS NULL)";
             $params[] = $accountId;
@@ -132,7 +144,9 @@ class MetaDataService {
             $clauses[] = "(projectKey IS NULL)";
         }
 
-        return Tag::filter("WHERE " . join(" AND ", $clauses) . " ORDER BY tag", $params);
+        // Handle the limiting and offsetting in memory for now.
+        $results = Tag::filter("WHERE " . join(" AND ", $clauses) . " ORDER BY tag", $params);
+        return array_slice($results, $offset, $limit);
 
     }
 
