@@ -121,7 +121,7 @@ class APIRouteInterceptorTest extends TestBase {
         $_GET = [];
         $_SERVER["HTTP_API_KEY"] = "TESTAPIKEY";
         $_SERVER["HTTP_API_SECRET"] = "TESTAPISECRET";
-        
+
         $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
 
         $this->assertTrue(true);
