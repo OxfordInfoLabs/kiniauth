@@ -39,14 +39,14 @@ class APIRouteInterceptor extends RouteInterceptor {
      */
     public function beforeRoute($request) {
 
-        $apiKey = $request->getParameter("apiKey");
-        $apiSecret = $request->getParameter("apiSecret");
+        $apiKey = $request->getParameter("apiKey") ?? $request->getHeaders()->getCustomHeader("API_KEY");
+        $apiSecret = $request->getParameter("apiSecret") ?? $request->getHeaders()->getCustomHeader("API_SECRET");
         if (!$apiKey || !$apiSecret) {
             throw new MissingAPICredentialsException();
         }
 
         list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
-        
+
         if (!$account || $account->getApiKey() != $apiKey || $account->getApiSecret() != $apiSecret) {
             $this->authenticationService->apiAuthenticate($apiKey, $apiSecret);
         }

@@ -96,13 +96,33 @@ class APIRouteInterceptorTest extends TestBase {
             // Success
         }
 
+        $_SERVER["REQUEST_URI"] = "/api/somecontroller?mynameistest";
+        $_GET = [];
+        $_SERVER["HTTP_API_KEY"] = "BADKEY";
+        $_SERVER["HTTP_API_SECRET"] = "BADSECRET";
 
-        // Finally good credentials
+        // Bad credentials supplied as header
+        try {
+            $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
+            $this->fail("should have thrown here");
+        } catch (InvalidAPICredentialsException $e) {
+            // Success
+        }
+
+
+        // Finally good credentials as GET params
         $_SERVER["REQUEST_URI"] = "/api/somecontroller?mynameistest?apiKey=TESTAPIKEY&apiSecret=TESTAPISECRET";
         $_GET = array("apiKey" => "TESTAPIKEY", "apiSecret" => "TESTAPISECRET");
 
         $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
 
+        // Good creds as header
+        $_SERVER["REQUEST_URI"] = "/api/somecontroller?mynameistest";
+        $_GET = [];
+        $_SERVER["HTTP_API_KEY"] = "TESTAPIKEY";
+        $_SERVER["HTTP_API_SECRET"] = "TESTAPISECRET";
+        
+        $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
 
         $this->assertTrue(true);
 
