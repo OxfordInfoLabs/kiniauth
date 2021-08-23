@@ -12,27 +12,12 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  *
  * @table ka_user
  */
-class UserSummary extends ActiveRecord {
+class UserSummary extends UserLabel {
 
     const STATUS_PENDING = "PENDING";
     const STATUS_ACTIVE = "ACTIVE";
     const STATUS_SUSPENDED = "SUSPENDED";
     const STATUS_LOCKED = "LOCKED";
-
-    /**
-     * Auto incremented id.
-     *
-     * @var integer
-     */
-    protected $id;
-
-    /**
-     * The full name for this user.  May or may not be required depending on the application.
-     *
-     * @maxLength 100
-     * @var string
-     */
-    protected $name;
 
     /**
      * Status for this user.
@@ -78,20 +63,6 @@ class UserSummary extends ActiveRecord {
         $this->status = $status;
         $this->emailAddress = $emailAddress;
         $this->successfulLogins = $successfulLogins;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId() {
-        return $this->id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getName() {
-        return $this->name;
     }
 
     /**
