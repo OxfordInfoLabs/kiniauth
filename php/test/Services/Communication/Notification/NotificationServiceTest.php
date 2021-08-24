@@ -11,9 +11,12 @@ use Kiniauth\Objects\Communication\Notification\NotificationSummary;
 use Kiniauth\Objects\Communication\Notification\UserNotification;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserCommunicationData;
+use Kiniauth\Services\Communication\Notification\CommunicationMethod\NotificationCommunicationMethod;
 use Kiniauth\Services\Communication\Notification\NotificationService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
+use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Testing\MockObjectProvider;
 
 include_once __DIR__ . "/../../../autoloader.php";
 
@@ -120,12 +123,11 @@ class NotificationServiceTest extends TestBase {
                 new NotificationGroupMember(new UserCommunicationData(11))
             ]);
 
-        $this->notificationService->saveNotificationGroup($notificationGroup, null, 1);
-
+        $groupId = $this->notificationService->saveNotificationGroup($notificationGroup, null, 1);
 
         $notification = new NotificationSummary("General Group Notification", "This is a general notification",
             null, [
-                $notificationGroup]);
+                new NotificationGroupSummary(null, null, null, $groupId)]);
 
         $notificationId = $this->notificationService->createNotification($notification, null, 1);
 
@@ -145,6 +147,49 @@ class NotificationServiceTest extends TestBase {
 
         $userNotification = UserNotification::fetch([$notificationId, 11]);
         $this->assertFalse($userNotification->isRead());
+
+    }
+
+
+    public function testCanCreateNotificationWithCommunicationMethodForGroups() {
+
+        $testCommunicationMethod = MockObjectProvider::instance()->getMockInstance(NotificationCommunicationMethod::class);
+
+        Container::instance()->addInterfaceImplementation(NotificationCommunicationMethod::class,
+            "test", $testCommunicationMethod);
+
+
+        $notificationGroup = new NotificationGroupSummary("New Group",
+            [
+                new NotificationGroupMember(new UserCommunicationData(2)),
+                new NotificationGroupMember(null, "group@test.com")
+            ], "test");
+
+        $groupId = $this->notificationService->saveNotificationGroup($notificationGroup, null, 1);
+
+        $notification = new NotificationSummary("External Group Notification", "This is an external notification",
+            null, [
+                new NotificationGroupSummary(null, null, null, $groupId)]);
+
+        $notificationId = $this->notificationService->createNotification($notification, null, 1);
+
+        // Check notification has been created
+        $this->assertNotNull($notificationId);
+
+        $reNotification = Notification::fetch($notificationId);
+        $this->assertNotNull($reNotification->getCreatedDate());
+        $this->assertEquals("External Group Notification", $reNotification->getTitle());
+
+        // Check user notification
+        $userNotification = UserNotification::fetch([$notificationId, 2]);
+        $this->assertFalse($userNotification->isRead());
+
+
+        // Now check that the communication method was called with appropriate parameters.
+        $reGroup = NotificationGroup::fetch($groupId);
+        $this->assertTrue($testCommunicationMethod->methodWasCalled("processNotification", [
+            $reNotification, $reGroup->getMembers()
+        ]));
 
     }
 

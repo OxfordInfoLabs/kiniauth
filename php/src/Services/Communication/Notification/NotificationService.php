@@ -11,6 +11,8 @@ use Kiniauth\Objects\Communication\Notification\NotificationGroupSummary;
 use Kiniauth\Objects\Communication\Notification\NotificationSummary;
 use Kiniauth\Objects\Communication\Notification\UserNotification;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Services\Communication\Notification\CommunicationMethod\NotificationCommunicationMethod;
+use Kinikit\Core\DependencyInjection\Container;
 
 class NotificationService {
 
@@ -109,6 +111,12 @@ class NotificationService {
         $notification = new Notification($notification, $projectKey, $accountId);
         $notification->save();
 
+
+        /**
+         * @var Notification $notification
+         */
+        $notification = Notification::fetch($notification->getId());
+
         // If this is a user based notification, create a user
         // notification entry
         $userIds = [];
@@ -124,6 +132,15 @@ class NotificationService {
                         $userIds[$member->getUser()->getId()] = 1;
                     }
                 }
+
+                // If not internal communication, call the communication method with the group data
+                if ($notificationGroup->getCommunicationMethod() !== NotificationGroupSummary::COMMUNICATION_METHOD_INTERNAL_ONLY) {
+                    $commsMethod = Container::instance()->getInterfaceImplementationClass(NotificationCommunicationMethod::class, $notificationGroup->getCommunicationMethod());
+                    if ($commsMethod) {
+                        $commsMethod->processNotification($notification, $notificationGroup->getMembers());
+                    }
+                }
+
             }
         }
 
