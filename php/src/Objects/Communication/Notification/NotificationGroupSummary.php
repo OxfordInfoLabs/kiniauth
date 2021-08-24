@@ -5,6 +5,12 @@ namespace Kiniauth\Objects\Communication\Notification;
 
 use Kinikit\Persistence\ORM\ActiveRecord;
 
+/**
+ * Class NotificationGroupSummary
+ * @package Kiniauth\Objects\Communication\Notification
+ *
+ * @table ka_notification_group
+ */
 class NotificationGroupSummary extends ActiveRecord {
 
     /**

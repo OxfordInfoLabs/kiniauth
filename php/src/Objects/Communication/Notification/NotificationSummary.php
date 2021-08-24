@@ -4,8 +4,16 @@
 namespace Kiniauth\Objects\Communication\Notification;
 
 
+use Kiniauth\Objects\MetaData\Category;
+use Kiniauth\Objects\Security\UserCommunicationData;
 use Kinikit\Persistence\ORM\ActiveRecord;
 
+/**
+ * Class NotificationSummary
+ * @package Kiniauth\Objects\Communication\Notification
+ *
+ * @table ka_notification
+ */
 class NotificationSummary extends ActiveRecord {
 
     /**
@@ -15,16 +23,6 @@ class NotificationSummary extends ActiveRecord {
      */
     protected $id;
 
-    /**
-     * @var integer
-     */
-    protected $accountId;
-
-
-    /**
-     * @var integer
-     */
-    protected $projectId;
 
     /**
      * Created date
@@ -32,6 +30,14 @@ class NotificationSummary extends ActiveRecord {
      * @var \DateTime
      */
     protected $createdDate;
+
+
+    /**
+     * @var Category
+     * @manyToOne
+     * @parentJoinColumns category_key,account_id,project_key
+     */
+    protected $category;
 
     /**
      * @var NotificationLevel
@@ -50,13 +56,6 @@ class NotificationSummary extends ActiveRecord {
      */
     protected $content;
 
-
-    /**
-     * State constants - may be extended with other states if required
-     */
-    const STATE_READ = "READ";
-    const STATE_UNREAD = "UNREAD";
-    const STATE_FLAGGED = "FLAGGED";
     /**
      * What state this notification is created in - only applies to internal use
      *
@@ -66,17 +65,55 @@ class NotificationSummary extends ActiveRecord {
 
 
     /**
-     * @return int
+     * @var NotificationGroupSummary[]
+     * @manyToMany
+     * @linkTable ka_notification_assigned_group
      */
-    public function getAccountId() {
-        return $this->accountId;
-    }
+    protected $notificationGroups;
+
 
     /**
-     * @return int
+     * @var UserCommunicationData
+     * @manyToOne
+     * @parentJoinColumns user_id
      */
-    public function getProjectId() {
-        return $this->projectId;
+    protected $user;
+
+
+    /**
+     * State constants - may be extended with other states if required
+     */
+    const STATE_READ = "READ";
+    const STATE_UNREAD = "UNREAD";
+    const STATE_FLAGGED = "FLAGGED";
+
+    /**
+     * NotificationSummary constructor.
+     * @param Category $category
+     * @param NotificationLevel $level
+     * @param string $title
+     * @param string $content
+     * @param string $initialState
+     */
+    public function __construct($title, $content,
+                                $user = null, $notificationGroups = null,
+                                $category = null, $level = null, $initialState = self::STATE_UNREAD) {
+        $this->title = $title;
+        $this->content = $content;
+        $this->user = $user;
+        $this->notificationGroups = $notificationGroups;
+        $this->category = $category;
+        $this->level = $level;
+        $this->initialState = $initialState;
+        $this->createdDate = new \DateTime();
+    }
+
+
+    /**
+     * @return Category
+     */
+    public function getCategory() {
+        return $this->category;
     }
 
 
@@ -121,4 +158,79 @@ class NotificationSummary extends ActiveRecord {
     public function getInitialState() {
         return $this->initialState;
     }
+
+
+    /**
+     * @param \DateTime $createdDate
+     */
+    public function setCreatedDate($createdDate) {
+        $this->createdDate = $createdDate;
+    }
+
+
+    /**
+     * @param Category $category
+     */
+    public function setCategory($category) {
+        $this->category = $category;
+    }
+
+
+    /**
+     * @param NotificationLevel $level
+     */
+    public function setLevel($level) {
+        $this->level = $level;
+    }
+
+    /**
+     * @return NotificationGroupSummary[]
+     */
+    public function getNotificationGroups() {
+        return $this->notificationGroups;
+    }
+
+    /**
+     * @param NotificationGroupSummary[] $notificationGroups
+     */
+    public function setNotificationGroups($notificationGroups) {
+        $this->notificationGroups = $notificationGroups;
+    }
+
+    /**
+     * @return UserCommunicationData
+     */
+    public function getUser() {
+        return $this->user;
+    }
+
+    /**
+     * @param UserCommunicationData $user
+     */
+    public function setUser($user) {
+        $this->user = $user;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle($title) {
+        $this->title = $title;
+    }
+
+    /**
+     * @param string $content
+     */
+    public function setContent($content) {
+        $this->content = $content;
+    }
+
+    /**
+     * @param string $initialState
+     */
+    public function setInitialState($initialState) {
+        $this->initialState = $initialState;
+    }
+
+
 }

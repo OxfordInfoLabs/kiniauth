@@ -1,13 +1,15 @@
 <?php
 
 
-namespace Kiniauth\Services\Notification;
+namespace Kiniauth\Services\Communication\Notification;
 
 
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Communication\Notification\Notification;
 use Kiniauth\Objects\Communication\Notification\NotificationGroup;
 use Kiniauth\Objects\Communication\Notification\NotificationGroupSummary;
 use Kiniauth\Objects\Communication\Notification\NotificationSummary;
+use Kiniauth\Objects\Communication\Notification\UserNotification;
 use Kiniauth\Objects\Security\User;
 
 class NotificationService {
@@ -90,7 +92,7 @@ class NotificationService {
      *
      * @return NotificationSummary
      */
-    public function listNotifications($accountId = Account::LOGGED_IN_ACCOUNT, $userId = User::LOGGED_IN_USER, $limit = 25, $offset = 0) {
+    public function listNotifications($limit = 25, $offset = 0, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT, $userId = User::LOGGED_IN_USER) {
 
     }
 
@@ -98,9 +100,41 @@ class NotificationService {
     /**
      * Create a notification from a definition
      *
-     * @param $notification
+     * @param NotificationSummary $notification
+     * @return integer
      */
-    public function createNotification($notification, $accountId = Account::LOGGED_IN_ACCOUNT) {
+    public function createNotification($notification, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
+
+        // Create a full Notification from the summary
+        $notification = new Notification($notification, $projectKey, $accountId);
+        $notification->save();
+
+        // If this is a user based notification, create a user
+        // notification entry
+        $userIds = [];
+        if ($notification->getUser()) {
+            $userIds[$notification->getUser()->getId()] = 1;
+        }
+
+        // If notification groups, loop through each of these and identify any users
+        if ($notification->getNotificationGroups()) {
+            foreach ($notification->getNotificationGroups() as $notificationGroup) {
+                foreach ($notificationGroup->getMembers() as $member) {
+                    if ($member->getUser()) {
+                        $userIds[$member->getUser()->getId()] = 1;
+                    }
+                }
+            }
+        }
+
+        // Store all entries for applicable users
+        foreach (array_keys($userIds) as $userId) {
+            $userNotification = new UserNotification($notification->getId(), $userId,
+                $notification->getInitialState() == Notification::STATE_READ);
+            $userNotification->save();
+        }
+
+        return $notification->getId();
 
     }
 

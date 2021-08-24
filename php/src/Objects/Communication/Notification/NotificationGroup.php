@@ -31,7 +31,7 @@ class NotificationGroup extends NotificationGroupSummary {
 
         if ($notificationGroupSummary)
             parent::__construct($notificationGroupSummary->getName(), $notificationGroupSummary->getMembers(),
-                $notificationGroupSummary->getCommunicationMethod());
+                $notificationGroupSummary->getCommunicationMethod(), $notificationGroupSummary->getId());
 
         $this->projectKey = $projectKey;
         $this->accountId = $accountId;
