@@ -3,6 +3,8 @@
 
 namespace Kiniauth\Objects\Communication\Notification;
 
+use Kinikit\Persistence\ORM\ActiveRecord;
+
 /**
  * Class UserNotification
  * @package Kiniauth\Objects\Communication\Notification
@@ -10,7 +12,7 @@ namespace Kiniauth\Objects\Communication\Notification;
  * @table ka_user_notification
  * @generate
  */
-class UserNotification {
+class UserNotification extends ActiveRecord {
 
     /**
      * @var integer
@@ -39,6 +41,20 @@ class UserNotification {
      *
      */
     private $notification;
+
+    /**
+     * UserNotification constructor.
+     *
+     * @param int $notificationId
+     * @param int $userId
+     * @param bool $read
+     */
+    public function __construct($notificationId, $userId, $read) {
+        $this->notificationId = $notificationId;
+        $this->userId = $userId;
+        $this->read = $read;
+    }
+
 
     /**
      * @return int

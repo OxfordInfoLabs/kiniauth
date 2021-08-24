@@ -3,7 +3,7 @@
 
 namespace Kiniauth\Objects\Communication\Notification;
 
-use Kiniauth\Objects\Security\UserLabel;
+use Kiniauth\Traits\Account\AccountProject;
 
 /**
  * Class Notification
@@ -14,92 +14,41 @@ use Kiniauth\Objects\Security\UserLabel;
  */
 class Notification extends NotificationSummary {
 
+    use AccountProject;
 
     /**
-     * @var NotificationGroup[]
-     * @manyToMany
-     * @linkTable ka_notification_assigned_group
+     * Notification constructor.
+     *
+     * @param NotificationSummary $notificationSummary
+     * @param string $projectKey
+     * @param integer $accountId
      */
-    private $notificationGroups;
+    public function __construct($notificationSummary, $projectKey = null, $accountId = null) {
 
+        if ($notificationSummary)
+            parent::__construct($notificationSummary->getTitle(),
+                $notificationSummary->getContent(),
+                $notificationSummary->getUser(),
+                $notificationSummary->getNotificationGroups(),
+                $notificationSummary->getCategory(),
+                $notificationSummary->getLevel(),
+                $notificationSummary->getInitialState());
 
-    /**
-     * @var UserLabel
-     * @manyToOne
-     * @parentJoinColumns user_id
-     */
-    private $user;
-
-
-    /**
-     * @param \DateTime $createdDate
-     */
-    public function setCreatedDate($createdDate) {
-        $this->createdDate = $createdDate;
-    }
-
-    /**
-     * @param int $accountId
-     */
-    public function setAccountId($accountId) {
+        $this->projectKey = $projectKey;
         $this->accountId = $accountId;
+
     }
 
 
     /**
-     * @param NotificationLevel $level
+     * Return notification summary
+     *
+     * @return NotificationSummary
      */
-    public function setLevel($level) {
-        $this->level = $level;
-    }
-
-    /**
-     * @return NotificationGroup[]
-     */
-    public function getNotificationGroups() {
-        return $this->notificationGroups;
-    }
-
-    /**
-     * @param NotificationGroup[] $notificationGroups
-     */
-    public function setNotificationGroups($notificationGroups) {
-        $this->notificationGroups = $notificationGroups;
-    }
-
-    /**
-     * @return UserLabel
-     */
-    public function getUser() {
-        return $this->user;
-    }
-
-    /**
-     * @param UserLabel $user
-     */
-    public function setUser($user) {
-        $this->user = $user;
-    }
-
-    /**
-     * @param string $title
-     */
-    public function setTitle($title) {
-        $this->title = $title;
-    }
-
-    /**
-     * @param string $content
-     */
-    public function setContent($content) {
-        $this->content = $content;
-    }
-
-    /**
-     * @param string $initialState
-     */
-    public function setInitialState($initialState) {
-        $this->initialState = $initialState;
+    public function returnSummary() {
+        return new NotificationSummary($this->getTitle(),
+            $this->getContent(), $this->getUser(), $this->getNotificationGroups(),
+            $this->getCategory(), $this->getLevel(), $this->getInitialState());
     }
 
 

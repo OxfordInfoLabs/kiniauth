@@ -3,7 +3,7 @@
 
 namespace Kiniauth\Objects\Communication\Notification;
 
-use Kiniauth\Objects\Security\UserLabel;
+use Kiniauth\Objects\Security\UserCommunicationData;
 
 /**
  * Class NotificationGroupMember
@@ -23,7 +23,7 @@ class NotificationGroupMember {
     /**
      * User for this group member if using
      *
-     * @var UserLabel
+     * @var UserCommunicationData
      * @manyToOne
      * @parentJoinColumns user_id
      */
@@ -39,7 +39,7 @@ class NotificationGroupMember {
 
     /**
      * NotificationGroupMember constructor.
-     * @param UserLabel $user
+     * @param UserCommunicationData $user
      * @param string $memberData
      */
     public function __construct($user = null, $memberData = null, $id = null) {
@@ -64,14 +64,14 @@ class NotificationGroupMember {
     }
 
     /**
-     * @return UserLabel
+     * @return UserCommunicationData
      */
     public function getUser() {
         return $this->user;
     }
 
     /**
-     * @param UserLabel $user
+     * @param UserCommunicationData $user
      */
     public function setUser($user) {
         $this->user = $user;

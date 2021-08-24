@@ -12,7 +12,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  *
  * @table ka_user
  */
-class UserLabel extends ActiveRecord {
+class UserCommunicationData extends ActiveRecord {
 
 
     /**
@@ -20,15 +20,29 @@ class UserLabel extends ActiveRecord {
      *
      * @var integer
      */
-    protected $id;
+    private $id;
 
     /**
      * The full name for this user.  May or may not be required depending on the application.
      *
-     * @maxLength 100
      * @var string
      */
-    protected $name;
+    private $name;
+
+    /**
+     * The email address for the user
+     *
+     * @var string
+     */
+    private $emailAddress;
+
+    /**
+     * The mobile number for the user
+     *
+     * @var string
+     */
+    private $mobileNumber;
+
 
     /**
      * UserLabel constructor.
@@ -36,9 +50,11 @@ class UserLabel extends ActiveRecord {
      * @param int $id
      * @param string $name
      */
-    public function __construct($id = null, $name = null) {
+    public function __construct($id = null, $name = null, $emailAddress = null, $mobileNumber = null) {
         $this->id = $id;
         $this->name = $name;
+        $this->emailAddress = $emailAddress;
+        $this->mobileNumber = $mobileNumber;
     }
 
 
@@ -55,4 +71,20 @@ class UserLabel extends ActiveRecord {
     public function getName() {
         return $this->name;
     }
+
+    /**
+     * @return string
+     */
+    public function getEmailAddress() {
+        return $this->emailAddress;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMobileNumber() {
+        return $this->mobileNumber;
+    }
+
+
 }
