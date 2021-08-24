@@ -5,7 +5,7 @@ namespace Kiniauth\Traits\Controller\Account;
 
 
 use Kiniauth\Objects\Communication\Notification\NotificationGroupSummary;
-use Kiniauth\Services\Notification\NotificationService;
+use Kiniauth\Services\Communication\Notification\NotificationService;
 
 trait Notification {
 
