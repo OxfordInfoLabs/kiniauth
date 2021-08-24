@@ -52,7 +52,11 @@ class NotificationService {
      * @return NotificationGroupSummary
      */
     public function getNotificationGroup($notificationGroupId) {
-        return NotificationGroup::fetch($notificationGroupId)->returnSummary();
+        try {
+            return NotificationGroup::fetch($notificationGroupId)->returnSummary();
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
