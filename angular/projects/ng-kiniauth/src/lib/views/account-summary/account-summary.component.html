@@ -1,6 +1,6 @@
 <ng-template [ngIf]="!editName && !editEmail && !editBackup && !editMobile && !enableTwoFa">
 
-    <div class="actionpanel sixtyforty mx1 mb2" *ngIf="account">
+    <div class="actionpanel sixtyforty mx1 mb2" *ngIf="account && showAccountDetails">
 
         <div class="actioninfo p2w p1m">
             <h4 class="mb1 mt0">Account Details</h4>
@@ -21,7 +21,7 @@
         <div class="actioninfo p2w p1m">
             <h4 class="mb1 mt0 flex align-center">
                 <img src="https://www.gravatar.com/avatar/{{security.hashedEmail}}?d=mp" height="40" alt="user-gravatar"
-                     class="mr1">
+                     class="mr1 mr-4">
                 {{security.name}}
             </h4>
 

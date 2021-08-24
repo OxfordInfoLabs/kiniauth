@@ -16,6 +16,7 @@ export class AccountSummaryComponent extends BaseComponent implements OnInit, On
 
     @Input() authenticationService: any;
     @Input() showPasswordReset = true;
+    @Input() showAccountDetails = true;
 
     public security: any;
     public account: any;
