@@ -104,6 +104,38 @@ class NotificationService {
 
 
     /**
+     * Get unread notification count for a user (defaults to logged in user)
+     *
+     * @param string $userId
+     */
+    public function getUnreadNotificationCount($userId = User::LOGGED_IN_USER) {
+        return UserNotification::values("COUNT(*)", "WHERE userId = ? AND NOT read", $userId)[0];
+    }
+
+    /**
+     * Mark one or more user notifications as read / unread
+     *
+     * @param int[] $notificationIds
+     * @param boolean $read
+     * @param string $userId
+     */
+    public function markUserNotification($notificationIds, $read = true, $userId = User::LOGGED_IN_USER) {
+
+        // Create multi level pks
+        $pks = array_map(function ($notificationId) use ($userId) {
+            return [$notificationId, $userId];
+        }, $notificationIds);
+
+        // Grab matching notifications
+        $matches = UserNotification::multiFetch($pks);
+        foreach ($matches as $match) {
+            $match->setRead($read);
+            $match->save();
+        }
+
+    }
+
+    /**
      * Create a notification from a definition
      *
      * @param NotificationSummary $notification
@@ -156,17 +188,6 @@ class NotificationService {
         }
 
         return $notification->getId();
-
-    }
-
-
-    /**
-     * Mark a user notification as read
-     *
-     * @param $notificationId
-     * @param string $userId
-     */
-    public function markUserNotificationAsRead($notificationId, $userId = User::LOGGED_IN_USER) {
 
     }
 

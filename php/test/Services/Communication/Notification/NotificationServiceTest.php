@@ -193,5 +193,49 @@ class NotificationServiceTest extends TestBase {
 
     }
 
+    public function testCanGetTotalUnreadNotificationsForUserId() {
+
+        // Assume zero initially
+        $this->assertEquals(0, $this->notificationService->getUnreadNotificationCount(3));
+
+        $this->notificationService->createNotification(new NotificationSummary("General Notification", "This is a general notification",
+            new UserCommunicationData(3)), null, 2);
+
+        $this->assertEquals(1, $this->notificationService->getUnreadNotificationCount(3));
+
+        $this->notificationService->createNotification(new NotificationSummary("Second General Notification", "This is a general notification",
+            new UserCommunicationData(3)), null, 2);
+
+        $this->assertEquals(2, $this->notificationService->getUnreadNotificationCount(3));
+
+    }
+
+
+    public function testCanMarkUserNotificationsAsReadOrUnread() {
+
+        $id1 = $this->notificationService->createNotification(new NotificationSummary("General Notification", "This is a general notification",
+            new UserCommunicationData(4)), null, 3);
+
+        $id2 = $this->notificationService->createNotification(new NotificationSummary("General Notification", "This is a general notification",
+            new UserCommunicationData(4)), null, 3);
+
+
+        $this->assertEquals(2, $this->notificationService->getUnreadNotificationCount(4));
+
+
+        $this->notificationService->markUserNotification([
+            $id1, $id2
+        ], true, 4);
+
+        $this->assertEquals(0, $this->notificationService->getUnreadNotificationCount(4));
+
+        $this->notificationService->markUserNotification([
+            $id2
+        ], false, 4);
+
+        $this->assertEquals(1, $this->notificationService->getUnreadNotificationCount(4));
+
+    }
+
 
 }
