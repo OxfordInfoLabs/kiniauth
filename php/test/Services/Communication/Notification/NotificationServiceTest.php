@@ -301,5 +301,40 @@ class NotificationServiceTest extends TestBase {
 
     }
 
+    public function testInitiallyFlaggedNotificationsArePinnedToTheTopOfListIfUnread() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+
+        $firstNotificationId = $this->notificationService->createNotification(new NotificationSummary("Flagged Notification", "This is a flagged notification",
+            new UserCommunicationData(11), null, null, null, NotificationSummary::STATE_FLAGGED), null, 1);
+
+        $secondNotificationId = $this->notificationService->createNotification(new NotificationSummary("Additional Notification", "This is a general notification",
+            new UserCommunicationData(11)), null, 1);
+
+        $thirdNotificationId = $this->notificationService->createNotification(new NotificationSummary("Super Notification", "This is a general notification",
+            new UserCommunicationData(11)), null, 1);
+
+
+        // Now check that flagged one is at top until read
+        $notifications = $this->notificationService->listNotifications(25, 0, null, 1, 11);
+        $this->assertGreaterThan(2, sizeof($notifications));
+
+        $this->assertEquals(UserNotification::fetch([$firstNotificationId, 11])->returnSummary(), $notifications[0]);
+        $this->assertEquals(UserNotification::fetch([$thirdNotificationId, 11])->returnSummary(), $notifications[1]);
+        $this->assertEquals(UserNotification::fetch([$secondNotificationId, 11])->returnSummary(), $notifications[2]);
+
+        // Now mark it as read and check order changes
+        $this->notificationService->markUserNotifications([$firstNotificationId], true, 11);
+
+        $notifications = $this->notificationService->listNotifications(25, 0, null, 1, 11);
+        $this->assertGreaterThan(2, sizeof($notifications));
+
+        $this->assertEquals(UserNotification::fetch([$thirdNotificationId, 11])->returnSummary(), $notifications[0]);
+        $this->assertEquals(UserNotification::fetch([$secondNotificationId, 11])->returnSummary(), $notifications[1]);
+        $this->assertEquals(UserNotification::fetch([$firstNotificationId, 11])->returnSummary(), $notifications[2]);
+
+    }
+
 
 }

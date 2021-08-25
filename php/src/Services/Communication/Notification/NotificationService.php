@@ -166,7 +166,8 @@ class NotificationService {
             $params[] = $projectKey;
         }
 
-        $query .= " ORDER BY notificationId DESC LIMIT $limit OFFSET $offset";
+        $query .= " ORDER BY CASE WHEN notification.initial_state = 'FLAGGED' AND NOT read THEN 0 ELSE 1 END,
+        notificationId DESC LIMIT $limit OFFSET $offset";
 
         // Return a summary array
         return array_map(function ($instance) {
