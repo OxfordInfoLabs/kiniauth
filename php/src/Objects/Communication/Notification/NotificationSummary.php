@@ -35,7 +35,7 @@ class NotificationSummary extends ActiveRecord {
     /**
      * @var Category
      * @manyToOne
-     * @parentJoinColumns category_key,account_id,project_key
+     * @parentJoinColumns category_key,category_account_id,category_project_key
      */
     protected $category;
 
@@ -97,7 +97,7 @@ class NotificationSummary extends ActiveRecord {
      */
     public function __construct($title, $content,
                                 $user = null, $notificationGroups = null,
-                                $category = null, $level = null, $initialState = self::STATE_UNREAD) {
+                                $category = null, $level = null, $initialState = self::STATE_UNREAD, $id = null) {
         $this->title = $title;
         $this->content = $content;
         $this->user = $user;
@@ -106,6 +106,7 @@ class NotificationSummary extends ActiveRecord {
         $this->level = $level;
         $this->initialState = $initialState;
         $this->createdDate = new \DateTime();
+        $this->id = $id;
     }
 
 

@@ -74,4 +74,53 @@ trait Notification {
     public function removeNotificationGroup($id) {
         $this->notificationService->removeNotificationGroup($id);
     }
+
+
+    /**
+     * @http GET /
+     *
+     * @param string $projectKey
+     * @param int $limit
+     * @param int $offset
+     */
+    public function listUserNotifications($projectKey = null, $offset = 0, $limit = 25) {
+        return $this->notificationService->listNotifications($limit, $offset, $projectKey);
+    }
+
+
+    /**
+     * Get the count of unread user notifications
+     *
+     * @http GET /unreadCount
+     *
+     * @return integer
+     */
+    public function getUnreadUserNotificationCount() {
+        return $this->notificationService->getUnreadUserNotificationCount();
+    }
+
+
+    /**
+     * Mark array of notifications as read by id
+     *
+     * @http POST /markRead
+     *
+     * @param int[] $notificationIds
+     */
+    public function markNotificationsRead($notificationIds) {
+        $this->notificationService->markUserNotifications($notificationIds, true);
+    }
+
+
+    /**
+     * Mark array of notifications as unread by id
+     *
+     * @http POST /markUnread
+     *
+     * @param int[] $notificationIds
+     */
+    public function markNotificationsUnread($notificationIds) {
+        $this->notificationService->markUserNotifications($notificationIds, false);
+    }
+
 }

@@ -90,50 +90,6 @@ class NotificationService {
     }
 
 
-    /**
-     * List notifications, default limited to the logged in account and user
-     *
-     * @param string $accountId
-     * @param string $userId
-     *
-     * @return NotificationSummary
-     */
-    public function listNotifications($limit = 25, $offset = 0, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT, $userId = User::LOGGED_IN_USER) {
-
-    }
-
-
-    /**
-     * Get unread notification count for a user (defaults to logged in user)
-     *
-     * @param string $userId
-     */
-    public function getUnreadNotificationCount($userId = User::LOGGED_IN_USER) {
-        return UserNotification::values("COUNT(*)", "WHERE userId = ? AND NOT read", $userId)[0];
-    }
-
-    /**
-     * Mark one or more user notifications as read / unread
-     *
-     * @param int[] $notificationIds
-     * @param boolean $read
-     * @param string $userId
-     */
-    public function markUserNotification($notificationIds, $read = true, $userId = User::LOGGED_IN_USER) {
-
-        // Create multi level pks
-        $pks = array_map(function ($notificationId) use ($userId) {
-            return [$notificationId, $userId];
-        }, $notificationIds);
-
-        // Grab matching notifications
-        $matches = UserNotification::multiFetch($pks);
-        foreach ($matches as $match) {
-            $match->setRead($read);
-            $match->save();
-        }
-
-    }
 
     /**
      * Create a notification from a definition
@@ -141,10 +97,10 @@ class NotificationService {
      * @param NotificationSummary $notification
      * @return integer
      */
-    public function createNotification($notification, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
+    public function createNotification($notificationSummary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
         // Create a full Notification from the summary
-        $notification = new Notification($notification, $projectKey, $accountId);
+        $notification = new Notification($notificationSummary, $projectKey, $accountId);
         $notification->save();
 
 
@@ -152,6 +108,7 @@ class NotificationService {
          * @var Notification $notification
          */
         $notification = Notification::fetch($notification->getId());
+
 
         // If this is a user based notification, create a user
         // notification entry
@@ -190,6 +147,69 @@ class NotificationService {
         return $notification->getId();
 
     }
+
+    /**
+     * List notifications, default limited to the logged in account and user
+     *
+     * @param string $accountId
+     * @param string $userId
+     *
+     * @return NotificationSummary
+     */
+    public function listNotifications($limit = 25, $offset = 0, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT, $userId = User::LOGGED_IN_USER) {
+
+        $query = "WHERE userId = ? AND notification.account_id = ?";
+        $params = [$userId, $accountId];
+
+        if ($projectKey) {
+            $query .= " AND notification.project_key = ?";
+            $params[] = $projectKey;
+        }
+
+        $query .= " ORDER BY notificationId DESC LIMIT $limit OFFSET $offset";
+
+        // Return a summary array
+        return array_map(function ($instance) {
+            return $instance->returnSummary();
+        },
+            UserNotification::filter($query, $params));
+
+
+    }
+
+
+    /**
+     * Get unread notification count for a user (defaults to logged in user)
+     *
+     * @param string $userId
+     */
+    public function getUnreadUserNotificationCount($userId = User::LOGGED_IN_USER) {
+        return UserNotification::values("COUNT(*)", "WHERE userId = ? AND NOT read", $userId)[0];
+    }
+
+    /**
+     * Mark one or more user notifications as read / unread
+     *
+     * @param int[] $notificationIds
+     * @param boolean $read
+     * @param string $userId
+     */
+    public function markUserNotifications($notificationIds, $read = true, $userId = User::LOGGED_IN_USER) {
+
+        // Create multi level pks
+        $pks = array_map(function ($notificationId) use ($userId) {
+            return [$notificationId, $userId];
+        }, $notificationIds);
+
+        // Grab matching notifications
+        $matches = UserNotification::multiFetch($pks);
+        foreach ($matches as $match) {
+            $match->setRead($read);
+            $match->save();
+        }
+
+    }
+
 
 
 }

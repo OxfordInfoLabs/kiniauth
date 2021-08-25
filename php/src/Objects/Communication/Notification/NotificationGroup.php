@@ -4,7 +4,6 @@
 namespace Kiniauth\Objects\Communication\Notification;
 
 use Kiniauth\Traits\Account\AccountProject;
-use Kinikit\Persistence\ORM\ActiveRecord;
 
 /**
  * Class NotificationGroup

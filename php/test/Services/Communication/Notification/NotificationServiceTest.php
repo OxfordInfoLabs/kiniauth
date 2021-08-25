@@ -196,17 +196,17 @@ class NotificationServiceTest extends TestBase {
     public function testCanGetTotalUnreadNotificationsForUserId() {
 
         // Assume zero initially
-        $this->assertEquals(0, $this->notificationService->getUnreadNotificationCount(3));
+        $this->assertEquals(0, $this->notificationService->getUnreadUserNotificationCount(3));
 
         $this->notificationService->createNotification(new NotificationSummary("General Notification", "This is a general notification",
             new UserCommunicationData(3)), null, 2);
 
-        $this->assertEquals(1, $this->notificationService->getUnreadNotificationCount(3));
+        $this->assertEquals(1, $this->notificationService->getUnreadUserNotificationCount(3));
 
         $this->notificationService->createNotification(new NotificationSummary("Second General Notification", "This is a general notification",
             new UserCommunicationData(3)), null, 2);
 
-        $this->assertEquals(2, $this->notificationService->getUnreadNotificationCount(3));
+        $this->assertEquals(2, $this->notificationService->getUnreadUserNotificationCount(3));
 
     }
 
@@ -220,20 +220,84 @@ class NotificationServiceTest extends TestBase {
             new UserCommunicationData(4)), null, 3);
 
 
-        $this->assertEquals(2, $this->notificationService->getUnreadNotificationCount(4));
+        $this->assertEquals(2, $this->notificationService->getUnreadUserNotificationCount(4));
 
 
-        $this->notificationService->markUserNotification([
+        $this->notificationService->markUserNotifications([
             $id1, $id2
         ], true, 4);
 
-        $this->assertEquals(0, $this->notificationService->getUnreadNotificationCount(4));
+        $this->assertEquals(0, $this->notificationService->getUnreadUserNotificationCount(4));
 
-        $this->notificationService->markUserNotification([
+        $this->notificationService->markUserNotifications([
             $id2
         ], false, 4);
 
-        $this->assertEquals(1, $this->notificationService->getUnreadNotificationCount(4));
+        $this->assertEquals(1, $this->notificationService->getUnreadUserNotificationCount(4));
+
+    }
+
+    public function testCanListNotificationsForUserAccountAndProjects() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+
+        $firstNotificationId = $this->notificationService->createNotification(new NotificationSummary("General Notification", "This is a general notification",
+            new UserCommunicationData(2)), null, 1);
+
+        $secondNotificationId = $this->notificationService->createNotification(new NotificationSummary("Additional Notification", "This is a general notification",
+            new UserCommunicationData(2)), null, 1);
+
+        $thirdNotificationId = $this->notificationService->createNotification(new NotificationSummary("Super Notification", "This is a general notification",
+            new UserCommunicationData(2)), null, 1);
+
+
+        $fourthNotificationId = $this->notificationService->createNotification(new NotificationSummary("Other User Notification", "This is a general notification",
+            new UserCommunicationData(10)), "soapSuds", 1);
+
+        $fifthNotificationId = $this->notificationService->createNotification(new NotificationSummary("Additional Other User Notification", "This is a general notification",
+            new UserCommunicationData(10)), "wiperBlades", 1);
+
+
+        // Full list
+        $notifications = $this->notificationService->listNotifications(25, 0, null, 1, 2);
+        $this->assertGreaterThan(2, sizeof($notifications));
+
+        $this->assertEquals(UserNotification::fetch([$thirdNotificationId, 2])->returnSummary(), $notifications[0]);
+        $this->assertEquals(UserNotification::fetch([$secondNotificationId, 2])->returnSummary(), $notifications[1]);
+        $this->assertEquals(UserNotification::fetch([$firstNotificationId, 2])->returnSummary(), $notifications[2]);
+
+
+        // Limited list
+        $notifications = $this->notificationService->listNotifications(2, 0, null, 1, 2);
+        $this->assertEquals(2, sizeof($notifications));
+
+        $this->assertEquals(UserNotification::fetch([$thirdNotificationId, 2])->returnSummary(), $notifications[0]);
+        $this->assertEquals(UserNotification::fetch([$secondNotificationId, 2])->returnSummary(), $notifications[1]);
+
+        // Offset list
+        $notifications = $this->notificationService->listNotifications(2, 1, null, 1, 2);
+        $this->assertEquals(2, sizeof($notifications));
+
+        $this->assertEquals(UserNotification::fetch([$secondNotificationId, 2])->returnSummary(), $notifications[0]);
+        $this->assertEquals(UserNotification::fetch([$firstNotificationId, 2])->returnSummary(), $notifications[1]);
+
+
+        // Other user
+        $notifications = $this->notificationService->listNotifications(25, 0, null, 1, 10);
+        $this->assertGreaterThan(1, sizeof($notifications));
+
+        $this->assertEquals(UserNotification::fetch([$fifthNotificationId, 10])->returnSummary(), $notifications[0]);
+        $this->assertEquals(UserNotification::fetch([$fourthNotificationId, 10])->returnSummary(), $notifications[1]);
+
+        // Project limited
+        $notifications = $this->notificationService->listNotifications(25, 0, "soapSuds", 1, 10);
+        $this->assertEquals(1, sizeof($notifications));
+        $this->assertEquals(UserNotification::fetch([$fourthNotificationId, 10])->returnSummary(), $notifications[0]);
+
+        $notifications = $this->notificationService->listNotifications(25, 0, "wiperBlades", 1, 10);
+        $this->assertEquals(1, sizeof($notifications));
+        $this->assertEquals(UserNotification::fetch([$fifthNotificationId, 10])->returnSummary(), $notifications[0]);
 
     }
 

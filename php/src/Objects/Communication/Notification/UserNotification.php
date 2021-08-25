@@ -106,4 +106,14 @@ class UserNotification extends ActiveRecord {
     }
 
 
+    /**
+     * Return a user notification summary.
+     *
+     * @return UserNotificationSummary
+     */
+    public function returnSummary() {
+        return new UserNotificationSummary($this);
+    }
+
+
 }
