@@ -1,0 +1,14 @@
+[
+  {
+    "key": "info",
+    "title": "Informational"
+  },
+  {
+    "key": "warning",
+    "title": "Warning"
+  },
+  {
+    "key": "critical",
+    "title": "Critical"
+  }
+]

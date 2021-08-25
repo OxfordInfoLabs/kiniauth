@@ -33,6 +33,8 @@ class Notification extends NotificationSummary {
                 $notificationSummary->getCategory(),
                 $notificationSummary->getLevel(),
                 $notificationSummary->getInitialState());
+        else
+            $this->createdDate = new \DateTime();
 
         $this->projectKey = $projectKey;
         $this->accountId = $accountId;
