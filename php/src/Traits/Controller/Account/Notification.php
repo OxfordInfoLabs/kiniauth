@@ -87,6 +87,15 @@ trait Notification {
         return $this->notificationService->listNotifications($limit, $offset, $projectKey);
     }
 
+    /**
+     * @http GET /item
+     *
+     * @param int $id
+     */
+    public function getUserNotification($id) {
+        return $this->notificationService->getUserNotification($id);
+    }
+
 
     /**
      * Get the count of unread user notifications

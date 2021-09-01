@@ -178,6 +178,19 @@ class NotificationService {
 
     }
 
+    /**
+     * Return a summary of a notification
+     *
+     * @param $id
+     * @return null
+     */
+    public function getUserNotification($id, $userId = User::LOGGED_IN_USER) {
+        try {
+            return UserNotification::fetch([$id, $userId])->returnSummary();
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 
     /**
      * Get unread notification count for a user (defaults to logged in user)

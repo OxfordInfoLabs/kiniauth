@@ -93,7 +93,7 @@ export class AccountUsersComponent implements OnInit {
         const message = 'Are you sure you would like to remove this user?';
         if (window.confirm(message)) {
             this.userService.removeUserFromAccount(user.id).then(() => {
-                this.reloadUsers.next(this.moment().unix())
+                this.reloadUsers.next(this.moment().unix());
             });
         }
     }

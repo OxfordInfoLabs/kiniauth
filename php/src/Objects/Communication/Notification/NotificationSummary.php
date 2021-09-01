@@ -233,5 +233,8 @@ class NotificationSummary extends ActiveRecord {
         $this->initialState = $initialState;
     }
 
+    public function getFormattedDate() {
+        return $this->createdDate ? $this->createdDate->format("d/m/Y H:i:s") : "";
+    }
 
 }

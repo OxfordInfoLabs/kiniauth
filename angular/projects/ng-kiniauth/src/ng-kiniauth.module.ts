@@ -28,6 +28,11 @@ import { EditDetailsComponent } from './lib/views/account-summary/edit-details/e
 import { EditNameComponent } from './lib/views/account-summary/edit-name/edit-name.component';
 import { EditAccountNameComponent } from './lib/views/account-summary/edit-account-name/edit-account-name.component';
 import { RecaptchaModule } from 'ng-recaptcha';
+import { NotificationsComponent } from './lib/views/notifications/notifications.component';
+import {MatTableModule} from '@angular/material/table';
+import {MatChipsModule} from '@angular/material/chips';
+import { NotificationComponent } from './lib/views/notifications/notification/notification.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
     declarations: [
@@ -49,7 +54,9 @@ import { RecaptchaModule } from 'ng-recaptcha';
         EditRolesComponent,
         InviteUserComponent,
         EditDetailsComponent,
-        EditAccountNameComponent
+        EditAccountNameComponent,
+        NotificationsComponent,
+        NotificationComponent
     ],
     imports: [
         NgKinibindModule,
@@ -62,7 +69,10 @@ import { RecaptchaModule } from 'ng-recaptcha';
         MatButtonModule,
         MatMenuModule,
         MatTabsModule,
-        RecaptchaModule
+        RecaptchaModule,
+        MatTableModule,
+        MatChipsModule,
+        MatCheckboxModule
     ],
     exports: [
         AccountSummaryComponent,
@@ -75,7 +85,9 @@ import { RecaptchaModule } from 'ng-recaptcha';
         UserRolesComponent,
         EditRolesComponent,
         InviteUserComponent,
-        EditAccountNameComponent
+        EditAccountNameComponent,
+        NotificationsComponent,
+        NotificationComponent
     ]
 })
 export class NgKiniAuthModule {
@@ -88,7 +100,6 @@ export class NgKiniAuthModule {
         };
     }
 }
-
 export class KiniAuthModuleConfig {
     guestHttpURL: string;
     accessHttpURL: string;
