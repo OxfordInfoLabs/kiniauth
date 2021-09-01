@@ -48,11 +48,14 @@ class NotificationSummary extends ActiveRecord {
 
     /**
      * @var string
+     * @required
      */
     protected $title;
+
     /**
      * @var string
      * @sqlType LONGTEXT
+     * @required
      */
     protected $content;
 
@@ -60,6 +63,7 @@ class NotificationSummary extends ActiveRecord {
      * What state this notification is created in - only applies to internal use
      *
      * @var string
+     * @required
      */
     protected $initialState = self::STATE_UNREAD;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiniauth\Services\Workflow\QueuedTask\Processor;
+namespace Kiniauth\Services\Workflow\Task\Queued\Processor;
 
 use Kiniauth\ValueObjects\QueuedTask\QueueItem;
 
@@ -10,9 +10,9 @@ use Kiniauth\ValueObjects\QueuedTask\QueueItem;
  * Interface QueuedTaskProcessor
  *
  * @implementationConfigParam queuedtask.processor
- * @implementation default \Kiniauth\Services\Workflow\QueuedTask\Processor\DefaultQueuedTaskProcessor
+ * @implementation default \Kiniauth\Services\Workflow\Task\Queued\Processor\DefaultQueuedTaskProcessor
  *
- * @defaultImplementation \Kiniauth\Services\Workflow\QueuedTask\Processor\DefaultQueuedTaskProcessor
+ * @defaultImplementation \Kiniauth\Services\Workflow\Task\Queued\Processor\DefaultQueuedTaskProcessor
  */
 interface QueuedTaskProcessor {
 

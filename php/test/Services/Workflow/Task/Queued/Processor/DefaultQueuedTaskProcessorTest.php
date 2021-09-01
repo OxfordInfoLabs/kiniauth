@@ -1,8 +1,8 @@
 <?php
 
-namespace Kiniauth\Services\Workflow\QueuedTask\Processor;
+namespace Kiniauth\Services\Workflow\Task\Queued\Processor;
 
-use Kiniauth\Objects\Workflow\QueuedTask\StoredQueueItem;
+use Kiniauth\Objects\Workflow\Task\Queued\StoredQueueItem;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\QueuedTask\QueueItem;
 use Kinikit\Core\DependencyInjection\Container;

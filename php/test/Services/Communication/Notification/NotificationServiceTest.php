@@ -127,7 +127,7 @@ class NotificationServiceTest extends TestBase {
 
         $notification = new NotificationSummary("General Group Notification", "This is a general notification",
             null, [
-                new NotificationGroupSummary(null, null, null, $groupId)]);
+                new NotificationGroupSummary("Test Group", null, NotificationGroupSummary::COMMUNICATION_METHOD_INTERNAL_ONLY, $groupId)]);
 
         $notificationId = $this->notificationService->createNotification($notification, null, 1);
 
@@ -169,7 +169,7 @@ class NotificationServiceTest extends TestBase {
 
         $notification = new NotificationSummary("External Group Notification", "This is an external notification",
             null, [
-                new NotificationGroupSummary(null, null, null, $groupId)]);
+                new NotificationGroupSummary("Test Group", null, NotificationGroupSummary::COMMUNICATION_METHOD_INTERNAL_ONLY, $groupId)]);
 
         $notificationId = $this->notificationService->createNotification($notification, null, 1);
 

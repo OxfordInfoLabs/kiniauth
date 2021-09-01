@@ -26,6 +26,7 @@ class NotificationGroupMember {
      * @var UserCommunicationData
      * @manyToOne
      * @parentJoinColumns user_id
+     * @requiredEither memberData
      */
     private $user;
 

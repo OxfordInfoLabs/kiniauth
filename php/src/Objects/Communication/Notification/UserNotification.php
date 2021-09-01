@@ -17,18 +17,21 @@ class UserNotification extends ActiveRecord {
     /**
      * @var integer
      * @primaryKey
+     * @required
      */
     private $notificationId;
 
     /**
      * @var integer
      * @primaryKey
+     * @required
      */
     private $userId;
 
 
     /**
      * @var boolean
+     * @required
      */
     private $read;
 
