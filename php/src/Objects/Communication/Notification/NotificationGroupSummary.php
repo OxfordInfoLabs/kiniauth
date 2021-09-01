@@ -20,6 +20,7 @@ class NotificationGroupSummary extends ActiveRecord {
 
     /**
      * @var string
+     * @required
      */
     protected $name;
 
@@ -35,6 +36,7 @@ class NotificationGroupSummary extends ActiveRecord {
      * Communication method - defaults to internal only
      *
      * @var string
+     * @required
      */
     protected $communicationMethod = self::COMMUNICATION_METHOD_INTERNAL_ONLY;
 

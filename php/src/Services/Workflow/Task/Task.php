@@ -1,13 +1,13 @@
 <?php
 
-namespace Kiniauth\Services\Workflow\QueuedTask;
+namespace Kiniauth\Services\Workflow\Task;
 
 /**
  * Queued task
  *
  * Interface QueuedTask
  */
-interface QueuedTask {
+interface Task {
 
     /**
      * Run method for a queued task.  Returns true or false

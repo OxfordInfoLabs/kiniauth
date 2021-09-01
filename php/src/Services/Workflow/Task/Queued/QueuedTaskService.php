@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Kiniauth\Services\Workflow\QueuedTask;
+namespace Kiniauth\Services\Workflow\Task\Queued;
 
 use Kiniauth\Exception\QueuedTask\NoQueuedTaskImplementationException;
 use Kiniauth\Services\Workflow\QueuedTask\Processor\QueuedTaskProcessor;

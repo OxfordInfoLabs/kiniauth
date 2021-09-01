@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiniauth\Objects\Workflow\QueuedTask;
+namespace Kiniauth\Objects\Workflow\Task\Queued;
 
 use Kiniauth\Services\Workflow\QueuedTask\QueuedTask;
 use Kiniauth\ValueObjects\QueuedTask\QueueItem;

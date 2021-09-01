@@ -23,6 +23,7 @@ class NotificationLevel extends ActiveRecord {
 
     /**
      * @var string
+     * @required
      */
     private $title;
 
