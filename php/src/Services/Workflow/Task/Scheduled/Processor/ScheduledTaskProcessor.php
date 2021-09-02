@@ -68,7 +68,6 @@ abstract class ScheduledTaskProcessor {
 
         // Save the scheduled task at the end
         $scheduledTask->setLastEndTime(new \DateTime());
-        $scheduledTask->recalculateNextStartTime();
         $scheduledTask->save();
 
         // Create a log entry as well

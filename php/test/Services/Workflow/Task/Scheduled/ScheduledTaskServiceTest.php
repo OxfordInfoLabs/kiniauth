@@ -5,12 +5,14 @@ namespace Kiniauth\Test\Services\Workflow\Task\Scheduled;
 
 
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTask;
+use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskInterceptor;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskSummary;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskTimePeriod;
 use Kiniauth\Services\Workflow\Task\Scheduled\Processor\ScheduledTaskProcessor;
 use Kiniauth\Services\Workflow\Task\Scheduled\ScheduledTaskService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
 use Kinikit\Core\Validation\ValidationException;
@@ -137,6 +139,7 @@ class ScheduledTaskServiceTest extends TestBase {
         $nextStartTime = new \DateTime();
         $nextStartTime->sub(new \DateInterval("P1D"));
 
+        ScheduledTaskInterceptor::$disabled = true;
 
         $task1 = new ScheduledTask(new ScheduledTaskSummary("test", "Test Scheduled Task",
             ["myParam" => "Hello", "anotherParam" => "Goodbye"], [

@@ -13,6 +13,7 @@ use Kiniauth\Traits\Account\AccountProject;
  *
  * @table ka_scheduled_task
  * @generate
+ * @interceptor Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskInterceptor
  */
 class ScheduledTask extends ScheduledTaskSummary {
     use AccountProject;

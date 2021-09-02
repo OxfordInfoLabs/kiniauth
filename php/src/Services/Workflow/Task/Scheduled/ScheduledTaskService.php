@@ -35,7 +35,6 @@ class ScheduledTaskService {
      */
     public function saveScheduledTask($scheduledTaskSummary, $projectkey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
         $task = new ScheduledTask($scheduledTaskSummary, $projectkey, $accountId);
-        $task->recalculateNextStartTime();
         $task->save();
         return $task->getId();
     }
