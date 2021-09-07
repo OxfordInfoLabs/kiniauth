@@ -162,7 +162,6 @@ class ScheduledTaskServiceTest extends TestBase {
             ], null, null), null, 1);
         $task3->recalculateNextStartTime();
         $task3->save();
-        $task3Id = $task3->getId();
 
 
         $task4 = new ScheduledTask(new ScheduledTaskSummary("test", "Test Scheduled Task",
