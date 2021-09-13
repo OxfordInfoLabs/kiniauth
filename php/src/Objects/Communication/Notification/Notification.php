@@ -32,7 +32,8 @@ class Notification extends NotificationSummary {
                 $notificationSummary->getNotificationGroups(),
                 $notificationSummary->getCategory(),
                 $notificationSummary->getLevel(),
-                $notificationSummary->getInitialState());
+                $notificationSummary->getInitialState(),
+                $notificationSummary->getCreatedDate() ? $notificationSummary->getCreatedDate() : new \DateTime());
         else
             $this->createdDate = new \DateTime();
 

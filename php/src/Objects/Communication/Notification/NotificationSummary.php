@@ -101,7 +101,9 @@ class NotificationSummary extends ActiveRecord {
      */
     public function __construct($title, $content,
                                 $user = null, $notificationGroups = null,
-                                $category = null, $level = null, $initialState = self::STATE_UNREAD, $id = null) {
+                                $category = null, $level = null, $initialState = self::STATE_UNREAD,
+                                $createdDate = null,
+                                $id = null) {
         $this->title = $title;
         $this->content = $content;
         $this->user = $user;
@@ -109,7 +111,7 @@ class NotificationSummary extends ActiveRecord {
         $this->category = $category;
         $this->level = $level;
         $this->initialState = $initialState;
-        $this->createdDate = new \DateTime();
+        $this->createdDate = $createdDate;
         $this->id = $id;
     }
 
