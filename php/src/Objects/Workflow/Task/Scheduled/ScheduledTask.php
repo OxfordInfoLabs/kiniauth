@@ -125,6 +125,7 @@ class ScheduledTask extends ScheduledTaskSummary {
             }
         }
 
+
         $this->nextStartTime = $nextStartTime;
 
     }

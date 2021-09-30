@@ -15,7 +15,7 @@ use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
  * Class ScheduledTaskProcessor
  *
  * @implementation default \Kiniauth\Services\Workflow\Task\Scheduled\Processor\DefaultScheduledTaskProcessor
- * 
+ *
  * @defaultImplementation \Kiniauth\Services\Workflow\Task\Scheduled\Processor\DefaultScheduledTaskProcessor
  */
 abstract class ScheduledTaskProcessor {
