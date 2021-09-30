@@ -128,7 +128,7 @@ class NotificationService {
 
                 // If not internal communication, call the communication method with the group data
                 if ($notificationGroup->getCommunicationMethod() !== NotificationGroupSummary::COMMUNICATION_METHOD_INTERNAL_ONLY) {
-                    $commsMethod = Container::instance()->getInterfaceImplementationClass(NotificationCommunicationMethod::class, $notificationGroup->getCommunicationMethod());
+                    $commsMethod = Container::instance()->getInterfaceImplementation(NotificationCommunicationMethod::class, $notificationGroup->getCommunicationMethod());
                     if ($commsMethod) {
                         $commsMethod->processNotification($notification, $notificationGroup->getMembers());
                     }

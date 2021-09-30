@@ -156,7 +156,9 @@ class NotificationServiceTest extends TestBase {
         $testCommunicationMethod = MockObjectProvider::instance()->getMockInstance(NotificationCommunicationMethod::class);
 
         Container::instance()->addInterfaceImplementation(NotificationCommunicationMethod::class,
-            "test", $testCommunicationMethod);
+            "test", get_class($testCommunicationMethod));
+
+        Container::instance()->set(get_class($testCommunicationMethod), $testCommunicationMethod);
 
 
         $notificationGroup = new NotificationGroupSummary("New Group",
