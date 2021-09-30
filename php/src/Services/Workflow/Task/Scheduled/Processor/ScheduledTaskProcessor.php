@@ -34,8 +34,7 @@ abstract class ScheduledTaskProcessor {
      * @param ScheduledTask $scheduledTask
      */
     public function processScheduledTask($scheduledTask) {
-
-
+        
         $output = null;
         try {
 
@@ -46,6 +45,7 @@ abstract class ScheduledTaskProcessor {
             // Return if we are already in a running state
             if ($scheduledTask->getStatus() == ScheduledTask::STATUS_RUNNING)
                 return;
+
 
             // Grab the task from the container
             $task = Container::instance()->getInterfaceImplementation(Task::class, $scheduledTask->getTaskIdentifier());

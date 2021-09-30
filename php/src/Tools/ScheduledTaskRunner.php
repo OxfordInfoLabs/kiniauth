@@ -4,10 +4,10 @@
 namespace Kiniauth\Tools;
 
 
+use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Workflow\Task\Scheduled\ScheduledTaskService;
 use Kinikit\Core\Bootstrapper;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Init;
 
 class ScheduledTaskRunner {
 
@@ -31,6 +31,7 @@ class ScheduledTaskRunner {
      * Run all due tasks
      */
     public function run() {
+
         $this->scheduledTaskService->processDueTasks();
     }
 
@@ -46,11 +47,20 @@ class ScheduledTaskRunner {
         // Ensure autoloader run from vendor.
         include_once "../vendor/autoload.php";
 
+
         // Ensure basic initialisation has occurred.
-        Container::instance()->get(Init::class);
         Container::instance()->get(Bootstrapper::class);
 
-        Container::instance()->get(ScheduledTaskRunner::class)->run();
+        /**
+         * @var ActiveRecordInterceptor $activeRecordInterceptor
+         */
+        $activeRecordInterceptor = Container::instance()->get(ActiveRecordInterceptor::class);
+
+        // Ececute the scheduled tasks with interceptor disabled
+        $activeRecordInterceptor->executeInsecure(function () {
+            Container::instance()->get(ScheduledTaskRunner::class)->run();
+        });
+
     }
 
 
