@@ -5,6 +5,7 @@ namespace Kiniauth\Tools;
 
 
 use Kiniauth\Services\Workflow\Task\Scheduled\ScheduledTaskService;
+use Kinikit\Core\Bootstrapper;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Init;
 
@@ -47,6 +48,7 @@ class ScheduledTaskRunner {
 
         // Ensure basic initialisation has occurred.
         Container::instance()->get(Init::class);
+        Container::instance()->get(Bootstrapper::class);
 
         Container::instance()->get(ScheduledTaskRunner::class)->run();
     }
