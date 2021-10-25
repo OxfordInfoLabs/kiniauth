@@ -25,7 +25,7 @@ class ScheduledTask extends ScheduledTaskSummary {
      * @param string $projectKey
      * @param integer $accountId
      */
-    public function __construct($scheduledTaskSummary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
+    public function __construct($scheduledTaskSummary, $projectKey = null, $accountId = null) {
         if ($scheduledTaskSummary) {
             parent::__construct($scheduledTaskSummary->getTaskIdentifier(),
                 $scheduledTaskSummary->getDescription(),

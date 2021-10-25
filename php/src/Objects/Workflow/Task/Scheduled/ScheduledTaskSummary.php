@@ -39,7 +39,7 @@ class ScheduledTaskSummary extends ActiveRecord {
      * Configuration as key/value pairs which should be
      * compatible with the task identified for this item.
      *
-     * @var string[string]
+     * @var mixed
      * @json
      */
     protected $configuration;
@@ -89,7 +89,7 @@ class ScheduledTaskSummary extends ActiveRecord {
      *
      * @param string $taskIdentifier
      * @param string $description
-     * @param string[] $configuration
+     * @param mixed $configuration
      * @param ScheduledTaskTimePeriod[] $timePeriods
      * @param string $status
      * @param \DateTime $lastStartTime
@@ -147,14 +147,14 @@ class ScheduledTaskSummary extends ActiveRecord {
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getConfiguration() {
         return $this->configuration;
     }
 
     /**
-     * @param string $configuration
+     * @param mixed $configuration
      */
     public function setConfiguration($configuration) {
         $this->configuration = $configuration;
