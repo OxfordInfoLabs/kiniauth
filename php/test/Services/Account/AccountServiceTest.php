@@ -103,6 +103,40 @@ class AccountServiceTest extends TestBase {
     }
 
 
+    public function testCanSearchForAccountsOptionallyLimitedByAccountNameStringAndPaging() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $matches = $this->accountService->searchForAccounts();
+        $this->assertEquals(5, sizeof($matches));
+        $this->assertEquals(AccountSummary::fetch(2), $matches[0]);
+        $this->assertEquals(AccountSummary::fetch(1), $matches[1]);
+        $this->assertEquals(AccountSummary::fetch(3), $matches[2]);
+        $this->assertEquals(AccountSummary::fetch(5), $matches[3]);
+        $this->assertEquals(AccountSummary::fetch(4), $matches[4]);
+
+        $matches = $this->accountService->searchForAccounts("smart");
+        $this->assertEquals(2, sizeof($matches));
+        $this->assertEquals(AccountSummary::fetch(3), $matches[0]);
+        $this->assertEquals(AccountSummary::fetch(5), $matches[1]);
+
+
+        $matches = $this->accountService->searchForAccounts("",2);
+        $this->assertEquals(3, sizeof($matches));
+        $this->assertEquals(AccountSummary::fetch(3), $matches[0]);
+        $this->assertEquals(AccountSummary::fetch(5), $matches[1]);
+        $this->assertEquals(AccountSummary::fetch(4), $matches[2]);
+
+        $matches = $this->accountService->searchForAccounts("",0, 3);
+        $this->assertEquals(3, sizeof($matches));
+        $this->assertEquals(AccountSummary::fetch(2), $matches[0]);
+        $this->assertEquals(AccountSummary::fetch(1), $matches[1]);
+        $this->assertEquals(AccountSummary::fetch(3), $matches[2]);
+
+
+    }
+
+
     public function testCanCreateAccountWithoutAdminUser() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
@@ -133,7 +167,7 @@ class AccountServiceTest extends TestBase {
         $adminUser = User::filter("WHERE name = 'Zoo Bernard'")[0];
         $this->assertEquals("bernard@shaw.com", $adminUser->getEmailAddress());
         $this->assertEquals([
-           UserRole::fetch([$adminUser->getId(),Role::SCOPE_ACCOUNT, $account->getAccountId(), 0])
+            UserRole::fetch([$adminUser->getId(), Role::SCOPE_ACCOUNT, $account->getAccountId(), 0])
         ], $adminUser->getRoles());
 
     }

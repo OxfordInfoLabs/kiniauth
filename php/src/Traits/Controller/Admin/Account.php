@@ -23,13 +23,26 @@ trait Account {
     /**
      * Get an account defaulting to logged in account
      *
-     * @http GET /
+     * @http GET /$accountId
      *
      * @return AccountSummary
      *
      */
-    public function getAccount($accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
+    public function getAccount($accountId) {
         return AccountSummary::fetch($accountId);
+    }
+
+    /**
+     * Search for accounts limiting to search string optionally
+     *
+     * @http GET /
+     *
+     * @param string $searchString
+     * @param int $offset
+     * @param int $limit
+     */
+    public function searchForAccounts($searchString = "", $offset = 0, $limit = 10) {
+        return $this->accountService->searchForAccounts($searchString, $offset, $limit);
     }
 
 

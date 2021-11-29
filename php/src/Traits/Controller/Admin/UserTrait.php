@@ -61,6 +61,22 @@ trait UserTrait {
         return UserSummary::fetch($userId);
     }
 
+
+    /**
+     * Search for account users
+     *
+     * @http GET /search
+     *
+     * @param string $searchString
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     */
+    public function searchForUsers($searchString = "", $offset = 0, $limit = 10) {
+        return $this->userService->searchForUsers($searchString, $offset, $limit);
+    }
+
+
     /**
      * Change the logged in users email
      *
@@ -100,19 +116,7 @@ trait UserTrait {
         return $this->userService->changeUserMobile($newMobile, $password);
     }
 
-    /**
-     * Search for account users
-     *
-     * @http GET /search
-     *
-     * @param string $searchString
-     * @param int $offset
-     * @param int $limit
-     * @return array
-     */
-    public function searchForAccountUsers($searchString = "", $offset = 0, $limit = 10) {
-        return $this->userService->searchForUsers($searchString, $offset, $limit);
-    }
+
 
     /**
      * Request a password reset

@@ -85,6 +85,39 @@ class AccountService {
 
 
     /**
+     * Search for accounts, optionally limiting by string and paging.
+     *
+     * @param string $searchString
+     * @param int $offset
+     * @param int $limit
+     */
+    public function searchForAccounts($searchString = "", $offset = 0, $limit = 10) {
+
+        $whereClauses = [];
+        $params = [];
+        if ($searchString) {
+            $whereClauses[] = "name LIKE ?";
+            $params[] = "%$searchString%";
+        }
+
+        $query = (sizeof($whereClauses) ? "WHERE " : "") . join(" AND ", $whereClauses) . " ORDER BY name";
+
+        if ($limit) {
+            $query .= " LIMIT ?";
+            $params[] = $limit;
+        }
+
+        if ($offset) {
+            $query .= " OFFSET ?";
+            $params[] = $offset;
+        }
+
+        return AccountSummary::filter($query, $params);
+
+    }
+
+
+    /**
      * Create a new active account.  If admin email address and password are supplied an initial admin user is created
      * and assigned to the account.
      *
@@ -92,7 +125,7 @@ class AccountService {
      * @param $adminUserName
      * @param $adminUserEmailAddress
      * @param $adminUserPassword
-     * @param null $parentAccountId
+     * @param integer $parentAccountId
      */
     public function createAccount($accountName, $adminEmailAddress = null, $adminHashedPassword = null, $adminName = null, $parentAccountId = null) {
 
