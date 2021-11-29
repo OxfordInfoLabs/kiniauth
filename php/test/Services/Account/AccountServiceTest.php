@@ -6,12 +6,14 @@ namespace Kiniauth\Test\Services\Account;
 use Kiniauth\Exception\Security\UserAlreadyAttachedToAccountException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
+use Kiniauth\Objects\Application\Activity;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Account\AccountService;
 use Kiniauth\Services\Account\UserService;
+use Kiniauth\Services\Application\ActivityLogger;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;
@@ -121,13 +123,13 @@ class AccountServiceTest extends TestBase {
         $this->assertEquals(AccountSummary::fetch(5), $matches[1]);
 
 
-        $matches = $this->accountService->searchForAccounts("",2);
+        $matches = $this->accountService->searchForAccounts("", 2);
         $this->assertEquals(3, sizeof($matches));
         $this->assertEquals(AccountSummary::fetch(3), $matches[0]);
         $this->assertEquals(AccountSummary::fetch(5), $matches[1]);
         $this->assertEquals(AccountSummary::fetch(4), $matches[2]);
 
-        $matches = $this->accountService->searchForAccounts("",0, 3);
+        $matches = $this->accountService->searchForAccounts("", 0, 3);
         $this->assertEquals(3, sizeof($matches));
         $this->assertEquals(AccountSummary::fetch(2), $matches[0]);
         $this->assertEquals(AccountSummary::fetch(1), $matches[1]);
@@ -169,6 +171,43 @@ class AccountServiceTest extends TestBase {
         $this->assertEquals([
             UserRole::fetch([$adminUser->getId(), Role::SCOPE_ACCOUNT, $account->getAccountId(), 0])
         ], $adminUser->getRoles());
+
+    }
+
+
+    public function testCanChangeAccountNameDirectlyWithoutPasswordValidationIfLoggedInAsAdminUser() {
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $accountId = $this->accountService->createAccount("Andrew Shaw");
+        $this->accountService->changeAccountName("Fiona Shaw", null, $accountId);
+
+        $reAccount = Account::fetch($accountId);
+        $this->assertEquals("Fiona Shaw", $reAccount->getName());
+
+    }
+
+
+    public function testCanSuspendAndReactivateAccounts() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $accountId = $this->accountService->createAccount("Playpen Account");
+        $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($accountId)->getStatus());
+
+        $this->accountService->suspendAccount($accountId, "Bad activity on account");
+        $this->assertEquals(Account::STATUS_SUSPENDED, Account::fetch($accountId)->getStatus());
+        $lastActivity = Activity::filter("ORDER BY id DESC")[0];
+        $this->assertEquals("Account Suspended", $lastActivity->getEvent());
+        $this->assertEquals($accountId, $lastActivity->getAccountId());
+        $this->assertEquals(["note" => "Bad activity on account"], $lastActivity->getData());
+
+        $this->accountService->reactivateAccount($accountId, "Apology accepted");
+        $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($accountId)->getStatus());
+        $lastActivity = Activity::filter("ORDER BY id DESC")[0];
+        $this->assertEquals("Account Reactivated", $lastActivity->getEvent());
+        $this->assertEquals($accountId, $lastActivity->getAccountId());
+        $this->assertEquals(["note" => "Apology accepted"], $lastActivity->getData());
+
 
     }
 
@@ -459,6 +498,6 @@ class AccountServiceTest extends TestBase {
 
 
     }
-
+    
 
 }

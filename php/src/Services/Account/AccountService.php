@@ -152,27 +152,69 @@ class AccountService {
      * @param $password
      * @return bool
      */
-    public function changeAccountName($newName, $password) {
-        list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
+    public function changeAccountName($newName, $password, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
-        $accountObject = Account::fetch($account->getAccountId());
+        $accountObject = Account::fetch($accountId);
 
-        if ($this->securityService->validateUserPassword($user->getEmailAddress(), $password)) {
+        $superUser = $this->securityService->isSuperUserLoggedIn();
 
-            $oldName = $accountObject->getName();
-
-            $accountObject->setName($newName);
-            $accountObject->save();
-
-            ActivityLogger::log("Account name changed", null, null, [
-                "From" => $oldName,
-                "To" => $newName
-            ], null, $accountObject->getAccountId());
-
-            $this->securityService->reloadLoggedInObjects();
-            return true;
+        // if not super user logged in, check permissions
+        if (!$superUser) {
+            list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
+            if (!$this->securityService->validateUserPassword($user->getEmailAddress(), $password))
+                return false;
         }
-        return false;
+
+
+        $oldName = $accountObject->getName();
+
+        $accountObject->setName($newName);
+        $accountObject->save();
+
+        ActivityLogger::log("Account name changed", null, null, [
+            "From" => $oldName,
+            "To" => $newName
+        ], null, $accountId);
+
+        if (!$superUser)
+            $this->securityService->reloadLoggedInObjects();
+
+        return true;
+
+    }
+
+
+    /**
+     * Suspend an account
+     *
+     * @param $accountId
+     */
+    public function suspendAccount($accountId, $note) {
+        $account = Account::fetch($accountId);
+        $account->setStatus(Account::STATUS_SUSPENDED);
+        $account->save();
+
+        ActivityLogger::log("Account Suspended", null, null, [
+            "note" => $note
+        ], null, $accountId);
+    }
+
+
+    /**
+     * Reactivate a suspended account
+     *
+     * @param $accountId
+     *
+     */
+    public function reactivateAccount($accountId, $note) {
+        $account = Account::fetch($accountId);
+        $account->setStatus(Account::STATUS_ACTIVE);
+        $account->save();
+
+        ActivityLogger::log("Account Reactivated", null, null, [
+            "note" => $note
+        ], null, $accountId);
+
     }
 
 

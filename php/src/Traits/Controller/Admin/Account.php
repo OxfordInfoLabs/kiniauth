@@ -59,4 +59,41 @@ trait Account {
     }
 
 
+    /**
+     * Update an account name
+     *
+     * @http PUT /$accountId/name
+     *
+     * @oaram int $accountId
+     * @param string $newAccountName
+     */
+    public function updateAccountName($accountId, $newAccountName) {
+        $this->accountService->changeAccountName($newAccountName, null, $accountId);
+    }
+
+
+    /**
+     * Suspend an account
+     *
+     * @http PUT /$accountId/suspend
+     *
+     * @param int $accountId
+     * @param string $note
+     */
+    public function suspendAccount($accountId, $note) {
+        $this->accountService->suspendAccount($accountId, $note);
+    }
+
+    /**
+     * Suspend an account
+     *
+     * @http PUT /$accountId/reactivate
+     *
+     * @param int $accountId
+     * @param string $note
+     */
+    public function reactivateAccount($accountId, $note) {
+        $this->accountService->reactivateAccount($accountId, $note);
+    }
+
 }
