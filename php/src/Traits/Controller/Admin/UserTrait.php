@@ -6,6 +6,7 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\Session;
+use Kiniauth\ValueObjects\Registration\NewUserDescriptor;
 use Kiniauth\ValueObjects\Security\UserExtended;
 
 trait UserTrait {
@@ -33,6 +34,19 @@ trait UserTrait {
         $user = User::fetch($userId);
         return new UserExtended($user);
     }
+
+
+    /**
+     * Create a new user using a new user descriptor.
+     *
+     * @http POST /admin
+     *
+     * @param NewUserDescriptor $newUserDescriptor
+     */
+    public function createAdminUser($newUserDescriptor) {
+        return $this->userService->createAdminUser($newUserDescriptor->getEmailAddress(), $newUserDescriptor->getPassword(), $newUserDescriptor->getName());
+    }
+
 
     /**
      * Get a user object by userId (optional), defaults to the logged in user

@@ -119,16 +119,11 @@ class UserService {
         $user->setName($name);
         $user->setParentAccountId($parentAccountId);
 
-        // Check for duplication across parent accounts
-        $matchingUsers = User::values("COUNT(*)", "WHERE emailAddress = ? AND parent_account_id = ?",
-            $emailAddress,
-            $parentAccountId);
+        $validationErrors = $user->validate();
 
-
-        if ($matchingUsers[0] > 0) {
+        if (isset($validationErrors["emailAddress"])) {
             $this->emailService->send(new BrandedTemplatedEmail("security/duplicate-account", ["name" => $name], null, null, [$user->getFullEmailAddress()]));
         } else {
-
 
             // Create an account to match with any name we can find.
             $account = Container::instance()->new(Account::class, false);
@@ -151,25 +146,51 @@ class UserService {
 
 
     /**
-     * Create an admin user.
+     * Create new system user - name and roles are optional.  If no password is supplied, send an email
+     * with a randomly assigned password.
+     *
+     *
      *
      * @param $emailAddress
      * @param $password
+     * @param string $name
+     * @param UserRole[] $roles
+     */
+    public function createUser($emailAddress, $hashedPassword = null, $name = null, $roles = []) {
+
+
+        // Create a new user, save it and return it back.
+        $user = Container::instance()->new(User::class, false);
+        $user->setEmailAddress($emailAddress);
+        $user->setHashedPassword($hashedPassword);
+        $user->setName($name);
+
+
+        if (!$hashedPassword) {
+            $plainPassword = $user->generateAndUpdatePassword();
+        }
+
+        $user->setRoles($roles);
+        $user->save();
+
+        if (!$hashedPassword) {
+            $this->emailService->send(new BrandedTemplatedEmail("security/user-welcome", ["emailAddress" => $emailAddress, "password" => $plainPassword], null, $user->getId()));
+        }
+
+        return $user->getId();
+    }
+
+
+    /**
+     * Create an admin user.
+     *
+     * @param $emailAddress
+     * @param $hashedPassword
      * @param null $name
      *
      */
-    public function createAdminUser($emailAddress, $password, $name = null) {
-
-        // Create a new user, save it and return it back.
-        $user = new User($emailAddress, $password, $name);
-        if ($validationErrors = $user->validate()) {
-            throw new ValidationException($validationErrors);
-        }
-
-        $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, 0, 0)));
-        $user->save();
-
-        return $user;
+    public function createAdminUser($emailAddress, $hashedPassword, $name = null) {
+        return $this->createUser($emailAddress, $hashedPassword, $name, array(new UserRole(Role::SCOPE_ACCOUNT, 0, 0)));
     }
 
 

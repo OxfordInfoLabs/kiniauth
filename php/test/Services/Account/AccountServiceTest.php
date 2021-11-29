@@ -15,6 +15,7 @@ use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
@@ -67,6 +68,12 @@ class AccountServiceTest extends TestBase {
      */
     private $mockEmailService;
 
+
+    /**
+     * @var MockObject
+     */
+    private $userService;
+
     /**
      * Constructor
      *
@@ -84,16 +91,52 @@ class AccountServiceTest extends TestBase {
 
 
         $this->mockedAccountService = new AccountService(Container::instance()->get(SecurityService::class), $this->mockPendingActionService, $this->mockEmailService,
+            Container::instance()->get(RoleService::class),
             Container::instance()->get(UserService::class));
 
         $this->pendingActionService = Container::instance()->get(PendingActionService::class);
+        $this->userService = MockObjectProvider::instance()->getMockInstance(UserService::class);
+
         $this->accountService = Container::instance()->get(AccountService::class);
 
 
     }
 
 
-   
+    public function testCanCreateAccountWithoutAdminUser() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $accountId = $this->accountService->createAccount("Bernard Shaw");
+
+        $this->assertNotNull($accountId);
+        $account = Account::fetch($accountId);
+
+        $this->assertEquals("Bernard Shaw", $account->getName());
+        $this->assertEquals(Account::STATUS_ACTIVE, $account->getStatus());
+
+    }
+
+
+    public function testCanCreateAccountWithAdminUser() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $accountId = $this->accountService->createAccount("Bernard Shaw", "bernard@shaw.com", null, "Zoo Bernard");
+
+        $this->assertNotNull($accountId);
+        $account = Account::fetch($accountId);
+
+        $this->assertEquals("Bernard Shaw", $account->getName());
+        $this->assertEquals(Account::STATUS_ACTIVE, $account->getStatus());
+
+        $adminUser = User::filter("WHERE name = 'Zoo Bernard'")[0];
+        $this->assertEquals("bernard@shaw.com", $adminUser->getEmailAddress());
+        $this->assertEquals([
+           UserRole::fetch([$adminUser->getId(),Role::SCOPE_ACCOUNT, $account->getAccountId(), 0])
+        ], $adminUser->getRoles());
+
+    }
 
 
     public function testCannotInviteUsersToJoinAccountIfNotLoggedInAsSuperUserForAccount() {

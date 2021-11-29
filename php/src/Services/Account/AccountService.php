@@ -48,6 +48,12 @@ class AccountService {
      */
     private $roleService;
 
+
+    /**
+     * @var UserService
+     */
+    private $userService;
+
     /**
      * Construct with required deps.
      *
@@ -55,12 +61,14 @@ class AccountService {
      * @param PendingActionService $pendingActionService
      * @param EmailService $emailService
      * @param RoleService $roleService
+     * @param UserService $userService
      */
-    public function __construct($securityService, $pendingActionService, $emailService, $roleService) {
+    public function __construct($securityService, $pendingActionService, $emailService, $roleService, $userService) {
         $this->securityService = $securityService;
         $this->pendingActionService = $pendingActionService;
         $this->emailService = $emailService;
         $this->roleService = $roleService;
+        $this->userService = $userService;
     }
 
 
@@ -74,6 +82,37 @@ class AccountService {
         $accountSummary = AccountSummary::fetch($id);
         return $accountSummary;
     }
+
+
+    /**
+     * Create a new active account.  If admin email address and password are supplied an initial admin user is created
+     * and assigned to the account.
+     *
+     * @param $accountName
+     * @param $adminUserName
+     * @param $adminUserEmailAddress
+     * @param $adminUserPassword
+     * @param null $parentAccountId
+     */
+    public function createAccount($accountName, $adminEmailAddress = null, $adminHashedPassword = null, $adminName = null, $parentAccountId = null) {
+
+        // Create an account to match with any name we can find.
+        $account = Container::instance()->new(Account::class, false);
+        $account->setName($accountName);
+        $account->setParentAccountId($parentAccountId);
+        $account->setStatus(Account::STATUS_ACTIVE);
+        $account->save();
+
+        if ($adminEmailAddress) {
+            $this->userService->createUser($adminEmailAddress, $adminHashedPassword, $adminName, [
+                new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId(), 0, $account->getAccountId())
+            ]);
+        }
+
+
+        return $account->getAccountId();
+    }
+
 
     /**
      * @param $newName

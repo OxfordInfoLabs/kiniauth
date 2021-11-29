@@ -11,6 +11,7 @@ use Kinikit\Core\Exception\ValidationException;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
+use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 
 
@@ -168,6 +169,30 @@ class User extends UserSummary {
      */
     public function setHashedPassword($hashedPassword) {
         $this->hashedPassword = $hashedPassword;
+    }
+
+
+    /**
+     * Update with a new random password which will be returned plain from this function.
+     * The hashed variant will be updated on this object.
+     *
+     * @return string
+     */
+    public function generateAndUpdatePassword() {
+
+        /**
+         * @var SHA512HashProvider $hashProvider
+         */
+        $hashProvider = Container::instance()->get(SHA512HashProvider::class);
+
+        // Generate a new password
+        $newPassword = StringUtils::generateRandomString(8, true, true, true);
+
+        // Update the hashed password
+        $this->setHashedPassword($hashProvider->generateHash($newPassword . $this->emailAddress));
+
+        // Return the new password
+        return $newPassword;
     }
 
     /**

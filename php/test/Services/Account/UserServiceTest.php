@@ -27,6 +27,7 @@ use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
+use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\Core\Validation\ValidationException;
 
 include_once __DIR__ . "/../../autoloader.php";
@@ -398,6 +399,89 @@ class UserServiceTest extends TestBase {
     }
 
 
+    public function testCanCreateNewUserWithJustEmailAndRandomPasswordIsAssignedAndNewUserEmailed() {
+
+        // Log out
+        $this->authenticationService->logout();
+
+        // Log in as super user.
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $userId = $this->userService->createUser("test@myshop.com");
+
+        $this->assertNotNull($userId);
+        $user = User::fetch($userId);
+
+        $this->assertEquals("test@myshop.com", $user->getEmailAddress());
+        $this->assertNotNull($user->getHashedPassword());
+        $this->assertEquals([], $user->getRoles());
+
+        // Check for an account exists email
+        $lastEmail = StoredEmail::filter("ORDER BY id DESC")[0];
+
+        $this->assertEquals(["test@myshop.com"], $lastEmail->getRecipients());
+        $this->assertEquals("New Kiniauth Example user account created", $lastEmail->getSubject());
+        $this->assertStringContainsString("<b>Email Address: </b>", $lastEmail->getTextBody());
+
+    }
+
+
+    public function testCanCreateNewUserWithEmailAndFixedHashedPasswordAndNoEmailSent() {
+
+        // Log out
+        $this->authenticationService->logout();
+
+        // Log in as super user.
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $existingStoredEmails = sizeof(StoredEmail::filter("ORDER BY id DESC"));
+
+        $password = hash("sha512", "MYTESTHASHEDPASSWORD");
+
+        $userId = $this->userService->createUser("test@bingo.com", $password);
+
+        $this->assertNotNull($userId);
+        $user = User::fetch($userId);
+
+        $this->assertEquals("test@bingo.com", $user->getEmailAddress());
+        $this->assertEquals($password, $user->getHashedPassword());
+        $this->assertEquals([], $user->getRoles());
+
+        // Check for an account exists email
+        $this->assertEquals($existingStoredEmails, sizeof(StoredEmail::filter("ORDER BY id DESC")));
+
+    }
+
+
+    public function testCanCreateNewUserWithNameAndRolesAsWell() {
+
+        // Log out
+        $this->authenticationService->logout();
+
+        // Log in as super user.
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $existingStoredEmails = sizeof(StoredEmail::filter("ORDER BY id DESC"));
+
+        $password = hash("sha512", "MYTESTHASHEDPASSWORD");
+
+        $userId = $this->userService->createUser("test@bingo3.com", $password, "Zoom Man", [
+            new UserRole(Role::SCOPE_ACCOUNT, 0, 0)]);
+
+        $this->assertNotNull($userId);
+        $user = User::fetch($userId);
+
+        $this->assertEquals("test@bingo3.com", $user->getEmailAddress());
+        $this->assertEquals($password, $user->getHashedPassword());
+        $this->assertEquals("Zoom Man", $user->getName());
+        $this->assertEquals([
+            new UserRole(Role::SCOPE_ACCOUNT, 0, 0, null, $userId)], $user->getRoles());
+
+        // Check for an account exists email
+        $this->assertEquals($existingStoredEmails, sizeof(StoredEmail::filter("ORDER BY id DESC")));
+    }
+
+
     public function testCanCreateNewAdminUserProvidedWeAreLoggedInAsSuperUser() {
 
 
@@ -408,9 +492,10 @@ class UserServiceTest extends TestBase {
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
         // Simple username / password one.
-        $adminUser = $this->userService->createAdminUser("marko@polo.com", AuthenticationHelper::hashNewPassword("Helloworld1"));
+        $adminUserId = $this->userService->createAdminUser("marko@polo.com", AuthenticationHelper::hashNewPassword("Helloworld1"));
 
-        $this->assertNotNull($adminUser->getId());
+        $this->assertNotNull($adminUserId);
+        $adminUser = User::fetch($adminUserId);
         $this->assertEquals("marko@polo.com", $adminUser->getEmailAddress());
         $this->assertEquals(AuthenticationHelper::hashNewPassword("Helloworld1"), $adminUser->getHashedPassword());
         $this->assertEquals(1, sizeof($adminUser->getRoles()));
@@ -419,9 +504,10 @@ class UserServiceTest extends TestBase {
 
 
         // Username, password and name one.
-        $adminUser = $this->userService->createAdminUser("marko2@polo.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "Marko Polo");
+        $adminUserId = $this->userService->createAdminUser("marko2@polo.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "Marko Polo");
 
-        $this->assertNotNull($adminUser->getId());
+        $this->assertNotNull($adminUserId);
+        $adminUser = User::fetch($adminUserId);
         $this->assertEquals("marko2@polo.com", $adminUser->getEmailAddress());
         $this->assertEquals("Marko Polo", $adminUser->getName());
         $this->assertEquals(AuthenticationHelper::hashNewPassword("Helloworld1"), $adminUser->getHashedPassword());
