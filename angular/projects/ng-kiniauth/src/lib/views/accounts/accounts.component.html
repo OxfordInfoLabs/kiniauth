@@ -1,0 +1,159 @@
+<div class="account-users">
+    <div class="flex align-center justify-between flex-wrap ">
+
+        <input type="text" (keyup)="search($event.target.value)"
+               placeholder="Search accounts" class="flex-1  mr-2 mt-0 flex1 mr050 mt0 desktop-table-view invite-user">
+
+        <button (click)="newAccount = true;"
+                class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none">
+            Create New Account
+        </button>
+
+    </div>
+
+    <div *ngIf="newAccountAdded" class="my-8 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="text-green-500 h-7 w-7 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div class="text-lg font-medium">New account successfully added.</div>
+    </div>
+
+    <div *ngIf="accountUnlocked" class="my-8 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="text-green-500 h-7 w-7 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z" />
+        </svg>
+        <div class="text-lg font-medium">This account has been successfully reactivated.</div>
+    </div>
+
+    <div *ngIf="accountSuspended" class="my-8 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="text-red-600 h-7 w-7 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+        </svg>
+        <div class="text-lg font-medium">This account has been suspended.</div>
+    </div>
+
+    <div class="my-4 flex flex-col" *ngIf="newAccount">
+        <p><b>Add New Account</b></p>
+        <input type="text" [(ngModel)]="newAccountName" placeholder="Enter name for the new account">
+
+        <input class="mt-2" type="email" [(ngModel)]="newAccountEmail" placeholder="Enter email address for account user">
+        <input class="mt-2" type="password" [(ngModel)]="newAccountPassword" placeholder="Enter password for user"
+               [ngClass]="{'border border-red-600': newAccountPassword && newAccountPassword.length < 8}">
+        <div *ngIf="newAccountPassword && newAccountPassword.length < 8">
+            <small class="text-red-600">Password must be at least 8 characters long.</small>
+        </div>
+        <div><small>If no password is entered, one will be auto generated and sent to the user by email.</small></div>
+        <div class="flex items-center justify-between my-4">
+            <div></div>
+            <button (click)="saveNewAdminUser()"
+                    class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none">
+                Save New Account
+            </button>
+        </div>
+    </div>
+
+    <div class="mobile-list-view pb1">
+
+        <input type="text" (keyup)="search($event.target.value)"
+               placeholder="Search users" class="full mt050">
+
+        <div class="list-items">
+            <div class="item-list flex align-center" *ngFor="let account of accounts; let i = index"
+                 (click)="viewAccount(account)">
+                <!--                <div *ngIf="!user.selected" (click)="toggleUsersSelected(user)"-->
+                <!--                     class="item-selection flex align-center justify-center mr1"></div>-->
+
+                <!--                <div *ngIf="user.selected" (click)="toggleUsersSelected(user)"-->
+                <!--                     class="item-selection flex align-center justify-center mr1 selected">-->
+                <!--                    <span>&#10004;</span>-->
+                <!--                </div>-->
+                <div>
+                    <h3>{{account.name}}</h3>
+                    <p>{{account.status}}</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="desktop-table-view">
+
+        <table class="mt1">
+            <thead>
+            <tr>
+                <!--            <th class="pl1">-->
+                <!--                <div *ngIf="!allSelected" (click)="toggleSelectAllUsers()"-->
+                <!--                     class="item-selection flex align-center justify-center mr1"></div>-->
+
+                <!--                <div *ngIf="allSelected" (click)="toggleSelectAllUsers()"-->
+                <!--                     class="item-selection flex align-center justify-center mr1 selected">-->
+                <!--                    <span>&#10004;</span>-->
+                <!--                </div>-->
+                <!--            </th>-->
+                <th>Name</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody *ngFor="let account of accounts; let i = index" class="{{account.status}}">
+                <tr>
+                    <!--            <td class="pl1">-->
+                    <!--                <div *ngIf="!user.selected" (click)="toggleUsersSelected(user)"-->
+                    <!--                     class="item-selection flex align-center justify-center mr1"></div>-->
+
+                    <!--                <div *ngIf="user.selected" (click)="toggleUsersSelected(user)"-->
+                    <!--                     class="item-selection flex align-center justify-center mr1 selected">-->
+                    <!--                    <span>&#10004;</span>-->
+                    <!--                </div>-->
+                    <!--            </td>-->
+                    <td (click)="viewAccount(account)"><b>{{account.name}}</b></td>
+                    <td class="status" (click)="viewAccount(account)">
+                        <span class="{{account.status}}">{{account.status}}</span>
+                    </td>
+                    <td class="actions text-right">
+                        <button mat-button [matMenuTriggerFor]="menu" color="primary">
+                            Actions
+                            <mat-icon>keyboard_arrow_down</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="account.showNoteField = 'reactivate'"
+                                    *ngIf="account.status === 'LOCKED' || account.status === 'SUSPENDED'">
+                                Reactivate
+                            </button>
+                            <button mat-menu-item (click)="account.showNoteField = 'suspend'" *ngIf="account.status !== 'SUSPENDED'">
+                                Suspend
+                            </button>
+                        </mat-menu>
+                    </td>
+                </tr>
+                <tr *ngIf="account.showNoteField" class="hover:bg-white">
+                    <td [colSpan]="3" class="pl-4">
+                        <div class="my-2">
+                            <input type="text" [ngClass]="{'border border-red-600': !account.note}"
+                                   class="w-full " [(ngModel)]="account.note" placeholder="Please enter accompanying note">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <button class="py-2 px-4 border border-blue-500 text-blue-500 font-semibold rounded-md hover:bg-blue-100 focus:outline-none"
+                                (click)="account.showNoteField = ''">
+                                Cancel
+                            </button>
+                            <button [disabled]="!account.note"
+                                    (click)="account.showNoteField === 'suspend' ? suspend(account, account.note) : reactivate(account, account.note)"
+                                class="disabled:opacity-50 py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none">
+                                Save note and {{account.showNoteField}}
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <mat-paginator class="user-paginator flex1 pl050 mb0" [length]="resultSize"
+                   [pageSize]="limit.getValue()"
+                   [pageIndex]="pageIndex"
+                   [pageSizeOptions]="[5, 10, 25, 100]"
+                   (page)="updatePage($event)">
+    </mat-paginator>
+
+</div>

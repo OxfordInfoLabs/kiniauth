@@ -2,22 +2,58 @@
     <div class="flex align-center justify-between flex-wrap ">
 
         <input type="text" (keyup)="search($event.target.value)"
-               placeholder="Search users" class="flex1 mr050 mt0 desktop-table-view invite-user">
+               placeholder="Search users" class="flex-1  mr-2 mt-0 flex1 mr050 mt0 desktop-table-view invite-user">
 
-        <button class="but" [routerLink]="['/invite-user']" *ngIf="!disableInvite">Invite User</button>
+        <button
+            class="but py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none"
+            [routerLink]="['/invite-user']" *ngIf="!disableInvite">Invite User
+        </button>
+
+        <button *ngIf="createAdminUser" (click)="newAdminUser = true;"
+                class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none">
+            Create Admin User
+        </button>
 
     </div>
 
+    <div *ngIf="newAdminAdded" class="my-8 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="text-green-500 h-7 w-7 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div class="text-lg font-medium">Admin user successfully added.</div>
+    </div>
+
+    <div class="my-4 flex flex-col" *ngIf="newAdminUser">
+        <p><b>Add New Admin User</b></p>
+        <input type="email" [(ngModel)]="newAdminEmail" placeholder="Enter email address for user">
+        <input class="mt-2" type="password" [(ngModel)]="newAdminPassword" placeholder="Enter password for user"
+            [ngClass]="{'border border-red-600': newAdminPassword && newAdminPassword.length < 8}">
+        <div *ngIf="newAdminPassword && newAdminPassword.length < 8">
+            <small class="text-red-600">Password must be at least 8 characters long.</small>
+        </div>
+        <div><small>If no password is entered, one will be auto generated and sent to the user by email.</small></div>
+        <div class="flex items-center justify-between my-4">
+            <div></div>
+            <button (click)="saveNewAdminUser()"
+                class="py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none">
+                Save New User
+            </button>
+        </div>
+    </div>
+
     <p class="text-center flex align-center mt1" *ngIf="passwordReset">
-        <mat-icon class="mr1">mail</mat-icon> Password reset email sent. Please check your email for further instructions
+        <mat-icon class="mr1">mail</mat-icon>
+        Password reset email sent. Please check your email for further instructions
     </p>
 
     <p class="text-center flex align-center mt1" *ngIf="userUnlocked">
-        <mat-icon class="mr1">lock_open</mat-icon> This user has been successfully unlocked.
+        <mat-icon class="mr1">lock_open</mat-icon>
+        This user has been successfully unlocked.
     </p>
 
     <p class="text-center flex align-center mt1" *ngIf="userSuspended">
-        <mat-icon class="mr1">block</mat-icon> This user has been suspended.
+        <mat-icon class="mr1">block</mat-icon>
+        This user has been suspended.
     </p>
 
     <div class="mobile-list-view pb1">
@@ -26,18 +62,18 @@
                placeholder="Search users" class="full mt050">
 
         <div class="list-items">
-            <div class="list-item flex align-center" *ngFor="let user of users; let i = index"
+            <div class="item-list flex align-center" *ngFor="let user of users; let i = index"
                  (click)="viewUser(user)">
-                <div *ngIf="!user.selected" (click)="toggleUsersSelected(user)"
-                     class="item-selection flex align-center justify-center mr1"></div>
+<!--                <div *ngIf="!user.selected" (click)="toggleUsersSelected(user)"-->
+<!--                     class="item-selection flex align-center justify-center mr1"></div>-->
 
-                <div *ngIf="user.selected" (click)="toggleUsersSelected(user)"
-                     class="item-selection flex align-center justify-center mr1 selected">
-                    <span>&#10004;</span>
-                </div>
+<!--                <div *ngIf="user.selected" (click)="toggleUsersSelected(user)"-->
+<!--                     class="item-selection flex align-center justify-center mr1 selected">-->
+<!--                    <span>&#10004;</span>-->
+<!--                </div>-->
                 <div>
                     <h3>{{user.name}}</h3>
-                    <p>{{user.buyerName}} • {{user.status}}</p>
+                    <p>{{user.emailAddress}} • {{user.status}}</p>
                 </div>
 
             </div>
@@ -82,13 +118,17 @@
                 </td>
                 <td class="actions text-right">
                     <button mat-button [matMenuTriggerFor]="menu" color="primary">
-                        Actions <mat-icon>keyboard_arrow_down</mat-icon>
+                        Actions
+                        <mat-icon>keyboard_arrow_down</mat-icon>
                     </button>
                     <mat-menu #menu="matMenu">
                         <button mat-menu-item (click)="removeUser(user)">Remove</button>
                         <button mat-menu-item (click)="resetPassword(user)">Reset Password</button>
-                        <button mat-menu-item (click)="unlockUser(user.id)" *ngIf="user.status === 'LOCKED'">Unlock</button>
-                        <button mat-menu-item (click)="suspendUser(user.id)" *ngIf="user.status !== 'SUSPENDED'">Suspend</button>
+                        <button mat-menu-item (click)="unlockUser(user.id)" *ngIf="user.status === 'LOCKED' || user.status === 'SUSPENDED'">Unlock
+                        </button>
+                        <button mat-menu-item (click)="suspendUser(user.id)" *ngIf="user.status !== 'SUSPENDED'">
+                            Suspend
+                        </button>
                     </mat-menu>
                 </td>
             </tr>

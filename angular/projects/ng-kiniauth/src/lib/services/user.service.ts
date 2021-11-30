@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
-import { KinibindRequestService } from 'ng-kinibind';
-import { KiniAuthModuleConfig } from '../../ng-kiniauth.module';
+import {Injectable} from '@angular/core';
+import {KinibindRequestService} from 'ng-kinibind';
+import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
 import * as _ from 'lodash';
+import {AuthenticationService} from './authentication.service';
 
 @Injectable({
     providedIn: 'root'
@@ -9,36 +10,48 @@ import * as _ from 'lodash';
 export class UserService {
 
     constructor(private kbRequest: KinibindRequestService,
-                private config: KiniAuthModuleConfig) {
+                private config: KiniAuthModuleConfig,
+                private authService: AuthenticationService) {
     }
 
     public getUser(userId) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/summary', {
-            params: { userId }
+            params: {userId}
         }).toPromise();
+    }
+
+    public createAdminUser(emailAddress, rawPassword?, name?) {
+        let password = rawPassword;
+        if (rawPassword) {
+            password = this.authService.getHashedPassword(rawPassword, emailAddress);
+        }
+
+        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/admin',
+            _.omitBy({emailAddress, password, name}, _.isNil)
+        ).toPromise();
     }
 
     public getUserExtended(userId) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user', {
-            params: { userId }
+            params: {userId}
         }).toPromise();
     }
 
     public getAccountUsers(searchString?, limit?, offset?) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/search', {
-            params: _.pickBy({ searchString, limit, offset }, _.identity)
+            params: _.pickBy({searchString, limit, offset}, _.identity)
         });
     }
 
     public getAllUserAccountRoles(userId) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/roles', {
-            params: { userId }
+            params: {userId}
         }).toPromise();
     }
 
     public getAssignableRoles(userId, scope, filterString = '', offset = 0, limit = 10) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/assignableRoles', {
-            params: { userId, scope, filterString, offset, limit }
+            params: {userId, scope, filterString, offset, limit}
         }).toPromise();
     }
 
@@ -49,37 +62,37 @@ export class UserService {
 
     public removeUserFromAccount(userId) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/account/removeUser', {
-            params: { userId }
+            params: {userId}
         }).toPromise();
     }
 
     public requestPasswordReset(emailAddress) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/passwordReset', {
-            params: { emailAddress }
+            params: {emailAddress}
         }).toPromise();
     }
 
     public unlockUser(userId) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/unlock', {
-            params: { userId }
+            params: {userId}
         }).toPromise();
     }
 
     public suspendUser(userId) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/suspend', {
-            params: { userId }
+            params: {userId}
         }).toPromise();
     }
 
     public getAccounts(userId) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/accounts', {
-            params: { userId }
+            params: {userId}
         }).toPromise();
     }
 
     public switchAccount(accountId, userId) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/switchAccount', {
-            params: { accountId, userId }
+            params: {accountId, userId}
         }).toPromise();
     }
 }

@@ -1,10 +1,10 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
-import { BehaviorSubject, merge, Subject } from 'rxjs';
+import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
+import {debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
+import {BehaviorSubject, merge, Subject} from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { UserService } from '../../services/user.service';
-import { Router } from '@angular/router';
+import {UserService} from '../../services/user.service';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'ka-account-users',
@@ -16,6 +16,7 @@ export class AccountUsersComponent implements OnInit {
 
     @Input() userRoleRoute: string;
     @Input() disableInvite: boolean;
+    @Input() createAdminUser: boolean;
 
     public users: any[];
     public searchText = new BehaviorSubject<string>('');
@@ -30,6 +31,10 @@ export class AccountUsersComponent implements OnInit {
     public passwordReset = false;
     public userUnlocked = false;
     public userSuspended = false;
+    public newAdminUser = false;
+    public newAdminEmail = '';
+    public newAdminPassword: string = null;
+    public newAdminAdded = false;
 
     private moment = moment;
 
@@ -48,6 +53,23 @@ export class AccountUsersComponent implements OnInit {
             )
             .subscribe((users: any) => {
                 this.users = users;
+            });
+    }
+
+    public saveNewAdminUser() {
+        if (this.newAdminPassword && this.newAdminPassword.length < 8) {
+            return true;
+        }
+
+        return this.userService.createAdminUser(this.newAdminEmail, this.newAdminPassword || null, null)
+            .then(res => {
+                this.newAdminEmail = '';
+                this.newAdminPassword = null;
+                this.newAdminUser = false;
+                this.newAdminAdded = true;
+                setTimeout(() => {
+                    this.newAdminAdded = false;
+                }, 3000);
             });
     }
 

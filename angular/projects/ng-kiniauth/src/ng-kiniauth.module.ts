@@ -33,6 +33,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatChipsModule} from '@angular/material/chips';
 import { NotificationComponent } from './lib/views/notifications/notification/notification.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { AccountsComponent } from './lib/views/accounts/accounts.component';
 
 @NgModule({
     declarations: [
@@ -56,7 +57,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
         EditDetailsComponent,
         EditAccountNameComponent,
         NotificationsComponent,
-        NotificationComponent
+        NotificationComponent,
+        AccountsComponent
     ],
     imports: [
         NgKinibindModule,
@@ -87,7 +89,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
         InviteUserComponent,
         EditAccountNameComponent,
         NotificationsComponent,
-        NotificationComponent
+        NotificationComponent,
+        AccountsComponent
     ]
 })
 export class NgKiniAuthModule {

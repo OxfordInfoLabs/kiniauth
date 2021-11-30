@@ -164,6 +164,19 @@ trait UserTrait {
     }
 
     /**
+     * Get all account roles for a user
+     *
+     * @http GET /roles
+     *
+     * @hasPrivilege ACCOUNT:*
+     * @param $userId
+     * @return array
+     */
+    public function getAllUserAccountRoles($userId) {
+        return $this->roleService->getAllUserAccountRoles($userId);
+    }
+
+    /**
      * Search for account users
      *
      * @http GET /search
@@ -176,19 +189,6 @@ trait UserTrait {
     public function searchForAccountUsers($searchString = "", $offset = 0, $limit = 10) {
         $account = $this->session->__getLoggedInAccount()->getAccountId();
         return $this->userService->searchForUsers($searchString, $offset, $limit, $account);
-    }
-
-    /**
-     * Get all account roles for a user
-     *
-     * @http GET /roles
-     *
-     * @hasPrivilege ACCOUNT:*
-     * @param $userId
-     * @return array
-     */
-    public function getAllUserAccountRoles($userId) {
-        return $this->roleService->getAllUserAccountRoles($userId);
     }
 
 
