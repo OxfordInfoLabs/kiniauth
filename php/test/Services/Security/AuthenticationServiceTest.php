@@ -511,6 +511,8 @@ class AuthenticationServiceTest extends TestBase {
     }
 
 
+
+
     public function testCanLogOut() {
         AuthenticationHelper::login("james@smartcoasting.org", "password");
         $this->assertNotNull($this->session->__getLoggedInAccount());
