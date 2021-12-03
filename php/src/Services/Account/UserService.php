@@ -164,6 +164,7 @@ class UserService {
         $user->setEmailAddress($emailAddress);
         $user->setHashedPassword($hashedPassword);
         $user->setName($name);
+        $user->setStatus(User::STATUS_ACTIVE);
 
 
         if (!$hashedPassword) {

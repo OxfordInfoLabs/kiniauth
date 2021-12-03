@@ -171,6 +171,7 @@ class AccountServiceTest extends TestBase {
         $this->assertEquals([
             UserRole::fetch([$adminUser->getId(), Role::SCOPE_ACCOUNT, $account->getAccountId(), 0])
         ], $adminUser->getRoles());
+        $this->assertEquals(User::STATUS_ACTIVE, $adminUser->getStatus());
 
     }
 
@@ -498,6 +499,6 @@ class AccountServiceTest extends TestBase {
 
 
     }
-    
+
 
 }
