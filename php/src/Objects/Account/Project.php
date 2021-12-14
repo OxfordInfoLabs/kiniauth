@@ -19,7 +19,7 @@ class Project extends ProjectSummary {
      * @var integer
      * @required
      */
-    private $accountId;
+    protected $accountId;
 
 
     /**
