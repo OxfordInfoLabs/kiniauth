@@ -34,12 +34,12 @@ class ProjectSummary extends ActiveRecord {
      *
      * @param string $name
      * @param string $description
-     * @param string $projectKey
+     * @param string $key
      */
-    public function __construct($name, $description = null, $projectKey = null) {
+    public function __construct($name, $description = null, $key = null) {
         $this->name = $name;
         $this->description = $description;
-        $this->projectKey = $projectKey;
+        $this->projectKey = $key;
     }
 
     /**

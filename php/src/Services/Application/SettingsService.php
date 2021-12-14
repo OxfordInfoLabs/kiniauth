@@ -45,6 +45,40 @@ class SettingsService {
         }
     }
 
+
+    /**
+     * Get a setting value for the supplied key, optionally supplying an account id
+     * and user id to qualify the settings scope
+     *
+     * @param string $key
+     * @param string $accountId
+     * @param string $userId
+     */
+    public function getSettingValue($key, $accountId = null, $userId = null) {
+        // Get parent account id.
+        $activeParentAccountId = $this->securityService->getParentAccountId($accountId, $userId);
+
+        /**
+         * @var Setting[] $settings
+         */
+        $settings = Setting::filter("WHERE parentAccountId = ? AND setting_key = ?",
+            $activeParentAccountId, $key);
+
+        if (sizeof($settings) > 0) {
+            if ($settings[0]->isMultiple()) {
+                return array_map(function ($setting) {
+                    return $setting->getValue();
+                }, $settings);
+            } else {
+                return $settings[0]->getValue();
+            }
+        } else {
+            return null;
+        }
+
+    }
+
+
     /**
      * Get parent account settings for
      */
