@@ -4,7 +4,7 @@
 namespace Kiniauth\Services\Workflow\Task\Queued;
 
 use Kiniauth\Exception\QueuedTask\NoQueuedTaskImplementationException;
-use Kiniauth\Services\Workflow\QueuedTask\Processor\QueuedTaskProcessor;
+use Kiniauth\Services\Workflow\Task\Queued\Processor\QueuedTaskProcessor;
 use Kiniauth\ValueObjects\QueuedTask\QueueItem;
 use Kinikit\Core\Configuration\ConfigFile;
 use Kinikit\Core\DependencyInjection\Container;

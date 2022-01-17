@@ -2,7 +2,7 @@
 
 namespace Kiniauth\Tools;
 
-use Kiniauth\Services\Workflow\QueuedTask\QueuedTaskService;
+use Kiniauth\Services\Workflow\Task\Queued\QueuedTaskService;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Init;
 
