@@ -17,6 +17,7 @@ export class InvitationComponent extends BaseComponent implements OnInit {
     public name = '';
     public password = '';
     public inviteAccepted = false;
+    public invitationError = false;
 
     constructor(kcAuthService: AuthenticationService,
                 private route: ActivatedRoute) {
@@ -30,6 +31,8 @@ export class InvitationComponent extends BaseComponent implements OnInit {
 
         this.authService.getInvitationDetails(this.invitationCode).then(details => {
             this.details = details;
+        }).catch(err => {
+            this.invitationError = true;
         });
     }
 
