@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { KiniAuthModuleConfig } from '../../ng-kiniauth.module';
-import { KinibindRequestService } from 'ng-kinibind';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import {Injectable} from '@angular/core';
+import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
+import {KinibindRequestService} from 'ng-kinibind';
+import {BehaviorSubject} from 'rxjs/internal/BehaviorSubject';
 import * as _ from 'lodash';
 import * as sha512 from 'js-sha512' ;
-import { HttpHeaders } from '@angular/common/http';
+import {HttpHeaders} from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'
@@ -56,8 +56,8 @@ export class AuthenticationService {
     public login(username: string, password: string, recaptcha?) {
         const request = this.config.guestHttpURL + `/auth/login`;
 
-        const headers = new HttpHeaders({ 'X-CAPTCHA-TOKEN': recaptcha || '' });
-        const options: any = { headers };
+        const headers = new HttpHeaders({'X-CAPTCHA-TOKEN': recaptcha || ''});
+        const options: any = {headers};
 
         return this.kbRequest.makePostRequest(request, {
             emailAddress: username,
@@ -90,7 +90,7 @@ export class AuthenticationService {
     public authenticateNewTwoFactor(code, secret) {
         return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/newTwoFactor',
             {
-                params: { code, secret }
+                params: {code, secret}
             }
         ).toPromise().then(user => {
             if (user) {
@@ -130,6 +130,19 @@ export class AuthenticationService {
         ).toPromise().then(res => {
             return !res;
         });
+    }
+
+    public getInvitationDetails(invitationCode) {
+        return this.kbRequest.makeGetRequest(
+            this.config.guestHttpURL + `/registration/invitation/${invitationCode}`
+        ).toPromise();
+    }
+
+    public acceptInvitation(invitationCode, name = '', password = '', email = '') {
+        return this.kbRequest.makePostRequest(
+            this.config.guestHttpURL + `/registration/invitation/${invitationCode}`,
+            {name, password: this.getHashedPassword(password, email, true)}
+        ).toPromise();
     }
 
     public validateUserPassword(emailAddress, password) {
@@ -248,15 +261,19 @@ export class AuthenticationService {
             });
     }
 
-    public getHashedPassword(password, emailAddress?) {
+    public getHashedPassword(password, emailAddress?, newPassword = false) {
         let hashedPassword;
         const sessionData = this.sessionData.getValue();
         const loggedInUser = this.authUser.getValue();
 
         const email = emailAddress ? emailAddress : (loggedInUser ? loggedInUser.emailAddress : '');
 
+        const hash = sha512.sha512(password + email);
+        if (newPassword) {
+            return hash;
+        }
+
         if (email && sessionData && sessionData.sessionSalt) {
-            const hash = sha512.sha512(password + email);
             hashedPassword = sha512.sha512(hash + sessionData.sessionSalt);
         }
         return hashedPassword || password;
