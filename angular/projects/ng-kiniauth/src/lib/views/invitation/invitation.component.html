@@ -1,0 +1,59 @@
+<div class="actionpanel sixtyforty mx1 mb2 mx-4 mb-8">
+
+    <div class="actioninfo p2w p1m">
+        <ng-template [ngIf]="!inviteAccepted && !invitationError">
+            <h4 class="mb1 mt0 flex align-center">
+                <b>Invitation Details</b>
+            </h4>
+
+            <div class="mb1">
+                <p class="mb-4">You have been invited to join the {{details.accountName}} account using email address
+                    <b>{{details.emailAddress}}</b></p>
+
+                <ng-template [ngIf]="details.newUser">
+
+                    <p class="mb-4">Please enter your full name and create a new password in order to log into your account.</p>
+
+                    <p>
+                        <label>Full Name</label>
+                        <input class="w-full" type="text" [(ngModel)]="name">
+                    </p>
+
+                    <p>
+                        <label>New Password</label>
+                        <input class="w-full" type="password" [(ngModel)]="password">
+                    </p>
+
+                </ng-template>
+
+                <p class="mt-4">To accept this invitation please click on the 'Accept Invitation' button.</p>
+            </div>
+        </ng-template>
+
+        <ng-template [ngIf]="inviteAccepted">
+            <div class="my-8 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-green-500 h-24 w-24 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div class="text-lg">Invitation Accepted. You have been added to the {{details.accountName}} account.</div>
+            </div>
+        </ng-template>
+
+        <ng-template [ngIf]="invitationError">
+            <div class="my-8 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-yellow-500 h-24 w-24 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div class="text-lg">There was a problem with the invitation code supplied, please check and try again.</div>
+            </div>
+        </ng-template>
+
+    </div>
+    <div class="actions flex flex-col align-center justify-center p1">
+        <button *ngIf="!inviteAccepted && !invitationError" class="button small-button white-button disabled:opacity-50" (click)="acceptInvitation()"
+            [disabled]="details.newUser && (!name || !password)">
+            Accept Invitation
+        </button>
+    </div>
+
+</div>

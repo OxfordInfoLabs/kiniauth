@@ -23,7 +23,7 @@ export class UserService {
     public createAdminUser(emailAddress, rawPassword?, name?) {
         let password = rawPassword;
         if (rawPassword) {
-            password = this.authService.getHashedPassword(rawPassword, emailAddress);
+            password = this.authService.getHashedPassword(rawPassword, emailAddress, true);
         }
 
         return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/admin',

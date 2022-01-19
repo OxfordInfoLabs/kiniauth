@@ -31,7 +31,7 @@ export class AccountService {
     public createAccount(accountName, emailAddress = null, rawPassword = null, name = null) {
         let password = rawPassword;
         if (rawPassword) {
-            password = this.authService.getHashedPassword(rawPassword, emailAddress);
+            password = this.authService.getHashedPassword(rawPassword, emailAddress, true);
         }
 
         return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/account',
