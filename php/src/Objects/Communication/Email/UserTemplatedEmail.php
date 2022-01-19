@@ -29,14 +29,12 @@ class UserTemplatedEmail extends BrandedTemplatedEmail {
      * @throws \Kinikit\Core\Validation\ValidationException
      */
     public function __construct($userId, $templateName, $model = [], $attachments = []) {
-
-
         /**
          * @var SecurityService $securityService
          */
         $securityService = Container::instance()->get(SecurityService::class);
 
-        $loggedInUserAndAccount = $securityService->getLoggedInUserAndAccount();
+        $loggedInUserAndAccount = $securityService->getLoggedInSecurableAndAccount();
         $user = null;
         if (isset($loggedInUserAndAccount[0]) && $loggedInUserAndAccount[0]->getId() == $userId) {
             $user = $loggedInUserAndAccount[0];

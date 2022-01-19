@@ -72,7 +72,7 @@ class AccountRouteInterceptorTest extends TestBase {
 
 
         // API login - shouldn't have access to account web context
-        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
         $_SERVER["HTTP_X_CSRF_TOKEN"] = $this->securityService->getCSRFToken();
         try {
             $this->accountRouteInterceptor->beforeRoute(new Request(new Headers()));

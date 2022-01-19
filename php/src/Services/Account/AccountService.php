@@ -160,7 +160,7 @@ class AccountService {
 
         // if not super user logged in, check permissions
         if (!$superUser) {
-            list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
+            list($user, $account) = $this->securityService->getLoggedInSecurableAndAccount();
             if (!$this->securityService->validateUserPassword($user->getEmailAddress(), $password))
                 return false;
         }

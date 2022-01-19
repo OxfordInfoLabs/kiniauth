@@ -73,7 +73,7 @@ class APIRouteInterceptorTest extends TestBase {
 
 
         // API login first - this should still fail.
-        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
 
         try {
             $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
@@ -112,15 +112,15 @@ class APIRouteInterceptorTest extends TestBase {
 
         // Finally good credentials as GET params
         $_SERVER["REQUEST_URI"] = "/api/somecontroller?mynameistest?apiKey=TESTAPIKEY&apiSecret=TESTAPISECRET";
-        $_GET = array("apiKey" => "TESTAPIKEY", "apiSecret" => "TESTAPISECRET");
+        $_GET = array("apiKey" => "GLOBALACCOUNTAPIKEY", "apiSecret" => "GLOBALACCOUNTAPISECRET");
 
         $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
 
         // Good creds as header
         $_SERVER["REQUEST_URI"] = "/api/somecontroller?mynameistest";
         $_GET = [];
-        $_SERVER["HTTP_API_KEY"] = "TESTAPIKEY";
-        $_SERVER["HTTP_API_SECRET"] = "TESTAPISECRET";
+        $_SERVER["HTTP_API_KEY"] = "GLOBALACCOUNTAPIKEY";
+        $_SERVER["HTTP_API_SECRET"] = "GLOBALACCOUNTAPISECRET";
 
         $this->apiRouteInterceptor->beforeRoute(new Request(new Headers()));
 

@@ -24,7 +24,7 @@ class SessionService {
      * Get session data for current logged in state.
      */
     public function getSessionData() {
-        return new SessionData($this->session->__getLoggedInUser(), $this->session->__getLoggedInAccount());
+        return new SessionData($this->session->__getLoggedInSecurable(), $this->session->__getLoggedInAccount());
     }
 
 }

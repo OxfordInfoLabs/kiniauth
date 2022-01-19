@@ -26,22 +26,6 @@ class Account extends AccountSummary {
      */
     protected $subAccountsEnabled;
 
-
-    /**
-     * API key for account access
-     *
-     * @var string
-     */
-    protected $apiKey;
-
-    /**
-     * API secret for account access
-     *
-     * @var string
-     */
-    protected $apiSecret;
-
-
     /**
      * @var \DateTime
      */
@@ -60,9 +44,6 @@ class Account extends AccountSummary {
     public function __construct($name = null, $parentAccountId = 0, $status = self::STATUS_PENDING) {
         $this->name = $name;
         $this->parentAccountId = $parentAccountId;
-
-        $this->apiKey = StringUtils::generateRandomString(10, true, true, false);
-        $this->apiSecret = StringUtils::generateRandomString(10, true, true, false);
         $this->status = $status;
     }
 
@@ -113,33 +94,6 @@ class Account extends AccountSummary {
         }
     }
 
-    /**
-     * @return string
-     */
-    public function getApiKey() {
-        return $this->apiKey;
-    }
-
-    /**
-     * @param string $apiKey
-     */
-    public function setApiKey($apiKey) {
-        $this->apiKey = $apiKey;
-    }
-
-    /**
-     * @return string
-     */
-    public function getApiSecret() {
-        return $this->apiSecret;
-    }
-
-    /**
-     * @param string $apiSecret
-     */
-    public function setApiSecret($apiSecret) {
-        $this->apiSecret = $apiSecret;
-    }
 
     /**
      * @return \DateTime

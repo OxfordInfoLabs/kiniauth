@@ -47,7 +47,7 @@ class SessionServiceTest extends TestBase {
         // Super Admin
         AuthenticationHelper::login("admin@kinicart.com", "password");
         $sessionData = $this->sessionService->getSessionData();
-        $loggedIn = $this->securityService->getLoggedInUserAndAccount();
+        $loggedIn = $this->securityService->getLoggedInSecurableAndAccount();
         $this->assertEquals($loggedIn[0], $sessionData->getUser());
         $this->assertNull($sessionData->getAccount());
 
@@ -56,16 +56,17 @@ class SessionServiceTest extends TestBase {
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
         $sessionData = $this->sessionService->getSessionData();
-        $loggedIn = $this->securityService->getLoggedInUserAndAccount();
+        $loggedIn = $this->securityService->getLoggedInSecurableAndAccount();
         $this->assertEquals($loggedIn[0], $sessionData->getUser());
         $this->assertEquals($loggedIn[1]->generateSummary(), $sessionData->getAccount());
 
         // Api one
-        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
 
         $sessionData = $this->sessionService->getSessionData();
-        $loggedIn = $this->securityService->getLoggedInUserAndAccount();
+        $loggedIn = $this->securityService->getLoggedInSecurableAndAccount();
         $this->assertNull($sessionData->getUser());
+        $this->assertEquals($loggedIn[0], $sessionData->getApiKey());
         $this->assertEquals($loggedIn[1]->generateSummary(), $sessionData->getAccount());
 
 

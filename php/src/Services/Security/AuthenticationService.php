@@ -10,6 +10,7 @@ use Kiniauth\Exception\Security\InvalidReferrerException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
+use Kiniauth\Objects\Security\APIKey;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
@@ -297,11 +298,11 @@ class AuthenticationService {
      */
     public function apiAuthenticate($apiKey, $apiSecret) {
 
-        $matchingAccounts = Account::filter("WHERE apiKey = ? AND apiSecret = ?", $apiKey, $apiSecret);
+        $matchingKeys = APIKey::filter("WHERE apiKey = ? AND apiSecret = ?", $apiKey, $apiSecret);
 
         // If there is a matching user, return it now.
-        if (sizeof($matchingAccounts) > 0) {
-            $this->securityService->login(null, $matchingAccounts[0]);
+        if (sizeof($matchingKeys) > 0) {
+            $this->securityService->login($matchingKeys[0], null);
             ActivityLogger::log("API Login");
         } else {
             throw new InvalidAPICredentialsException();

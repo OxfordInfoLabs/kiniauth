@@ -68,7 +68,7 @@ class ActivityLogger {
     public function createLog($event, $associatedObjectId = null, $associatedObjectDescription = null, $data = [], $userId = User::LOGGED_IN_USER, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
         // Logged in user id.
-        $loggedInUserId = $this->session->__getLoggedInUser() ? $this->session->__getLoggedInUser()->getId() : null;
+        $loggedInUserId = $this->session->__getLoggedInSecurable() ? $this->session->__getLoggedInSecurable()->getId() : null;
 
         // Save activity log
         $logEntry = new Activity($userId, $accountId, $event, $associatedObjectId, $associatedObjectDescription, $data, $loggedInUserId);

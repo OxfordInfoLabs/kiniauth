@@ -285,20 +285,6 @@ class User extends UserSummary {
     }
 
 
-    /**
-     * @return UserRole[]
-     */
-    public function getRoles() {
-        return $this->roles;
-    }
-
-    /**
-     * @param UserRole[] $roles
-     */
-    public function setRoles($roles) {
-        $this->roles = $roles;
-    }
-
 
     public function getAccountIds() {
         $accountIds = array();

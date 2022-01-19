@@ -236,7 +236,7 @@ class UserServiceTest extends TestBase {
 
         // Check user is active
         $this->authenticationService->login("john5@test.com", AuthenticationHelper::encryptPasswordForLogin(AuthenticationHelper::hashNewPassword("Helloworld1")));
-        $user = $this->session->__getLoggedInUser();
+        $user = $this->session->__getLoggedInSecurable();
         $this->assertEquals("John Smith", $user->getName());
         $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
         $this->assertEquals(1, sizeof($user->getRoles()));
@@ -341,7 +341,7 @@ class UserServiceTest extends TestBase {
          */
         $reUser = User::fetch($newUser->getId());
         $this->assertEquals($newAccount2->getAccountId(), $reUser->getActiveAccountId());
-        $this->assertEquals($newAccount2->getAccountId(), $this->session->__getLoggedInUser()->getActiveAccountId());
+        $this->assertEquals($newAccount2->getAccountId(), $this->session->__getLoggedInSecurable()->getActiveAccountId());
         $this->assertEquals($newAccount2->getAccountId(), $this->session->__getLoggedInAccount()->getAccountId());
 
 
@@ -352,7 +352,7 @@ class UserServiceTest extends TestBase {
          */
         $reUser = User::fetch($newUser->getId());
         $this->assertEquals($newAccount->getAccountId(), $reUser->getActiveAccountId());
-        $this->assertEquals($newAccount->getAccountId(), $this->session->__getLoggedInUser()->getActiveAccountId());
+        $this->assertEquals($newAccount->getAccountId(), $this->session->__getLoggedInSecurable()->getActiveAccountId());
         $this->assertEquals($newAccount->getAccountId(), $this->session->__getLoggedInAccount()->getAccountId());
 
 
@@ -577,7 +577,7 @@ class UserServiceTest extends TestBase {
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
         // Check the user
-        $loggedInUser = $this->session->__getLoggedInUser();
+        $loggedInUser = $this->session->__getLoggedInSecurable();
         $this->assertTrue($loggedInUser instanceof User);
 
         $twoFactorSettings = $this->userService->generateTwoFactorSettings();

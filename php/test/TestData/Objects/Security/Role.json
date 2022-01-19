@@ -22,5 +22,13 @@
       "editdata",
       "deletedata"
     ]
+  },
+  {
+    "name": "Project Access",
+    "description": "Can access a project",
+    "privileges": [
+      "access"
+    ],
+    "scope": "PROJECT"
   }
 ]

@@ -74,7 +74,7 @@ class AdminRouteInterceptorTest extends TestBase {
 
 
         // API login
-        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
         $_SERVER["HTTP_X_CSRF_TOKEN"] = $this->securityService->getCSRFToken();
 
         try {

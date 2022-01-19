@@ -69,16 +69,15 @@ class SecurityServiceTest extends TestBase {
 
 
         // Account logged in by API
-        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
-        $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 1));
-        $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 5));
+        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
+        $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 2));
 
     }
 
     public function testCanCheckObjectAccessWithAccountId() {
 
         $contact = new Contact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
-            "Oxon", "OX4 7YY", "GB", null, "test@test.com", 1, Contact::ADDRESS_TYPE_GENERAL);
+            "Oxon", "OX4 7YY", "GB", null, "test@test.com", 2, Contact::ADDRESS_TYPE_GENERAL);
 
 
         // Logged out
@@ -91,15 +90,15 @@ class SecurityServiceTest extends TestBase {
 
 
         // User with different account access
-        AuthenticationHelper::login("mary@shoppingonline.com", "password");
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
         $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
 
         // Useer login
-        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
         $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
 
         // API login
-        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
         $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
 
 
@@ -125,7 +124,7 @@ class SecurityServiceTest extends TestBase {
         $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
 
         // API login
-        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
         $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
 
 
@@ -150,7 +149,7 @@ class SecurityServiceTest extends TestBase {
         $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
 
         // API login
-        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
         $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
     }
 
@@ -172,7 +171,7 @@ class SecurityServiceTest extends TestBase {
         $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
 
         // API login
-        $this->authenticationService->apiAuthenticate("TESTAPIKEY", "TESTAPISECRET");
+        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
         $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
     }
 

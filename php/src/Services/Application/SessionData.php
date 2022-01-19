@@ -60,7 +60,7 @@ class SessionData {
          * @var $user User
          * @var $account Account
          */
-        list ($user, $account) = $securityService->getLoggedInUserAndAccount();
+        list ($user, $account) = $securityService->getLoggedInSecurableAndAccount();
 
         if ($user) {
             $this->user = $user->generateSummary();

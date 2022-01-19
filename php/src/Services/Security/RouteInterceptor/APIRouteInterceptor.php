@@ -45,9 +45,9 @@ class APIRouteInterceptor extends RouteInterceptor {
             throw new MissingAPICredentialsException();
         }
 
-        list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
+        list($securable, $account) = $this->securityService->getLoggedInSecurableAndAccount();
 
-        if (!$account || $account->getApiKey() != $apiKey || $account->getApiSecret() != $apiSecret) {
+        if (!$securable || $securable->getApiKey() != $apiKey || $securable->getApiSecret() != $apiSecret) {
             $this->authenticationService->apiAuthenticate($apiKey, $apiSecret);
         }
 

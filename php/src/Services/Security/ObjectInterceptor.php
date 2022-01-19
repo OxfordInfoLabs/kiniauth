@@ -115,7 +115,7 @@ class ObjectInterceptor extends ContainerInterceptor {
 
 
         if ($key = array_search(Account::LOGGED_IN_ACCOUNT, $params, true)) {
-            list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
+            list($user, $account) = $this->securityService->getLoggedInSecurableAndAccount();
             if ($account) {
                 $params[$key] = $account->getAccountId();
             } else {
@@ -124,8 +124,8 @@ class ObjectInterceptor extends ContainerInterceptor {
         }
 
         if ($key = array_search(User::LOGGED_IN_USER, $params, true)) {
-            list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
-            if ($user) {
+            list($user, $account) = $this->securityService->getLoggedInSecurableAndAccount();
+            if ($user instanceof User) {
                 $params[$key] = $user->getId();
             } else {
                 $params[$key] = null;

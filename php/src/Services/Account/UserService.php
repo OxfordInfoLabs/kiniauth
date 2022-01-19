@@ -690,7 +690,7 @@ class UserService {
                 throw new TwoFactorAuthenticationRequiredException();
         }
 
-        $loggedIn = $this->session->__getLoggedInUser();
+        $loggedIn = $this->session->__getLoggedInSecurable();
 
         // Check maximum number of tokens not reached
         $maxTokens = Configuration::readParameter("max.useraccess.tokens") ?? 5;

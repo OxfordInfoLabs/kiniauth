@@ -38,7 +38,7 @@ class AccountTemplatedEmail extends BrandedTemplatedEmail {
          */
         $securityService = Container::instance()->get(SecurityService::class);
 
-        $loggedInUserAndAccount = $securityService->getLoggedInUserAndAccount();
+        $loggedInUserAndAccount = $securityService->getLoggedInSecurableAndAccount();
         $account = null;
         if (isset($loggedInUserAndAccount[1]) && $loggedInUserAndAccount[1]->getAccountId() == $accountId) {
             $account = $loggedInUserAndAccount[1];

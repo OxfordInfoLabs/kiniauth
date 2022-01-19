@@ -21,7 +21,7 @@ class AccountRouteInterceptor extends WebRouteInterceptor {
      */
     public function beforeWebRoute($request, $loggedInUser, $loggedInAccount) {
 
-        if (!$loggedInUser)
+        if (!$loggedInUser instanceof User)
             throw new AccessDeniedException();
 
 

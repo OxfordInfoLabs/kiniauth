@@ -60,7 +60,7 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
      */
     public function beforeRoute($request) {
 
-        list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
+        list($user, $account) = $this->securityService->getLoggedInSecurableAndAccount();
 
         // Authenticate using referrer / origin to ensure we are allowed in.
         $this->authenticationService->updateActiveParentAccount($this->getReferrer($request));

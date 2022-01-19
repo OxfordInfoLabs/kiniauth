@@ -51,8 +51,8 @@ class AccountScopeAccess extends ScopeAccess {
         $superUser = false;
         $accountIds = array();
 
-
         if ($user) {
+
 
             /**
              * @var $role UserRole
@@ -87,6 +87,8 @@ class AccountScopeAccess extends ScopeAccess {
 
 
             }
+
+
         } else if ($account) {
             $scopePrivileges[$account->getAccountId()] = ["*"];
             $accountIds = [$account->getAccountId()];

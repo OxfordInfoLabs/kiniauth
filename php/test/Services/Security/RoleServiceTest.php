@@ -88,9 +88,9 @@ class RoleServiceTest extends TestBase {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
-        $userRole1 = new UserRole("EXAMPLE", 1, 4, 1, 2);
-        $userRole2 = new UserRole("EXAMPLE", 2, 5, 1, 2);
-        $userRole3 = new UserRole("EXAMPLE", 1, 4, 2, 3);
+        $userRole1 = new UserRole("EXAMPLE", 1, 5, 1, 2);
+        $userRole2 = new UserRole("EXAMPLE", 2, 6, 1, 2);
+        $userRole3 = new UserRole("EXAMPLE", 1, 5, 2, 3);
 
         $userRole1->save();
         $userRole2->save();
@@ -110,7 +110,7 @@ class RoleServiceTest extends TestBase {
 
         $this->assertEquals(2, sizeof($exampleUserRoles));
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 1, "EXAMPLE 1", [
-            new Role("EXAMPLE", "Example Role 1", "Example Role 1", ["testpriv"], 4),
+            new Role("EXAMPLE", "Example Role 1", "Example Role 1", ["testpriv"], 5),
         ]), $exampleUserRoles[0]);
 
 
@@ -135,32 +135,32 @@ class RoleServiceTest extends TestBase {
         $this->assertEquals(5, sizeof($scopeRoles));
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 1, "EXAMPLE 1",
             [
-                4 => Role::fetch(4),
-                5 => null
+                5 => null,
+                6 => Role::fetch(6),
             ]), $scopeRoles[0]);
 
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 2, "EXAMPLE 2",
             [
-                4 => Role::fetch(4),
-                5 => null
+                5 => null,
+                6 => Role::fetch(6),
             ]), $scopeRoles[1]);
 
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 3, "EXAMPLE 3",
             [
-                4 => Role::fetch(4),
-                5 => null
+                5 => null,
+                6 => Role::fetch(6),
             ]), $scopeRoles[2]);
 
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 4, "EXAMPLE 4",
             [
-                4 => Role::fetch(4),
-                5 => null
+                5 => null,
+                6 => Role::fetch(6),
             ]), $scopeRoles[3]);
 
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 5, "EXAMPLE 5",
             [
-                4 => Role::fetch(4),
-                5 => null
+                5 => null,
+                6 => Role::fetch(6),
             ]), $scopeRoles[4]);
 
     }

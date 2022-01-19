@@ -12,7 +12,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  *
  * @table ka_user
  */
-class UserSummary extends ActiveRecord {
+class UserSummary extends Securable {
 
 
     /**
@@ -54,8 +54,9 @@ class UserSummary extends ActiveRecord {
      */
     protected $emailAddress;
 
+
     /**
-     * An array of explicit user account role objects
+     * An array of explicit role objects
      *
      * @oneToMany
      * @childJoinColumns user_id
@@ -132,5 +133,25 @@ class UserSummary extends ActiveRecord {
         return $this->successfulLogins;
     }
 
+    /**
+     * @return UserRole[]
+     */
+    public function getRoles() {
+        return $this->roles;
+    }
+
+    /**
+     * @param UserRole[] $roles
+     */
+    public function setRoles($roles) {
+        $this->roles = $roles;
+    }
+
+    /**
+     * @return null
+     */
+    public function getActiveAccountId() {
+       return null;
+    }
 
 }

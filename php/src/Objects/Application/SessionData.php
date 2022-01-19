@@ -5,6 +5,8 @@ namespace Kiniauth\Objects\Application;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
+use Kiniauth\Objects\Security\APIKey;
+use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\User;
 use Kinikit\Core\Object\SerialisableObject;
 
@@ -22,6 +24,11 @@ class SessionData {
     private $user;
 
     /**
+     * @var APIKey
+     */
+    private $apiKey;
+
+    /**
      * @var AccountSummary
      */
     private $account;
@@ -31,11 +38,12 @@ class SessionData {
      * Get session data using user and account objects to seed the data.
      *
      * SessionData constructor.
-     * @param User $user
+     * @param Securable $securable
      * @param Account $account
      */
-    public function __construct($user = null, $account = null) {
-        $this->user = $user;
+    public function __construct($securable = null, $account = null) {
+        $this->user = $securable instanceof User ? $securable : null;
+        $this->apiKey = $securable instanceof APIKey ? $securable : null;
         $this->account = $account ? $account->generateSummary() : null;
     }
 
@@ -44,6 +52,14 @@ class SessionData {
      */
     public function getUser() {
         return $this->user;
+    }
+
+
+    /**
+     * @return APIKey
+     */
+    public function getApiKey() {
+        return $this->apiKey;
     }
 
     /**

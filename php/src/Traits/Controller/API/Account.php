@@ -28,7 +28,7 @@ trait Account {
      * @return \Kiniauth\Objects\Account\AccountSummary
      */
     public function getAccount() {
-        list($user, $account) = $this->securityService->getLoggedInUserAndAccount();
+        list($user, $account) = $this->securityService->getLoggedInSecurableAndAccount();
         return $account->generateSummary();
     }
 

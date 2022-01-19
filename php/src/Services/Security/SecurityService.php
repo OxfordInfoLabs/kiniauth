@@ -10,8 +10,10 @@ use Kiniauth\Exception\Security\MissingScopeObjectIdForPrivilegeException;
 use Kiniauth\Exception\Security\NonExistentPrivilegeException;
 use Kiniauth\Exception\Security\UserSuspendedException;
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Security\APIKey;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
+use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\Session;
 use Kinikit\Core\Binding\ObjectBinder;
@@ -99,55 +101,54 @@ class SecurityService {
      * Login as either a user or an account.  This should usually be called from
      * an Authentication service.  It sets up the session variables required to maintain state.
      *
-     * @param User $user
+     * @param Securable $securable
      * @param Account $account
      * @throws AccountSuspendedException
      * @throws InvalidLoginException
      * @throws UserSuspendedException
      */
-    public function login($user = null, $account = null, $userAccessTokenHash = null) {
+    public function login($securable = null, $account = null, $userAccessTokenHash = null) {
 
         $this->logout();
 
-
         $accountId = null;
 
-        if ($user) {
+        if ($securable) {
 
             // Throw suspended exception if user is suspended.
-            if ($user->getStatus() == User::STATUS_SUSPENDED) {
+            if ($securable->getStatus() == User::STATUS_SUSPENDED) {
                 throw new UserSuspendedException();
             }
 
             // Throw invalid login if still pending.
-            if ($user->getStatus() == User::STATUS_PENDING || $user->getStatus() == User::STATUS_LOCKED) {
+            if ($securable->getStatus() == User::STATUS_PENDING || $securable->getStatus() == User::STATUS_LOCKED) {
                 throw new InvalidLoginException();
             }
 
 
-            $accountId = $user->getActiveAccountId();
+            $accountId = $securable->getActiveAccountId();
 
-            if (!$accountId && $user->getAccountIds()) {
+            if (!$accountId && $securable->getAccountIds()) {
                 throw new AccountSuspendedException();
             }
 
             // Regenerate the session to avoid session fixation
             $this->session->regenerate();
 
-            $this->session->__setLoggedInUser($user);
+            $this->session->__setLoggedInSecurable($securable);
 
             if ($userAccessTokenHash) {
                 $this->session->__setLoggedInUserAccessTokenHash($userAccessTokenHash);
-            } else {
+            } else if ($securable instanceof User) {
+
                 // If regular interactive login, record this as a logged in session
                 // And update successful logins.
-                $this->userSessionService->registerNewAuthenticatedSession($user->getId());
+                $this->userSessionService->registerNewAuthenticatedSession($securable->getId());
 
                 // Update the user and re-store in session to prevent inconsistencies.
-                $user->setSuccessfulLogins($user->getSuccessfulLogins() + 1);
-                $this->session->__setLoggedInUser($user);
-                $user->save();
-
+                $securable->setSuccessfulLogins($securable->getSuccessfulLogins() + 1);
+                $this->session->__setLoggedInSecurable($securable);
+                $securable->save();
 
             }
 
@@ -175,12 +176,12 @@ class SecurityService {
          */
         $privileges = array();
 
-
         // Add account scope access
         $accountPrivileges = null;
         foreach ($this->scopeManager->getScopeAccesses() as $scopeAccess) {
 
-            $scopePrivileges = $scopeAccess->generateScopePrivileges($user, $account, $accountPrivileges);
+            $scopePrivileges = $scopeAccess->generateScopePrivileges($securable, $account, $accountPrivileges);
+
             $privileges[$scopeAccess->getScope()] = $scopePrivileges;
             if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT) $accountPrivileges = $scopePrivileges;
         }
@@ -198,7 +199,7 @@ class SecurityService {
     public function logout() {
 
         // Clean down the session to remove any previously logged in state
-        $this->session->__setLoggedInUser(null);
+        $this->session->__setLoggedInSecurable(null);
         $this->session->__setLoggedInAccount(null);
         $this->session->__setLoggedInPrivileges(null);
         $this->session->__setLoggedInUserAccessTokenHash(null);
@@ -215,8 +216,8 @@ class SecurityService {
      *
      * @return array
      */
-    public function getLoggedInUserAndAccount() {
-        return array($this->session->__getLoggedInUser(), $this->session->__getLoggedInAccount());
+    public function getLoggedInSecurableAndAccount() {
+        return array($this->session->__getLoggedInSecurable(), $this->session->__getLoggedInAccount());
     }
 
 
@@ -271,15 +272,15 @@ class SecurityService {
 
 
         // Shortcut if we are the logged in user
-        $loggedInUser = $this->session->__getLoggedInUser();
+        $loggedInSecurable = $this->session->__getLoggedInSecurable();
         $loggedInAccount = $this->session->__getLoggedInAccount();
 
 
         // Handle user as a special case
         if ($object instanceof User) {
 
-            if ($loggedInUser) {
-                if ($loggedInUser->getId() == $object->getId())
+            if ($loggedInSecurable) {
+                if ($loggedInSecurable->getId() == $object->getId())
                     return true;
 
                 // Otherwise check to see whether we have any roles for this account
@@ -308,7 +309,7 @@ class SecurityService {
                     // objects become read only, other objects are fine as they are downstream and controlled separately
                     if ($scopeId === null) {
                         if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT)
-                            $access = $access && ($accessMode == self::ACCESS_READ && ($loggedInUser || $loggedInAccount));
+                            $access = $access && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
                     } else {
                         $access = $access && $this->getLoggedInScopePrivileges($scopeAccess->getScope(),
                                 $scopeId);
@@ -344,9 +345,9 @@ class SecurityService {
         }
 
         // Return straight away if not logged in.
-        $loggedInUser = $this->session->__getLoggedInUser();
+        $loggedInSecurable = $this->session->__getLoggedInSecurable();
         $loggedInAccount = $this->session->__getLoggedInAccount();
-        if ($loggedInUser == null && $loggedInAccount == null) return false;
+        if ($loggedInSecurable == null && $loggedInAccount == null) return false;
 
 
         // Resolve missing ids.
@@ -357,7 +358,7 @@ class SecurityService {
                 throw new MissingScopeObjectIdForPrivilegeException($privilegeKey);
             } else {
                 // Fall back to logged in user / account
-                if ($loggedInUser) $scopeId = $loggedInUser->getActiveAccountId();
+                if ($loggedInSecurable) $scopeId = $loggedInSecurable->getActiveAccountId();
                 else if ($loggedInAccount) $scopeId = $loggedInAccount->getAccountId();
             }
         }
@@ -402,7 +403,7 @@ class SecurityService {
      * @return int
      */
     public function getParentAccountId($accountId = null, $userId = null) {
-        $loggedInUserAndAccount = $this->getLoggedInUserAndAccount();
+        $loggedInUserAndAccount = $this->getLoggedInSecurableAndAccount();
         if ($accountId) {
             if (!isset($loggedInUserAndAccount[1]) || $loggedInUserAndAccount[1]->getAccountId() != $accountId) {
                 return $this->databaseConnection->query("SELECT parent_account_id FROM ka_account WHERE account_id = ?", $accountId)->fetchAll()[0]["parent_account_id"] ?? 0;
@@ -430,11 +431,11 @@ class SecurityService {
      * Reload logged in user and account.  Useful after any live changes have been made to accounts etc.
      */
     public function reloadLoggedInObjects() {
-        list($user, $account) = $this->getLoggedInUserAndAccount();
-        if ($user) {
-            $newUser = User::fetch($user->getId());
-            $this->session->__setLoggedInUser($newUser);
-            $this->session->__setLoggedInAccount(Account::fetch($newUser->getActiveAccountId()));
+        list($securable, $account) = $this->getLoggedInSecurableAndAccount();
+        if ($securable) {
+            $newSecurable = $securable instanceof User ? User::fetch($securable->getId()) : APIKey::fetch($securable->getId());
+            $this->session->__setLoggedInSecurable($newSecurable);
+            $this->session->__setLoggedInAccount(Account::fetch($newSecurable->getActiveAccountId()));
         } else if ($account) {
             $this->session->__setLoggedInAccount(Account::fetch($account->getAccountId()));
         }

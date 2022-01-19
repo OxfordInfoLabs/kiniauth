@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Application;
 
 use Kiniauth\Objects\Account\Account;
 
+use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\User;
 use Kinikit\Core\Util\StringUtils;
 
@@ -35,22 +36,22 @@ class Session implements \Kinikit\MVC\Session\Session {
     }
 
     /**
-     * Get the logged in user
+     * Get the logged in securable
      *
-     * @return User
+     * @return Securable
      */
-    public function __getLoggedInUser() {
-        return $this->getValue("loggedInUser");
+    public function __getLoggedInSecurable() {
+        return $this->getValue("loggedInSecurable");
     }
 
 
     /**
-     * Set the logged in user
+     * Set the logged in securable
      *
-     * @param $user User
+     * @param $securable Securable
      */
-    public function __setLoggedInUser($user) {
-        $this->setValue("loggedInUser", $user);
+    public function __setLoggedInSecurable($securable) {
+        $this->setValue("loggedInSecurable", $securable);
     }
 
 

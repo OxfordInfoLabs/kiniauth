@@ -1,0 +1,13 @@
+[
+  {
+    "accountId": 2,
+    "apiKey": "GLOBALACCOUNTAPIKEY",
+    "apiSecret": "GLOBALACCOUNTAPISECRET"
+  },
+  {
+    "accountId": 2,
+    "projectKey": "soapSuds",
+    "apiKey": "PROJECTSPECIFICKEY",
+    "apiSecret": "PROJECTSPECIFICSECRET"
+  }
+]
