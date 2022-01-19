@@ -5,6 +5,7 @@ import {BehaviorSubject} from 'rxjs/internal/BehaviorSubject';
 import * as _ from 'lodash';
 import * as sha512 from 'js-sha512' ;
 import {HttpHeaders} from '@angular/common/http';
+import {map} from "rxjs/operators";
 
 @Injectable({
     providedIn: 'root'
@@ -71,6 +72,37 @@ export class AuthenticationService {
                 });
             }
         });
+    }
+
+    public isAdminNow() {
+        const session = this.sessionData.getValue();
+        if (session && session.privileges) {
+            const accountId = session.account ? session.account.accountId : null;
+            const privileges = session.privileges.ACCOUNT;
+
+            if (privileges['*']) {
+                return true;
+            }
+
+            return privileges[accountId] ? privileges[accountId].indexOf('*') > -1 : false;
+        }
+        return false;
+    }
+
+    public isAdmin() {
+        return this.sessionData.pipe(map(session => {
+            if (session && session.privileges) {
+                const accountId = session.account ? session.account.accountId : null;
+                const privileges = session.privileges.ACCOUNT;
+
+                if (privileges['*']) {
+                    return true;
+                }
+
+                return privileges[accountId] ? privileges[accountId].indexOf('*') > -1 : false;
+            }
+            return false;
+        }));
     }
 
     public closeActiveSession() {
