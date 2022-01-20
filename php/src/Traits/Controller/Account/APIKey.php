@@ -18,7 +18,7 @@ trait APIKey {
      * Construct with API Key service
      *
      * APIKey constructor.
-     * @param $apiKeyService
+     * @param APIKeyService $apiKeyService
      */
     public function __construct($apiKeyService) {
         $this->apiKeyService = $apiKeyService;
@@ -59,8 +59,8 @@ trait APIKey {
      *
      * @http PUT /$id
      *
-     * @param string $id
-     * @param string $description
+     * @param $id
+     * @param $description
      */
     public function updateAPIKey($id, $description) {
         $this->apiKeyService->updateAPIKeyDescription($id, $description);
