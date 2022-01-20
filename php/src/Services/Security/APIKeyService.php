@@ -58,22 +58,26 @@ class APIKeyService {
      * Regenerate an existing API key
      *
      * @param $apiKeyId
+     * @return APIKeySummary
      */
     public function regenerateAPIKey($apiKeyId) {
         $key = APIKey::fetch($apiKeyId);
         $key->regenerate();
         $key->save();
+        return new APIKeySummary($key->getId(), $key->getAPIKey(), $key->getAPISecret(), $key->getDescription(), $key->getStatus());
     }
 
     /**
      * Suspend an existing API key
      *
      * @param $apiKeyId
+     * @return APIKeySummary
      */
     public function suspendAPIKey($apiKeyId) {
         $key = APIKey::fetch($apiKeyId);
         $key->setStatus(User::STATUS_SUSPENDED);
         $key->save();
+        return new APIKeySummary($key->getId(), $key->getAPIKey(), $key->getAPISecret(), $key->getDescription(), $key->getStatus());
     }
 
 
@@ -81,11 +85,13 @@ class APIKeyService {
      * Reactivate an existing suspended API key
      *
      * @param $apiKeyId
+     * @return APIKeySummary
      */
     public function reactivateAPIKey($apiKeyId) {
         $key = APIKey::fetch($apiKeyId);
         $key->setStatus(User::STATUS_ACTIVE);
         $key->save();
+        return new APIKeySummary($key->getId(), $key->getAPIKey(), $key->getAPISecret(), $key->getDescription(), $key->getStatus());
     }
 
 
