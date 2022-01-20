@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Security\RouteInterceptor;
 
 
 use Kiniauth\Exception\Security\MissingAPICredentialsException;
+use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
 use Kinikit\MVC\Routing\RouteInterceptor;
@@ -47,7 +48,7 @@ class APIRouteInterceptor extends RouteInterceptor {
 
         list($securable, $account) = $this->securityService->getLoggedInSecurableAndAccount();
 
-        if (!$securable || $securable->getApiKey() != $apiKey || $securable->getApiSecret() != $apiSecret) {
+        if (!$securable || $securable instanceof User || $securable->getApiKey() != $apiKey || $securable->getApiSecret() != $apiSecret) {
             $this->authenticationService->apiAuthenticate($apiKey, $apiSecret);
         }
 
