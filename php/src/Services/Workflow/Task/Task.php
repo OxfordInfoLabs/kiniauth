@@ -5,7 +5,7 @@ namespace Kiniauth\Services\Workflow\Task;
 /**
  * Queued task
  *
- * Interface QueuedTask
+ * Interface Task
  */
 interface Task {
 
