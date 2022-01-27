@@ -12,6 +12,7 @@ use Kiniauth\Traits\Account\AccountProject;
  *
  * @table ka_category
  * @generate
+ * @interceptor \Kiniauth\Objects\MetaData\CategoryInterceptor
  */
 class Category extends CategorySummary {
 
@@ -55,6 +56,10 @@ class Category extends CategorySummary {
     protected $parentProjectkey;
 
 
+
+
+
+
     /**
      * Category constructor.
      *
@@ -65,7 +70,7 @@ class Category extends CategorySummary {
      */
     public function __construct($categorySummary = null, $accountId = null, $projectKey = null, $parentCategory = null) {
         if ($categorySummary instanceof CategorySummary) {
-            parent::__construct($categorySummary->getTag(), $categorySummary->getDescription(), $categorySummary->getKey());
+            parent::__construct($categorySummary->getCategory(), $categorySummary->getDescription(), $categorySummary->getKey());
         }
         $this->accountId = $accountId;
         $this->projectKey = $projectKey;

@@ -4,6 +4,9 @@
 namespace Kiniauth\Services\MetaData;
 
 
+use Kiniauth\Objects\MetaData\Category;
+use Kiniauth\Objects\MetaData\CategorySummary;
+use Kiniauth\Objects\MetaData\ObjectCategory;
 use Kiniauth\Objects\MetaData\ObjectTag;
 use Kiniauth\Objects\MetaData\Tag;
 use Kiniauth\Objects\MetaData\TagSummary;
@@ -279,5 +282,291 @@ class MetaDataServiceTest extends TestBase {
         $this->assertEquals("pressureWashing", $fullTags[2]->getTag()->getProjectKey());
 
     }
+
+
+    public function testCanFilterAllGlobalCategoriesWhereNoAccountOrProjectSupplied() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        // Get global tags
+        $globalCategories = $this->service->filterAvailableCategories("", null, 0, 10, null);
+
+        $this->assertEquals([
+            new CategorySummary("Global", "A truly global category available to whole system", "global")
+        ], $globalCategories);
+
+
+    }
+
+    public function testCanGetFilterCategoriesIncludingGlobalOnesWhenAccountSupplied() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        // Get global tags
+        $globalCategories = $this->service->filterAvailableCategories("", null, 0, 10, 1);
+
+        $this->assertEquals([
+            new CategorySummary("Account1", "An account wide category available to account 1", "account1"),
+            new CategorySummary("Global", "A truly global category available to whole system", "global"),
+
+        ], $globalCategories);
+
+        // Check one with a title filter applied
+        // Get global tags
+        $globalCategories = $this->service->filterAvailableCategories("lob", null, 0, 10, 1);
+
+        $this->assertEquals([
+            new CategorySummary("Global", "A truly global category available to whole system", "global"),
+
+        ], $globalCategories);
+
+
+    }
+
+    public function testCanFilterAllCategoriesIncludingProjectOnesWhenProjectNumberSupplied() {
+
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
+
+        // Get global tags
+        $categories = $this->service->filterAvailableCategories("", "soapSuds", 0, 10, 2);
+
+        $this->assertEquals([
+            new CategorySummary("Account2", "An account wide category available to account 2", "account2"),
+            new CategorySummary("Global", "A truly global category available to whole system", "global"),
+            new CategorySummary("Project", "A project level category available to just one project", "project")],
+            $categories);
+
+
+        // Check one with a title filter applied
+        $categories = $this->service->filterAvailableCategories("t", "soapSuds", 0, 10, 2);
+
+        $this->assertEquals([
+            new CategorySummary("Account2", "An account wide category available to account 2", "account2"),
+            new CategorySummary("Project", "A project level category available to just one project", "project")],
+            $categories);
+
+        // Limit
+        $categories = $this->service->filterAvailableCategories("", "soapSuds", 0, 2, 2);
+
+        $this->assertEquals([
+            new CategorySummary("Account2", "An account wide category available to account 2", "account2"),
+            new CategorySummary("Global", "A truly global category available to whole system", "global")],
+            $categories);
+
+        // Offset
+        $categories = $this->service->filterAvailableCategories("", "soapSuds", 1, 10, 2);
+
+        $this->assertEquals([
+            new CategorySummary("Global", "A truly global category available to whole system", "global"),
+            new CategorySummary("Project", "A project level category available to just one project", "project")],
+            $categories);
+
+
+    }
+
+
+    public function testCanCreateTopLevelCategoriesIfSuperUser() {
+
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
+
+        try {
+            $categorySummary = new CategorySummary("Peanut Butter", "Peanut Butter Tag");
+            $this->service->saveCategory($categorySummary, null, null);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            $this->assertTrue(true);
+        }
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $categorySummary = new CategorySummary("Peanut Butter", "Peanut Butter Tag");
+        $key = $this->service->saveCategory($categorySummary);
+        $this->assertEquals("peanutButter", $key);
+
+        // Get global categorys
+        $globalTags = $this->service->filterAvailableCategories("", null, 0, 10, null);
+
+        $this->assertEquals([
+            new CategorySummary("Global", "A truly global category available to whole system", "global"),
+            new CategorySummary("Peanut Butter", "Peanut Butter Tag", "peanutButter")
+        ], $globalTags);
+
+
+        // Check duplicate one
+        $categorySummary = new CategorySummary("Peanut Butter", "Peanut Butter Tag");
+        $key = $this->service->saveCategory($categorySummary);
+        $this->assertEquals("peanutButter2", $key);
+    }
+
+
+    public function testCanCreateCategoriesAtAccountLevel() {
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $categorySummary = new CategorySummary("Account Category", "Account Category");
+        $key = $this->service->saveCategory($categorySummary, null, 1);
+        $this->assertEquals("accountCategory", $key);
+
+        $accountCategorys = $this->service->filterAvailableCategories("", null, 0, 10, 1);
+        $this->assertEquals(new CategorySummary("Account Category", "Account Category", "accountCategory"), $accountCategorys[0]);
+
+        // Check duplicate one
+        $categorySummary = new CategorySummary("Account Category", "Account Category");
+        $key = $this->service->saveCategory($categorySummary, null, 1);
+        $this->assertEquals("accountCategory2", $key);
+
+    }
+
+    public function testCanCreateCategoriesAtProjectLevel() {
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
+
+        $categorySummary = new CategorySummary("Project Category", "Project Category");
+        $key = $this->service->saveCategory($categorySummary, "wiperBlades", 2);
+        $this->assertEquals("projectCategory", $key);
+
+        $projectCategorys = $this->service->filterAvailableCategories("", "wiperBlades", 0, 10, 2);
+        $this->assertEquals(new CategorySummary("Project Category", "Project Category", "projectCategory"), array_pop($projectCategorys));
+
+
+        // Check duplicate one
+        $categorySummary = new CategorySummary("Project Category", "Project Category");
+        $key = $this->service->saveCategory($categorySummary, "wiperBlades", 2);
+        $this->assertEquals("projectCategory2", $key);
+
+        // Check different project same category name
+        $categorySummary = new CategorySummary("Project Category", "Project Category");
+        $key = $this->service->saveCategory($categorySummary, "pressureWashing", 2);
+        $this->assertEquals("projectCategory", $key);
+    }
+
+
+    public function testCanRemoveCategoriesAtSpecifiedScope() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $categorySummary = new CategorySummary("Top Level");
+        $this->service->saveCategory($categorySummary);
+
+        $categorySummary = new CategorySummary("Shared Account");
+        $this->service->saveCategory($categorySummary, null, 1);
+
+        $categorySummary = new CategorySummary("Shared Account");
+        $this->service->saveCategory($categorySummary, null, 2);
+
+        $categorySummary = new CategorySummary("Shared Project");
+        $this->service->saveCategory($categorySummary, "wiperBlades", 2);
+
+        $categorySummary = new CategorySummary("Shared Project");
+        $this->service->saveCategory($categorySummary, "pressureWashing", 2);
+
+        // Check removal of top level category
+        $this->assertEquals(1, sizeof(Category::filter("WHERE key = 'topLevel'")));
+        $this->service->removeCategory("topLevel");
+        $this->assertEquals(0, sizeof(Category::filter("WHERE key = 'topLevel'")));
+
+        // Check removal of account level category
+        $this->assertEquals(2, sizeof(Category::filter("WHERE key = 'sharedAccount'")));
+        $this->service->removeCategory("sharedAccount", null, 1);
+        $this->assertEquals(1, sizeof(Category::filter("WHERE key = 'sharedAccount'")));
+        $this->service->removeCategory("sharedAccount", null, 2);
+        $this->assertEquals(0, sizeof(Category::filter("WHERE key = 'sharedAccount'")));
+
+        // Check removal of project level category
+        $this->assertEquals(2, sizeof(Category::filter("WHERE key = 'sharedProject'")));
+        $this->service->removeCategory("sharedProject", "wiperBlades", 2);
+        $this->assertEquals(1, sizeof(Category::filter("WHERE key = 'sharedProject'")));
+        $this->service->removeCategory("sharedProject", "pressureWashing", 2);
+        $this->assertEquals(0, sizeof(Category::filter("WHERE key = 'sharedProject'")));
+
+    }
+
+
+    public function testCanGetObjectCategoriesFromSummariesForContext() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $categorySummary = new CategorySummary("Top Level");
+        $this->service->saveCategory($categorySummary);
+
+        $categorySummary = new CategorySummary("Shared Account", "Belongs to account 1");
+        $this->service->saveCategory($categorySummary, null, 1);
+
+        $categorySummary = new CategorySummary("Shared Account", "Belongs to account 2");
+        $this->service->saveCategory($categorySummary, null, 2);
+
+        $categorySummary = new CategorySummary("Shared Project", "Belongs to wiperBlades");
+        $this->service->saveCategory($categorySummary, "wiperBlades", 2);
+
+        $categorySummary = new CategorySummary("Shared Project", "Belongs to pressureWashing");
+        $this->service->saveCategory($categorySummary, "pressureWashing", 2);
+
+
+        $fullCategories = $this->service->getObjectCategoriesFromSummaries([
+            new CategorySummary("topLevel", "", "topLevel"),
+            new CategorySummary("sharedAccount", "", "sharedAccount"),
+            new CategorySummary("sharedProject", "", "sharedProject")
+        ], 2, "wiperBlades");
+
+        $this->assertEquals(3, sizeof($fullCategories));
+        $this->assertInstanceOf(ObjectCategory::class, $fullCategories[0]);
+        $this->assertEquals("topLevel", $fullCategories[0]->getCategory()->getKey());
+        $this->assertInstanceOf(ObjectCategory::class, $fullCategories[1]);
+        $this->assertEquals("sharedAccount", $fullCategories[1]->getCategory()->getKey());
+        $this->assertEquals(2, $fullCategories[1]->getCategory()->getAccountId());
+        $this->assertInstanceOf(ObjectCategory::class, $fullCategories[2]);
+        $this->assertEquals("sharedProject", $fullCategories[2]->getCategory()->getKey());
+        $this->assertEquals(2, $fullCategories[2]->getCategory()->getAccountId());
+        $this->assertEquals("wiperBlades", $fullCategories[2]->getCategory()->getProjectKey());
+
+
+        $fullCategories = $this->service->getObjectCategoriesFromSummaries([
+            new CategorySummary("topLevel", "", "topLevel"),
+            new CategorySummary("sharedAccount", "", "sharedAccount"),
+            new CategorySummary("sharedProject", "", "sharedProject")
+        ], 2, "pressureWashing");
+
+        $this->assertEquals(3, sizeof($fullCategories));
+        $this->assertInstanceOf(ObjectCategory::class, $fullCategories[0]);
+        $this->assertEquals("topLevel", $fullCategories[0]->getCategory()->getKey());
+        $this->assertInstanceOf(ObjectCategory::class, $fullCategories[1]);
+        $this->assertEquals("sharedAccount", $fullCategories[1]->getCategory()->getKey());
+        $this->assertEquals(2, $fullCategories[1]->getCategory()->getAccountId());
+        $this->assertInstanceOf(ObjectCategory::class, $fullCategories[2]);
+        $this->assertEquals("sharedProject", $fullCategories[2]->getCategory()->getKey());
+        $this->assertEquals(2, $fullCategories[2]->getCategory()->getAccountId());
+        $this->assertEquals("pressureWashing", $fullCategories[2]->getCategory()->getProjectKey());
+
+    }
+
+    public function testCanGetMultipleCategoriesByKeyForAccountAndProject() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $this->assertEquals([
+            new CategorySummary("Shared Account", "Belongs to account 1", "sharedAccount"),
+            new CategorySummary("Top Level", "", "topLevel"),
+        ], $this->service->getMultipleCategoriesByKey([
+            "topLevel",
+            "sharedAccount"
+        ], null, 1));
+
+
+        $this->assertEquals([
+            new CategorySummary("Shared Account", "Belongs to account 2", "sharedAccount"),
+            new CategorySummary("Top Level", "", "topLevel"),
+        ], $this->service->getMultipleCategoriesByKey([
+            "topLevel",
+            "sharedAccount"
+        ], null, 2));
+
+
+
+        $this->assertEquals([
+            new CategorySummary("Shared Project", "Belongs to wiperBlades", "sharedProject"),
+        ], $this->service->getMultipleCategoriesByKey([
+            "sharedProject",
+        ], "wiperBlades", 2));
+
+    }
+
 
 }

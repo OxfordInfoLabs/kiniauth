@@ -8,6 +8,7 @@ use Kiniauth\Exception\Security\MissingAPICredentialsException;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\MVC\Routing\RouteInterceptor;
 
 class APIRouteInterceptor extends RouteInterceptor {

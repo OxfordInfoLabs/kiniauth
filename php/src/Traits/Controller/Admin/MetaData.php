@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Kiniauth\Traits\Controller\Account;
+namespace Kiniauth\Traits\Controller\Admin;
 
 
 use Kiniauth\Objects\MetaData\CategorySummary;
@@ -34,11 +34,12 @@ trait MetaData {
      * @param string $projectKey
      * @param int $offset
      * @param int $limit
+     * @param int $accountId
      *
      * @return \Kiniauth\Objects\MetaData\TagSummary[]
      */
-    public function filterAvailableTags($filterString = "", $projectKey = null, $offset = 0, $limit = 10) {
-        return $this->metaDataService->filterAvailableTags($filterString, $projectKey, $offset, $limit);
+    public function filterAvailableTags($filterString = "", $projectKey = null, $offset = 0, $limit = 10, $accountId = 0) {
+        return $this->metaDataService->filterAvailableTags($filterString, $projectKey, $offset, $limit, $accountId);
     }
 
 
@@ -49,9 +50,10 @@ trait MetaData {
      *
      * @param TagSummary $tagSummary
      * @param string $projectKey
+     * @param int $accountId
      */
-    public function saveTag($tagSummary, $projectKey = null) {
-        $this->metaDataService->saveTag($tagSummary, $projectKey);
+    public function saveTag($tagSummary, $projectKey = null, $accountId = 0) {
+        $this->metaDataService->saveTag($tagSummary, $projectKey, $accountId);
     }
 
 
@@ -62,11 +64,12 @@ trait MetaData {
      *
      * @param string $key
      * @param string $projectKey
+     * @param integer $accountId
      *
      * @throws \Kinikit\Persistence\ORM\Exception\ObjectNotFoundException
      */
-    public function removeTag($key, $projectKey = null) {
-        $this->metaDataService->removeTag($key, $projectKey = null);
+    public function removeTag($key, $projectKey = null, $accountId = 0) {
+        $this->metaDataService->removeTag($key, $projectKey = null, $accountId);
     }
 
 
@@ -79,11 +82,12 @@ trait MetaData {
      * @param string $projectKey
      * @param int $offset
      * @param int $limit
+     * @param int $accountId
      *
      * @return \Kiniauth\Objects\MetaData\CategorySummary[]
      */
-    public function filterAvailableCategories($filterString = "", $projectKey = null, $offset = 0, $limit = 10) {
-        return $this->metaDataService->filterAvailableCategories($filterString, $projectKey, $offset, $limit);
+    public function filterAvailableCategories($filterString = "", $projectKey = null, $offset = 0, $limit = 10, $accountId = 0) {
+        return $this->metaDataService->filterAvailableCategories($filterString, $projectKey, $offset, $limit, $accountId);
     }
 
 
@@ -94,9 +98,10 @@ trait MetaData {
      *
      * @param CategorySummary $categorySummary
      * @param string $projectKey
+     * @param int $accountId
      */
-    public function saveCategory($categorySummary, $projectKey = null) {
-        $this->metaDataService->saveCategory($categorySummary, $projectKey);
+    public function saveCategory($categorySummary, $projectKey = null, $accountId = null) {
+        $this->metaDataService->saveCategory($categorySummary, $projectKey, $accountId);
     }
 
 
@@ -107,11 +112,12 @@ trait MetaData {
      *
      * @param string $key
      * @param string $projectKey
+     * @param integer $accountId
      *
      * @throws \Kinikit\Persistence\ORM\Exception\ObjectNotFoundException
      */
-    public function removeCategory($key, $projectKey = null) {
-        $this->metaDataService->removeCategory($key, $projectKey = null);
+    public function removeCategory($key, $projectKey = null, $accountId = null) {
+        $this->metaDataService->removeCategory($key, $projectKey = null, $accountId = null);
     }
 
 

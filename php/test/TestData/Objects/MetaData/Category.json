@@ -1,7 +1,26 @@
 [
   {
-    "key": "alert",
-    "category": "Alert",
-    "description": "Alert category"
+    "key": "global",
+    "category": "Global",
+    "description": "A truly global category available to whole system"
+  },
+  {
+    "key": "account1",
+    "accountId": 1,
+    "category": "Account1",
+    "description": "An account wide category available to account 1"
+  },
+  {
+    "key": "account2",
+    "accountId": 2,
+    "category": "Account2",
+    "description": "An account wide category available to account 2"
+  },
+  {
+    "key": "project",
+    "accountId": 2,
+    "projectKey": "soapSuds",
+    "category": "Project",
+    "description": "A project level category available to just one project"
   }
 ]
