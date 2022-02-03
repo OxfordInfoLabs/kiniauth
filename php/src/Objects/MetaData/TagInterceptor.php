@@ -43,7 +43,8 @@ class TagInterceptor extends DefaultORMInterceptor {
             $index = 1;
             do {
 
-                $clause = "key = ?";
+                $keyColumn = $this->databaseConnection->escapeColumn("key");
+                $clause = "$keyColumn = ?";
                 $params = [$proposedKey];
 
                 if ($object->getAccountId()) {
