@@ -17,7 +17,6 @@ export class UserRolesComponent implements OnInit {
     public Object = Object;
     public editDetails = false;
     public loggedInUser: any;
-    public userId: number;
 
     public editRoles = false;
     public scopeEdit = null;
@@ -30,12 +29,10 @@ export class UserRolesComponent implements OnInit {
 
     ngOnInit() {
         this.route.params.subscribe(params => {
-            this.authService.getLoggedInUser().then(user => {
-                this.loggedInUser = user;
-                this.loadRoles(params.userId);
-                this.userId = params.userId;
-            });
+            this.loadUser();
         });
+
+        this.loadUser();
     }
 
     public roleDisplayString(scope) {
@@ -62,7 +59,7 @@ export class UserRolesComponent implements OnInit {
     }
 
     public closeEditDetails() {
-        this.loadRoles(this.userId);
+        this.loadUser();
         this.editDetails = false;
     }
 
@@ -80,6 +77,13 @@ export class UserRolesComponent implements OnInit {
         });
         this.userService.getAllUserAccountRoles(userId).then(roles => {
             this.userRoles = roles;
+        });
+    }
+
+    private loadUser() {
+        this.authService.getLoggedInUser().then(user => {
+            this.loggedInUser = user;
+            this.loadRoles(user.id);
         });
     }
 }
