@@ -183,6 +183,9 @@ class MetaDataService {
      */
     public function getMultipleCategoriesByKey($keys, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
+        if (sizeof($keys) == 0)
+            return [];
+        
         $clauses = ["key IN (?" . str_repeat(",?", sizeof($keys) - 1) . ")"];
         $params = $keys;
 
