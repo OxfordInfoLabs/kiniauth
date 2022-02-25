@@ -74,7 +74,7 @@ class MetaDataService {
     public function saveTag($tagSummary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
         // Create new tag
-        $tag = new Tag($tagSummary, $accountId, $projectKey);
+        $tag = new Tag($tagSummary, $accountId, $projectKey ? $projectKey : null);
         $tag->save();
         return $tag->getKey();
 
@@ -135,7 +135,7 @@ class MetaDataService {
         }
 
         if ($accountId) {
-            $clauses[] = "(accountId = ? OR accountId IS NULL)";
+            $clauses[] = "(accountId = ?)";
             $params[] = $accountId;
         } else {
             $clauses[] = "(accountId IS NULL)";
@@ -185,12 +185,12 @@ class MetaDataService {
 
         if (sizeof($keys) == 0)
             return [];
-        
+
         $clauses = ["key IN (?" . str_repeat(",?", sizeof($keys) - 1) . ")"];
         $params = $keys;
 
         if ($accountId) {
-            $clauses[] = "(accountId = ? OR accountId IS NULL)";
+            $clauses[] = "(accountId = ?)";
             $params[] = $accountId;
         } else {
             $clauses[] = "(accountId IS NULL)";
@@ -251,7 +251,7 @@ class MetaDataService {
     public function saveCategory($categorySummary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
         // Create new tag
-        $category = new Category($categorySummary, $accountId, $projectKey);
+        $category = new Category($categorySummary, $accountId, $projectKey ? $projectKey : null);
         $category->save();
         return $category->getKey();
 
@@ -312,7 +312,7 @@ class MetaDataService {
         }
 
         if ($accountId) {
-            $clauses[] = "(accountId = ? OR accountId IS NULL)";
+            $clauses[] = "(accountId = ?)";
             $params[] = $accountId;
         } else {
             $clauses[] = "(accountId IS NULL)";

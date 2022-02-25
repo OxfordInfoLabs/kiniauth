@@ -44,7 +44,7 @@ class MetaDataServiceTest extends TestBase {
 
     }
 
-    public function testCanGetFilterTagsIncludingGlobalOnesWhenAccountSupplied() {
+    public function testFilterTagsLimitsToAccountWhenAccountSupplied() {
 
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
@@ -52,19 +52,10 @@ class MetaDataServiceTest extends TestBase {
         $globalTags = $this->service->filterAvailableTags("", null, 0, 10, 1);
 
         $this->assertEquals([
-            new TagSummary("Account1", "An account wide tag available to account 1", "account1"),
-            new TagSummary("Global", "A truly global tag available to whole system", "global"),
-
+            new TagSummary("Account1", "An account wide tag available to account 1", "account1")
         ], $globalTags);
 
-        // Check one with a title filter applied
-        // Get global tags
-        $globalTags = $this->service->filterAvailableTags("lob", null, 0, 10, 1);
 
-        $this->assertEquals([
-            new TagSummary("Global", "A truly global tag available to whole system", "global"),
-
-        ], $globalTags);
 
 
     }
@@ -78,7 +69,6 @@ class MetaDataServiceTest extends TestBase {
 
         $this->assertEquals([
             new TagSummary("Account2", "An account wide tag available to account 2", "account2"),
-            new TagSummary("Global", "A truly global tag available to whole system", "global"),
             new TagSummary("Project", "A project level tag available to just one project", "project")],
             $tags);
 
@@ -92,18 +82,17 @@ class MetaDataServiceTest extends TestBase {
             $tags);
 
         // Limit
-        $tags = $this->service->filterAvailableTags("", "soapSuds", 0, 2, 2);
+        $tags = $this->service->filterAvailableTags("", "soapSuds", 0, 1, 2);
+
 
         $this->assertEquals([
-            new TagSummary("Account2", "An account wide tag available to account 2", "account2"),
-            new TagSummary("Global", "A truly global tag available to whole system", "global")],
+            new TagSummary("Account2", "An account wide tag available to account 2", "account2")],
             $tags);
 
         // Offset
         $tags = $this->service->filterAvailableTags("", "soapSuds", 1, 10, 2);
 
         $this->assertEquals([
-            new TagSummary("Global", "A truly global tag available to whole system", "global"),
             new TagSummary("Project", "A project level tag available to just one project", "project")],
             $tags);
 
@@ -252,16 +241,14 @@ class MetaDataServiceTest extends TestBase {
             new TagSummary("sharedProject", "", "sharedProject")
         ], 2, "wiperBlades");
 
-        $this->assertEquals(3, sizeof($fullTags));
+        $this->assertEquals(2, sizeof($fullTags));
         $this->assertInstanceOf(ObjectTag::class, $fullTags[0]);
-        $this->assertEquals("topLevel", $fullTags[0]->getTag()->getKey());
+        $this->assertEquals("sharedAccount", $fullTags[0]->getTag()->getKey());
+        $this->assertEquals(2, $fullTags[0]->getTag()->getAccountId());
         $this->assertInstanceOf(ObjectTag::class, $fullTags[1]);
-        $this->assertEquals("sharedAccount", $fullTags[1]->getTag()->getKey());
+        $this->assertEquals("sharedProject", $fullTags[1]->getTag()->getKey());
         $this->assertEquals(2, $fullTags[1]->getTag()->getAccountId());
-        $this->assertInstanceOf(ObjectTag::class, $fullTags[2]);
-        $this->assertEquals("sharedProject", $fullTags[2]->getTag()->getKey());
-        $this->assertEquals(2, $fullTags[2]->getTag()->getAccountId());
-        $this->assertEquals("wiperBlades", $fullTags[2]->getTag()->getProjectKey());
+        $this->assertEquals("wiperBlades", $fullTags[1]->getTag()->getProjectKey());
 
 
         $fullTags = $this->service->getObjectTagsFromSummaries([
@@ -270,16 +257,14 @@ class MetaDataServiceTest extends TestBase {
             new TagSummary("sharedProject", "", "sharedProject")
         ], 2, "pressureWashing");
 
-        $this->assertEquals(3, sizeof($fullTags));
+        $this->assertEquals(2, sizeof($fullTags));
         $this->assertInstanceOf(ObjectTag::class, $fullTags[0]);
-        $this->assertEquals("topLevel", $fullTags[0]->getTag()->getKey());
+        $this->assertEquals("sharedAccount", $fullTags[0]->getTag()->getKey());
+        $this->assertEquals(2, $fullTags[0]->getTag()->getAccountId());
         $this->assertInstanceOf(ObjectTag::class, $fullTags[1]);
-        $this->assertEquals("sharedAccount", $fullTags[1]->getTag()->getKey());
+        $this->assertEquals("sharedProject", $fullTags[1]->getTag()->getKey());
         $this->assertEquals(2, $fullTags[1]->getTag()->getAccountId());
-        $this->assertInstanceOf(ObjectTag::class, $fullTags[2]);
-        $this->assertEquals("sharedProject", $fullTags[2]->getTag()->getKey());
-        $this->assertEquals(2, $fullTags[2]->getTag()->getAccountId());
-        $this->assertEquals("pressureWashing", $fullTags[2]->getTag()->getProjectKey());
+        $this->assertEquals("pressureWashing", $fullTags[1]->getTag()->getProjectKey());
 
     }
 
@@ -298,27 +283,25 @@ class MetaDataServiceTest extends TestBase {
 
     }
 
-    public function testCanGetFilterCategoriesIncludingGlobalOnesWhenAccountSupplied() {
+    public function testCanGetFilterCategoriesWhenAccountSupplied() {
 
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
         // Get global tags
-        $globalCategories = $this->service->filterAvailableCategories("", null, 0, 10, 1);
+        $accountCategories = $this->service->filterAvailableCategories("", null, 0, 10, 1);
 
         $this->assertEquals([
             new CategorySummary("Account1", "An account wide category available to account 1", "account1"),
-            new CategorySummary("Global", "A truly global category available to whole system", "global"),
 
-        ], $globalCategories);
+        ], $accountCategories);
 
         // Check one with a title filter applied
         // Get global tags
-        $globalCategories = $this->service->filterAvailableCategories("lob", null, 0, 10, 1);
+        $accountCategories = $this->service->filterAvailableCategories("lob", null, 0, 10, 1);
 
         $this->assertEquals([
-            new CategorySummary("Global", "A truly global category available to whole system", "global"),
 
-        ], $globalCategories);
+        ], $accountCategories);
 
 
     }
@@ -332,8 +315,7 @@ class MetaDataServiceTest extends TestBase {
 
         $this->assertEquals([
             new CategorySummary("Account2", "An account wide category available to account 2", "account2"),
-            new CategorySummary("Global", "A truly global category available to whole system", "global"),
-            new CategorySummary("Project", "A project level category available to just one project", "project")],
+             new CategorySummary("Project", "A project level category available to just one project", "project")],
             $categories);
 
 
@@ -346,19 +328,17 @@ class MetaDataServiceTest extends TestBase {
             $categories);
 
         // Limit
-        $categories = $this->service->filterAvailableCategories("", "soapSuds", 0, 2, 2);
+        $categories = $this->service->filterAvailableCategories("", "soapSuds", 0, 1, 2);
 
         $this->assertEquals([
-            new CategorySummary("Account2", "An account wide category available to account 2", "account2"),
-            new CategorySummary("Global", "A truly global category available to whole system", "global")],
-            $categories);
+            new CategorySummary("Account2", "An account wide category available to account 2", "account2")],
+             $categories);
 
         // Offset
         $categories = $this->service->filterAvailableCategories("", "soapSuds", 1, 10, 2);
 
         $this->assertEquals([
-            new CategorySummary("Global", "A truly global category available to whole system", "global"),
-            new CategorySummary("Project", "A project level category available to just one project", "project")],
+             new CategorySummary("Project", "A project level category available to just one project", "project")],
             $categories);
 
 
@@ -506,16 +486,14 @@ class MetaDataServiceTest extends TestBase {
             new CategorySummary("sharedProject", "", "sharedProject")
         ], 2, "wiperBlades");
 
-        $this->assertEquals(3, sizeof($fullCategories));
-        $this->assertInstanceOf(ObjectCategory::class, $fullCategories[0]);
-        $this->assertEquals("topLevel", $fullCategories[0]->getCategory()->getKey());
+        $this->assertEquals(2, sizeof($fullCategories));
+         $this->assertInstanceOf(ObjectCategory::class, $fullCategories[0]);
+        $this->assertEquals("sharedAccount", $fullCategories[0]->getCategory()->getKey());
+        $this->assertEquals(2, $fullCategories[0]->getCategory()->getAccountId());
         $this->assertInstanceOf(ObjectCategory::class, $fullCategories[1]);
-        $this->assertEquals("sharedAccount", $fullCategories[1]->getCategory()->getKey());
+        $this->assertEquals("sharedProject", $fullCategories[1]->getCategory()->getKey());
         $this->assertEquals(2, $fullCategories[1]->getCategory()->getAccountId());
-        $this->assertInstanceOf(ObjectCategory::class, $fullCategories[2]);
-        $this->assertEquals("sharedProject", $fullCategories[2]->getCategory()->getKey());
-        $this->assertEquals(2, $fullCategories[2]->getCategory()->getAccountId());
-        $this->assertEquals("wiperBlades", $fullCategories[2]->getCategory()->getProjectKey());
+        $this->assertEquals("wiperBlades", $fullCategories[1]->getCategory()->getProjectKey());
 
 
         $fullCategories = $this->service->getObjectCategoriesFromSummaries([
@@ -524,16 +502,14 @@ class MetaDataServiceTest extends TestBase {
             new CategorySummary("sharedProject", "", "sharedProject")
         ], 2, "pressureWashing");
 
-        $this->assertEquals(3, sizeof($fullCategories));
+        $this->assertEquals(2, sizeof($fullCategories));
         $this->assertInstanceOf(ObjectCategory::class, $fullCategories[0]);
-        $this->assertEquals("topLevel", $fullCategories[0]->getCategory()->getKey());
+        $this->assertEquals("sharedAccount", $fullCategories[0]->getCategory()->getKey());
+        $this->assertEquals(2, $fullCategories[0]->getCategory()->getAccountId());
         $this->assertInstanceOf(ObjectCategory::class, $fullCategories[1]);
-        $this->assertEquals("sharedAccount", $fullCategories[1]->getCategory()->getKey());
+        $this->assertEquals("sharedProject", $fullCategories[1]->getCategory()->getKey());
         $this->assertEquals(2, $fullCategories[1]->getCategory()->getAccountId());
-        $this->assertInstanceOf(ObjectCategory::class, $fullCategories[2]);
-        $this->assertEquals("sharedProject", $fullCategories[2]->getCategory()->getKey());
-        $this->assertEquals(2, $fullCategories[2]->getCategory()->getAccountId());
-        $this->assertEquals("pressureWashing", $fullCategories[2]->getCategory()->getProjectKey());
+        $this->assertEquals("pressureWashing", $fullCategories[1]->getCategory()->getProjectKey());
 
     }
 
@@ -542,8 +518,7 @@ class MetaDataServiceTest extends TestBase {
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
         $this->assertEquals([
-            new CategorySummary("Shared Account", "Belongs to account 1", "sharedAccount"),
-            new CategorySummary("Top Level", "", "topLevel"),
+            new CategorySummary("Shared Account", "Belongs to account 1", "sharedAccount")
         ], $this->service->getMultipleCategoriesByKey([
             "topLevel",
             "sharedAccount"
@@ -551,8 +526,7 @@ class MetaDataServiceTest extends TestBase {
 
 
         $this->assertEquals([
-            new CategorySummary("Shared Account", "Belongs to account 2", "sharedAccount"),
-            new CategorySummary("Top Level", "", "topLevel"),
+            new CategorySummary("Shared Account", "Belongs to account 2", "sharedAccount")
         ], $this->service->getMultipleCategoriesByKey([
             "topLevel",
             "sharedAccount"
