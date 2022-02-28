@@ -22,6 +22,8 @@ export class UserRolesComponent implements OnInit {
     public scopeEdit = null;
     public scopeKey: string;
 
+    private userId;
+
     constructor(private userService: UserService,
                 private route: ActivatedRoute,
                 public authService: AuthenticationService) {
@@ -30,6 +32,7 @@ export class UserRolesComponent implements OnInit {
     ngOnInit() {
         this.route.params.subscribe(params => {
             this.loadUser();
+            this.userId = params.userId;
         });
 
         this.loadUser();
@@ -83,7 +86,7 @@ export class UserRolesComponent implements OnInit {
     private loadUser() {
         this.authService.getLoggedInUser().then(user => {
             this.loggedInUser = user;
-            this.loadRoles(user.id);
+            this.loadRoles(this.userId);
         });
     }
 }
