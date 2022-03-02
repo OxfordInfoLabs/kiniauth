@@ -3,6 +3,7 @@ import { UserService } from '../../services/user.service';
 import { ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
 import { AuthenticationService } from '../../services/authentication.service';
+import {RoleService} from '../../services/role.service';
 
 @Component({
     selector: 'ka-user-roles',
@@ -12,12 +13,13 @@ import { AuthenticationService } from '../../services/authentication.service';
 })
 export class UserRolesComponent implements OnInit {
 
-    public userRoles: any = {};
+    public accountError: string;
     public user: any = {};
     public Object = Object;
     public editDetails = false;
     public loggedInUser: any;
-
+    public scopeAccesses: any[];
+    public scopeRoles: any = { ACCOUNT: {} };
     public editRoles = false;
     public scopeEdit = null;
     public scopeKey: string;
@@ -26,6 +28,7 @@ export class UserRolesComponent implements OnInit {
 
     constructor(private userService: UserService,
                 private route: ActivatedRoute,
+                private roleService: RoleService,
                 public authService: AuthenticationService) {
     }
 
@@ -38,48 +41,20 @@ export class UserRolesComponent implements OnInit {
         this.loadUser();
     }
 
-    public roleDisplayString(scope) {
-        if (scope.roles.length === 1 && scope.roles[0] === null) {
-            return 'Owner';
-        }
-        const strings = _.map(scope.roles, 'name');
-        return strings.join(', ');
-    }
-
-    public editRolesForScope(roles, scopeKey) {
-        if (roles.length) {
-            this.scopeEdit = roles[0].scope;
-            this.scopeKey = scopeKey;
-        }
-        this.editRoles = true;
-    }
-
-    public closeEditRoles(reload?) {
-        this.editRoles = false;
-        if (reload) {
-            this.loadRoles(this.user.id);
-        }
-    }
-
-    public closeEditDetails() {
-        this.loadUser();
-        this.editDetails = false;
-    }
-
     public saveUserDetails() {
 
-    }
-
-    public userCanEditRoles(scopeKey) {
-        return scopeKey === 'Account' ? (this.loggedInUser.id !== this.user.id) : true;
     }
 
     private loadRoles(userId) {
         this.userService.getUser(userId).then(user => {
             this.user = user;
         });
-        this.userService.getAllUserAccountRoles(userId).then(roles => {
-            this.userRoles = roles;
+        this.roleService.getScopeAccesses().then(scopeAccesses => {
+            delete scopeAccesses.ACCOUNT;
+            this.scopeAccesses = _.values(scopeAccesses);
+            _.forEach(scopeAccesses, scopeAccess => {
+                this.scopeRoles[scopeAccess.scope] = {};
+            });
         });
     }
 

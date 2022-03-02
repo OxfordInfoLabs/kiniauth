@@ -11,14 +11,14 @@
                 </ng-template>
 
                 <ng-template [ngIf]="!_.reject(assignableRole.roles).length">
-                <span class="mr1 flex align-baseline" *ngIf="assignableRole.scope === 'ACCOUNT'">
+                <span class="mr1 flex items-center align-baseline" *ngIf="assignableRole.scope === 'ACCOUNT'">
                     <input type="checkbox" value="OWNER" class="role-checkbox"
                            [checked]="checked[assignableRole.scopeId]['owner']"
                            (change)="updateRole($event, assignableRole.scopeId)">
                     Owner
                 </span>
                     <ng-template ngFor let-roleIndex [ngForOf]="Object.keys(assignableRole.roles)">
-                    <span class="mr1 flex align-baseline" *ngIf="assignableRole.roles[roleIndex]">
+                    <span class="mr1 flex items-center align-baseline" *ngIf="assignableRole.roles[roleIndex]">
                         <input type="checkbox" class="role-checkbox"
                                *ngIf="assignableRole.roles[roleIndex]"
                                [disabled]="disabled[assignableRole.scopeId]"
@@ -41,7 +41,7 @@
     </tbody>
 </table>
 
-<div class="flex align-center justify-between p1 apply-bar" *ngIf="!hideApply">
+<div class="flex align-center items-center justify-between p1 p-4 apply-bar" *ngIf="!hideApply">
     <div></div>
-    <button class="but butsm" (click)="updateUserScope()">Apply Changes</button>
+    <button mat-flat-button color="primary" class="but butsm" (click)="updateUserScope()">Apply Changes</button>
 </div>

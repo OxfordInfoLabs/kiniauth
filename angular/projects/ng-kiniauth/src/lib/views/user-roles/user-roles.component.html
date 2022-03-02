@@ -11,46 +11,28 @@
 
         </div>
         <div class="actions flex flex-col align-center justify-center p1">
-            <button class="button small-button white-button" (click)="editDetails = true">Edit Details</button>
+
         </div>
 
     </div>
 
-    <div class="roles-container mx1" *ngIf="Object.keys(userRoles).length">
+    <p class="thin">Account permissions</p>
 
-        <table>
-            <tbody *ngFor="let scopeKey of Object.keys(userRoles)">
-            <tr class="thead">
-                <th>{{scopeKey}}</th>
-                <th></th>
-                <th style="text-align: right">
-                    <button mat-button color="primary"
-                            *ngIf="userCanEditRoles(scopeKey)"
-                            (click)="editRolesForScope(userRoles[scopeKey], scopeKey)">
-                        Edit {{scopeKey}} Roles
-                        <mat-icon>launch</mat-icon>
-                    </button>
-                </th>
-            </tr>
-            <tr *ngFor="let scope of userRoles[scopeKey]">
-                <td>{{scope.scopeObjectDescription}}</td>
-                <td>{{roleDisplayString(scope)}}</td>
-                <td></td>
-            </tr>
-            </tbody>
-        </table>
-
-
+    <div class="mb2">
+        <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'" [user]="user"></ka-edit-roles>
+        <p style="color: red" *ngIf="accountError">{{accountError}}</p>
     </div>
 
-    <ka-inline-modal *ngIf="editRoles" (closed)="closeEditRoles(true)">
-        <ka-edit-roles [scopeKey]="scopeKey" [scope]="scopeEdit" [user]="user"
-                       (closed)="closeEditRoles(true)"></ka-edit-roles>
-    </ka-inline-modal>
+    <p class="thin">Other permissions</p>
 
-    <ka-inline-modal *ngIf="editDetails" (closed)="closeEditDetails()">
-        <ka-edit-details [authenticationService]="authService" (saved)="closeEditDetails()"
-                         [user]="user"></ka-edit-details>
-    </ka-inline-modal>
+    <mat-tab-group animationDuration="0">
+        <mat-tab *ngFor="let scopeAccess of scopeAccesses" [label]="scopeAccess.scopeDescription">
+            <ka-edit-roles [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope" [user]="user"></ka-edit-roles>
+        </mat-tab>
+    </mat-tab-group>
 
+    <div class="flex items-center justify-between">
+        <div></div>
+<!--        <button mat-flat-button color="primary" (click)="saveUserDetails()">Save Changes</button>-->
+    </div>
 </div>
