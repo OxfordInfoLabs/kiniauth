@@ -138,8 +138,8 @@ class ProjectScopeAccessTest extends TestBase {
     public function testCanGetFilteredScopeObjectDescriptions() {
 
         $this->projectService->returnValue("filterProjects", [
-            new ProjectSummary("Bingo"),
-            new ProjectSummary("Bongo")
+            new ProjectSummary("Bingo","", "myBigOne"),
+            new ProjectSummary("Bongo", "", "myTestOne")
         ], [
             "filterstring",
                 0, 10, 5
@@ -148,7 +148,7 @@ class ProjectScopeAccessTest extends TestBase {
         $projectDescriptions = $this->projectScopeAccess->getFilteredScopeObjectDescriptions("filterstring",0, 10, 5);
 
 
-        $this->assertEquals(["Bingo", "Bongo"], $projectDescriptions);
+        $this->assertEquals(["myBigOne" => "Bingo", "myTestOne" => "Bongo"], $projectDescriptions);
 
 
     }

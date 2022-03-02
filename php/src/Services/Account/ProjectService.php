@@ -6,6 +6,7 @@ namespace Kiniauth\Services\Account;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\Project;
 use Kiniauth\Objects\Account\ProjectSummary;
+use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 /**
@@ -40,9 +41,11 @@ class ProjectService {
         $results = Project::filter("WHERE account_id = ? AND project_key IN (?" . str_repeat(",?", sizeof($projectKeys) - 1) . ")",
             $values);
 
-        return array_map(function ($project) {
+        $projectSummaries = array_map(function ($project) {
             return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey());
         }, $results);
+
+        return ObjectArrayUtils::indexArrayOfObjectsByMember("projectKey", $projectSummaries);
     }
 
     /**

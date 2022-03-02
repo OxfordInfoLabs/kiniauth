@@ -22,7 +22,7 @@ class ScopeObjectRolesAssignment {
     /**
      * The id of the scope object
      *
-     * @var integer
+     * @var string
      */
     private $scopeId;
 
@@ -37,7 +37,7 @@ class ScopeObjectRolesAssignment {
     /**
      * ScopeObjectRolesAssignment constructor.
      * @param string $scope
-     * @param int $scopeId
+     * @param string $scopeId
      * @param integer[] $roleIds
      */
     public function __construct($scope, $scopeId, $roleIds) {
@@ -55,7 +55,7 @@ class ScopeObjectRolesAssignment {
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getScopeId() {
         return $this->scopeId;

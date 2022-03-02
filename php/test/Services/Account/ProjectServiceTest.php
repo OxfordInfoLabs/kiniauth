@@ -147,8 +147,8 @@ class ProjectServiceTest extends TestBase {
         ], 2);
 
         $this->assertEquals([
-            new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds"),
-            new ProjectSummary("Pressure Washing", "Pressure washing project", "pressureWashing"),
+            "soapSuds" => new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds"),
+            "pressureWashing" => new ProjectSummary("Pressure Washing", "Pressure washing project", "pressureWashing"),
         ], $projects);
 
 

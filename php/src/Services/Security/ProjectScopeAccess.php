@@ -50,6 +50,6 @@ class ProjectScopeAccess extends StandardAccountObjectScopeAccess {
      */
     public function getFilteredScopeObjectDescriptions($searchFilter, $offset = 0, $limit = 10, $accountId = null) {
         $matches = $this->projectService->filterProjects($searchFilter, $offset, $limit, $accountId);
-        return ObjectArrayUtils::getMemberValueArrayForObjects("name", $matches);
+        return ObjectArrayUtils::getMemberValueArrayForObjects("name", ObjectArrayUtils::indexArrayOfObjectsByMember("projectKey", $matches));
     }
 }
