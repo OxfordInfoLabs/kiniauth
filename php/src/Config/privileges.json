@@ -5,8 +5,18 @@
     "scope": "ACCOUNT"
   },
   {
+    "key": "admin",
+    "description": "Admin access to an account.",
+    "scope": "ACCOUNT"
+  },
+  {
     "key": "access",
     "description": "Basic access to a project.",
+    "scope": "PROJECT"
+  },
+  {
+    "key": "admin",
+    "description": "Admin access to a project.",
     "scope": "PROJECT"
   }
 ]
