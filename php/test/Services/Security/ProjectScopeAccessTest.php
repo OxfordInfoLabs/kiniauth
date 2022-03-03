@@ -85,10 +85,10 @@ class ProjectScopeAccessTest extends TestBase {
             "edit"
         ]);
 
-        $userRole1 = new UserRole(ProjectScopeAccess::SCOPE_PROJECT, "myProject");
+        $userRole1 = new UserRole(ProjectScopeAccess::SCOPE_PROJECT, "myProject", 3);
         $userRole1->setRole($role1);
 
-        $userRole2 = new UserRole(ProjectScopeAccess::SCOPE_PROJECT, "otherProject");
+        $userRole2 = new UserRole(ProjectScopeAccess::SCOPE_PROJECT, "otherProject", 4);
         $userRole2->setRole($role2);
 
 

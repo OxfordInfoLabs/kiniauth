@@ -54,7 +54,13 @@ abstract class StandardAccountObjectScopeAccess extends ScopeAccess {
                         $scopePrivileges[$role->getScopeId()] = [];
                     }
 
-                    $scopePrivileges[$role->getScopeId()] = array_merge($scopePrivileges[$role->getScopeId()], $role->getPrivileges());
+                    if ($role->getRoleId()){
+                        $privileges = $role->getPrivileges();
+                    } else {
+                        $privileges = ["*"];
+                    }
+
+                    $scopePrivileges[$role->getScopeId()] = array_merge($scopePrivileges[$role->getScopeId()], $privileges);
                 }
             }
 
