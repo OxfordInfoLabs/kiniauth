@@ -17,12 +17,13 @@ export class EditRolesComponent implements OnInit {
     @Input() hideApply: boolean;
     @Output() closed: EventEmitter<any> = new EventEmitter<any>();
     @Output() saved: EventEmitter<any> = new EventEmitter<any>();
+    @Output() updatedScopesChange: EventEmitter<any> = new EventEmitter<any>();
 
     public assignableRoles: any[];
     public _ = _;
     public Object = Object;
     public disabled = {};
-    public checked = {};
+    public checked: any = {};
     public loading = true;
     public roles: any[] = [];
     public errors = {};
@@ -60,6 +61,7 @@ export class EditRolesComponent implements OnInit {
             if (checked) {
                 roleIds = [null];
             } else {
+                delete this.checked[scopeId].owner;
                 roleIds = this.setRoleIds(scopeId);
             }
 
@@ -73,13 +75,14 @@ export class EditRolesComponent implements OnInit {
             scopeId,
             roleIds: _.uniq(roleIds)
         };
+        this.updatedScopesChange.next(this.updatedScopes);
     }
 
     public updateUserScope() {
         this.errors = {};
         // Check if we are saving any ACCOUNT scopes. If we are, check there are some roles attached.
         const accounts = _.filter(this.updatedScopes, update => {
-            return update.scope === 'ACCOUNT' && update.roleIds.length === 0;
+            return update.scope === 'ACCOUNT' && update.roleIds.length > 0;
         });
         if (accounts.length > 0) {
             accounts.forEach(scopeUpdate => {
