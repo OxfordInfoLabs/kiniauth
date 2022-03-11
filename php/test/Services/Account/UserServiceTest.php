@@ -830,4 +830,26 @@ class UserServiceTest extends TestBase {
     }
 
 
+    public function testCanUpdateUserApplicationSettings() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $user = User::fetch(1);
+        $this->assertEquals([], $user->getApplicationSettings());
+
+        // Update and check
+        $this->userService->updateUserApplicationSettings(["test" => "Hello World", "colour" => "blue"]);
+
+        $user = User::fetch(1);
+        $this->assertEquals(["test" => "Hello World", "colour" => "blue"], $user->getApplicationSettings());
+
+        // Update again and check they aggregate accordingly
+        $this->userService->updateUserApplicationSettings(["colour" => "red", "name" => "Mark"]);
+
+        $user = User::fetch(1);
+        $this->assertEquals(["test" => "Hello World", "colour" => "red", "name" => "Mark"], $user->getApplicationSettings());
+
+
+    }
+
 }

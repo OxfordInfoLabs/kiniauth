@@ -163,6 +163,19 @@ trait UserTrait {
         return $this->userService->disableTwoFactor($userId);
     }
 
+
+    /**
+     * Update the passed settings
+     *
+     * @http PUT /applicationSettings
+     *
+     * @param mixed $newSettings
+     */
+    public function updateApplicationSettings($newSettings) {
+        $this->userService->updateUserApplicationSettings($newSettings);
+    }
+
+
     /**
      * Get all account roles for a user
      *

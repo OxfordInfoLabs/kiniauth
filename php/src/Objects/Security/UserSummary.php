@@ -72,15 +72,24 @@ class UserSummary extends Securable {
 
 
     /**
+     * @var mixed
+     * @json
+     * @sqlType LONGTEXT
+     */
+    protected $applicationSettings = null;
+
+
+    /**
      * UserSummary constructor.
      * @param null $name
      * @param null $status
      */
-    public function __construct($name = null, $status = null, $emailAddress = null, $successfulLogins = 0) {
+    public function __construct($name = null, $status = null, $emailAddress = null, $successfulLogins = 0, $applicationSettings = null) {
         $this->name = $name;
         $this->status = $status;
         $this->emailAddress = $emailAddress;
         $this->successfulLogins = $successfulLogins;
+        $this->applicationSettings = $applicationSettings;
     }
 
     /**
@@ -134,6 +143,14 @@ class UserSummary extends Securable {
     }
 
     /**
+     * @return mixed
+     */
+    public function getApplicationSettings() {
+        return $this->applicationSettings ?? [];
+    }
+
+
+    /**
      * @return UserRole[]
      */
     public function getRoles() {
@@ -147,11 +164,12 @@ class UserSummary extends Securable {
         $this->roles = $roles;
     }
 
+
     /**
      * @return null
      */
     public function getActiveAccountId() {
-       return null;
+        return null;
     }
 
 }

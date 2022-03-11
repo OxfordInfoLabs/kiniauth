@@ -742,6 +742,28 @@ class UserService {
 
 
     /**
+     * Update user settings for the supplied user id
+     *
+     * @param array $settings
+     * @param integer $userId
+     */
+    public function updateUserApplicationSettings($settings = [], $userId = User::LOGGED_IN_USER) {
+
+        /** @var User $user */
+        $user = User::fetch($userId);
+
+        // Grab existing settings and merge accordingly
+        $existingSettings = $user->getApplicationSettings();
+        $newSettings = array_merge($existingSettings, $settings);
+
+        $user->setApplicationSettings($newSettings);
+        $user->save();
+
+
+    }
+
+
+    /**
      * Get pending user and account from
      */
     protected function getPendingUserAndAccount($pendingActionIdentifier) {

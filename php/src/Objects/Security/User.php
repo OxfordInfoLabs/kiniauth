@@ -105,9 +105,6 @@ class User extends UserSummary {
 
     const LOGGED_IN_USER = "LOGGED_IN_USER";
 
-    // Salt prefix for password - BLOWFISH bcrypt
-    const PASSWORD_SALT_PREFIX = "$2a$10$";
-
 
     /**
      * Create a new user with basic data.
@@ -285,7 +282,6 @@ class User extends UserSummary {
     }
 
 
-
     public function getAccountIds() {
         $accountIds = array();
         foreach ($this->roles as $role) {
@@ -325,6 +321,13 @@ class User extends UserSummary {
      */
     public function setActiveAccountId($activeAccountId) {
         $this->activeAccountId = $activeAccountId;
+    }
+
+    /**
+     * @param mixed $applicationSettings
+     */
+    public function setApplicationSettings($applicationSettings) {
+        $this->applicationSettings = $applicationSettings;
     }
 
 
@@ -396,7 +399,7 @@ class User extends UserSummary {
     }
 
     public function generateSummary() {
-        return new UserSummary($this->name, $this->status, $this->emailAddress, $this->successfulLogins);
+        return new UserSummary($this->name, $this->status, $this->emailAddress, $this->successfulLogins, $this->applicationSettings);
     }
 
 
