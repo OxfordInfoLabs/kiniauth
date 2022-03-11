@@ -1,44 +1,42 @@
 <ng-template [ngIf]="inviteComplete">
 
-    <div class="flex align-center justify-center p3 invite-sent">
+    <div class="flex align-center justify-center p3 p-8 invite-sent">
 
-        <h3 class="mb3"><mat-icon color="primary">check</mat-icon> Invitation Sent</h3>
+        <h3 class="mb3 mb-8"><mat-icon color="primary">check</mat-icon> Invitation Sent</h3>
 
-        <p class="mb3">A confirmation email has been sent to <b>{{emailAddress}}</b>, the user will need to click on the confirmation
+        <p class="mb3 mb-8">A confirmation email has been sent to <b>{{emailAddress}}</b>, the user will need to click on the confirmation
             link in order to activate their account.</p>
 
-        <button class="but" (click)="back()">Return to list</button>
+        <button mat-flat-button class="but" (click)="back()">Return to list</button>
     </div>
 
 </ng-template>
 
 <ng-template [ngIf]="!inviteComplete">
 
-    <div class="mb2">
+    <div class="mb2 mb-4">
         <p class="thin">User email address</p>
         <input type="text" placeholder="Email address" class="flex1 mr050 mt0 full"
                [(ngModel)]="emailAddress">
     </div>
 
-    <p class="thin">Account permissions</p>
+    <div class="text-base font-medium text-gray-900 mb-4">Permissions</div>
 
-    <div class="mb2">
+    <div class="mb2 mb-4">
         <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'"
                        [updatedScopes]="scopeRoles['ACCOUNT']" [hideApply]="true"></ka-edit-roles>
         <p style="color: red" *ngIf="accountError">{{accountError}}</p>
     </div>
 
-    <p class="thin">Other permissions</p>
-
     <mat-tab-group animationDuration="0">
         <mat-tab *ngFor="let scopeAccess of scopeAccesses" [label]="scopeAccess.scopeDescription">
-            <ka-edit-roles [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope"
+            <ka-edit-roles class="block mt-4" [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope"
                            [updatedScopes]="scopeRoles[scopeAccess.scope]" [hideApply]="true"></ka-edit-roles>
         </mat-tab>
     </mat-tab-group>
 
-    <div class="flex align-center justify-between mt2">
+    <div class="flex align-center justify-between mt2 mt-6">
         <div></div>
-        <button class="but butsm" (click)="save()" [disabled]="!emailAddress">Invite User</button>
+        <button mat-flat-button color="primary" class="but butsm" (click)="save()" [disabled]="!emailAddress">Invite User</button>
     </div>
 </ng-template>

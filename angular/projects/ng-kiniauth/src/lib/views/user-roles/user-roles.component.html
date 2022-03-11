@@ -16,23 +16,24 @@
 
     </div>
 
-    <p class="thin">Account permissions</p>
+    <div class="text-base font-medium text-gray-900 mb-4">Permissions</div>
 
     <div class="mb2">
-        <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'" [user]="user"></ka-edit-roles>
+        <ka-edit-roles *ngIf="user.id" [scopeKey]="'Account'" [scope]="'ACCOUNT'" [user]="user" [(updatedScopes)]="scopeRoles.ACCOUNT"
+                       [hideApply]="true" (updatedScopesChange)="roleUpdated($event)"></ka-edit-roles>
         <p style="color: red" *ngIf="accountError">{{accountError}}</p>
     </div>
 
-    <p class="thin">Other permissions</p>
-
-    <mat-tab-group animationDuration="0">
+    <mat-tab-group animationDuration="0" *ngIf="!accountOwner">
         <mat-tab *ngFor="let scopeAccess of scopeAccesses" [label]="scopeAccess.scopeDescription">
-            <ka-edit-roles [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope" [user]="user"></ka-edit-roles>
+            <ka-edit-roles class="block mt-4" *ngIf="user.id"
+                [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope" [user]="user"
+                           [(updatedScopes)]="scopeRoles[scopeAccess.scope]" [hideApply]="true"></ka-edit-roles>
         </mat-tab>
     </mat-tab-group>
 
     <div class="flex items-center justify-between">
         <div></div>
-<!--        <button mat-flat-button color="primary" (click)="saveUserDetails()">Save Changes</button>-->
+        <button mat-flat-button color="primary" (click)="saveUserDetails()">Save Changes</button>
     </div>
 </div>

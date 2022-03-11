@@ -20,9 +20,9 @@ export class UserRolesComponent implements OnInit {
     public loggedInUser: any;
     public scopeAccesses: any[];
     public scopeRoles: any = { ACCOUNT: {} };
-    public editRoles = false;
     public scopeEdit = null;
-    public scopeKey: string;
+    public _ = _;
+    public accountOwner = false;
 
     private userId;
 
@@ -41,8 +41,20 @@ export class UserRolesComponent implements OnInit {
         this.loadUser();
     }
 
-    public saveUserDetails() {
+    public roleUpdated(value) {
+        this.accountOwner = _.values(value)[0].roleIds[0] === null;
+    }
 
+    public saveUserDetails() {
+        const updates = [];
+        _.values(this.scopeRoles).forEach(scope => {
+            _.forEach(scope, update => {
+                updates.push(update);
+            });
+        });
+        if (updates.length) {
+            this.userService.updateUserScope(updates, this.user.id);
+        }
     }
 
     private loadRoles(userId) {
@@ -55,6 +67,12 @@ export class UserRolesComponent implements OnInit {
             _.forEach(scopeAccesses, scopeAccess => {
                 this.scopeRoles[scopeAccess.scope] = {};
             });
+        });
+        this.userService.getAllUserAccountRoles(userId).then(roles => {
+            const role = _.values(roles.Account).length ? _.values(roles.Account)[0] : null;
+            if (role) {
+                this.accountOwner = role.roles[0] === null;
+            }
         });
     }
 

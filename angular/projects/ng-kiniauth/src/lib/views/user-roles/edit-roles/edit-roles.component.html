@@ -1,45 +1,99 @@
-<table class="edit-roles" *ngIf="assignableRoles" [ngStyle]="{marginBottom: hideApply ? '0' : '100px'}">
-    <tbody *ngFor="let assignableRole of _.orderBy(assignableRoles, ['scopeId'], ['asc'])">
-    <tr class="thead">
-        <th>{{assignableRole.scopeObjectDescription}}</th>
-    </tr>
-    <tr>
-        <td>
-            <div class="flex align-center" *ngIf="!loading">
-                <ng-template [ngIf]="_.reject(assignableRole.roles).length">
-                    <i>You have reached the max number of users</i>
-                </ng-template>
+<ng-template [ngIf]="assignableRoles">
+    <ng-template ngFor let-assignableRole [ngForOf]="_.orderBy(assignableRoles, ['scopeId'], ['asc'])">
 
-                <ng-template [ngIf]="!_.reject(assignableRole.roles).length">
-                <span class="mr1 flex items-center align-baseline" *ngIf="assignableRole.scope === 'ACCOUNT'">
-                    <input type="checkbox" value="OWNER" class="role-checkbox"
-                           [checked]="checked[assignableRole.scopeId]['owner']"
-                           (change)="updateRole($event, assignableRole.scopeId)">
-                    Owner
-                </span>
+        <fieldset class="mb-4 ml-4">
+            <legend class="text-sm font-medium text-gray-800">{{assignableRole.scopeObjectDescription}}</legend>
+
+            <ng-template [ngIf]="_.reject(assignableRole.roles).length">
+                <div><i>You have reached the max number of users</i></div>
+            </ng-template>
+
+            <ng-template [ngIf]="!_.reject(assignableRole.roles).length">
+                <div class="mt-4 flex items-center">
+
                     <ng-template ngFor let-roleIndex [ngForOf]="Object.keys(assignableRole.roles)">
-                    <span class="mr1 flex items-center align-baseline" *ngIf="assignableRole.roles[roleIndex]">
-                        <input type="checkbox" class="role-checkbox"
-                               *ngIf="assignableRole.roles[roleIndex]"
-                               [disabled]="disabled[assignableRole.scopeId]"
-                               [(ngModel)]="checked[assignableRole.scopeId][assignableRole.roles[roleIndex].id]"
-                               (change)="updateRole($event, assignableRole.scopeId)">
-                        {{assignableRole.roles[roleIndex].name}}
-                    </span>
-                        <i *ngIf="!assignableRole.roles[roleIndex]" class="mr2">
-                            Upgrade
-                        </i>
+
+                        <div class="flex items-start" *ngIf="assignableRole.roles[roleIndex]">
+                            <div class="flex items-center h-5">
+                                <input type="checkbox" *ngIf="assignableRole.roles[roleIndex]"
+                                       [disabled]="disabled[assignableRole.scopeId]"
+                                       [(ngModel)]="checked[assignableRole.scopeId][assignableRole.roles[roleIndex].id]"
+                                       (change)="updateRole($event, assignableRole.scopeId)"
+                                       [name]="'name' + roleIndex"
+                                       class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label class="font-medium text-gray-700">{{assignableRole.roles[roleIndex].name}}</label>
+                            </div>
+                        </div>
+
                     </ng-template>
-                </ng-template>
-            </div>
 
-            <p class="mb0 mt050 text-red"
-               *ngIf="errors[assignableRole.scopeId]">{{errors[assignableRole.scopeId]}}</p>
-        </td>
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input value="OWNER" type="checkbox" [name]="'owner' + assignableRole.scopeId"
+                                   [checked]="checked[assignableRole.scopeId]['owner']"
+                                   (change)="updateRole($event, assignableRole.scopeId)"
+                                   class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label class="font-medium text-gray-700">Owner</label>
+                        </div>
+                    </div>
 
-    </tr>
-    </tbody>
-</table>
+                    <div class="text-red-500 m-2" *ngIf="errors[assignableRole.scopeId]">
+                        {{errors[assignableRole.scopeId]}}
+                    </div>
+                </div>
+            </ng-template>
+
+        </fieldset>
+
+    </ng-template>
+</ng-template>
+
+<!--<table class="edit-roles" *ngIf="assignableRoles" [ngStyle]="{marginBottom: hideApply ? '0' : '100px'}">-->
+<!--    <tbody *ngFor="let assignableRole of _.orderBy(assignableRoles, ['scopeId'], ['asc'])">-->
+<!--    <tr class="thead">-->
+<!--        <th>{{assignableRole.scopeObjectDescription}}</th>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--        <td>-->
+<!--            <div class="flex align-center" *ngIf="!loading">-->
+<!--                <ng-template [ngIf]="_.reject(assignableRole.roles).length">-->
+<!--                    <i>You have reached the max number of users</i>-->
+<!--                </ng-template>-->
+
+<!--                <ng-template [ngIf]="!_.reject(assignableRole.roles).length">-->
+<!--                    <span class="mr1 flex items-center align-baseline" *ngIf="assignableRole.scope === 'ACCOUNT'">-->
+<!--                        <input type="checkbox" value="OWNER" class="role-checkbox"-->
+<!--                               [checked]="checked[assignableRole.scopeId]['owner']"-->
+<!--                               (change)="updateRole($event, assignableRole.scopeId)">-->
+<!--                        Owner-->
+<!--                    </span>-->
+<!--                    <ng-template ngFor let-roleIndex [ngForOf]="Object.keys(assignableRole.roles)">-->
+<!--                        <span class="mr1 flex items-center align-baseline" *ngIf="assignableRole.roles[roleIndex]">-->
+<!--                            <input type="checkbox" class="role-checkbox"-->
+<!--                                   *ngIf="assignableRole.roles[roleIndex]"-->
+<!--                                   [disabled]="disabled[assignableRole.scopeId]"-->
+<!--                                   [(ngModel)]="checked[assignableRole.scopeId][assignableRole.roles[roleIndex].id]"-->
+<!--                                   (change)="updateRole($event, assignableRole.scopeId)">-->
+<!--                            {{assignableRole.roles[roleIndex].name}}-->
+<!--                        </span>-->
+<!--                        <i *ngIf="!assignableRole.roles[roleIndex]" class="mr2">-->
+<!--                            Upgrade-->
+<!--                        </i>-->
+<!--                    </ng-template>-->
+<!--                </ng-template>-->
+<!--            </div>-->
+
+<!--            <p class="mb0 mt050 text-red"-->
+<!--               *ngIf="errors[assignableRole.scopeId]">{{errors[assignableRole.scopeId]}}</p>-->
+<!--        </td>-->
+
+<!--    </tr>-->
+<!--    </tbody>-->
+<!--</table>-->
 
 <div class="flex align-center items-center justify-between p1 p-4 apply-bar" *ngIf="!hideApply">
     <div></div>
