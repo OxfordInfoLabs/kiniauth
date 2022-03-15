@@ -35,6 +35,7 @@ import { NotificationComponent } from './lib/views/notifications/notification/no
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { AccountsComponent } from './lib/views/accounts/accounts.component';
 import { InvitationComponent } from './lib/views/invitation/invitation.component';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
     declarations: [
@@ -67,6 +68,7 @@ import { InvitationComponent } from './lib/views/invitation/invitation.component
         RouterModule,
         CommonModule,
         FormsModule,
+        HttpClientModule,
         ReactiveFormsModule,
         MatPaginatorModule,
         MatIconModule,

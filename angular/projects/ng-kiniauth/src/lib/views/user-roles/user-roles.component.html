@@ -1,20 +1,7 @@
 <div class="user-roles">
-    <div class="actionpanel sixtyforty" [ngClass]="{edit: editDetails}">
 
-        <div class="actioninfo p2w p1m">
-            <h4 class="mb1 mt0">User Details</h4>
-
-            <p>
-                <b>Name: </b>{{user.name}}<br>
-                <b>Email Address: </b>{{user.emailAddress}}
-            </p>
-
-        </div>
-        <div class="actions flex flex-col align-center justify-center p1">
-
-        </div>
-
-    </div>
+    <div class="text-base font-medium">{{user.name}}</div>
+    <div class="text-sm text-gray-400 mb-4 border-b pb-4 border-gray-200">{{user.emailAddress}}</div>
 
     <div class="text-base font-medium text-gray-900 mb-4">Permissions</div>
 

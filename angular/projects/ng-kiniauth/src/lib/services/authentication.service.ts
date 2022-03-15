@@ -4,8 +4,8 @@ import {KinibindRequestService} from 'ng-kinibind';
 import {BehaviorSubject} from 'rxjs/internal/BehaviorSubject';
 import * as _ from 'lodash';
 import * as sha512 from 'js-sha512' ;
-import {HttpHeaders} from '@angular/common/http';
-import {map} from "rxjs/operators";
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {map} from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +17,8 @@ export class AuthenticationService {
     public loadingRequests: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     constructor(private kbRequest: KinibindRequestService,
-                private config: KiniAuthModuleConfig) {
+                private config: KiniAuthModuleConfig,
+                private http: HttpClient) {
 
         const user = sessionStorage.getItem('loggedInUser');
         this.authUser.next(JSON.parse(user));
@@ -72,6 +73,11 @@ export class AuthenticationService {
                 });
             }
         });
+    }
+
+    public updateApplicationSettings(settings) {
+        return this.http.put(this.config.accessHttpURL + '/user/applicationSettings', settings
+        ).toPromise();
     }
 
     public isAdminNow() {
