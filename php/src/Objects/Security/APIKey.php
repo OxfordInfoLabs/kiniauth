@@ -65,7 +65,7 @@ class APIKey extends Securable {
         $this->regenerate();
     }
 
-
+    
     /**
      * @return int
      */
