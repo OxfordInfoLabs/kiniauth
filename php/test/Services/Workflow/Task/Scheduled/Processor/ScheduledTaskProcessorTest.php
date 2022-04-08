@@ -16,6 +16,7 @@ use Kinikit\Core\DependencyInjection\Proxy;
 use Kinikit\Core\Proxy\ProxyGenerator;
 use Kinikit\Core\Testing\ConcreteClassGenerator;
 use Kinikit\Core\Testing\MockObjectProvider;
+use Kinikit\Persistence\Database\Connection\DatabaseConnectionProvider;
 
 include_once "autoloader.php";
 
@@ -50,7 +51,7 @@ class ScheduledTaskProcessorTest extends TestBase {
         $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("success", "Successful task", ["game" => "set"], [new ScheduledTaskTimePeriod(null, null, 0, 0)]), null, 1);
 
         // Process the scheduled task
-        $this->processor->processScheduledTask($scheduledTask);
+        $scheduledTask = $this->processor->processScheduledTask($scheduledTask);
 
         // Check the scheduled task updated as expected and saved and that a log entry was created
         $this->assertNotNull($scheduledTask->getId());
@@ -92,7 +93,7 @@ class ScheduledTaskProcessorTest extends TestBase {
             new ScheduledTaskTimePeriod(null, null, 0, 0)]), null, 1);
 
         // Process the scheduled task
-        $this->processor->processScheduledTask($scheduledTask);
+        $scheduledTask = $this->processor->processScheduledTask($scheduledTask);
 
         // Check the scheduled task updated as expected and saved and that a log entry was created
         $this->assertNotNull($scheduledTask->getId());
@@ -139,7 +140,52 @@ class ScheduledTaskProcessorTest extends TestBase {
         $reTask->save();
 
         // Process the scheduled task
-        $this->processor->processScheduledTask($scheduledTask);
+        $scheduledTask = $this->processor->processScheduledTask($scheduledTask);
+
+        // Check it was ignored and not updated
+        $this->assertNull($scheduledTask->getLastStartTime());
+        $this->assertNull($scheduledTask->getLastEndTime());
+        $this->assertEquals(ScheduledTask::STATUS_RUNNING, $scheduledTask->getStatus());
+
+    }
+
+
+    public function testIfScheduledTaskAlreadyCompletedWithFutureNextStartDateItIsSkipped() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $successTask = MockObjectProvider::instance()->getMockInstance(Task::class);
+        $successTask->returnValue("run", [
+            "result" => "Hello"
+        ], [
+            ["game" => "set"]
+        ]);
+
+        Container::instance()->addInterfaceImplementation(Task::class, "success", get_class($successTask));
+        Container::instance()->set(get_class($successTask), $successTask);
+
+        $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("success", "Successful task", ["game" => "set"], []), null, 1);
+        $scheduledTask->save();
+
+        /**
+         * @var $databaseConnectionProvider DatabaseConnectionProvider
+         */
+        $databaseConnectionProvider = Container::instance()->get(DatabaseConnectionProvider::class);
+
+        $databaseConnection = $databaseConnectionProvider->getDatabaseConnectionByConfigKey(null);
+
+        $nextStartTime = new \DateTime();
+        $nextStartTime->sub(new \DateInterval("P1D"));
+        $databaseConnection->execute("UPDATE ka_scheduled_task SET next_start_time = ? WHERE id = ?", $nextStartTime->format("Y-m-d H:i:s"), $scheduledTask->getId());
+        $scheduledTask = ScheduledTask::fetch($scheduledTask->getId());
+
+        $nextStartTime = new \DateTime();
+        $nextStartTime->add(new \DateInterval("P1D"));
+        $databaseConnection->execute("UPDATE ka_scheduled_task SET next_start_time = ? WHERE id = ?", $nextStartTime->format("Y-m-d H:i:s"), $scheduledTask->getId());
+
+        // Process the scheduled task
+        $scheduledTask = $this->processor->processScheduledTask($scheduledTask);
+
 
         // Check it was ignored and not updated
         $this->assertNull($scheduledTask->getLastStartTime());

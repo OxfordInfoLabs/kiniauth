@@ -34,7 +34,7 @@ abstract class ScheduledTaskProcessor {
      * @param ScheduledTask $scheduledTask
      */
     public function processScheduledTask($scheduledTask) {
-        
+
         $output = null;
         try {
 
@@ -42,9 +42,11 @@ abstract class ScheduledTaskProcessor {
             if ($scheduledTask->getId())
                 $scheduledTask = ScheduledTask::fetch($scheduledTask->getId());
 
+
             // Return if we are already in a running state
-            if ($scheduledTask->getStatus() == ScheduledTask::STATUS_RUNNING)
-                return;
+            if (($scheduledTask->getStatus() == ScheduledTask::STATUS_RUNNING) ||
+                ($scheduledTask->getNextStartTime() > new \DateTime()))
+                return $scheduledTask;
 
 
             // Grab the task from the container
@@ -76,6 +78,8 @@ abstract class ScheduledTaskProcessor {
             $scheduledTask->getStatus(), $output);
 
         $logEntry->save();
+
+        return $scheduledTask;
 
     }
 
