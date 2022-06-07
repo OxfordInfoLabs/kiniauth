@@ -519,8 +519,11 @@ class UserService {
             ], $userId);
 
             return true;
-        }
-        return false;
+        } else {
+            throw new ValidationException(["password" => [
+                "invalid" => new FieldValidationError("password", "invalid", "The supplied password was incorrect")
+            ]]);
+        };
     }
 
     /**
@@ -545,8 +548,11 @@ class UserService {
             ], $userId);
 
             return true;
-        }
-        return false;
+        } else {
+            throw new ValidationException(["password" => [
+                "invalid" => new FieldValidationError("password", "invalid", "The supplied password was incorrect")
+            ]]);
+        };
     }
 
     /**
@@ -571,8 +577,11 @@ class UserService {
             ], $userId);
 
             return true;
-        }
-        return false;
+        } else {
+            throw new ValidationException(["password" => [
+                "invalid" => new FieldValidationError("password", "invalid", "The supplied password was incorrect")
+            ]]);
+        };
     }
 
     /**
@@ -598,8 +607,11 @@ class UserService {
 
 
             return true;
-        }
-        return false;
+        } else {
+            throw new ValidationException(["password" => [
+                "invalid" => new FieldValidationError("password", "invalid", "The supplied password was incorrect")
+            ]]);
+        };
     }
 
     public function changeUserDetails($newEmailAddress, $newName, $password, $userId) {
@@ -610,8 +622,11 @@ class UserService {
             $user->setName($newName);
             $user->save();
             return true;
-        }
-        return false;
+        } else {
+            throw new ValidationException(["password" => [
+                "invalid" => new FieldValidationError("password", "invalid", "The supplied password was incorrect")
+            ]]);
+        };
     }
 
 
