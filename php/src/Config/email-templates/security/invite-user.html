@@ -1,18 +1,17 @@
 Subject: Invitation to join {{settings.brandName}} account
 To: {{emailAddress}}
 ---
-{{{header}}}
+{{> header }}
 <p>Hi There</p>
 
 <p>You have been invited to join the {{settings.brandName}} account with name {{account.name}}</p>
 
 <p>If you are not expecting this request, please ignore this email.</p>
 
-<p>To accept this invitation and join the account, please click this link
-    {{settings.userInvitationURL}}?invitationCode={{invitationCode}}&newUser={{newUser}}.</p>
+<p style="margin:0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;"><a href="{{settings.userInvitationURL}}?invitationCode={{invitationCode}}&newUser={{newUser}}" style="background-color:#039590;color:#ffffff;text-decoration:none;border-radius: 5px;box-sizing: border-box;cursor: pointer;display: inline-block;font-size: 16px;font-weight: normal;padding: 12px 25px">Accept Invitation →</a></p>
 
 <p>Kind regards</p>
 
 <p>The {{settings.brandName}} team</p>
 
-{{{footer}}}
+{{> footer }}

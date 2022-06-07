@@ -36,33 +36,6 @@ class BrandedTemplatedEmail extends TemplatedEmail {
             $replyTo = $settings["replyToEmailAddress"] ?? null;
         }
 
-        /**
-         * Create a file resolver
-         *
-         * @var FileResolver $fileResolver
-         */
-        $fileResolver = Container::instance()->get(FileResolver::class);
-
-        /**
-         * Create a template parser
-         *
-         * @var TemplateParser $templateParser
-         */
-        $templateParser = Container::instance()->get(TemplateParser::class);
-
-        // Header
-        $header = $fileResolver->resolveFile("Config/email-templates/header.html");
-        if ($header) {
-            $model["header"] = $templateParser->parseTemplateText(file_get_contents($header), $model);
-        }
-
-
-        // Header
-        $footer = $fileResolver->resolveFile("Config/email-templates/footer.html");
-        if ($footer) {
-            $model["footer"] = $templateParser->parseTemplateText(file_get_contents($footer), $model);
-        }
-
         parent::__construct($templateName, $model, $recipients, $from, null, null, null, $replyTo, $attachments);
     }
 

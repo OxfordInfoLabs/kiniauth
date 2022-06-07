@@ -61,10 +61,6 @@ class BrandedTemplatedEmailTest extends TestBase {
         $this->assertEquals($this->settingsService->getParentAccountSettingValues(2), $model["settings"]);
         $this->assertEquals(Account::fetch(2), $model["account"]);
 
-        // Also check for header and footer convenience models
-        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/header.html"), $model), $model["header"]);
-        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/footer.html"), $model), $model["footer"]);
-
         $this->assertEquals("Kiniauth Example <info@kiniauth.example>", $accountTemplatedEmail->getFrom());
         $this->assertEquals("noreply@kiniauth.example", $accountTemplatedEmail->getReplyTo());
         $this->assertEquals(["Simon Car Wash <simon@peterjonescarwash.com>", "James Smartcoasting <james@smartcoasting.org>", "Mary Shopping <mary@shoppingonline.com>"], $accountTemplatedEmail->getRecipients());
@@ -82,9 +78,6 @@ class BrandedTemplatedEmailTest extends TestBase {
         $this->assertEquals($this->settingsService->getParentAccountSettingValues(5), $model["settings"]);
         $this->assertEquals(Account::fetch(5), $model["account"]);
 
-        // Also check for header and footer convenience models
-        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/header.html"), $model), $model["header"]);
-        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/footer.html"), $model), $model["footer"]);
 
         $this->assertEquals("Sam Davis Retail <info@samdavis.org>", $accountTemplatedEmail->getFrom());
         $this->assertEquals("noreply@samdavis.org", $accountTemplatedEmail->getReplyTo());
@@ -110,10 +103,6 @@ class BrandedTemplatedEmailTest extends TestBase {
         $this->assertEquals($this->settingsService->getParentAccountSettingValues(null, 2), $model["settings"]);
         $this->assertEquals(User::fetch(2), $model["user"]);
 
-        // Also check for header and footer convenience models
-        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/header.html"), $model), $model["header"]);
-        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/footer.html"), $model), $model["footer"]);
-
         $this->assertEquals("Kiniauth Example <info@kiniauth.example>", $userTemplatedEmail->getFrom());
         $this->assertEquals("noreply@kiniauth.example", $userTemplatedEmail->getReplyTo());
         $this->assertEquals(["Sam Davis <sam@samdavisdesign.co.uk>"], $userTemplatedEmail->getRecipients());
@@ -131,9 +120,6 @@ class BrandedTemplatedEmailTest extends TestBase {
         $this->assertEquals($this->settingsService->getParentAccountSettingValues(null, 9), $model["settings"]);
         $this->assertEquals(User::fetch(9), $model["user"]);
 
-        // Also check for header and footer convenience models
-        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/header.html"), $model), $model["header"]);
-        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/footer.html"), $model), $model["footer"]);
 
         $this->assertEquals("Sam Davis Retail <info@samdavis.org>", $userTemplatedEmail->getFrom());
         $this->assertEquals("noreply@samdavis.org", $userTemplatedEmail->getReplyTo());
@@ -155,10 +141,6 @@ class BrandedTemplatedEmailTest extends TestBase {
 
         // Check the additional models are there which we expect
         $this->assertEquals($this->settingsService->getParentAccountSettingValues(null, null), $model["settings"]);
-
-        // Also check for header and footer convenience models
-        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/header.html"), $model), $model["header"]);
-        $this->assertEquals($this->templateParser->parseTemplateText(file_get_contents(__DIR__ . "/../../../../src/Config/email-templates/footer.html"), $model), $model["footer"]);
 
         $this->assertEquals("Kiniauth Example <info@kiniauth.example>", $superUserEmail->getFrom());
         $this->assertEquals("noreply@kiniauth.example", $superUserEmail->getReplyTo());
