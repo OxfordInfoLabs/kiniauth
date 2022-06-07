@@ -555,6 +555,31 @@ class UserService {
         };
     }
 
+
+    /**
+     * Direct change of password as initiated from the dashboard.  Existing password is supplied in hashed format for
+     * comparison and validation
+     *
+     * @param $newHashedPassword
+     * @param $existingPassword
+     */
+    public function changeUserPassword($newHashedPassword, $existingPassword, $userId = User::LOGGED_IN_USER) {
+
+        /** @var User $user */
+        $user = User::fetch($userId);
+
+        // If existing password valid, save new password
+        if ($this->validateUserPassword($user->getEmailAddress(), $existingPassword)) {
+            $user->setHashedPassword($newHashedPassword);
+            $user->save();
+        } else {
+            throw new ValidationException(["password" => [
+                "invalid" => new FieldValidationError("password", "invalid", "The supplied password was incorrect")
+            ]]);
+        }
+    }
+
+
     /**
      * @param $newMobile
      * @param $password

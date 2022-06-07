@@ -852,4 +852,39 @@ class UserServiceTest extends TestBase {
 
     }
 
+
+    public function testCanChangeUserPasswordBySupplyingOldAndNewOne() {
+
+        $userId = $this->userService->createUser("examplechange@hello.world", AuthenticationHelper::hashNewPassword("passwordexamplechange@hello.world"), "Example Change");
+
+        AuthenticationHelper::login("examplechange@hello.world", "password");
+
+
+        $session = Container::instance()->get(Session::class);
+        $sessionSalt = $session->__getSessionSalt();
+        $existingHashedPassword = AuthenticationHelper::hashNewPassword(
+            AuthenticationHelper::hashNewPassword("passwordexamplechange@hello.world") . $sessionSalt);
+
+
+        $newHashedPassword = AuthenticationHelper::hashNewPassword("updatedexamplechange@hello.world");
+
+
+        $this->userService->changeUserPassword($newHashedPassword, $existingHashedPassword, $userId);
+
+        AuthenticationHelper::logout();
+
+        try {
+            AuthenticationHelper::login("examplechange@hello.world", "password");
+            $this->fail("Should have thrown here");
+        } catch (InvalidLoginException $e) {
+            // OK
+        }
+
+
+        AuthenticationHelper::login("examplechange@hello.world", "updated");
+        $this->assertTrue(true);
+
+
+    }
+
 }

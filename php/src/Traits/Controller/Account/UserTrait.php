@@ -102,6 +102,19 @@ trait UserTrait {
         return $this->userService->changeUserEmail($newEmailAddress, $password, $hashedPassword, $userId);
     }
 
+
+    /**
+     * Change user password
+     *
+     * @param $newPassword
+     * @param $password
+     * @param string $userId
+     */
+    public function changeUserPassword($newPassword, $password) {
+        $this->userService->changeUserPassword($newPassword, $password);
+    }
+
+
     /**
      * Change the logged in user backup email
      *
