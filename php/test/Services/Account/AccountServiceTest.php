@@ -8,6 +8,7 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Application\Activity;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
+use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
@@ -379,7 +380,7 @@ class AccountServiceTest extends TestBase {
     }
 
 
-    public function testNewUserCreatedCorrectlyIfValidInvitationCodeAndPassword() {
+    public function testNewUserCreatedCorrectlyAndUserWelcomeEmailSentIfValidInvitationCodeAndPassword() {
 
         $this->authenticationService->logout();
 
@@ -391,7 +392,20 @@ class AccountServiceTest extends TestBase {
                 "newUser" => true]);
 
 
-        $this->accountService->acceptUserInvitationForAccount($invitationCode, AuthenticationHelper::hashNewPassword("helloJeffrey1"));
+        $this->mockPendingActionService->returnValue("getPendingActionByIdentifier", $this->pendingActionService->getPendingActionByIdentifier("USER_INVITE", $invitationCode), [
+            "USER_INVITE", $invitationCode
+        ]);
+
+
+        $interceptor = Container::instance()->get(ActiveRecordInterceptor::class);
+
+
+        // Simulate insecure - usually implemented by annotation.
+        $interceptor->executeInsecure(function () use ($invitationCode) {
+
+            $this->mockedAccountService->acceptUserInvitationForAccount($invitationCode, AuthenticationHelper::hashNewPassword("helloJeffrey1"));
+
+        });
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
@@ -402,10 +416,16 @@ class AccountServiceTest extends TestBase {
         $this->assertEquals(1, sizeof($newUser->getRoles()));
         $this->assertEquals(3, $newUser->getRoles()[0]->getRoleId());
 
+        // Check email was sent
+        $targetEmail = new UserTemplatedEmail($newUser->getId(), "security/invited-user-welcome", ["emailAddress" => "newuser@samdavisdesign.co.uk"]);
+
+        $this->assertTrue($this->mockEmailService->methodWasCalled("send", [$targetEmail, 1, $newUser->getId()]));
+
+
     }
 
 
-    public function testExistingUserAddedToAccountCorrectlyIfValidInvitationCodeAndPassword() {
+    public function testExistingUserAddedToAccountCorrectlyIfValidInvitationCodeAndPasswordAndNoEmailSent() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
@@ -428,7 +448,18 @@ class AccountServiceTest extends TestBase {
                 "newUser" => false]);
 
 
-        $this->accountService->acceptUserInvitationForAccount($invitationCode);
+        $this->mockPendingActionService->returnValue("getPendingActionByIdentifier", $this->pendingActionService->getPendingActionByIdentifier("USER_INVITE", $invitationCode), [
+            "USER_INVITE", $invitationCode
+        ]);
+
+
+        $interceptor = Container::instance()->get(ActiveRecordInterceptor::class);
+
+
+        // Simulate insecure - usually implemented by annotation.
+        $interceptor->executeInsecure(function () use ($invitationCode) {
+            $this->mockedAccountService->acceptUserInvitationForAccount($invitationCode);
+        });
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
@@ -438,6 +469,8 @@ class AccountServiceTest extends TestBase {
         $this->assertEquals(3, sizeof($newUser->getRoles()));
         $this->assertEquals(4, $newUser->getRoles()[0]->getAccountId());
         $this->assertEquals(3, $newUser->getRoles()[0]->getRoleId());
+
+        $this->assertFalse($this->mockEmailService->methodWasCalled("send"));
 
     }
 

@@ -8,6 +8,7 @@ use Kiniauth\Exception\Security\UserAlreadyAttachedToAccountException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
+use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
@@ -331,6 +332,14 @@ class AccountService {
 
             // Remove the pending action once completed.
             $this->pendingActionService->removePendingAction("USER_INVITE", $invitationCode);
+
+            // If a new user, send email
+            if ($pendingData["newUser"]) {
+
+                $this->emailService->send(new UserTemplatedEmail($user->getId(), "security/invited-user-welcome", [
+                    "emailAddress" => $pendingData["emailAddress"]
+                ]), $accountSummary->getAccountId(), $user->getId());
+            }
 
         } catch (ItemNotFoundException $e) {
             throw new ValidationException(["invitationCode" => new FieldValidationError("invitationCode", "invalid", "Invalid invitation code supplied for user invitation")]);
