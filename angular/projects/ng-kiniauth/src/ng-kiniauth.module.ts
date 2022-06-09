@@ -36,6 +36,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import { AccountsComponent } from './lib/views/accounts/accounts.component';
 import { InvitationComponent } from './lib/views/invitation/invitation.component';
 import {HttpClientModule} from '@angular/common/http';
+import { PasswordResetComponent } from './lib/views/password-reset/password-reset.component';
+import { ChangePasswordComponent } from './lib/views/account-summary/change-password/change-password.component';
 
 @NgModule({
     declarations: [
@@ -61,7 +63,9 @@ import {HttpClientModule} from '@angular/common/http';
         NotificationsComponent,
         NotificationComponent,
         AccountsComponent,
-        InvitationComponent
+        InvitationComponent,
+        PasswordResetComponent,
+        ChangePasswordComponent
     ],
     imports: [
         NgKinibindModule,
@@ -95,7 +99,8 @@ import {HttpClientModule} from '@angular/common/http';
         NotificationsComponent,
         NotificationComponent,
         AccountsComponent,
-        InvitationComponent
+        InvitationComponent,
+        PasswordResetComponent
     ]
 })
 export class NgKiniAuthModule {

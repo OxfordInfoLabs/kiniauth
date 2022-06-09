@@ -75,6 +75,39 @@ export class AuthenticationService {
         });
     }
 
+    public sendPasswordReset(emailAddress, recaptcha?) {
+        const headers = new HttpHeaders({'X-CAPTCHA-TOKEN': recaptcha || ''});
+
+        return this.http.get(this.config.guestHttpURL + '/auth/passwordReset', {
+            params: {emailAddress},
+            headers
+        }).toPromise();
+    }
+
+    public getEmailForPasswordReset(resetCode) {
+        return this.http.get(this.config.guestHttpURL + '/auth/passwordReset/' + resetCode)
+            .toPromise();
+    }
+
+    public resetPassword(emailAddress, newPassword, resetCode, recaptcha) {
+        const headers = new HttpHeaders({'X-CAPTCHA-TOKEN': recaptcha || ''});
+        const options: any = {headers};
+
+        return this.http.post(this.config.guestHttpURL + '/auth/passwordReset', {
+            newPassword: this.getHashedPassword(newPassword, emailAddress, true),
+            resetCode
+        }, options).toPromise();
+    }
+
+    public changeUserPassword(newPassword, existingPassword, email) {
+        return this.http.get(this.config.accessHttpURL + '/user/changeUserPassword', {
+            params: {
+                newPassword: this.getHashedPassword(newPassword, email, true),
+                password: this.getHashedPassword(existingPassword, email)
+            }
+        }).toPromise();
+    }
+
     public updateApplicationSettings(settings) {
         return this.http.put(this.config.accessHttpURL + '/user/applicationSettings', settings
         ).toPromise();

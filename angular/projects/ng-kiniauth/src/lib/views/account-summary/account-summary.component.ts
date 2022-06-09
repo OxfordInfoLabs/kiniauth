@@ -30,6 +30,7 @@ export class AccountSummaryComponent extends BaseComponent implements OnInit, On
     public editMobile = false;
     public editBackup = false;
     public enableTwoFa = false;
+    public changePassword = false;
 
     private userSub: Subscription;
 

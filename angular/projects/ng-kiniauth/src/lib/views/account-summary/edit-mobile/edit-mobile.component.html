@@ -1,27 +1,41 @@
-<p class="mb2">
-    Change your mobile number. You will be required to confirm you identity by entering your password
-    prior to saving the new number.
-</p>
+<div class="space-y-8 divide-y divide-gray-200 p-6">
+    <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+        <div>
+            <div class="mb-8">
+                Change your mobile number. You will be required to confirm you identity by entering your password
+                prior to saving the new number.
+            </div>
+            <div class="space-y-6 sm:space-y-5">
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
+                    <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Enter the new mobile number you want to use.</label>
+                    <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <input type="text" name="name" [(ngModel)]="newMobile"
+                               class="max-w-lg block w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-6 sm:space-y-5">
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
+                    <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Enter current password to confirm name change.</label>
+                    <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <input type="password" name="password" [(ngModel)]="currentPassword"
+                               class="max-w-lg block w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pt-5">
+        <div *ngIf="saveError" class="my-8 flex align-center error text-red-600">
+            {{saveError}}
+        </div>
 
-<div class="mb2">
-    <label>Enter the new mobile number you want to use.</label>
-    <input type="text" placeholder="New mobile number" [(ngModel)]="newMobile" maxlength="30">
+        <div class="flex justify-end">
+            <button type="button" [disabled]="!newMobile || !currentPassword" (click)="saveMobileNumber()"
+                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary focus:outline-none">
+                Update mobile number</button>
+        </div>
+    </div>
 </div>
-
-<div class="mb2">
-    <label>Enter current password to confirm change.</label>
-    <input type="password" placeholder="Enter password" [(ngModel)]="currentPassword" maxlength="100">
-</div>
-
-<div class="flex align-center justify-between">
-    <div></div>
-    <button type="button" class="but butsm"
-            [disabled]="!newMobile || !currentPassword"
-            (click)="saveMobileNumber()">
-        Update mobile number
-    </button>
-</div>
-
-<p *ngIf="saveError" class="mt2 flex align-center error">
-    {{saveError}}
-</p>

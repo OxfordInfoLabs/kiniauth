@@ -15,7 +15,7 @@ export class AccountsComponent implements OnInit {
 
     public accounts: any[];
     public searchText = new BehaviorSubject<string>('');
-    public limit = new BehaviorSubject<number>(10);
+    public limit = new BehaviorSubject<number>(100);
     public offset = new BehaviorSubject<number>(0);
     public pageIndex = 0;
     public resultSize = 0;
@@ -132,6 +132,7 @@ export class AccountsComponent implements OnInit {
             this.limit.getValue(),
             this.offset.getValue()
         ).pipe(map((data: any) => {
+            this.resultSize = data.length;
             return data;
         }));
     }
