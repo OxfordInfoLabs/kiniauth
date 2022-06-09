@@ -82,7 +82,6 @@ trait Auth {
      *
      * @param $emailAddress
      *
-     * @captcha
      */
     public function requestPasswordReset($emailAddress) {
         $this->userService->sendPasswordReset($emailAddress);

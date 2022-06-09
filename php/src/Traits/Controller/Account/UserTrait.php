@@ -106,6 +106,8 @@ trait UserTrait {
     /**
      * Change user password
      *
+     * @http GET /changeUserPassword
+     *
      * @param $newPassword
      * @param $password
      * @param string $userId
@@ -267,5 +269,27 @@ trait UserTrait {
      */
     public function switchActiveAccount($accountId, $userId = User::LOGGED_IN_USER) {
         $this->userService->switchActiveAccount($accountId, $userId);
+    }
+
+    /**
+     * Unlock a user account
+     *
+     * @http GET /unlock
+     *
+     * @param $userId
+     */
+    public function unlockUser($userId) {
+        $this->userService->unlockUserByUserId($userId);
+    }
+
+    /**
+     * Suspend a user
+     *
+     * @http GET /suspend
+     *
+     * @param $userId
+     */
+    public function suspendUser($userId) {
+        $this->userService->suspendUser($userId);
     }
 }

@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import {UserService} from '../../services/user.service';
 import {Router} from '@angular/router';
+import {AuthenticationService} from '../../services/authentication.service';
 
 @Component({
     selector: 'ka-account-users',
@@ -39,7 +40,8 @@ export class AccountUsersComponent implements OnInit {
     private moment = moment;
 
     constructor(private userService: UserService,
-                private router: Router) {
+                private router: Router,
+                private authService: AuthenticationService) {
     }
 
     ngOnInit() {
@@ -67,6 +69,7 @@ export class AccountUsersComponent implements OnInit {
                 this.newAdminPassword = null;
                 this.newAdminUser = false;
                 this.newAdminAdded = true;
+                this.reloadUsers.next(Date.now());
                 setTimeout(() => {
                     this.newAdminAdded = false;
                 }, 3000);
@@ -115,13 +118,13 @@ export class AccountUsersComponent implements OnInit {
         const message = 'Are you sure you would like to remove this user?';
         if (window.confirm(message)) {
             this.userService.removeUserFromAccount(user.id).then(() => {
-                this.reloadUsers.next(this.moment().unix());
+                this.reloadUsers.next(Date.now());
             });
         }
     }
 
     public resetPassword(user) {
-        this.userService.requestPasswordReset(user.emailAddress).then(() => {
+        this.authService.sendPasswordReset(user.emailAddress, null).then(() => {
             this.passwordReset = true;
             setTimeout(() => {
                 this.passwordReset = false;
@@ -132,6 +135,7 @@ export class AccountUsersComponent implements OnInit {
     public unlockUser(userId) {
         this.userService.unlockUser(userId).then(() => {
             this.userUnlocked = true;
+            this.reloadUsers.next(Date.now());
             setTimeout(() => {
                 this.userUnlocked = false;
             }, 3000);
@@ -141,6 +145,7 @@ export class AccountUsersComponent implements OnInit {
     public suspendUser(userId) {
         this.userService.suspendUser(userId).then(() => {
             this.userSuspended = true;
+            this.reloadUsers.next(Date.now());
             setTimeout(() => {
                 this.userSuspended = false;
             }, 3000);

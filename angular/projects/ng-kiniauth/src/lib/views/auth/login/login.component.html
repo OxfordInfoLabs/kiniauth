@@ -1,49 +1,94 @@
 <div class="login">
 
-    <div class="login-container" *ngIf="!twoFA && !activeSession">
+    <div class="login-container" *ngIf="!twoFA && !activeSession && !forgottenPassword">
 
-        <h1>Login</h1>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
 
         <label>Enter your username or email address</label>
         <input type="text" placeholder="Username" name="email" [(ngModel)]="email" required
                (change)="checkUsername()">
 
-        <label>Enter your password <a href="#">I've forgotten my password</a></label>
+        <label>Enter your password</label>
         <input type="password" placeholder="Password" name="password" [(ngModel)]="password"
                (keyup.enter)="login()" required>
 
         <p class="error" *ngIf="loginError">Email or password incorrect, please check and try again.</p>
 
-        <re-captcha class="mt1" *ngIf="showRecaptcha" (resolved)="recaptchaResolved($event)"
+        <re-captcha class="mt-8" *ngIf="showRecaptcha" (resolved)="recaptchaResolved($event)"
                     [siteKey]="recaptchaKey"></re-captcha>
 
-        <button class="button small-button login-button" *ngIf="!loading" (click)="login()"
-                [disabled]="!email || !password">Sign in
+        <button
+            class="mt-8 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary focus:outline-none"
+            *ngIf="!loading" (click)="login()"
+            [disabled]="!email || !password">Sign in
         </button>
+
+        <a class="text-center text-secondary mt-4 cursor-pointer hover:underline"
+           (click)="forgottenPassword = true">I've forgotten my password</a>
+    </div>
+
+    <div class="login-container" *ngIf="forgottenPassword">
+
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Forgotten Password
+        </h2>
+
+        <ng-template [ngIf]="!passwordResetSent">
+            <label>Enter your username or email address</label>
+            <input type="text" placeholder="Email address" name="forgottenEmail" [(ngModel)]="forgottenEmail" required>
+
+            <re-captcha class="mt-8" (resolved)="recaptchaResolved($event)"
+                        [siteKey]="recaptchaKey"></re-captcha>
+
+            <button
+                class="mt-8 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary focus:outline-none"
+                (click)="sendForgottenPassword()" [disabled]="!forgottenEmail">
+                Request Password Reset
+            </button>
+        </ng-template>
+
+        <div *ngIf="passwordResetSent" class="py-8 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-secondary mr-4" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div class="font-medium text-lg">Password reset has been requested.</div>
+        </div>
+
+        <a class="justify-center text-primary mt-4 cursor-pointer hover:underline flex items-center"
+           (click)="forgottenPassword = false; passwordResetSent = false">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
+            </svg>
+            Back to login</a>
     </div>
 
     <div class="two-fa-container" *ngIf="activeSession">
         <p class="text-center">We have detected other active logged in sessions for your user account. To continue with
             this login and terminate any other active sessions please click the button below.</p>
 
-        <button class="button small-button session-button" (click)="closeActiveSession()">Close my other sessions and
+        <button
+            class="mt-8 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-danger focus:outline-none"
+            (click)="closeActiveSession()">Close my other sessions and
             continue
         </button>
     </div>
 
     <div class="two-fa-container" *ngIf="twoFA">
-
-        <h4>Two Factor Authentication</h4>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Two Factor Authentication</h2>
 
         <p>Enter your second factor authentication code.</p>
 
         <input placeholder="Verification code" [(ngModel)]="twoFACode"
                (keyup.enter)="authenticate()">
 
-        <p class="error" *ngIf="twoFAError">Invalid code, please try again.</p>
+        <p class="error py-4" *ngIf="twoFAError">Invalid code, please try again.</p>
 
-        <button class="button small-button login-button" *ngIf="!loading" (click)="authenticate()"
-                [disabled]="!twoFACode">Login
+        <button
+            class="mt-8 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary focus:outline-none"
+            *ngIf="!loading" (click)="authenticate()"
+            [disabled]="!twoFACode">Login
         </button>
 
     </div>

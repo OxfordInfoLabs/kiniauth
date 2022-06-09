@@ -15,6 +15,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     @Input() recaptchaKey: string;
 
     public email: string;
+    public forgottenEmail: string;
     public password: string;
     public loading = false;
     public loginError = false;
@@ -24,6 +25,8 @@ export class LoginComponent extends BaseComponent implements OnInit {
     public showRecaptcha = false;
     public recaptchaResponse: string;
     public activeSession = false;
+    public forgottenPassword = false;
+    public passwordResetSent = false;
 
     constructor(private router: Router,
                 kcAuthService: AuthenticationService) {
@@ -68,6 +71,15 @@ export class LoginComponent extends BaseComponent implements OnInit {
                     this.loading = false;
                 });
         }
+    }
+
+    public sendForgottenPassword() {
+        this.authService.sendPasswordReset(this.forgottenEmail, this.recaptchaResponse).then(() => {
+            this.passwordResetSent = true;
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
+        });
     }
 
     public closeActiveSession() {
