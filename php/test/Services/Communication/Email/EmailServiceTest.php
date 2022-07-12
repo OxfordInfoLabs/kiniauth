@@ -2,7 +2,7 @@
 
 namespace Kiniauth\Test\Services\Communication\Email;
 
-use Kiniauth\Objects\Communication\Attachment\Attachment;
+use Kiniauth\Objects\Attachment\Attachment;
 use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Communication\Email\StoredEmailSendResult;
 use Kiniauth\Services\Communication\Email\EmailService;

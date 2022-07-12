@@ -5,14 +5,16 @@ namespace Kiniauth\Services\Communication\Email;
 
 
 use Kiniauth\Objects\Account\Account;
-use Kiniauth\Objects\Communication\Attachment\Attachment;
+use Kiniauth\Objects\Attachment\Attachment;
+use Kiniauth\Objects\Attachment\AttachmentSummary;
 use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Communication\Email\StoredEmailSendResult;
+use Kiniauth\Services\Attachment\AttachmentService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kinikit\Core\Communication\Email\Email;
-use Kinikit\Core\Communication\Email\EmailSendResult;
 use Kinikit\Core\Communication\Email\Provider\EmailProvider;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Stream\String\ReadOnlyStringStream;
 
 /**
  * Service for sending and querying for sent emails.
@@ -25,14 +27,21 @@ class EmailService {
      */
     private $provider;
 
+    /**
+     * @var AttachmentService
+     */
+    private $attachmentService;
+
 
     /**
      * Construct with the current provider.
      *
      * @param EmailProvider $provider
+     * @param AttachmentService $attachmentService
      */
-    public function __construct($provider) {
+    public function __construct($provider, $attachmentService) {
         $this->provider = $provider;
+        $this->attachmentService = $attachmentService;
     }
 
 
@@ -58,8 +67,8 @@ class EmailService {
 
             if (is_array($email->getAttachments())) {
                 foreach ($email->getAttachments() as $attachment) {
-                    $attachment = new Attachment("Email", $storedEmail->getId(), $attachment->getContent(), $attachment->getContentMimeType(), $attachment->getAttachmentFilename(), $accountId);
-                    $attachment->save();
+                    $attachmentSummary = new AttachmentSummary($attachment->getAttachmentFilename(), $attachment->getContentMimeType(), "Email", $storedEmail->getId(), null, null, $accountId);
+                    $this->attachmentService->saveAttachment($attachmentSummary, new ReadOnlyStringStream($attachment->getContent()));
                 }
 
             }

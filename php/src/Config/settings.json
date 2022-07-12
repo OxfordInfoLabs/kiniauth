@@ -21,6 +21,13 @@
     "scope": "ALL"
   },
   {
+    "title": "Attachment Download URL",
+    "description": "The Attachment Download URL pattern used for downloading attachments - use $id to represent the id param",
+    "key": "attachmentDownloadURLPattern",
+    "type": "string",
+    "scope": "ALL"
+  },
+  {
     "title": "Dashboard URL",
     "description": "The URL for the dashboard.  This is used in email templates",
     "key": "dashboardURL",

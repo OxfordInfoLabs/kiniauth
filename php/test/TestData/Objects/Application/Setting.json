@@ -8,6 +8,10 @@
     "value": "TESTLOGO"
   },
   {
+    "key": "attachmentDownloadURLPattern",
+    "value": "http://kinicart.test/attachment/$id"
+  },
+  {
     "key": "resetPasswordURL",
     "value": "http://localhost:5013/sign-in/new-password/"
   },

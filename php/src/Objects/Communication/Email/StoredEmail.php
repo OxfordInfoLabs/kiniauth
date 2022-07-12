@@ -3,8 +3,7 @@
 namespace Kiniauth\Objects\Communication\Email;
 
 
-use Kiniauth\Objects\Communication\Attachment\Attachment;
-use Kiniauth\Objects\Communication\Attachment\AttachmentSummary;
+use Kiniauth\Objects\Attachment\AttachmentSummary;
 use Kinikit\Core\Communication\Email\Email;
 use Kinikit\Persistence\UPF\Object\ActiveRecord;
 
