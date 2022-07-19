@@ -27,7 +27,7 @@
     "type": "string",
     "scope": "ALL"
   },
-  {  
+  {
     "title": "Dashboard URL",
     "description": "The URL for the dashboard.  This is used in email templates",
     "key": "dashboardURL",
