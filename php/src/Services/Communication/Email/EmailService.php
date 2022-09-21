@@ -9,6 +9,7 @@ use Kiniauth\Objects\Attachment\Attachment;
 use Kiniauth\Objects\Attachment\AttachmentSummary;
 use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Communication\Email\StoredEmailSendResult;
+use Kiniauth\Objects\Communication\Email\StoredEmailSummary;
 use Kiniauth\Services\Attachment\AttachmentService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kinikit\Core\Communication\Email\Email;
@@ -52,7 +53,16 @@ class EmailService {
      *
      * @return StoredEmailSendResult
      */
-    public function send($email, $accountId = null, $userId = null) {
+    public function send($email, $accountId = null, $userId = null, $sendDuplicates = false) {
+
+        // If not sending duplicates, do a duplicate check
+        if (!$sendDuplicates) {
+            // Check for duplicate stored email first and quit if there is one
+            $previousEmails = StoredEmail::values("COUNT(*)", "WHERE hash = ?", $email->getHash());
+            if ($previousEmails[0] > 0) {
+                return new StoredEmailSendResult(StoredEmail::STATUS_DUPLICATE);
+            }
+        }
 
         // Send the email
         $response = $this->provider->send($email);

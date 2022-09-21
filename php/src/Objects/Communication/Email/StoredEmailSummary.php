@@ -113,8 +113,15 @@ class StoredEmailSummary extends ActiveRecord {
      */
     protected $status;
 
+
+    /**
+     * @var string
+     */
+    protected $hash;
+
     const STATUS_SENT = "SENT";
     const STATUS_FAILED = "FAILED";
+    const STATUS_DUPLICATE = "DUPLICATE";
 
     /**
      * @return string
@@ -199,6 +206,13 @@ class StoredEmailSummary extends ActiveRecord {
      */
     public function getStatus() {
         return $this->status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHash() {
+        return $this->hash;
     }
 
 

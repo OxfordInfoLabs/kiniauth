@@ -57,6 +57,7 @@ class StoredEmail extends StoredEmailSummary {
             $this->sentDate = new \DateTime();
             $this->status = $status;
             $this->errorMessage = $errorMessage;
+            $this->hash = $email->getHash();
         }
 
     }

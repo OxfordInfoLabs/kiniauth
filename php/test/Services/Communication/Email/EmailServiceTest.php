@@ -65,7 +65,7 @@ class EmailServiceTest extends TestBase {
      */
     public function testWhenEmailSentWithAttachmentsTheyAreCorrectlyStoredInTheAttachmentTableAsWell() {
 
-        $email = new Email("mark@oxil.co.uk", ["test@joebloggs.com", "test2@home.com"], "Test Message", "Hello Joe, this is clearly a test",
+        $email = new Email("mark@oxil.co.uk", ["test@joebloggs.com", "test3@home.com"], "Test Message", "Hello Joe, this is clearly a test",
             ["jane@test.com", "the@world.co.uk"], ["mary@test.com", "badger@haslanded.org"], "info@oxil.co.uk", 1);
 
         $email->setAttachments([new FileEmailAttachment(__DIR__ . "/Provider/testimage.png"), new FileEmailAttachment(__DIR__ . "/Provider/testtext.txt")]);
@@ -80,7 +80,7 @@ class EmailServiceTest extends TestBase {
          */
         $email = StoredEmail::fetch($result->getEmailId());
         $this->assertEquals("mark@oxil.co.uk", $email->getSender());
-        $this->assertEquals(["test@joebloggs.com", "test2@home.com"], $email->getRecipients());
+        $this->assertEquals(["test@joebloggs.com", "test3@home.com"], $email->getRecipients());
         $this->assertEquals("Test Message", $email->getSubject());
         $this->assertEquals("Hello Joe, this is clearly a test", $email->getTextBody());
         $this->assertEquals(["jane@test.com", "the@world.co.uk"], $email->getCc());
@@ -111,7 +111,24 @@ class EmailServiceTest extends TestBase {
     }
 
 
+    public function testEmailSentWithSameHashAsPreviousEmailIsNotSentAndMarkedAsDuplicateUnlessSendDuplicateBooleanSupplied() {
 
+        $email = new Email("mark@oxil.co.uk", ["test@joebloggs.com", "test4@home.com"], "Test Message", "Hello Joe, this is clearly a test",
+            ["jane@test.com", "the@world.co.uk"], ["mary@test.com", "badger@haslanded.org"], "info@oxil.co.uk", 1);
+
+
+        $result = $this->emailService->send($email, 1);
+        $this->assertEquals(StoredEmailSendResult::STATUS_SENT, $result->getStatus());
+        $this->assertNotNull($result->getEmailId());
+
+        $duplicateResult = $this->emailService->send($email, 1);
+        $this->assertEquals(StoredEmail::STATUS_DUPLICATE, $duplicateResult->getStatus());
+        $this->assertNull($duplicateResult->getEmailId());
+
+        $overrideResult = $this->emailService->send($email, 1, null, true);
+        $this->assertEquals(StoredEmailSendResult::STATUS_SENT, $overrideResult->getStatus());
+        $this->assertNotNull($overrideResult->getEmailId());
+    }
 
 
 }
