@@ -26,7 +26,7 @@ class ProjectService {
      */
     public function getProject($projectKey, $accountId = Account::LOGGED_IN_ACCOUNT) {
         $project = $this->getFullProject($accountId, $projectKey);
-        return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey());
+        return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey(), $project->getSettings());
     }
 
 
@@ -42,7 +42,7 @@ class ProjectService {
             $values);
 
         $projectSummaries = array_map(function ($project) {
-            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey());
+            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey(), $project->getSettings());
         }, $results);
 
         return ObjectArrayUtils::indexArrayOfObjectsByMember("projectKey", $projectSummaries);
@@ -57,7 +57,7 @@ class ProjectService {
     public function listProjects($accountId = Account::LOGGED_IN_ACCOUNT) {
         $projects = Project::filter("WHERE account_id = ? ORDER BY name", $accountId);
         return array_map(function ($project) {
-            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey());
+            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey(), $project->getSettings());
         }, $projects);
     }
 
@@ -74,7 +74,7 @@ class ProjectService {
         $projects = Project::filter("WHERE account_id = ? AND name LIKE ? ORDER BY name LIMIT $limit OFFSET $offset", $accountId,
             "%$filterString%");
         return array_map(function ($project) {
-            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey());
+            return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey(), $project->getSettings());
         }, $projects);
     }
 
@@ -94,7 +94,7 @@ class ProjectService {
         }
 
         $project = new Project($projectSummary->getName(), $accountId, $projectSummary->getProjectKey(),
-            $projectSummary->getDescription(), $projectId);
+            $projectSummary->getDescription(), $projectSummary->getSettings(), $projectId);
 
         $project->save();
 

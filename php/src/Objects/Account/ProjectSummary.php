@@ -28,6 +28,12 @@ class ProjectSummary extends ActiveRecord {
      */
     protected $description;
 
+    /**
+     * @var mixed
+     * @sqlType longtext
+     * @json
+     */
+    protected $settings;
 
     /**
      * Project summary constructor.
@@ -35,11 +41,13 @@ class ProjectSummary extends ActiveRecord {
      * @param string $name
      * @param string $description
      * @param string $key
+     * @param string $settings
      */
-    public function __construct($name, $description = null, $key = null) {
+    public function __construct($name, $description = null, $key = null, $settings = null) {
         $this->name = $name;
         $this->description = $description;
         $this->projectKey = $key;
+        $this->settings = $settings ?? [];
     }
 
     /**
@@ -76,6 +84,20 @@ class ProjectSummary extends ActiveRecord {
      */
     public function setDescription($description) {
         $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSettings() {
+        return $this->settings;
+    }
+
+    /**
+     * @param mixed $settings
+     */
+    public function setSettings($settings) {
+        $this->settings = $settings;
     }
 
 

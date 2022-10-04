@@ -10,13 +10,21 @@ class MockAuthService  {
 
 }
 
+class MockAccountService {
+
+
+
+}
+
 describe('EditAccountNameComponent', () => {
     let component: EditAccountNameComponent;
     let service: any;
+    let accountService: any;
 
     beforeEach(() => {
         service = new MockAuthService();
-        component = new EditAccountNameComponent(service);
+        accountService = new MockAccountService();
+        component = new EditAccountNameComponent(service, accountService);
     });
 
     afterAll(() => {

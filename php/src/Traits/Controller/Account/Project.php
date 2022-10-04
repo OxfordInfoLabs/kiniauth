@@ -79,4 +79,20 @@ trait Project {
         $this->projectService->removeProject($projectKey);
     }
 
+    /**
+     * Update project setting
+     *
+     * @http PUT /$projectKey/$key
+     *
+     * @param $key
+     * @param $value
+     * @return void
+     */
+    public function updateProjectSetting($projectKey, $key, $value) {
+        $project = $this->getProject($projectKey);
+        $settings = $project->getSettings();
+        $settings[$key] = $value;
+        $project->setSettings($settings);
+        $this->projectService->saveProject($project);
+    }
 }
