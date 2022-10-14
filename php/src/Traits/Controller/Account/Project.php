@@ -7,6 +7,7 @@ namespace Kiniauth\Traits\Controller\Account;
 use Kiniauth\Objects\Account\ProjectSummary;
 use Kiniauth\Services\Account\ProjectService;
 use Kiniauth\ValueObjects\Account\ProjectUpdateDescriptor;
+use Kinikit\Core\Logging\Logger;
 
 trait Project {
 
@@ -80,18 +81,16 @@ trait Project {
     }
 
     /**
-     * Update project setting
+     * Update the project settings object
      *
-     * @http PUT /$projectKey/$key
+     * @http PUT /$projectKey/settings
      *
-     * @param $key
-     * @param $value
+     * @param $projectKey
+     * @param mixed $settings
      * @return void
      */
-    public function updateProjectSetting($projectKey, $key, $value) {
+    public function updateProjectSettings($projectKey, $settings) {
         $project = $this->getProject($projectKey);
-        $settings = $project->getSettings();
-        $settings[$key] = $value;
         $project->setSettings($settings);
         $this->projectService->saveProject($project);
     }
