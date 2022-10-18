@@ -93,6 +93,27 @@ class Session implements \Kinikit\MVC\Session\Session {
         $this->setValue("pendingLoggedInUser", $user);
     }
 
+
+    /**
+     * Get any pending two factor data which may have been set by the two factor provider.
+     *
+     * @return mixed
+     */
+    public function __getPendingTwoFactorData() {
+        return $this->getValue("pendingTwoFactorData");
+    }
+
+
+    /**
+     * Set any pending two factor data which may be required to authenticate
+     * two factor logins e.g. a temporary code
+     *
+     * @param $data
+     */
+    public function __setPendingTwoFactorData($data) {
+        $this->setValue("pendingTwoFactorData", $data);
+    }
+
     /**
      * Get the logged in account
      *

@@ -7,6 +7,7 @@ namespace Kiniauth\Services\MetaData;
 use Kiniauth\Objects\MetaData\Category;
 use Kiniauth\Objects\MetaData\CategorySummary;
 use Kiniauth\Objects\MetaData\ObjectCategory;
+use Kiniauth\Objects\MetaData\ObjectStructuredData;
 use Kiniauth\Objects\MetaData\ObjectTag;
 use Kiniauth\Objects\MetaData\Tag;
 use Kiniauth\Objects\MetaData\TagSummary;
@@ -54,8 +55,6 @@ class MetaDataServiceTest extends TestBase {
         $this->assertEquals([
             new TagSummary("Account1", "An account wide tag available to account 1", "account1")
         ], $globalTags);
-
-
 
 
     }
@@ -315,7 +314,7 @@ class MetaDataServiceTest extends TestBase {
 
         $this->assertEquals([
             new CategorySummary("Account2", "An account wide category available to account 2", "account2"),
-             new CategorySummary("Project", "A project level category available to just one project", "project")],
+            new CategorySummary("Project", "A project level category available to just one project", "project")],
             $categories);
 
 
@@ -332,13 +331,13 @@ class MetaDataServiceTest extends TestBase {
 
         $this->assertEquals([
             new CategorySummary("Account2", "An account wide category available to account 2", "account2")],
-             $categories);
+            $categories);
 
         // Offset
         $categories = $this->service->filterAvailableCategories("", "soapSuds", 1, 10, 2);
 
         $this->assertEquals([
-             new CategorySummary("Project", "A project level category available to just one project", "project")],
+            new CategorySummary("Project", "A project level category available to just one project", "project")],
             $categories);
 
 
@@ -487,7 +486,7 @@ class MetaDataServiceTest extends TestBase {
         ], 2, "wiperBlades");
 
         $this->assertEquals(2, sizeof($fullCategories));
-         $this->assertInstanceOf(ObjectCategory::class, $fullCategories[0]);
+        $this->assertInstanceOf(ObjectCategory::class, $fullCategories[0]);
         $this->assertEquals("sharedAccount", $fullCategories[0]->getCategory()->getKey());
         $this->assertEquals(2, $fullCategories[0]->getCategory()->getAccountId());
         $this->assertInstanceOf(ObjectCategory::class, $fullCategories[1]);
@@ -533,7 +532,6 @@ class MetaDataServiceTest extends TestBase {
         ], null, 2));
 
 
-
         $this->assertEquals([
             new CategorySummary("Shared Project", "Belongs to wiperBlades", "sharedProject"),
         ], $this->service->getMultipleCategoriesByKey([
@@ -542,5 +540,143 @@ class MetaDataServiceTest extends TestBase {
 
     }
 
+
+    public function testCanUpdateStructuredDataItems() {
+
+        $structuredData1 = new ObjectStructuredData("User", 1, "Note", 1, "A new note");
+        $structuredData2 = new ObjectStructuredData("User", 1, "Note", 2, "A note I plan to update");
+
+        $this->service->updateStructuredDataItems([$structuredData1, $structuredData2]);
+
+        $reItems = ObjectStructuredData::filter("WHERE object_type = ? AND object_id = ? AND data_type = ?",
+            "User", 1, "Note");
+        $this->assertEquals([$structuredData1, $structuredData2], $reItems);
+
+        $structuredData2->setData("Updated note");
+        $structuredData3 = new ObjectStructuredData("User", 1, "Note", 3, "brand new one");
+
+        $this->service->updateStructuredDataItems([$structuredData2, $structuredData3]);
+
+
+        $reItems = ObjectStructuredData::filter("WHERE object_type = ? AND object_id = ? AND data_type = ?",
+            "User", 1, "Note");
+        $this->assertEquals([$structuredData1, $structuredData2, $structuredData3], $reItems);
+
+
+    }
+
+    public function testCanReplaceStructuredDataItemsBasedOnObjectTypeObjectIdAndDataType() {
+
+        $structuredData1 = new ObjectStructuredData("User", 1, "Note", 1, "A new note");
+        $structuredData2 = new ObjectStructuredData("User", 1, "Note", 2, "A note I plan to update");
+        $structuredData4 = new ObjectStructuredData("User", 2, "Note", 1, "A second object note I plan to update");
+
+
+        $this->service->replaceStructuredDataItems([$structuredData1, $structuredData2, $structuredData4]);
+
+        $reItems = ObjectStructuredData::filter("WHERE object_type = ? AND object_id = ? AND data_type = ?",
+            "User", 1, "Note");
+        $this->assertEquals([$structuredData1, $structuredData2], $reItems);
+
+        $reItems = ObjectStructuredData::filter("WHERE object_type = ? AND object_id = ? AND data_type = ?",
+            "User", 2, "Note");
+        $this->assertEquals([$structuredData4], $reItems);
+
+
+        $structuredData2->setData("Updated note");
+        $structuredData3 = new ObjectStructuredData("User", 1, "Note", 3, "brand new one");
+        $structuredData5 = new ObjectStructuredData("User", 2, "Note", 3, "brand new one");
+
+        $this->service->replaceStructuredDataItems([$structuredData2, $structuredData3, $structuredData5]);
+
+
+        // Check item one was eliminated
+        $reItems = ObjectStructuredData::filter("WHERE object_type = ? AND object_id = ? AND data_type = ?",
+            "User", 1, "Note");
+        $this->assertEquals([$structuredData2, $structuredData3], $reItems);
+
+        // Check item 5 has replaced item 4
+        $reItems = ObjectStructuredData::filter("WHERE object_type = ? AND object_id = ? AND data_type = ?",
+            "User", 2, "Note");
+        $this->assertEquals([$structuredData5], $reItems);
+
+
+    }
+
+
+    public function testCanGetSingleStructuredDataItemByPrimaryKey() {
+
+        $structuredData1 = new ObjectStructuredData("User", 1, "Note", 1, "A new note");
+        $structuredData2 = new ObjectStructuredData("User", 1, "Note", 2, "A note I plan to update");
+
+        $this->service->updateStructuredDataItems([$structuredData1, $structuredData2]);
+
+        $this->assertEquals($structuredData1, $this->service->getStructuredDataItem("User", 1, "Note", 1));
+        $this->assertEquals($structuredData2, $this->service->getStructuredDataItem("User", 1, "Note", 2));
+
+
+    }
+
+
+    public function testCanGetAllStructuredDataItemsForObjectAndType() {
+        $structuredData1 = new ObjectStructuredData("User", 1, "Note", 1, "A new note");
+        $structuredData2 = new ObjectStructuredData("User", 1, "Note", 2, "A note I plan to update");
+
+        $this->service->replaceStructuredDataItems([$structuredData1, $structuredData2]);
+
+        $this->assertEquals([$structuredData1, $structuredData2],
+            $this->service->getStructuredDataItemsForObjectAndType("User", 1, "Note"));
+    }
+
+
+    public function testCanDeleteSingleStructuredDataItem() {
+
+        $structuredData1 = new ObjectStructuredData("User", 1, "Note", 1, "A new note");
+        $structuredData2 = new ObjectStructuredData("User", 1, "Note", 2, "A note I plan to update");
+
+        $this->service->updateStructuredDataItems([$structuredData1, $structuredData2]);
+
+        $this->service->removeStructuredDataItem("User", 1, "Note", 1);
+        try {
+            $this->service->getStructuredDataItem("User", 1, "Note", 1);
+            $this->fail("Should have thrown here");
+        } catch (ObjectNotFoundException $e) {
+            $this->assertTrue(true);
+        }
+
+        // Should still be able to get first one
+        $this->service->getStructuredDataItem("User", 1, "Note", 2);
+
+
+        $this->service->removeStructuredDataItem("User", 1, "Note", 2);
+        try {
+            $this->service->getStructuredDataItem("User", 1, "Note", 2);
+            $this->fail("Should have thrown here");
+        } catch (ObjectNotFoundException $e) {
+            $this->assertTrue(true);
+        }
+
+    }
+
+
+    public function testCanRemoveAllStructuredItemsForObjectAndType() {
+
+        $structuredData1 = new ObjectStructuredData("User", 1, "Note", 1, "A new note");
+        $structuredData2 = new ObjectStructuredData("User", 1, "Note", 2, "A note I plan to update");
+        $structuredData4 = new ObjectStructuredData("User", 2, "Note", 1, "A second object note I plan to update");
+
+
+        $this->service->replaceStructuredDataItems([$structuredData1, $structuredData2, $structuredData4]);
+
+        $this->service->removeStructuredDataItemsForObjectAndType("User", 1, "Note");
+
+        // Check all matching items gone
+        $this->assertEquals(0, sizeof($this->service->getStructuredDataItemsForObjectAndType("User", 1, "Note")));
+
+        // Check other one still exists
+        $this->service->getStructuredDataItem("User", 2, "Note", 1);
+
+
+    }
 
 }

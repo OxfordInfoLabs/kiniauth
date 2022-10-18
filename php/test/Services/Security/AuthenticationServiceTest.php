@@ -25,6 +25,7 @@ use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Application\BootstrapService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\SecurityService;
+use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Security\UserSessionService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
@@ -32,6 +33,7 @@ use Kiniauth\Test\TestBase;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Security\Hash\HashProvider;
+use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
 use Kinikit\MVC\Request\URL;
 
@@ -49,11 +51,16 @@ class AuthenticationServiceTest extends TestBase {
      */
     private $session;
 
-
     /**
      * @var PendingActionService
      */
     private $pendingActionService;
+
+
+    /**
+     * @var MockObject
+     */
+    private $twoFactorProvider;
 
 
     public function setUp(): void {
@@ -61,9 +68,20 @@ class AuthenticationServiceTest extends TestBase {
         parent::setUp();
 
         Container::instance()->get(Bootstrap::class);
-        $this->authenticationService = Container::instance()->get(AuthenticationService::class);
+
         $this->session = Container::instance()->get(Session::class);
         $this->pendingActionService = Container::instance()->get(PendingActionService::class);
+
+        $this->twoFactorProvider = MockObjectProvider::instance()->getMockInstance(TwoFactorProvider::class);
+
+        $this->authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class),
+            $this->session, Container::instance()->get(SecurityService::class), $this->twoFactorProvider,
+            Container::instance()->get(HashProvider::class), Container::instance()->get(UserService::class),
+            Container::instance()->get(UserSessionService::class));
+
+
+        // Assume two factor is not required
+        $this->twoFactorProvider->returnValue("generateTwoFactorIfRequired", false);
     }
 
     public function testCanCheckWhetherEmailExistsOrNot() {
@@ -123,15 +141,58 @@ class AuthenticationServiceTest extends TestBase {
 
     }
 
-    public function testTwoFactorInterruptsLoginFlow() {
-        // Attempt a login.
-        $attemptedLogin = AuthenticationHelper::login("bob@twofactor.com", "password");
+    public function testIfTwoFactorIsRequiredForClientSuppliedDataLoginIsInterrupted() {
 
-        $this->assertEquals("REQUIRES_2FA", $attemptedLogin);
+        // Login as admin to read bob
+        Container::instance()->get(ActiveRecordInterceptor::class)->executeInsecure(function () {
 
-        $pendingUser = $this->session->__getPendingLoggedInUser();
-        $this->assertTrue($pendingUser instanceof User);
-        $this->assertEquals(11, $pendingUser->getId());
+            $bob = User::fetch(11);
+
+            $this->twoFactorProvider->returnValue("generateTwoFactorIfRequired", 987654321, [
+                $bob, 123456
+            ]);
+
+            // Attempt a login.
+            $attemptedLogin = $this->authenticationService->login("bob@twofactor.com",
+                AuthenticationHelper::encryptPasswordForLogin("passwordbob@twofactor.com"), 123456, 0);
+
+            $this->assertEquals("REQUIRES_2FA", $attemptedLogin);
+
+            // Check pending user set
+            $pendingUser = $this->session->__getPendingLoggedInUser();
+            $this->assertTrue($pendingUser instanceof User);
+            $this->assertEquals(11, $pendingUser->getId());
+
+            // Check 2FA data stashed
+            $this->assertEquals(987654321, $this->session->__getPendingTwoFactorData());
+
+
+        });
+
+
+    }
+
+
+    public function testIfTwoFactorIsNotRequiredForClientSuppliedDataLoginContinues() {
+
+        // Login as admin to read bob
+        Container::instance()->get(ActiveRecordInterceptor::class)->executeInsecure(function () {
+
+            $bob = User::fetch(11);
+
+            $this->twoFactorProvider->returnValue("generateTwoFactorIfRequired", false, [
+                $bob, 123456
+            ]);
+
+            // Attempt a login.
+            $attemptedLogin = $this->authenticationService->login("bob@twofactor.com",
+                AuthenticationHelper::encryptPasswordForLogin("passwordbob@twofactor.com"), 123456, 0);
+
+            $this->assertEquals("LOGGED_IN", $attemptedLogin);
+
+        });
+
+
     }
 
 
@@ -424,43 +485,49 @@ class AuthenticationServiceTest extends TestBase {
 
     public function testCanAuthenticateWithValidUserAccessTokens() {
 
-        $this->authenticationService->logout();
 
-        try {
-            $this->authenticationService->authenticateByUserToken("BADTOKEN");
-            $this->fail("Should have thrown here");
-        } catch (InvalidUserAccessTokenException $e) {
-            // Success
-        }
+        // Login as admin to read bob
+        Container::instance()->get(ActiveRecordInterceptor::class)->executeInsecure(function () {
 
 
-        // Try a simple token
-        $this->authenticationService->authenticateByUserToken("TESTTOKEN");
+            $this->authenticationService->logout();
 
-        $loggedInUser = $this->session->__getLoggedInSecurable();
-        $this->assertTrue($loggedInUser instanceof User);
-        $this->assertEquals(4, $loggedInUser->getId());
-        $this->assertEquals(AuthenticationHelper::hashNewPassword("TESTTOKEN"), $this->session->__getLoggedInUserAccessTokenHash());
+            try {
+                $this->authenticationService->authenticateByUserToken("BADTOKEN");
+                $this->fail("Should have thrown here");
+            } catch (InvalidUserAccessTokenException $e) {
+                // Success
+            }
 
-        $this->authenticationService->logout();
 
-        // Try a token with secondary token without secondary
-        try {
-            $this->authenticationService->authenticateByUserToken("TESTTOKEN2");
-            $this->fail("Should have thrown here");
-        } catch (InvalidUserAccessTokenException $e) {
-            // Success
-        }
+            // Try a simple token
+            $this->authenticationService->authenticateByUserToken("TESTTOKEN");
 
-        // Try a simple token
-        $this->authenticationService->authenticateByUserToken("TESTTOKEN2", "TESTSECONDARY");
+            $loggedInUser = $this->session->__getLoggedInSecurable();
+            $this->assertTrue($loggedInUser instanceof User);
+            $this->assertEquals(4, $loggedInUser->getId());
+            $this->assertEquals(AuthenticationHelper::hashNewPassword("TESTTOKEN"), $this->session->__getLoggedInUserAccessTokenHash());
 
-        $loggedInUser = $this->session->__getLoggedInSecurable();
-        $this->assertTrue($loggedInUser instanceof User);
-        $this->assertEquals(7, $loggedInUser->getId());
+            $this->authenticationService->logout();
 
-        $this->assertEquals(AuthenticationHelper::hashNewPassword("TESTTOKEN2--TESTSECONDARY"), $this->session->__getLoggedInUserAccessTokenHash());
+            // Try a token with secondary token without secondary
+            try {
+                $this->authenticationService->authenticateByUserToken("TESTTOKEN2");
+                $this->fail("Should have thrown here");
+            } catch (InvalidUserAccessTokenException $e) {
+                // Success
+            }
 
+            // Try a simple token
+            $this->authenticationService->authenticateByUserToken("TESTTOKEN2", "TESTSECONDARY");
+
+            $loggedInUser = $this->session->__getLoggedInSecurable();
+            $this->assertTrue($loggedInUser instanceof User);
+            $this->assertEquals(7, $loggedInUser->getId());
+
+            $this->assertEquals(AuthenticationHelper::hashNewPassword("TESTTOKEN2--TESTSECONDARY"), $this->session->__getLoggedInUserAccessTokenHash());
+
+        });
 
     }
 
@@ -495,26 +562,33 @@ class AuthenticationServiceTest extends TestBase {
 
     public function testCanAuthenticateWithAPICredentials() {
 
-        try {
-            $this->authenticationService->apiAuthenticate("BADKEY", "BADSECRET");
-            $this->fail("Should have thrown here");
-        } catch (InvalidAPICredentialsException $e) {
-            // Success
-        }
 
-        // Authenticate with an account level key
-        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
+        // Login as admin to read bob
+        Container::instance()->get(ActiveRecordInterceptor::class)->executeInsecure(function () {
 
 
-        $this->assertEquals(APIKey::fetch(1), $this->session->__getLoggedInSecurable());
-        $this->assertEquals(Account::fetch(2), $this->session->__getLoggedInAccount());
+            try {
+                $this->authenticationService->apiAuthenticate("BADKEY", "BADSECRET");
+                $this->fail("Should have thrown here");
+            } catch (InvalidAPICredentialsException $e) {
+                // Success
+            }
+
+            // Authenticate with an account level key
+            $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
 
 
-        // Authenticate with a project level key
-        $this->authenticationService->apiAuthenticate("PROJECTSPECIFICKEY", "PROJECTSPECIFICSECRET");
+            $this->assertEquals(APIKey::fetch(1), $this->session->__getLoggedInSecurable());
+            $this->assertEquals(Account::fetch(2), $this->session->__getLoggedInAccount());
 
-        $this->assertEquals(APIKey::fetch(2), $this->session->__getLoggedInSecurable());
-        $this->assertEquals(Account::fetch(2), $this->session->__getLoggedInAccount());
+
+            // Authenticate with a project level key
+            $this->authenticationService->apiAuthenticate("PROJECTSPECIFICKEY", "PROJECTSPECIFICSECRET");
+
+            $this->assertEquals(APIKey::fetch(2), $this->session->__getLoggedInSecurable());
+            $this->assertEquals(Account::fetch(2), $this->session->__getLoggedInAccount());
+
+        });
     }
 
 
@@ -596,7 +670,7 @@ class AuthenticationServiceTest extends TestBase {
             $authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class),
                 $this->session,
                 Container::instance()->get(SecurityService::class),
-                null,
+                $this->twoFactorProvider,
                 Container::instance()->get(HashProvider::class),
                 Container::instance()->get(UserService::class),
                 $mockUserSessionService);
@@ -633,13 +707,22 @@ class AuthenticationServiceTest extends TestBase {
                 new UserSession(11, "XXXYYY", new UserSessionProfile("1.1.1.1", "html/1.1", 11))], [11]);
 
 
-            $result = $authenticationService->login("bob@twofactor.com", AuthenticationHelper::encryptPasswordForLogin("passwordbob@twofactor.com"));
+            // Simulate 2FA
+            $bob = User::fetch(11);
+            $this->twoFactorProvider->returnValue("generateTwoFactorIfRequired", 98765, [
+                $bob, 1234567
+            ]);
+
+            $result = $authenticationService->login("bob@twofactor.com", AuthenticationHelper::encryptPasswordForLogin("passwordbob@twofactor.com"), 1234567);
             $this->assertEquals(AuthenticationService::STATUS_ACTIVE_SESSION, $result);
 
-
+            // Check pending user was saved in session
             $pendingUser = $this->session->__getPendingLoggedInUser();
             $this->assertTrue($pendingUser instanceof User);
             $this->assertEquals(11, $pendingUser->getId());
+
+            // Check client data was saved in session as pending 2FA data
+            $this->assertEquals(1234567, $this->session->__getPendingTwoFactorData());
 
 
             // Close active sessions for the pending user and continue with login.
@@ -656,6 +739,9 @@ class AuthenticationServiceTest extends TestBase {
             $this->assertEquals(11, $pendingUser->getId());
             $this->assertNull($this->session->__getLoggedInSecurable());
 
+            // Check we have pending two factor data
+            $this->assertEquals(98765, $this->session->__getPendingTwoFactorData());
+
 
         });
 
@@ -664,5 +750,54 @@ class AuthenticationServiceTest extends TestBase {
 
     }
 
+
+    public function testExceptionRaisedIfAttemptToAuthenticateWithTwoFactorWithoutPendingUserInSession() {
+
+        $this->session->__setPendingLoggedInUser(null);
+
+        try {
+            $this->authenticationService->authenticateTwoFactor(123456);
+            $this->fail("Should have thrown exception here");
+        } catch (InvalidLoginException $e) {
+            $this->assertTrue(true);
+        }
+    }
+
+    public function testCanAuthenticateTwoFactorUsingProviderAndPassedLoginDataIfPendingUser() {
+
+        // Login as admin to read bob
+        Container::instance()->get(ActiveRecordInterceptor::class)->executeInsecure(function () {
+
+            $bob = User::fetch(11);
+            $this->session->__setPendingLoggedInUser($bob);
+            $this->session->__setPendingTwoFactorData(12345);
+
+            $this->twoFactorProvider->returnValue("authenticate", false, [
+                $bob, 12345, 76584
+            ]);
+
+            try {
+                $this->authenticationService->authenticateTwoFactor(76584);
+                $this->fail("Should have thrown here");
+            } catch (InvalidLoginException $e) {
+                $this->assertTrue(true);
+                $this->assertEquals($bob, $this->session->__getPendingLoggedInUser());
+                $this->assertEquals(12345, $this->session->__getPendingTwoFactorData());
+                $this->assertNull($this->session->__getLoggedInSecurable());
+            }
+
+            $this->twoFactorProvider->returnValue("authenticate", 23456, [
+                $bob, 12345, 76584
+            ]);
+
+            $this->assertEquals(23456, $this->authenticationService->authenticateTwoFactor(76584));
+
+            $this->assertNull($this->session->__getPendingLoggedInUser());
+            $this->assertNull($this->session->__getPendingTwoFactorData());
+            $this->assertEquals($bob, $this->session->__getLoggedInSecurable());
+        });
+
+
+    }
 
 }

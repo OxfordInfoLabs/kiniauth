@@ -8,6 +8,7 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\MetaData\Category;
 use Kiniauth\Objects\MetaData\CategorySummary;
 use Kiniauth\Objects\MetaData\ObjectCategory;
+use Kiniauth\Objects\MetaData\ObjectStructuredData;
 use Kiniauth\Objects\MetaData\ObjectTag;
 use Kiniauth\Objects\MetaData\Tag;
 use Kiniauth\Objects\MetaData\TagSummary;
@@ -329,6 +330,104 @@ class MetaDataService {
         $results = Category::filter("WHERE " . join(" AND ", $clauses) . " ORDER BY category", $params);
         return array_slice($results, $offset, $limit);
 
+    }
+
+
+    /**
+     * Get a single structured data item by object type, object id, data type and primary key
+     *
+     * @param string $objectType
+     * @param string $objectId
+     * @param string $dataType
+     * @param string $primaryKey
+     */
+    public function getStructuredDataItem($objectType, $objectId, $dataType, $primaryKey) {
+        return ObjectStructuredData::fetch([$objectType, $objectId, $dataType, $primaryKey]);
+    }
+
+
+    /**
+     *
+     * Get all structured data items for a given object and type
+     *
+     * @param $objectType
+     * @param $objectId
+     * @param $dataType
+     */
+    public function getStructuredDataItemsForObjectAndType($objectType, $objectId, $dataType) {
+        return ObjectStructuredData::filter("WHERE object_type = ? AND object_id = ? AND data_type = ?",
+            $objectType, $objectId, $dataType);
+    }
+
+
+    /**
+     * Update an array of structured data items
+     *
+     * @param ObjectStructuredData[] $structuredDataItems
+     */
+    public function updateStructuredDataItems($structuredDataItems) {
+        foreach ($structuredDataItems ?? [] as $item) {
+            $item->save();
+        }
+    }
+
+
+    /**
+     * Replace the array of structured data items.  This first removes any
+     * matches for the same object type, object id and data type
+     *
+     * @param ObjectStructuredData[] $structuredDataItems
+     */
+    public function replaceStructuredDataItems($structuredDataItems) {
+
+        // Firstly gather the items to delete
+        $replaceKeys = array_unique(ObjectArrayUtils::getMemberValueArrayForObjects("replaceKey", $structuredDataItems));
+
+        $deleteItemClauses = [];
+        $placeholders = [];
+        foreach ($replaceKeys as $replaceKey) {
+            $splitKey = explode("||", $replaceKey);
+            $deleteItemClauses[] = "(objectType = ? AND objectId = ? AND dataType = ?)";
+            $placeholders = array_merge($placeholders, $splitKey);
+        }
+
+        $deleteItems = ObjectStructuredData::filter("WHERE " . join(" OR ", $deleteItemClauses), $placeholders);
+        foreach ($deleteItems as $deleteItem) {
+            $deleteItem->remove();
+        }
+
+        // Update items once deleted
+        $this->updateStructuredDataItems($structuredDataItems);
+    }
+
+
+    /**
+     * Remove a structured data item
+     *
+     * @param string $objectType
+     * @param string $objectId
+     * @param string $dataType
+     * @param string $primaryKey
+     */
+    public function removeStructuredDataItem($objectType, $objectId, $dataType, $primaryKey) {
+        $this->getStructuredDataItem($objectType, $objectId, $dataType, $primaryKey)->remove();
+    }
+
+
+    /**
+     * Remove all structured data items for a given object type, object id and data type
+     *
+     * @param string $objectType
+     * @param string $objectId
+     * @param string $dataType
+     */
+    public function removeStructuredDataItemsForObjectAndType($objectType, $objectId, $dataType) {
+
+        // Select all matching items for object and type
+        $matches = $this->getStructuredDataItemsForObjectAndType($objectType, $objectId, $dataType);
+        foreach ($matches as $match) {
+            $match->remove();
+        }
     }
 
 

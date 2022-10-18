@@ -67,8 +67,9 @@ class User extends UserSummary {
     /**
      * Optional two factor authentication data if this has been enabled.
      *
-     * @var string
-     * @maxLength 2000
+     * @var mixed[]
+     * @maxLength LONGTEXT
+     * @json
      */
     protected $twoFactorData;
 

@@ -19,9 +19,9 @@ class AuthenticationHelper {
      * @param $username
      * @param $password
      */
-    public static function login($emailAddress, $password) {
+    public static function login($emailAddress, $password, $clientLoginData = null) {
         $authenticationService = Container::instance()->get(AuthenticationService::class);
-        return $authenticationService->login($emailAddress, self::encryptPasswordForLogin($password . $emailAddress));
+        return $authenticationService->login($emailAddress, self::encryptPasswordForLogin($password . $emailAddress), $clientLoginData);
     }
 
 

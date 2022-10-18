@@ -4,10 +4,12 @@
 namespace Kiniauth\Services\Security;
 
 
+use Kiniauth\Exception\Security\AccountSuspendedException;
 use Kiniauth\Exception\Security\InvalidAPICredentialsException;
 use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Exception\Security\InvalidReferrerException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
+use Kiniauth\Exception\Security\UserSuspendedException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\APIKey;
@@ -101,7 +103,7 @@ class AuthenticationService {
      *
      * @objectInterceptorDisabled
      */
-    public function login($emailAddress, $password, $parentAccountId = null) {
+    public function login($emailAddress, $password, $clientTwoFactorData = null, $parentAccountId = null) {
 
         if ($parentAccountId === null) {
             $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
@@ -122,12 +124,16 @@ class AuthenticationService {
 
                     if (sizeof($otherSessions) > 0) {
                         $this->session->__setPendingLoggedInUser($user);
+                        $this->session->__setPendingTwoFactorData($clientTwoFactorData);
                         return self::STATUS_ACTIVE_SESSION;
                     }
                 }
 
-                if ($user->getTwoFactorData()) {
+                $sessionTwoFactorData = $this->twoFactorProvider->generateTwoFactorIfRequired($user, $clientTwoFactorData);
+
+                if ($sessionTwoFactorData !== false) {
                     $this->session->__setPendingLoggedInUser($user);
+                    $this->session->__setPendingTwoFactorData($sessionTwoFactorData);
                     return self::STATUS_REQUIRES_2FA;
                 } else {
                     $this->securityService->logIn($user);
@@ -182,8 +188,14 @@ class AuthenticationService {
                 $this->userSessionService->terminateAuthenticatedSession($pendingUser->getId(), $activeSession->getSessionId());
             }
 
-            if ($pendingUser->getTwoFactorData()) {
+
+            // Work out if we need to generate a two factor
+            $sessionTwoFactorData = $this->twoFactorProvider->generateTwoFactorIfRequired($pendingUser,
+                $this->session->__getPendingTwoFactorData());
+
+            if ($sessionTwoFactorData !== false) {
                 $this->session->__setPendingLoggedInUser($pendingUser);
+                $this->session->__setPendingTwoFactorData($sessionTwoFactorData);
                 return self::STATUS_REQUIRES_2FA;
             } else {
                 $this->session->__setPendingLoggedInUser(null);
@@ -200,17 +212,22 @@ class AuthenticationService {
     /**
      * Check the supplied two factor code and authenticate the login if correct.
      *
-     * @param $code
-     * @return bool
+     * @param $twoFactorLoginData
+     * @return mixed
+     *
      * @throws InvalidLoginException
-     * @throws \Kiniauth\Exception\Security\AccountSuspendedException
-     * @throws \Kiniauth\Exception\Security\UserSuspendedException
+     * @throws AccountSuspendedException
+     * @throws UserSuspendedException
      *
      * @objectInterceptorDisabled
      */
-    public function authenticateTwoFactor($code) {
+    public function authenticateTwoFactor($twoFactorLoginData) {
 
         $pendingUser = $this->session->__getPendingLoggedInUser();
+
+        if (!$pendingUser) {
+            throw new InvalidLoginException("Two factor authentication called out of sequence");
+        }
 
         if (Configuration::readParameter("login.single.session")) {
             $otherSessions = $this->userSessionService->listAuthenticatedSessions($pendingUser->getId());
@@ -219,42 +236,22 @@ class AuthenticationService {
             }
         }
 
-        if (strlen($code) === 6) {
+        $pendingTwoFactorData = $this->session->__getPendingTwoFactorData();
 
-            $secretKey = $pendingUser->getTwoFactorData();
+        // Authenticate
+        $result = $this->twoFactorProvider->authenticate($pendingUser, $pendingTwoFactorData, $twoFactorLoginData);
 
-            if (!$secretKey || !$pendingUser) return false;
+        if ($result !== false) {
+            $this->session->__setPendingLoggedInUser(null);
+            $this->session->__setPendingTwoFactorData(null);
 
-            $authenticated = $this->twoFactorProvider->authenticate($secretKey, $code);
-
-            if ($authenticated) {
-                $this->session->__setPendingLoggedInUser(null);
-
-                $this->securityService->logIn($pendingUser);
-                ActivityLogger::log("Logged in");
-                return true;
-            }
-        } else if (strlen($code) === 9) {
-            $backupCodes = $pendingUser->getBackupCodes();
-
-            if (($key = array_search($code, $backupCodes)) !== false) {
-                unset($backupCodes[$key]);
-                $user = User::fetch($pendingUser->getId());
-                $user->setBackupCodes(array_values($backupCodes));
-                $user->save();
-
-                $this->session->__setPendingLoggedInUser(null);
-
-                $this->securityService->logIn($pendingUser);
-                ActivityLogger::log("Logged in");
-                return true;
-            }
+            $this->securityService->logIn($pendingUser);
+            ActivityLogger::log("Logged in");
+            return true;
         }
 
         ActivityLogger::log("Failed Login (Invalid 2FA)", null, null, [], $pendingUser->getId());
-
-
-        return false;
+        throw new InvalidLoginException("Invalid Two Factor Authentication Supplied");
     }
 
 
