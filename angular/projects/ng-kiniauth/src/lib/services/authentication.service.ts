@@ -55,7 +55,7 @@ export class AuthenticationService {
         });
     }
 
-    public login(username: string, password: string, recaptcha?) {
+    public login(username: string, password: string, clientTwoFactorData?, recaptcha?) {
         const request = this.config.guestHttpURL + `/auth/login`;
 
         const headers = new HttpHeaders({'X-CAPTCHA-TOKEN': recaptcha || ''});
@@ -63,7 +63,8 @@ export class AuthenticationService {
 
         return this.kbRequest.makePostRequest(request, {
             emailAddress: username,
-            password: this.getHashedPassword(password, username)
+            password: this.getHashedPassword(password, username),
+            clientTwoFactorData: clientTwoFactorData || null
         }, options).toPromise().then((user: any) => {
             if (user === 'REQUIRES_2FA') {
                 return user;
@@ -171,17 +172,16 @@ export class AuthenticationService {
         });
     }
 
-    public authenticateTwoFactor(code) {
+    public async authenticateTwoFactor(code) {
         const url = this.config.guestHttpURL + `/auth/twoFactor?code=${code}`;
-        return this.kbRequest.makeGetRequest(url).toPromise()
-            .then(result => {
-                if (result) {
-                    sessionStorage.removeItem('pendingLoginSession');
-                    return this.getLoggedInUser();
-                } else {
-                    throw(result);
-                }
-            });
+        const result = await this.kbRequest.makeGetRequest(url).toPromise();
+        if (result) {
+            sessionStorage.removeItem('pendingLoginSession');
+            await this.getLoggedInUser(true);
+            return result;
+        } else {
+            throw(result);
+        }
     }
 
     public disableTwoFactor() {

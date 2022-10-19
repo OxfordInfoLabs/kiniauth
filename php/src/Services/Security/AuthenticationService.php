@@ -247,7 +247,7 @@ class AuthenticationService {
 
             $this->securityService->logIn($pendingUser);
             ActivityLogger::log("Logged in");
-            return true;
+            return $result;
         }
 
         ActivityLogger::log("Failed Login (Invalid 2FA)", null, null, [], $pendingUser->getId());

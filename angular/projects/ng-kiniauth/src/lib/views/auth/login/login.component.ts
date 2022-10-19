@@ -53,7 +53,8 @@ export class LoginComponent extends BaseComponent implements OnInit {
         this.loginError = false;
         if (this.email && this.password) {
             this.loading = true;
-            return this.authService.login(this.email, this.password, (this.showRecaptcha ? this.recaptchaResponse : null))
+            const clientTwoFactorData = localStorage.getItem('clientTwoFactorData');
+            return this.authService.login(this.email, this.password, clientTwoFactorData || null, (this.showRecaptcha ? this.recaptchaResponse : null))
                 .then((res: any) => {
                     this.loading = false;
                     if (res === 'REQUIRES_2FA') {
@@ -106,10 +107,12 @@ export class LoginComponent extends BaseComponent implements OnInit {
         this.loading = true;
         if (this.twoFACode) {
             return this.authService.authenticateTwoFactor(this.twoFACode)
-                .then(user => {
+                .then(clientTwoFactorData => {
                     this.loading = false;
-                    this.router.navigate([this.loginRoute || '/']);
-                    return user;
+                    if (clientTwoFactorData) {
+                        localStorage.setItem('clientTwoFactorData', String(clientTwoFactorData));
+                    }
+                    return this.router.navigate([this.loginRoute || '/']);
                 })
                 .catch(error => {
                     this.authService.getSessionData();

@@ -37,7 +37,7 @@ trait Auth {
      * @captcha 1
      */
     public function logIn($payload) {
-        return $this->authenticationService->login($payload["emailAddress"], $payload["password"]);
+        return $this->authenticationService->login($payload["emailAddress"], $payload["password"], $payload["clientTwoFactorData"] ?? null);
     }
 
     /**

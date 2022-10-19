@@ -10,7 +10,7 @@ use Kiniauth\Objects\Security\User;
  *
  * @implementationConfigParam twofactor.provider
  * @defaultImplementation \Kiniauth\Services\Security\TwoFactor\NoTwoFactorProvider
- * @implementation email  \Kiniauth\Services\Security\TwoFactor\EmailConfirmationTwoFactorProvider
+ * @implementation email \Kiniauth\Services\Security\TwoFactor\EmailConfirmationTwoFactorProvider
  * @implementation google-authenticator \Kiniauth\Services\Security\TwoFactor\GoogleAuthenticatorProvider
  *
  *

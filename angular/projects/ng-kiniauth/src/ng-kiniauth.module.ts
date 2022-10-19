@@ -104,7 +104,7 @@ import { ChangePasswordComponent } from './lib/views/account-summary/change-pass
     ]
 })
 export class NgKiniAuthModule {
-    static forRoot(conf?: KiniAuthModuleConfig): ModuleWithProviders {
+    static forRoot(conf?: KiniAuthModuleConfig): ModuleWithProviders<NgKiniAuthModule> {
         return {
             ngModule: NgKiniAuthModule,
             providers: [
