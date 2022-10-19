@@ -2,7 +2,6 @@ import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../../services/authentication.service';
 import { BaseComponent } from '../../base-component';
-import * as _ from 'lodash';
 
 @Component({
     selector: 'ka-login',

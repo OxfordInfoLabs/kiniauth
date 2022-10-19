@@ -172,17 +172,16 @@ export class AuthenticationService {
         });
     }
 
-    public authenticateTwoFactor(code) {
+    public async authenticateTwoFactor(code) {
         const url = this.config.guestHttpURL + `/auth/twoFactor?code=${code}`;
-        return this.kbRequest.makeGetRequest(url).toPromise()
-            .then(result => {
-                if (result) {
-                    sessionStorage.removeItem('pendingLoginSession');
-                    return this.getLoggedInUser(true);
-                } else {
-                    throw(result);
-                }
-            });
+        const result = await this.kbRequest.makeGetRequest(url).toPromise();
+        if (result) {
+            sessionStorage.removeItem('pendingLoginSession');
+            await this.getLoggedInUser(true);
+            return result;
+        } else {
+            throw(result);
+        }
     }
 
     public disableTwoFactor() {
