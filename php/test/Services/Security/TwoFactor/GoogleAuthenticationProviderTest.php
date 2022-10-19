@@ -13,6 +13,7 @@ use Kiniauth\Services\Security\TwoFactor\GoogleAuthenticatorProvider;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
+use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 include_once "autoloader.php";
 
@@ -87,6 +88,7 @@ class GoogleAuthenticationProviderTest extends TestBase {
 
     public function testCanDisableTwoFactorForAUser() {
 
+
         $this->provider->disableTwoFactor(4);
 
         $this->assertTrue($this->metaDataService->methodWasCalled("removeStructuredDataItemsForObjectAndType", [
@@ -95,6 +97,87 @@ class GoogleAuthenticationProviderTest extends TestBase {
 
         $this->assertTrue($this->metaDataService->methodWasCalled("removeStructuredDataItemsForObjectAndType", [
             User::class, 4, "2FABackupCode"
+        ]));
+    }
+
+
+    public function testGenerateTwoFactorIfRequiredReturnsFalseIfNoTwoFactorConfiguredForUser() {
+
+        $pendingUser = new User("mark@test.com", null, null, 0, 5);
+
+        // Expect no 2FA config for user 5
+        $this->metaDataService->returnValue("getStructuredDataItemsForObjectAndType", [], [
+            User::class, 5, "2FASecretKey"
+        ]);
+
+        $this->assertFalse($this->provider->generateTwoFactorIfRequired($pendingUser, null));
+    }
+
+
+    public function testGenerateTwoFactorIfRequiredReturnsTrueIfTwoFactorConfiguredForUser() {
+
+        $pendingUser = new User("mark@test.com", null, null, 0, 5);
+
+        // Expect no 2FA config for user 5
+        $this->metaDataService->returnValue("getStructuredDataItemsForObjectAndType", [new ObjectStructuredData(User::class, 5, "2FASecretKey", "12345678", null)], [
+            User::class, 5, "2FASecretKey"
+        ]);
+
+        $this->assertTrue($this->provider->generateTwoFactorIfRequired($pendingUser, null));
+    }
+
+
+    public function testIfInvalidAuthenticationCodeSuppliedToAuthenticateFalseIsReturned() {
+
+        $pendingUser = new User("mark@test.com", null, null, 0, 5);
+
+        $this->metaDataService->returnValue("getStructuredDataItem", new ObjectStructuredData(User::class, 5, "2FASecretKey", "2FASecretKey", "ERTYUIO"), [
+            User::class, 5, "2FASecretKey", "2FASecretKey"
+        ]);
+
+        $this->googleAuthenticator->returnValue("authenticate", false, [
+            "ERTYUIO", 123456
+        ]);
+
+        $result = $this->provider->authenticate($pendingUser, null, 123456);
+
+        $this->assertFalse($result);
+
+    }
+
+
+    public function testIfValidAuthenticationCodeSuppliedToAuthenticateTrueIsReturned() {
+
+        $pendingUser = new User("mark@test.com", null, null, 0, 5);
+
+        $this->metaDataService->returnValue("getStructuredDataItem", new ObjectStructuredData(User::class, 5, "2FASecretKey", "2FASecretKey", "ERTYUIO"), [
+            User::class, 5, "2FASecretKey", "2FASecretKey"
+        ]);
+
+        $this->googleAuthenticator->returnValue("authenticate", true, [
+            "ERTYUIO", 123456
+        ]);
+
+        $result = $this->provider->authenticate($pendingUser, null, 123456);
+
+        $this->assertTrue($result);
+
+    }
+
+    public function testIfValidBackupCodeSuppliedToAuthenticateInsteadOfAuthenticationCodeTrueIsReturnedAndBackupCodeIsRemoved() {
+
+        $pendingUser = new User("mark@test.com", null, null, 0, 5);
+
+        $this->metaDataService->returnValue("getStructuredDataItem", new ObjectStructuredData(User::class, 5, "2FABackupCode", "123456789", null), [
+            User::class, 5, "2FABackupCode", "123456789"
+        ]);
+
+        $result = $this->provider->authenticate($pendingUser, null, 123456789);
+
+        $this->assertTrue($result);
+
+        $this->assertTrue($this->metaDataService->methodWasCalled("removeStructuredDataItem", [
+            User::class, 5, "2FABackupCode", "123456789"
         ]));
     }
 

@@ -16,6 +16,7 @@ use Kiniauth\Services\MetaData\MetaDataService;
 use Kiniauth\ValueObjects\Security\TwoFactor\GoogleAuthenticatorTwoFactorData;
 use Kiniauth\ValueObjects\Security\UserExtended;
 use Kinikit\Core\Util\StringUtils;
+use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 
@@ -60,7 +61,11 @@ class GoogleAuthenticatorProvider implements TwoFactorProvider {
      * @return bool
      */
     public function generateTwoFactorIfRequired($pendingUser, $twoFactorClientData) {
-        return false;
+
+        // Check to see whether this user has a two factor configuration
+        $configItems = $this->metaDataService->getStructuredDataItemsForObjectAndType(User::class, $pendingUser->getId(), "2FASecretKey");
+
+        return sizeof($configItems) > 0;
     }
 
 
@@ -73,7 +78,35 @@ class GoogleAuthenticatorProvider implements TwoFactorProvider {
      * @return mixed|void
      */
     public function authenticate($pendingUser, $pendingTwoFactorData, $twoFactorLoginData) {
-        // TODO: Implement authenticate() method.
+
+        // Ensure we only process codes of length 6 for auth
+        if (strlen($twoFactorLoginData) == 6) {
+
+            $filesystemAdapter = new Local(sys_get_temp_dir() . "/");
+            $filesystem = new Filesystem($filesystemAdapter);
+            $pool = new FilesystemCachePool($filesystem);
+            $this->googleAuthenticator->setCache($pool);
+
+            // Get secret key
+            $secretKey = $this->metaDataService->getStructuredDataItem(User::class, $pendingUser->getId(), "2FASecretKey", "2FASecretKey");
+
+            return $this->googleAuthenticator->authenticate($secretKey->getData(), $twoFactorLoginData);
+        } // Process length 9 codes as backup codes
+        else if (strlen($twoFactorLoginData) == 9) {
+
+            // Check if we have a match within the backup codes
+            try {
+                $this->metaDataService->getStructuredDataItem(User::class, $pendingUser->getId(), "2FABackupCode", $twoFactorLoginData);
+                $this->metaDataService->removeStructuredDataItem(User::class, $pendingUser->getId(), "2FABackupCode", $twoFactorLoginData);
+                return true;
+            } catch (ObjectNotFoundException $e) {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+
     }
 
 
@@ -140,8 +173,6 @@ class GoogleAuthenticatorProvider implements TwoFactorProvider {
     }
 
 
-
-
     private function authenticateWithGA($secretKey, $twoFactorData, $twoFactorLoginData) {
         $filesystemAdapter = new Local(sys_get_temp_dir() . "/");
         $filesystem = new Filesystem($filesystemAdapter);
@@ -150,7 +181,6 @@ class GoogleAuthenticatorProvider implements TwoFactorProvider {
 
         return $this->googleAuthenticator->authenticate($secretKey, $twoFactorData);
     }
-
 
 
     private function toBEREIMPLEMENTED() {

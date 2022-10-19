@@ -65,25 +65,6 @@ class User extends UserSummary {
 
 
     /**
-     * Optional two factor authentication data if this has been enabled.
-     *
-     * @var mixed[]
-     * @maxLength LONGTEXT
-     * @json
-     */
-    protected $twoFactorData;
-
-    /**
-     * Set of backup emergency codes used for 2fa where the original method can't be used.
-     *
-     * @var string[]
-     * @json
-     * @sqlType LONGTEXT
-     */
-    protected $backupCodes;
-
-
-    /**
      * Active account id.  This will default to the first account found for the
      * user based upon roles if not supplied.
      *
@@ -114,7 +95,7 @@ class User extends UserSummary {
      * @param string $hashedPassword
      * @param string $name
      */
-    public function __construct($emailAddress = null, $hashedPassword = null, $name = null, $parentAccountId = 0) {
+    public function __construct($emailAddress = null, $hashedPassword = null, $name = null, $parentAccountId = 0, $id = null) {
         $this->emailAddress = $emailAddress;
         if ($hashedPassword) {
             $this->setHashedPassword($hashedPassword);
@@ -122,6 +103,7 @@ class User extends UserSummary {
         }
         $this->name = $name;
         $this->parentAccountId = $parentAccountId ? $parentAccountId : 0;
+        $this->id = $id;
 
     }
 
@@ -211,34 +193,6 @@ class User extends UserSummary {
 
     }
 
-
-    /**
-     * @return string
-     */
-    public function getTwoFactorData() {
-        return $this->twoFactorData;
-    }
-
-    /**
-     * @param string $twoFactorData
-     */
-    public function setTwoFactorData($twoFactorData) {
-        $this->twoFactorData = $twoFactorData;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getBackupCodes() {
-        return $this->backupCodes;
-    }
-
-    /**
-     * @param string[] $backupCodes
-     */
-    public function setBackupCodes($backupCodes) {
-        $this->backupCodes = $backupCodes;
-    }
 
     /**
      * @return string
