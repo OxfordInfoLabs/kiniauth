@@ -55,7 +55,7 @@ export class AuthenticationService {
         });
     }
 
-    public login(username: string, password: string, recaptcha?) {
+    public login(username: string, password: string, clientTwoFactorData?, recaptcha?) {
         const request = this.config.guestHttpURL + `/auth/login`;
 
         const headers = new HttpHeaders({'X-CAPTCHA-TOKEN': recaptcha || ''});
@@ -63,7 +63,8 @@ export class AuthenticationService {
 
         return this.kbRequest.makePostRequest(request, {
             emailAddress: username,
-            password: this.getHashedPassword(password, username)
+            password: this.getHashedPassword(password, username),
+            clientTwoFactorData: clientTwoFactorData || null
         }, options).toPromise().then((user: any) => {
             if (user === 'REQUIRES_2FA') {
                 return user;
@@ -177,7 +178,7 @@ export class AuthenticationService {
             .then(result => {
                 if (result) {
                     sessionStorage.removeItem('pendingLoginSession');
-                    return this.getLoggedInUser();
+                    return this.getLoggedInUser(true);
                 } else {
                     throw(result);
                 }

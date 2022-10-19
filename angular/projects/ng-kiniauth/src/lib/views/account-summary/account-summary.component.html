@@ -121,32 +121,32 @@
 
     </div>
 
-    <div class="actionpanel sixtyforty mx1 mb2">
+<!--    <div class="actionpanel sixtyforty mx1 mb2">-->
 
-        <div class="actioninfo p2w p1m">
-            <h4 class="mb1 mt0">Two Factor Authentication</h4>
+<!--        <div class="actioninfo p2w p1m">-->
+<!--            <h4 class="mb1 mt0">Two Factor Authentication</h4>-->
 
-            <p class="mb0">
-                To increase security on your account you can enable two factor authentication. Currently this uses the
-                Google Authenticator app downloadable for your mobile device.
-            </p>
+<!--            <p class="mb0">-->
+<!--                To increase security on your account you can enable two factor authentication. Currently this uses the-->
+<!--                Google Authenticator app downloadable for your mobile device.-->
+<!--            </p>-->
 
-        </div>
-        <div class="actions flex flex-col align-center justify-center p1">
+<!--        </div>-->
+<!--        <div class="actions flex flex-col align-center justify-center p1">-->
 
-            <span *ngIf="!security">Loading...</span>
+<!--            <span *ngIf="!security">Loading...</span>-->
 
-            <button class="button small-button white-button" (click)="enableTwoFa = true"
-                    *ngIf="security && !security.twoFactorData">
-                Enable 2FA
-            </button>
-            <button class="button small-button alert-button" *ngIf="security && security.twoFactorData"
-                    (click)="disable2FA()">
-                Disable 2FA
-            </button>
-        </div>
+<!--            <button class="button small-button white-button" (click)="enableTwoFa = true"-->
+<!--                    *ngIf="security && !security.twoFactorData">-->
+<!--                Enable 2FA-->
+<!--            </button>-->
+<!--            <button class="button small-button alert-button" *ngIf="security && security.twoFactorData"-->
+<!--                    (click)="disable2FA()">-->
+<!--                Disable 2FA-->
+<!--            </button>-->
+<!--        </div>-->
 
-    </div>
+<!--    </div>-->
 
 </ng-template>
 <ka-inline-modal *ngIf="editName" (closed)="editName = false">
