@@ -350,6 +350,17 @@ class UserService {
 
     }
 
+
+    /**
+     * Get a user by id
+     *
+     * @param $id
+     * @return User
+     */
+    public function getUser($id) {
+        return User::fetch($id);
+    }
+
     /**
      * Get all users matching a specific role scope and scope id, optionally limited to roles
      *
@@ -652,61 +663,6 @@ class UserService {
                 "invalid" => new FieldValidationError("password", "invalid", "The supplied password was incorrect")
             ]]);
         };
-    }
-
-
-    public function generateTwoFactorSettings($userId = User::LOGGED_IN_USER) {
-
-        /** @var User $user */
-        $user = User::fetch($userId);
-
-        $backupCodes = [];
-        for ($i = 0; $i < 10; $i++) {
-            $backupCodes[] = StringUtils::generateRandomString(9, false);
-        }
-        $user->setBackupCodes($backupCodes);
-        $user->save();
-
-        $this->twoFactorProvider->setAccountName($user->getEmailAddress());
-
-        $secret = $this->twoFactorProvider->createSecretKey();
-        $qrCode = $this->twoFactorProvider->generateQRCode($secret);
-
-        return array("secret" => $secret, "qrCode" => $qrCode, "backupCodes" => $backupCodes);
-    }
-
-    public function authenticateNewTwoFactor($code, $secret, $userId = User::LOGGED_IN_USER) {
-
-        /** @var User $user */
-        $user = User::fetch($userId);
-
-        $authenticated = $this->twoFactorProvider->authenticate($secret, $code);
-
-        if ($authenticated) {
-            $user->setTwoFactorData($secret);
-            $user->save();
-
-            ActivityLogger::log("User 2FA enabled", null, null, [], $userId);
-
-
-            return new UserExtended($user);
-        }
-        return false;
-    }
-
-    public function disableTwoFactor($userId = User::LOGGED_IN_USER) {
-
-        /** @var User $user */
-        $user = User::fetch($userId);
-
-        $user->setTwoFactorData(null);
-        $user->setBackupCodes(null);
-        $user->save();
-
-        ActivityLogger::log("User 2FA disabled", null, null, [], $userId);
-
-
-        return new UserExtended($user);
     }
 
 

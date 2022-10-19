@@ -8,35 +8,49 @@ use Dolondro\GoogleAuthenticator\QrImageGenerator\EndroidQrImageGenerator;
 use Dolondro\GoogleAuthenticator\QrImageGenerator\GoogleQrImageGenerator;
 use Dolondro\GoogleAuthenticator\Secret;
 use Dolondro\GoogleAuthenticator\SecretFactory;
+use Kiniauth\Objects\MetaData\ObjectStructuredData;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\ActivityLogger;
+use Kiniauth\Services\MetaData\MetaDataService;
+use Kiniauth\ValueObjects\Security\TwoFactor\GoogleAuthenticatorTwoFactorData;
+use Kiniauth\ValueObjects\Security\UserExtended;
+use Kinikit\Core\Util\StringUtils;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 
 class GoogleAuthenticatorProvider implements TwoFactorProvider {
 
-    private $issuer;
-    private $accountName;
-
+    /**
+     * @var GoogleAuthenticator
+     */
     private $googleAuthenticator;
 
-    public function __construct($issuer = null, $accountName = null) {
-        $this->issuer = $issuer;
-        $this->accountName = $accountName ? $accountName : "new-ga" . time() . rand(0, 10);
-        $this->googleAuthenticator = new GoogleAuthenticator();
+
+    /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
+     * @var MetaDataService
+     */
+    private $metaDataService;
+
+
+    /**
+     * GoogleAuthenticatorProvider constructor.
+     *
+     * @param GoogleAuthenticator $googleAuthenticator
+     * @param UserService $userService
+     * @param MetaDataService $metaDataService
+     */
+    public function __construct($googleAuthenticator, $userService, $metaDataService) {
+        $this->googleAuthenticator = $googleAuthenticator;
+        $this->userService = $userService;
+        $this->metaDataService = $metaDataService;
     }
 
-    public function createSecretKey() {
-        $secretFactory = new SecretFactory();
-        $secret = $secretFactory->create($this->issuer, $this->accountName);
-        return $secret->getSecretKey();
-    }
-
-    public function generateQRCode($secretKey) {
-        $secret = $this->generateSecret($secretKey);
-        $qrImageGenerator = new GoogleQrImageGenerator();
-        return $qrImageGenerator->generateUri($secret);
-    }
 
     /**
      * Always return true when using Google 2FA
@@ -50,7 +64,85 @@ class GoogleAuthenticatorProvider implements TwoFactorProvider {
     }
 
 
-    public function authenticate($secretKey, $twoFactorData, $twoFactorLoginData) {
+    /**
+     * Authenticate the 2FA using this provider
+     *
+     * @param User $pendingUser
+     * @param mixed $pendingTwoFactorData
+     * @param mixed $twoFactorLoginData
+     * @return mixed|void
+     */
+    public function authenticate($pendingUser, $pendingTwoFactorData, $twoFactorLoginData) {
+        // TODO: Implement authenticate() method.
+    }
+
+
+    /**
+     * Enable two factor for the supplied user.
+     *
+     * @param string $userId
+     */
+    public function enableTwoFactor($userId = User::LOGGED_IN_USER) {
+
+        // Generate 10 backup codes
+        $backupCodeItems = [];
+        $backupCodes = [];
+        for ($i = 0; $i < 10; $i++) {
+            $backupCode = StringUtils::generateRandomString(9, false);
+            $backupCodes[] = $backupCode;
+            $backupCodeItems[] =
+                new ObjectStructuredData(User::class, $userId, "2FABackupCode",
+                    $backupCode, null);
+        }
+
+        $user = $this->userService->getUser($userId);
+
+        // Generate a secret key
+        $secretFactory = new SecretFactory();
+        $secret = $secretFactory->create(null, $user->getEmailAddress());
+        $secretKey = $secret->getSecretKey();
+
+        // Generate a QR code
+        $qrImageGenerator = new GoogleQrImageGenerator();
+        $qrCode = $qrImageGenerator->generateUri($secret);
+
+        // Update backup codes
+        $this->metaDataService->replaceStructuredDataItems($backupCodeItems);
+
+        // Update secret key
+        $this->metaDataService->updateStructuredDataItems([
+            new ObjectStructuredData(User::class, $userId, "2FASecretKey", "2FASecretKey", $secretKey)
+        ]);
+
+        // Log the fact 2FA has been enabled
+        ActivityLogger::log("User 2FA enabled", null, null, [], $userId);
+
+        return new GoogleAuthenticatorTwoFactorData($secretKey, $qrCode, $backupCodes);
+
+
+    }
+
+
+    /**
+     * Disable two factor for the supplied user
+     *
+     * @param string $userId
+     * @return UserExtended
+     */
+    public function disableTwoFactor($userId = User::LOGGED_IN_USER) {
+
+        // Remove all structured data entries for 2FA
+        $this->metaDataService->removeStructuredDataItemsForObjectAndType(User::class, $userId, "2FASecretKey");
+        $this->metaDataService->removeStructuredDataItemsForObjectAndType(User::class, $userId, "2FABackupCode");
+
+        ActivityLogger::log("User 2FA disabled", null, null, [], $userId);
+
+    }
+
+
+
+
+    private function authenticateWithGA($secretKey, $twoFactorData, $twoFactorLoginData) {
         $filesystemAdapter = new Local(sys_get_temp_dir() . "/");
         $filesystem = new Filesystem($filesystemAdapter);
         $pool = new FilesystemCachePool($filesystem);
@@ -59,45 +151,9 @@ class GoogleAuthenticatorProvider implements TwoFactorProvider {
         return $this->googleAuthenticator->authenticate($secretKey, $twoFactorData);
     }
 
-    /**
-     * @return string|null
-     */
-    public function getIssuer() {
-        return $this->issuer;
-    }
 
-    /**
-     * @param string|null $issuer
-     */
-    public function setIssuer($issuer) {
-        $this->issuer = $issuer;
-    }
 
-    /**
-     * @return string|null
-     */
-    public function getAccountName() {
-        return $this->accountName;
-    }
-
-    /**
-     * @param string|null $accountName
-     */
-    public function setAccountName($accountName) {
-        $this->accountName = $accountName;
-    }
-
-    /**
-     * This returns a Secret object which is required for generating a QR Code.
-     *
-     * @param $secretKey
-     * @return Secret
-     */
-    private function generateSecret($secretKey) {
-        return new Secret($this->issuer, $this->accountName, $secretKey);
-    }
-
-    private function toBEREIMPLEMENTED(){
+    private function toBEREIMPLEMENTED() {
         if (strlen($code) === 6) {
 
             $secretKey = $pendingUser->getTwoFactorData();
