@@ -572,22 +572,6 @@ class UserServiceTest extends TestBase {
     }
 
 
-    public function testCanGenerateTwoFactorSettingsForDefaultProvider() {
-        // Attempt a login. We need to be logged in to generate settings.
-        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
-
-        // Check the user
-        $loggedInUser = $this->session->__getLoggedInSecurable();
-        $this->assertTrue($loggedInUser instanceof User);
-
-        $twoFactorSettings = $this->userService->generateTwoFactorSettings();
-
-        $this->assertNotNull($twoFactorSettings["secret"]);
-        $this->assertNotNull($twoFactorSettings["qrCode"]);
-
-    }
-
-
     public function testSendPasswordResetGeneratesAccountActionAndSendsEmailWithOneTimeCode() {
 
         $this->authenticationService->logout();
@@ -738,12 +722,12 @@ class UserServiceTest extends TestBase {
             // Success
         }
 
-        try {
-            $this->userService->createUserAccessToken("bob@twofactor.com", AuthenticationHelper::encryptPasswordForLogin("passwordbob@twofactor.com"));
-            $this->fail("Should have thrown here");
-        } catch (TwoFactorAuthenticationRequiredException $e) {
-            // Success
-        }
+//        try {
+//            $this->userService->createUserAccessToken("bob@twofactor.com", AuthenticationHelper::encryptPasswordForLogin("passwordbob@twofactor.com"));
+//            $this->fail("Should have thrown here");
+//        } catch (TwoFactorAuthenticationRequiredException $e) {
+//            // Success
+//        }
 
 
         $this->assertTrue(true);

@@ -145,39 +145,6 @@ trait UserTrait {
         return $this->userService->changeUserMobile($newMobile, $password, $userId);
     }
 
-    /**
-     * Generate two factor settings
-     *
-     * @http GET /twoFactorSettings
-     *
-     * @return array
-     */
-    public function createTwoFactorSettings($userId = User::LOGGED_IN_USER) {
-        return $this->userService->generateTwoFactorSettings($userId);
-    }
-
-    /**
-     * @http GET /newTwoFactor
-     *
-     * @param $code
-     * @param $secret
-     * @return bool|\Kiniauth\Objects\Security\User
-     */
-    public function authenticateNewTwoFactorCode($code, $secret, $userId = User::LOGGED_IN_USER) {
-        return $this->userService->authenticateNewTwoFactor($code, $secret, $userId);
-    }
-
-    /**
-     * Disable the current logged in users two fa.
-     *
-     * @http GET /disableTwoFA
-     *
-     * @return \Kiniauth\Objects\Security\User
-     */
-    public function disableTwoFactor($userId = User::LOGGED_IN_USER) {
-        return $this->userService->disableTwoFactor($userId);
-    }
-
 
     /**
      * Update the passed settings
