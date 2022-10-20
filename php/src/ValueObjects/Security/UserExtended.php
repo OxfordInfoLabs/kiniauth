@@ -14,7 +14,6 @@ class UserExtended {
     protected $name;
     protected $status;
     protected $roles;
-    protected $twoFactorData;
     protected $hashedEmail;
     protected $activeAccountId;
     protected $userData;
@@ -32,7 +31,6 @@ class UserExtended {
         $this->name = $user->getName();
         $this->status = $user->getStatus();
         $this->roles = $user->getRoles();
-        $this->twoFactorData = $user->getTwoFactorData();
         $this->activeAccountId = $user->getActiveAccountId();
 
         $this->hashedEmail = md5( strtolower( trim( $user->getEmailAddress() ) ) );
@@ -92,13 +90,6 @@ class UserExtended {
      */
     public function getRoles() {
         return $this->roles;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTwoFactorData() {
-        return $this->twoFactorData;
     }
 
     /**
