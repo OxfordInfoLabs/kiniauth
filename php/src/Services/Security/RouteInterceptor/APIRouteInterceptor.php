@@ -9,6 +9,8 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
 use Kinikit\Core\Logging\Logger;
+use Kinikit\MVC\Request\URL;
+use Kinikit\MVC\Response\Headers;
 use Kinikit\MVC\Routing\RouteInterceptor;
 
 class APIRouteInterceptor extends RouteInterceptor {
@@ -50,5 +52,37 @@ class APIRouteInterceptor extends RouteInterceptor {
         $this->authenticationService->apiAuthenticate($apiKey, $apiSecret);
     }
 
+
+    /**
+     * Allow referrer based API calls
+     *
+     * @param \Kinikit\MVC\Request\Request $request
+     * @param \Kinikit\MVC\Response\Response $response
+     * @return \Kinikit\MVC\Response\Response
+     */
+    public function afterRoute($request, $response) {
+        $referrer = $this->getReferrer($request);
+
+        // Check we have an active referrer - if so we can assume that the request referrer is valid.
+        if ($this->authenticationService->hasActiveReferrer() && $referrer) {
+            $accessControlOrigin = strtolower($referrer->getProtocol()) . "://" . $referrer->getHost() . ($referrer->getPort() != "80" && $referrer->getPort() != "443" ? ":" . $referrer->getPort() : "");
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, $accessControlOrigin);
+        }
+
+        return $response;
+    }
+
+
+    // Get normalised referrer
+    private function getReferrer($request) {
+        $referrer = null;
+        if ($request->getReferringURL()) {
+            $referrer = $request->getReferringURL();
+        } else if ($request->getHeaders()->getCustomHeader("ORIGIN")) {
+            $referrer = new URL($request->getHeaders()->getCustomHeader("ORIGIN"));
+        }
+        return $referrer;
+    }
 
 }
