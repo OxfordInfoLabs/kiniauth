@@ -6,8 +6,10 @@ namespace Kiniauth\Services\Security\RouteInterceptor;
 
 use Kiniauth\Exception\Security\MissingAPICredentialsException;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\MVC\Request\URL;
 use Kinikit\MVC\Response\Headers;
@@ -99,6 +101,9 @@ class APIRouteInterceptor extends RouteInterceptor {
             $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
             $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, $accessControlOrigin);
         }
+
+        // Remove cookies
+        $response->getHeaders()->remove(Headers::HEADER_SET_COOKIE);
 
         return $response;
     }
