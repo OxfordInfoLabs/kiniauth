@@ -61,7 +61,7 @@ class ScheduledTask extends ScheduledTaskSummary {
 
         $nextStartTime = null;
         // Loop through each time period and calculate the next start date
-        foreach ($this->getTimePeriods() as $timePeriod) {
+        foreach ($this->getTimePeriods() ?? [] as $timePeriod) {
 
             $startTime = null;
 
