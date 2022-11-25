@@ -40,6 +40,10 @@ class ScheduledTaskRunner {
      */
     public static function runFromComposer($event) {
 
+        // Wait seconds if defined
+        $waitSeconds = $event->getArguments()[0] ?? 0;
+        sleep($waitSeconds);
+
         $sourceDirectory = $event->getComposer()->getPackage()->getConfig()["source-directory"] ?? "src";
 
         chdir($sourceDirectory);

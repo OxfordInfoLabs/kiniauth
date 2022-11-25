@@ -74,6 +74,16 @@ class AccountService {
 
 
     /**
+     * Get a full account object
+     *
+     * @param $id
+     */
+    public function getAccount($id) {
+        return Account::fetch($id);
+    }
+
+
+    /**
      * Get an account summary, default to the logged in account.
      *
      * @param string $id

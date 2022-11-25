@@ -21,6 +21,7 @@ class ScheduledTaskInterceptor extends DefaultORMInterceptor {
      * @param ScheduledTask $object
      */
     public function preSave($object) {
+
         if (!self::$disabled && $object->getStatus() != ScheduledTask::STATUS_RUNNING)
             $object->recalculateNextStartTime();
     }
