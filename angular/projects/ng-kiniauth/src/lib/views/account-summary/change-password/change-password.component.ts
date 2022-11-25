@@ -1,15 +1,14 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {BaseComponent} from '../../base-component';
-import {AuthenticationService} from '../../../services/authentication.service';
 
 @Component({
     selector: 'ka-change-password',
     templateUrl: './change-password.component.html',
     styleUrls: ['./change-password.component.sass']
 })
-export class ChangePasswordComponent extends BaseComponent implements OnInit {
+export class ChangePasswordComponent implements OnInit {
 
     @Input() email: string;
+    @Input() authService: any;
 
     @Output('saved') saved: EventEmitter<any> = new EventEmitter();
 
@@ -19,12 +18,10 @@ export class ChangePasswordComponent extends BaseComponent implements OnInit {
     public saveError = false;
     public changeComplete = false;
 
-    constructor(kcAuthService: AuthenticationService) {
-        super(kcAuthService);
+    constructor() {
     }
 
     ngOnInit() {
-        super.ngOnInit();
     }
 
     public saveNewPassword() {

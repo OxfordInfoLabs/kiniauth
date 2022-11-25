@@ -7,13 +7,13 @@
 
     <div class="mb2">
         <ka-edit-roles *ngIf="user.id" [scopeKey]="'Account'" [scope]="'ACCOUNT'" [user]="user" [(updatedScopes)]="scopeRoles.ACCOUNT"
-                       [hideApply]="true" (updatedScopesChange)="roleUpdated($event)"></ka-edit-roles>
+                       [hideApply]="true" (updatedScopesChange)="roleUpdated($event)" [userService]="userService"></ka-edit-roles>
         <p style="color: red" *ngIf="accountError">{{accountError}}</p>
     </div>
 
     <mat-tab-group animationDuration="0" *ngIf="!accountOwner">
         <mat-tab *ngFor="let scopeAccess of scopeAccesses" [label]="scopeAccess.scopeDescription">
-            <ka-edit-roles class="block mt-4" *ngIf="user.id"
+            <ka-edit-roles class="block mt-4" *ngIf="user.id" [userService]="userService"
                 [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope" [user]="user"
                            [(updatedScopes)]="scopeRoles[scopeAccess.scope]" [hideApply]="true"></ka-edit-roles>
         </mat-tab>

@@ -1,6 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { BaseComponent } from '../../base-component';
+import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
 
 @Component({
     selector: 'ka-edit-mobile',
@@ -8,7 +6,9 @@ import { BaseComponent } from '../../base-component';
     styleUrls: ['./edit-mobile.component.sass'],
     encapsulation: ViewEncapsulation.None
 })
-export class EditMobileComponent extends BaseComponent implements OnInit {
+export class EditMobileComponent implements OnInit {
+
+    @Input() authService;
 
     @Output('saved') saved: EventEmitter<any> = new EventEmitter();
 
@@ -18,12 +18,10 @@ export class EditMobileComponent extends BaseComponent implements OnInit {
 
     public user: any;
 
-    constructor(public kcAuthService: AuthenticationService) {
-        super(kcAuthService);
+    constructor() {
     }
 
     ngOnInit() {
-        super.ngOnInit();
         return this.authService.getLoggedInUser().then(user => {
             this.user = user;
         });
