@@ -41,10 +41,11 @@ class Account extends AccountSummary {
      *
      * Account constructor.
      */
-    public function __construct($name = null, $parentAccountId = 0, $status = self::STATUS_PENDING) {
+    public function __construct($name = null, $parentAccountId = 0, $status = self::STATUS_PENDING, $id = null) {
         $this->name = $name;
         $this->parentAccountId = $parentAccountId;
         $this->status = $status;
+        $this->accountId = $id;
     }
 
     /**

@@ -71,7 +71,6 @@ class ObjectInterceptor extends ContainerInterceptor {
      */
     public function beforeMethod($objectInstance, $methodName, $params, $methodInspector) {
 
-
         if ($matches =
             $methodInspector->getMethodAnnotations()["hasPrivilege"] ?? []
         ) {
