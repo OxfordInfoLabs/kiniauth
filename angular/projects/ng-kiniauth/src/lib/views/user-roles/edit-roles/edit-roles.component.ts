@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { UserService } from '../../../services/user.service';
 import * as _ from 'lodash';
 
 @Component({
@@ -15,6 +14,8 @@ export class EditRolesComponent implements OnInit {
     @Input() user: any;
     @Input() updatedScopes: any;
     @Input() hideApply: boolean;
+    @Input() userService;
+
     @Output() closed: EventEmitter<any> = new EventEmitter<any>();
     @Output() saved: EventEmitter<any> = new EventEmitter<any>();
     @Output() updatedScopesChange: EventEmitter<any> = new EventEmitter<any>();
@@ -29,7 +30,7 @@ export class EditRolesComponent implements OnInit {
     public errors = {};
 
 
-    constructor(private userService: UserService) {
+    constructor() {
     }
 
     ngOnInit() {

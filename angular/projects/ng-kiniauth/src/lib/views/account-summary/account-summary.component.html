@@ -151,35 +151,35 @@
 </ng-template>
 <ka-inline-modal *ngIf="editName" (closed)="editName = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit User Name</div>
-    <ka-edit-name [authenticationService]="authService" (saved)="editName = false;"></ka-edit-name>
+    <ka-edit-name [authService]="authService" (saved)="editName = false;"></ka-edit-name>
 </ka-inline-modal>
 
 <ka-inline-modal *ngIf="editAccountName" (closed)="editAccountName = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit Account Name</div>
-    <ka-edit-account-name [authenticationService]="authService" (saved)="loadAccount()"></ka-edit-account-name>
+    <ka-edit-account-name [accountService]="accountService" [authService]="authService" (saved)="loadAccount()"></ka-edit-account-name>
 </ka-inline-modal>
 
 <ka-inline-modal *ngIf="editEmail" (closed)="editEmail = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit Email Address</div>
-    <ka-edit-email [authenticationService]="authService" (saved)="editEmail = false;"></ka-edit-email>
+    <ka-edit-email [authService]="authService" (saved)="editEmail = false;"></ka-edit-email>
 </ka-inline-modal>
 
 <ka-inline-modal *ngIf="editMobile" (closed)="editMobile = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit Mobile Phone Number</div>
-    <ka-edit-mobile [authenticationService]="authService" (saved)="editMobile = false;"></ka-edit-mobile>
+    <ka-edit-mobile [authService]="authService" (saved)="editMobile = false;"></ka-edit-mobile>
 </ka-inline-modal>
 
 <ka-inline-modal *ngIf="editBackup" (closed)="editBackup = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit Backup Email Address</div>
-    <ka-edit-backup-email [authenticationService]="authService" (saved)="editBackup = false;"></ka-edit-backup-email>
+    <ka-edit-backup-email [authService]="authService" (saved)="editBackup = false;"></ka-edit-backup-email>
 </ka-inline-modal>
 
 <ka-inline-modal *ngIf="enableTwoFa" (closed)="enableTwoFa = false">
     <div class="text-base font-medium text-gray-900 ml-6">Enable Two Factor Authentication</div>
-    <ka-two-factor (saved)="enableTwoFa = false;"></ka-two-factor>
+    <ka-two-factor [authService]="authService" (saved)="enableTwoFa = false;"></ka-two-factor>
 </ka-inline-modal>
 
 <ka-inline-modal *ngIf="changePassword" (closed)="changePassword = false">
     <div class="text-base font-medium text-gray-900 ml-6">Change Password</div>
-    <ka-change-password (saved)="changePassword = false;" [email]="security.emailAddress"></ka-change-password>
+    <ka-change-password [authService]="authService" (saved)="changePassword = false;" [email]="security.emailAddress"></ka-change-password>
 </ka-inline-modal>

@@ -26,7 +26,7 @@ export class UserRolesComponent implements OnInit {
 
     private userId;
 
-    constructor(private userService: UserService,
+    constructor(public userService: UserService,
                 private route: ActivatedRoute,
                 private roleService: RoleService,
                 public authService: AuthenticationService) {

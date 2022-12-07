@@ -4,8 +4,9 @@
   "scripts": {
     "watch": "ng build ng-kiniauth --watch",
     "build": "ng build ng-kiniauth",
+    "build:prod": "ng build ng-kiniauth --configuration production",
     "test": "ng test ng-kiniauth",
-    "publish": "cd projects/ng-kiniauth && npm version patch && cd ../.. && npm run build && cd dist/ng-kiniauth && npm publish"
+    "publish": "cd projects/ng-kiniauth && npm version patch && cd ../.. && npm run build:prod && cd dist/ng-kiniauth && npm publish"
   },
   "dependencies": {
     "@angular/animations": "^14.2.6",

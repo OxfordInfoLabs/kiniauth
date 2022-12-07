@@ -1,7 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { BaseComponent } from '../../base-component';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { Router } from '@angular/router';
+import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
 
 @Component({
     selector: 'ka-two-factor',
@@ -9,7 +6,9 @@ import { Router } from '@angular/router';
     styleUrls: ['./two-factor.component.sass'],
     encapsulation: ViewEncapsulation.None
 })
-export class TwoFactorComponent extends BaseComponent implements OnInit {
+export class TwoFactorComponent implements OnInit {
+
+    @Input() authService;
 
     @Output('saved') saved: EventEmitter<any> = new EventEmitter();
 
@@ -17,17 +16,13 @@ export class TwoFactorComponent extends BaseComponent implements OnInit {
     public settings: any;
     public twoFACode: string;
 
-    constructor(public kcAuthService: AuthenticationService,
-                private router: Router) {
-        super(kcAuthService);
+    constructor() {
     }
 
     ngOnInit() {
-        super.ngOnInit();
-
         return this.authService.getLoggedInUser().then(user => {
             this.user = user;
-            return
+            return user;
         }).then(() => {
             this.authService.generateTwoFactorSettings().then(settings => {
                 this.settings = settings;

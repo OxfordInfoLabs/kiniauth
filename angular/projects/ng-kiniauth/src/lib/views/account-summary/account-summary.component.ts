@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { Subject } from 'rxjs/internal/Subject';
 import { AuthenticationService } from '../../services/authentication.service';
 import { BaseComponent } from '../base-component';
-import { KinibindModel } from 'ng-kinibind';
 import { AccountService } from '../../services/account.service';
 
 @Component({
@@ -35,7 +34,7 @@ export class AccountSummaryComponent extends BaseComponent implements OnInit, On
     private userSub: Subscription;
 
     constructor(kcAuthService: AuthenticationService,
-                private accountService: AccountService) {
+                public accountService: AccountService) {
         super(kcAuthService);
     }
 

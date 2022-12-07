@@ -3,6 +3,7 @@ import { RoleService } from '../../services/role.service';
 import * as _ from 'lodash';
 import { AccountService } from '../../services/account.service';
 import { Location } from '@angular/common';
+import {UserService} from '../../services/user.service';
 
 @Component({
     selector: 'ka-invite-user',
@@ -20,7 +21,8 @@ export class InviteUserComponent implements OnInit {
 
     constructor(private roleService: RoleService,
                 private accountService: AccountService,
-                private location: Location) {
+                private location: Location,
+                public userService: UserService) {
     }
 
     ngOnInit() {

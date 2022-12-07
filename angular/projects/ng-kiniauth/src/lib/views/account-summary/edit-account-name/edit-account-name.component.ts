@@ -1,7 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { BaseComponent } from '../../base-component';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { AccountService } from '../../../services/account.service';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsulation} from '@angular/core';
 
 @Component({
     selector: 'ka-edit-account-name',
@@ -9,7 +6,10 @@ import { AccountService } from '../../../services/account.service';
     styleUrls: ['./edit-account-name.component.sass'],
     encapsulation: ViewEncapsulation.None
 })
-export class EditAccountNameComponent extends BaseComponent implements OnInit, OnDestroy {
+export class EditAccountNameComponent implements OnInit, OnDestroy {
+
+    @Input() authService;
+    @Input() accountService;
 
     @Output('saved') saved: EventEmitter<any> = new EventEmitter();
 
@@ -18,13 +18,10 @@ export class EditAccountNameComponent extends BaseComponent implements OnInit, O
     public saveError: string;
     public user: any;
 
-    constructor(kcAuthService: AuthenticationService,
-                private accountService: AccountService) {
-        super(kcAuthService);
+    constructor() {
     }
 
     ngOnInit() {
-        super.ngOnInit();
         return this.authService.getLoggedInUser().then(user => {
             this.user = user;
         });
