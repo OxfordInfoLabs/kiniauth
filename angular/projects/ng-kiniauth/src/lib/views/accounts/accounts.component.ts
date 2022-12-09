@@ -13,6 +13,8 @@ import * as moment from 'moment';
 })
 export class AccountsComponent implements OnInit {
 
+    @Input() accountClickThrough: string;
+
     public accounts: any[];
     public searchText = new BehaviorSubject<string>('');
     public limit = new BehaviorSubject<number>(100);
@@ -50,6 +52,12 @@ export class AccountsComponent implements OnInit {
             .subscribe((accounts: any) => {
                 this.accounts = accounts;
             });
+    }
+
+    public accountAction(account) {
+        if (this.accountClickThrough) {
+            this.router.navigate([this.accountClickThrough, account.accountId]);
+        }
     }
 
     public saveNewAdminUser() {
