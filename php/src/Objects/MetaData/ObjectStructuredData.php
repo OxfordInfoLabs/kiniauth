@@ -49,7 +49,7 @@ class ObjectStructuredData extends ActiveRecord {
     /**
      * Store the data as a large JSON block
      *
-     * @var string
+     * @var mixed
      * @json
      * @sqlType LONGTEXT
      */
@@ -130,14 +130,14 @@ class ObjectStructuredData extends ActiveRecord {
     }
 
     /**
-     * @return string
+     * @return mixed
      */
     public function getData() {
         return $this->data;
     }
 
     /**
-     * @param string $data
+     * @param mixed $data
      */
     public function setData($data) {
         $this->data = $data;

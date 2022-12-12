@@ -67,7 +67,7 @@ class LongRunningTaskService {
         $storedLongRunningTask->setFinishedDate(clone new \DateTime());
         $now->add(new \DateInterval("PT" . $expiryMinutes . "M"));
         $storedLongRunningTask->setExpiryDate($now);
-        
+
         $storedLongRunningTask->save();
 
         if ($exception)
