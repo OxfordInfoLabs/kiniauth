@@ -18,7 +18,7 @@ class ScheduledTaskTest extends TestBase {
     public function testCanRecalculateNextStartTimeForDateBasedTimePeriod() {
 
         $month = (new \DateTime())->add(new \DateInterval("P1M"))->format("m");
-        $year = date("Y");
+        $year = (new \DateTime())->add(new \DateInterval("P1M"))->format("Y");
 
         $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("test", "Test Task",
             [], [
@@ -36,6 +36,7 @@ class ScheduledTaskTest extends TestBase {
         $date = $currentTime->format("d");
         $hour = $currentTime->format("H");
         $minute = $currentTime->format("i");
+        $year = $currentTime->format("Y");
 
 
         $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("test", "Test Task",
