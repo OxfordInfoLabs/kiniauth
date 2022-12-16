@@ -340,6 +340,10 @@ class Session implements \Kinikit\MVC\Session\Session {
     }
 
 
+    public function join($id) {
+        $this->coreSession->join($id);
+    }
+
     /**
      * Get the current session id
      *
@@ -369,5 +373,6 @@ class Session implements \Kinikit\MVC\Session\Session {
     public function destroy($id) {
         $this->coreSession->destroy($id);
     }
+
 
 }
