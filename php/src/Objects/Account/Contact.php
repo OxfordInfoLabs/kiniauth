@@ -42,7 +42,7 @@ class Contact extends ActiveRecord {
      * @var string
      * @required
      */
-    private $type = self::ADDRESS_TYPE_GENERAL;
+    protected $type = self::ADDRESS_TYPE_GENERAL;
 
 
     /**
@@ -50,7 +50,7 @@ class Contact extends ActiveRecord {
      *
      * @var string
      */
-    private $name;
+    protected $name;
 
 
     /**
@@ -58,7 +58,7 @@ class Contact extends ActiveRecord {
      *
      * @var string
      */
-    private $organisation;
+    protected $organisation;
 
 
     /**
@@ -67,7 +67,7 @@ class Contact extends ActiveRecord {
      * @var string
      * @required
      */
-    private $street1;
+    protected $street1;
 
 
     /**
@@ -75,7 +75,7 @@ class Contact extends ActiveRecord {
      *
      * @var string
      */
-    private $street2;
+    protected $street2;
 
 
     /**
@@ -84,7 +84,7 @@ class Contact extends ActiveRecord {
      * @var string
      * @required
      */
-    private $city;
+    protected $city;
 
 
     /**
@@ -92,7 +92,7 @@ class Contact extends ActiveRecord {
      *
      * @var string
      */
-    private $county;
+    protected $county;
 
 
     /**
@@ -100,7 +100,7 @@ class Contact extends ActiveRecord {
      *
      * @var string
      */
-    private $postcode;
+    protected $postcode;
 
     /**
      * Country code (2 Letter)
@@ -108,7 +108,7 @@ class Contact extends ActiveRecord {
      * @var string
      * @required
      */
-    private $countryCode;
+    protected $countryCode;
 
 
     /**
@@ -116,7 +116,7 @@ class Contact extends ActiveRecord {
      *
      * @var string
      */
-    private $telephoneNumber;
+    protected $telephoneNumber;
 
 
     /**
@@ -125,7 +125,7 @@ class Contact extends ActiveRecord {
      * @var string
      * @email
      */
-    private $emailAddress;
+    protected $emailAddress;
 
 
     /**
@@ -133,7 +133,7 @@ class Contact extends ActiveRecord {
      *
      * @var boolean
      */
-    private $defaultContact = 0;
+    protected $defaultContact = 0;
 
     const ADDRESS_TYPE_GENERAL = "GENERAL";
 

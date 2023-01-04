@@ -435,7 +435,8 @@ class SecurityService {
         if ($securable) {
             $newSecurable = $securable instanceof User ? User::fetch($securable->getId()) : APIKey::fetch($securable->getId());
             $this->session->__setLoggedInSecurable($newSecurable);
-            $this->session->__setLoggedInAccount(Account::fetch($newSecurable->getActiveAccountId()));
+            if ($newSecurable->getActiveAccountId())
+                $this->session->__setLoggedInAccount(Account::fetch($newSecurable->getActiveAccountId()));
         } else if ($account) {
             $this->session->__setLoggedInAccount(Account::fetch($account->getAccountId()));
         }
