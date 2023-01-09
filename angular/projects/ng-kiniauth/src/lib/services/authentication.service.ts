@@ -29,30 +29,25 @@ export class AuthenticationService {
         }
     }
 
-    public getLoggedInUser(reloadSession?): any {
-        let promise = Promise.resolve(true);
+    public async getLoggedInUser(reloadSession?): Promise<any> {
         if (reloadSession || !this.sessionData.getValue()) {
-            promise = this.getSessionData();
+            await this.getSessionData();
         }
-        return promise.then(() => {
-            return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user').toPromise()
-                .then(res => {
-                    if (res) {
-                        return this.setSessionUser(res).then(() => {
-                            const sessionData = sessionStorage.getItem('sessionData');
-                            if (sessionData && _.filter(JSON.parse(sessionData)).length) {
-                                this.sessionData.next(JSON.parse(sessionData));
-                                return res;
-                            } else {
-                                return this.getSessionData().then(() => {
-                                    return res;
-                                });
-                            }
-                        });
-                    }
-                    return null;
-                });
-        });
+
+        const res = await this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user')
+            .toPromise();
+
+        if (res) {
+            await this.setSessionUser(res);
+            const sessionData = sessionStorage.getItem('sessionData');
+            if (sessionData && _.filter(JSON.parse(sessionData)).length) {
+                this.sessionData.next(JSON.parse(sessionData));
+            } else {
+                await this.getSessionData();
+            }
+            return res;
+        }
+        return null;
     }
 
     public login(username: string, password: string, clientTwoFactorData?, recaptcha?) {

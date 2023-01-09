@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../../services/authentication.service';
 import { BaseComponent } from '../../base-component';
@@ -13,6 +13,9 @@ export class LoginComponent extends BaseComponent implements OnInit {
 
     @Input() loginRoute: string;
     @Input() recaptchaKey: string;
+    @Input() preventRedirect = false;
+
+    @Output() loggedIn = new EventEmitter();
 
     public email: string;
     public forgottenEmail: string;
@@ -63,7 +66,10 @@ export class LoginComponent extends BaseComponent implements OnInit {
                     } else if (res === 'ACTIVE_SESSION') {
                         this.activeSession = true;
                     } else {
-                        return this.router.navigate([this.loginRoute || '/']);
+                        this.loggedIn.emit(res);
+                        if (!this.preventRedirect) {
+                            return this.router.navigate([this.loginRoute || '/']);
+                        }
                     }
                 })
                 .catch(err => {
@@ -93,7 +99,9 @@ export class LoginComponent extends BaseComponent implements OnInit {
                 this.activeSession = true;
             } else {
                 this.activeSession = false;
-                return this.router.navigate([this.loginRoute || '/']);
+                if (!this.preventRedirect) {
+                    return this.router.navigate([this.loginRoute || '/']);
+                }
             }
         });
     }
@@ -112,7 +120,10 @@ export class LoginComponent extends BaseComponent implements OnInit {
                     if (clientTwoFactorData) {
                         localStorage.setItem('clientTwoFactorData', String(clientTwoFactorData));
                     }
-                    return this.router.navigate([this.loginRoute || '/']);
+                    this.loggedIn.emit(clientTwoFactorData);
+                    if (!this.preventRedirect) {
+                        return this.router.navigate([this.loginRoute || '/']);
+                    }
                 })
                 .catch(error => {
                     this.authService.getSessionData();
