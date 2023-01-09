@@ -67,6 +67,19 @@ class ScheduledTaskService {
      */
     public function processDueTasks() {
 
+        // Process any timed out tasks
+        $timedOutTasks = ScheduledTask::filter("WHERE timeoutTime <= ? AND status LIKE ?",
+        date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING);
+
+        if (sizeof($timedOutTasks)) {
+            foreach ($timedOutTasks as $task) {
+                $task->setStatus(ScheduledTaskSummary::STATUS_TIMED_OUT);
+                $task->save();
+            }
+        }
+
+
+        // Gather due tasks
         $dueTasks = ScheduledTask::filter("WHERE nextStartTime <= ? AND (status IS NULL OR status <> ?)",
             date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING);
 

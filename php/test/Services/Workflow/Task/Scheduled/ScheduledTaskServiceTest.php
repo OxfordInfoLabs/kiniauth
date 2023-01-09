@@ -187,5 +187,30 @@ class ScheduledTaskServiceTest extends TestBase {
 
     }
 
+    public function testCanIdentifyTimedOutTasksAndUpdateStatus() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        ScheduledTaskInterceptor::$disabled = false;
+
+        $timeoutDate = (new \DateTime())->sub(new \DateInterval("PT2H"));
+
+        $task1 = new ScheduledTask(new ScheduledTaskSummary("test", "Test Scheduled Task",
+            ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
+                new ScheduledTaskTimePeriod(null, null, null, 30)
+            ], ScheduledTaskSummary::STATUS_RUNNING, null,null,null,$timeoutDate,3600), null, 1);
+
+        $task1->save();
+        $task1Id = $task1->getId();
+
+        // Process due tasks
+        $this->scheduledTaskService->processDueTasks();
+
+        $this->assertEquals(ScheduledTaskSummary::STATUS_TIMED_OUT, ScheduledTask::fetch($task1Id)->getStatus());
+        $this->assertEquals(30, ScheduledTask::fetch($task1Id)->getNextStartTime()->format("i"));
+
+
+    }
+
 
 }
