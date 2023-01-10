@@ -230,4 +230,17 @@ class SecurityServiceTest extends TestBase {
     }
 
 
+    public function testCanLoginAsSuperUser(){
+
+        $this->securityService->logout();
+
+        // Login as a machine super user
+        $this->securityService->loginAsSuperUser();
+
+        // Should now be a super user
+        $this->assertTrue($this->securityService->isSuperUserLoggedIn());
+
+    }
+
+
 }
