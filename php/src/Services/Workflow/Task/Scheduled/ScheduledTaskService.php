@@ -6,6 +6,7 @@ namespace Kiniauth\Services\Workflow\Task\Scheduled;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTask;
+use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskLog;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskSummary;
 use Kiniauth\Services\Workflow\Task\Scheduled\Processor\ScheduledTaskProcessor;
 
@@ -75,6 +76,10 @@ class ScheduledTaskService {
             foreach ($timedOutTasks as $task) {
                 $task->setStatus(ScheduledTaskSummary::STATUS_TIMED_OUT);
                 $task->save();
+
+                $logEntry = new ScheduledTaskLog($task->getId(), $task->getLastStartTime(), $task->getLastEndTime(),
+                    $task->getStatus(), "Timed Out");
+                $logEntry->save();
             }
         }
 
