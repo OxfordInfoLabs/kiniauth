@@ -55,6 +55,10 @@ abstract class ScheduledTaskProcessor {
             // Ensure we record the last start time and set status to running
             $scheduledTask->setLastStartTime(new \DateTime());
             $scheduledTask->setStatus(ScheduledTask::STATUS_RUNNING);
+
+            $timeoutTime = (new \DateTime())->add(new \DateInterval("PT{$scheduledTask->getTimeoutSeconds()}S"));
+            $scheduledTask->setTimeoutTime($timeoutTime);
+
             $scheduledTask->save();
 
             // Run the task

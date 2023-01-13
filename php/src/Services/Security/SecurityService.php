@@ -15,6 +15,7 @@ use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Application\Session;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\FileResolver;
@@ -192,6 +193,21 @@ class SecurityService {
 
     }
 
+
+    /**
+     * Log in as super user
+     */
+    public function loginAsSuperUser() {
+
+        // Create adhoc user
+        $user = new User("admin@admin", null, "Super User", 0, 0);
+        $user->setStatus(User::STATUS_ACTIVE);
+        $user->setRoles([new UserRole(Role::SCOPE_ACCOUNT)]);
+
+        $this->session->__setLoggedInSecurable($user);
+        $this->session->__setLoggedInPrivileges([Role::SCOPE_ACCOUNT => $this->scopeManager->getScopeAccess(Role::SCOPE_ACCOUNT)->generateScopePrivileges($user, null, [])]);
+
+    }
 
     /**
      * Log out implementation.  Usually called from authentication service.

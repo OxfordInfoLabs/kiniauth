@@ -6,6 +6,7 @@ namespace Kiniauth\Test\Services\Workflow\Task\Scheduled;
 
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTask;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskInterceptor;
+use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskLog;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskSummary;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskTimePeriod;
 use Kiniauth\Services\Workflow\Task\Scheduled\Processor\ScheduledTaskProcessor;
@@ -187,5 +188,59 @@ class ScheduledTaskServiceTest extends TestBase {
 
     }
 
+    public function testCanIdentifyTimedOutTasksAndUpdateStatus() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        ScheduledTaskInterceptor::$disabled = false;
+
+        $timeoutDate = (new \DateTime())->sub(new \DateInterval("PT2H"));
+
+        $task1 = new ScheduledTask(new ScheduledTaskSummary("test", "Test Scheduled Task",
+            ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
+                new ScheduledTaskTimePeriod(null, null, null, 30)
+            ], ScheduledTaskSummary::STATUS_RUNNING, null, null, null, $timeoutDate, 3600), null, 1);
+
+        $task1->save();
+        $task1Id = $task1->getId();
+
+        // Process due tasks
+        $this->scheduledTaskService->processDueTasks();
+
+        $this->assertEquals(ScheduledTaskSummary::STATUS_TIMED_OUT, ScheduledTask::fetch($task1Id)->getStatus());
+        $this->assertEquals(30, ScheduledTask::fetch($task1Id)->getNextStartTime()->format("i"));
+
+
+    }
+
+    public function testIfATaskTimeOutIsLoggedAndNextStartTimeUpdatedCorrectly() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $timeoutTime = (new \DateTime())->sub(new \DateInterval("PT10S"));
+        $lastStartTime = (new \DateTime())->sub(new \DateInterval("PT1H"));
+        $nextStartTime = (new \DateTime())->format("Y-m-d H:i:s");
+
+        $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("test timeout", "Timed Out Task", ["game" => "set"], [new ScheduledTaskTimePeriod(null, null, 0, 0)], ScheduledTaskSummary::STATUS_RUNNING,
+            $nextStartTime, $lastStartTime, null, $timeoutTime, 3500), null, 1);
+
+        $scheduledTask->save();
+
+        // Process due tasks
+        $this->scheduledTaskService->processDueTasks();
+
+        // Check the scheduled task updated as expected and saved and that a log entry was created
+        $this->assertNotNull($scheduledTask->getId());
+        $this->assertEquals(ScheduledTaskSummary::STATUS_RUNNING, $scheduledTask->getStatus());
+
+        // Check for log entry as well
+        $logEntries = ScheduledTaskLog::filter("WHERE scheduled_task_id = " . $scheduledTask->getId());
+        $this->assertEquals(1, sizeof($logEntries));
+        $logEntry = $logEntries[0];
+        $this->assertEquals($scheduledTask->getLastStartTime(), $logEntry->getStartTime());
+        $this->assertEquals($scheduledTask->getLastEndTime(), $logEntry->getEndTime());
+        $this->assertEquals(ScheduledTaskSummary::STATUS_TIMED_OUT, $logEntry->getStatus());
+        $this->assertEquals("Timed Out", $logEntry->getLogOutput());
+    }
 
 }

@@ -6,6 +6,7 @@ namespace Kiniauth\Services\Workflow\Task\Scheduled;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTask;
+use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskLog;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskSummary;
 use Kiniauth\Services\Workflow\Task\Scheduled\Processor\ScheduledTaskProcessor;
 
@@ -67,6 +68,23 @@ class ScheduledTaskService {
      */
     public function processDueTasks() {
 
+        // Process any timed out tasks
+        $timedOutTasks = ScheduledTask::filter("WHERE timeoutTime <= ? AND status LIKE ?",
+        date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING);
+
+        if (sizeof($timedOutTasks)) {
+            foreach ($timedOutTasks as $task) {
+                $task->setStatus(ScheduledTaskSummary::STATUS_TIMED_OUT);
+                $task->save();
+
+                $logEntry = new ScheduledTaskLog($task->getId(), $task->getLastStartTime(), $task->getLastEndTime(),
+                    $task->getStatus(), "Timed Out");
+                $logEntry->save();
+            }
+        }
+
+
+        // Gather due tasks
         $dueTasks = ScheduledTask::filter("WHERE nextStartTime <= ? AND (status IS NULL OR status <> ?)",
             date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING);
 

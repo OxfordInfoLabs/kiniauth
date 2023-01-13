@@ -78,11 +78,24 @@ class ScheduledTaskSummary extends ActiveRecord {
     protected $nextStartTime;
 
 
+    /**
+     * @var integer
+     */
+    protected $timeoutSeconds;
+
+
+    /**
+     * @var \DateTime
+     */
+    protected $timeoutTime;
+
+
     // Status constants
     const STATUS_PENDING = "PENDING";
     const STATUS_RUNNING = "RUNNING";
     const STATUS_COMPLETED = "COMPLETED";
     const STATUS_FAILED = "FAILED";
+    const STATUS_TIMED_OUT = "TIMED_OUT";
 
     /**
      * ScheduledTaskSummary constructor.
@@ -92,13 +105,15 @@ class ScheduledTaskSummary extends ActiveRecord {
      * @param mixed $configuration
      * @param ScheduledTaskTimePeriod[] $timePeriods
      * @param string $status
+     * @param integer $id
      * @param \DateTime $lastStartTime
      * @param \DateTime $lastEndTime
-     * @param integer $id
+     * @param null $timeoutTime
+     * @param int $timeoutSeconds
      */
     public function __construct($taskIdentifier, $description, $configuration, $timePeriods, $status = self::STATUS_PENDING,
                                 $nextStartTime = null,
-                                $lastStartTime = null, $lastEndTime = null, $id = null) {
+                                $lastStartTime = null, $lastEndTime = null, $timeoutTime = null, $timeoutSeconds = 86000, $id = null) {
         $this->taskIdentifier = $taskIdentifier;
         $this->description = $description;
         $this->configuration = $configuration;
@@ -108,6 +123,8 @@ class ScheduledTaskSummary extends ActiveRecord {
         $this->lastStartTime = $lastStartTime;
         $this->lastEndTime = $lastEndTime;
         $this->id = $id;
+        $this->timeoutTime = $timeoutTime;
+        $this->timeoutSeconds = $timeoutSeconds;
     }
 
 
@@ -235,6 +252,34 @@ class ScheduledTaskSummary extends ActiveRecord {
      */
     public function setNextStartTime($nextStartTime) {
         $this->nextStartTime = $nextStartTime;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimeoutSeconds() {
+        return $this->timeoutSeconds;
+    }
+
+    /**
+     * @param int $timeoutSeconds
+     */
+    public function setTimeoutSeconds($timeoutSeconds) {
+        $this->timeoutSeconds = $timeoutSeconds;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getTimeoutTime() {
+        return $this->timeoutTime;
+    }
+
+    /**
+     * @param \DateTime $timeoutTime
+     */
+    public function setTimeoutTime($timeoutTime) {
+        $this->timeoutTime = $timeoutTime;
     }
 
 

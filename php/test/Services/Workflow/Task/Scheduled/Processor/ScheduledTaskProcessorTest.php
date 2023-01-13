@@ -48,7 +48,8 @@ class ScheduledTaskProcessorTest extends TestBase {
         Container::instance()->addInterfaceImplementation(Task::class, "success", get_class($successTask));
         Container::instance()->set(get_class($successTask), $successTask);
 
-        $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("success", "Successful task", ["game" => "set"], [new ScheduledTaskTimePeriod(null, null, 0, 0)]), null, 1);
+        $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("success", "Successful task", ["game" => "set"], [new ScheduledTaskTimePeriod(null, null, 0, 0)], ScheduledTaskSummary::STATUS_PENDING,
+            null, null, null, null, 3600), null, 1);
 
         // Process the scheduled task
         $scheduledTask = $this->processor->processScheduledTask($scheduledTask);
@@ -61,6 +62,8 @@ class ScheduledTaskProcessorTest extends TestBase {
         $expectedDate = date_create_from_format("d/m/Y H:i:s", date("d/m/Y") . " 00:00:00");
         $expectedDate->add(new \DateInterval("P1D"));
         $this->assertEquals($expectedDate, $scheduledTask->getNextStartTime());
+        $expectedTimeout = (new \DateTime())->add(new \DateInterval("PT3600S"));
+        $this->assertEquals($expectedTimeout->format("Y-m-d H:i:s"), $scheduledTask->getTimeoutTime()->format("Y-m-d H:i:s"));
 
         // Check for log entry as well
         $logEntries = ScheduledTaskLog::filter("WHERE scheduled_task_id = " . $scheduledTask->getId());
@@ -90,7 +93,7 @@ class ScheduledTaskProcessorTest extends TestBase {
         Container::instance()->set(get_class($failedTask), $failedTask);
 
         $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("success", "Successful task", ["game" => "set"], [
-            new ScheduledTaskTimePeriod(null, null, 0, 0)]), null, 1);
+            new ScheduledTaskTimePeriod(null, null, 0, 0)], ScheduledTaskSummary::STATUS_PENDING, null, null, null, null, 100), null, 1);
 
         // Process the scheduled task
         $scheduledTask = $this->processor->processScheduledTask($scheduledTask);
@@ -103,6 +106,8 @@ class ScheduledTaskProcessorTest extends TestBase {
         $expectedDate = date_create_from_format("d/m/Y H:i:s", date("d/m/Y") . " 00:00:00");
         $expectedDate->add(new \DateInterval("P1D"));
         $this->assertEquals($expectedDate, $scheduledTask->getNextStartTime());
+        $expectedTimeout = (new \DateTime())->add(new \DateInterval("PT100S"));
+        $this->assertEquals($expectedTimeout->format("Y-m-d H:i:s"), $scheduledTask->getTimeoutTime()->format("Y-m-d H:i:s"));
 
         // Check for log entry as well
         $logEntries = ScheduledTaskLog::filter("WHERE scheduled_task_id = " . $scheduledTask->getId());

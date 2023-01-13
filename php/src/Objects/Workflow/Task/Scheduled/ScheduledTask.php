@@ -35,6 +35,8 @@ class ScheduledTask extends ScheduledTaskSummary {
                 $scheduledTaskSummary->getNextStartTime(),
                 $scheduledTaskSummary->getLastStartTime(),
                 $scheduledTaskSummary->getLastEndTime(),
+                $scheduledTaskSummary->getTimeoutTime(),
+                $scheduledTaskSummary->getTimeoutSeconds(),
                 $scheduledTaskSummary->getId());
         }
         $this->projectKey = $projectKey;
@@ -49,7 +51,7 @@ class ScheduledTask extends ScheduledTaskSummary {
      */
     public function returnSummary() {
         return new ScheduledTaskSummary($this->taskIdentifier, $this->description, $this->configuration,
-            $this->timePeriods, $this->status, $this->nextStartTime, $this->lastStartTime, $this->lastEndTime, $this->id);
+            $this->timePeriods, $this->status, $this->nextStartTime, $this->lastStartTime, $this->lastEndTime, $this->timeoutTime, $this->timeoutSeconds, $this->id);
     }
 
     /**
