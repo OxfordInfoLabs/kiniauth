@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NotificationService} from '../../services/notification.service';
-import * as _ from 'lodash';
+import * as lodash from 'lodash';
+const _ = lodash.default;
 
 @Component({
     selector: 'ka-notifications',

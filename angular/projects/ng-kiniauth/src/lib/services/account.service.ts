@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { KinibindRequestService } from 'ng-kinibind';
 import { KiniAuthModuleConfig } from '../../ng-kiniauth.module';
 import { AuthenticationService } from './authentication.service';
-import * as _ from 'lodash';
+import * as lodash from 'lodash';
+const _ = lodash.default;
 
 @Injectable({
     providedIn: 'root'

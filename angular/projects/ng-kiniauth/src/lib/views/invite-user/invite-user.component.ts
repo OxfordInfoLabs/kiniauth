@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { RoleService } from '../../services/role.service';
-import * as _ from 'lodash';
+import * as lodash from 'lodash';
+const _ = lodash.default;
 import { AccountService } from '../../services/account.service';
 import { Location } from '@angular/common';
 import {UserService} from '../../services/user.service';

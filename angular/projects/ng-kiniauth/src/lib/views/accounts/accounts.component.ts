@@ -3,7 +3,8 @@ import {BehaviorSubject, merge, Subject} from 'rxjs';
 import {AccountService} from '../../services/account.service';
 import {Router} from '@angular/router';
 import {debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
-import * as _ from 'lodash';
+import * as lodash from 'lodash';
+const _ = lodash.default;
 import * as moment from 'moment';
 
 @Component({

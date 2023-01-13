@@ -1,7 +1,8 @@
 import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
 import {BehaviorSubject, merge, Subject} from 'rxjs';
-import * as _ from 'lodash';
+import * as lodash from 'lodash';
+const _ = lodash.default;
 import * as moment from 'moment';
 import {UserService} from '../../services/user.service';
 import {Router} from '@angular/router';

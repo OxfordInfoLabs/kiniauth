@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import * as _ from 'lodash';
+import * as lodash from 'lodash';
+const _ = lodash.default;
 
 @Component({
     selector: 'ka-edit-roles',

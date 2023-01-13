@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { ActivatedRoute } from '@angular/router';
-import * as _ from 'lodash';
+import * as lodash from 'lodash';
+const _ = lodash.default;
 import { AuthenticationService } from '../../services/authentication.service';
 import {RoleService} from '../../services/role.service';
 
