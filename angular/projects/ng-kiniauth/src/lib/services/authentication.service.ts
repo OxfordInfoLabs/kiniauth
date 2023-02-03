@@ -3,6 +3,7 @@ import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
 import {KinibindRequestService} from 'ng-kinibind';
 import {BehaviorSubject} from 'rxjs/internal/BehaviorSubject';
 import * as lodash from 'lodash';
+
 const _ = lodash.default;
 import * as sha512 from 'js-sha512' ;
 import {HttpClient, HttpHeaders} from '@angular/common/http';
@@ -97,11 +98,9 @@ export class AuthenticationService {
     }
 
     public changeUserPassword(newPassword, existingPassword, email) {
-        return this.http.get(this.config.accessHttpURL + '/user/changeUserPassword', {
-            params: {
-                newPassword: this.getHashedPassword(newPassword, email, true),
-                password: this.getHashedPassword(existingPassword, email)
-            }
+        return this.http.post(this.config.accessHttpURL + '/user/changeUserPassword', {
+            newPassword: this.getHashedPassword(newPassword, email, true),
+            password: this.getHashedPassword(existingPassword, email)
         }).toPromise();
     }
 
@@ -213,21 +212,17 @@ export class AuthenticationService {
     }
 
     public validateUserPassword(emailAddress, password) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/auth/validatePassword', {
-            params: {
-                emailAddress,
-                password: this.getHashedPassword(password)
-            }
+        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/auth/validatePassword', {
+            emailAddress,
+            password: this.getHashedPassword(password)
         }).toPromise();
     }
 
     public changeUserDetails(newEmailAddress, newName, password, userId?) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/changeDetails', {
-            params: {
-                newEmailAddress,
-                newName,
-                password: this.getHashedPassword(password)
-            }
+        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/changeDetails', {
+            newEmailAddress,
+            newName,
+            password: this.getHashedPassword(password)
         }).toPromise().then(res => {
             if (res) {
                 return this.getLoggedInUser();
@@ -236,11 +231,9 @@ export class AuthenticationService {
     }
 
     public changeUserName(newName, password) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/changeName', {
-            params: {
-                newName,
-                password: this.getHashedPassword(password)
-            }
+        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/changeName', {
+            newName,
+            password: this.getHashedPassword(password)
         }).toPromise().then(res => {
             if (res) {
                 return this.getLoggedInUser();
@@ -255,9 +248,7 @@ export class AuthenticationService {
             params.password = this.getHashedPassword(password);
             params.hashedPassword = sha512.sha512(password + newEmailAddress);
         }
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/changeEmail', {
-            params
-        }).toPromise().then(res => {
+        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/changeEmail', params).toPromise().then(res => {
             if (res) {
                 return this.getLoggedInUser();
             }
@@ -265,11 +256,9 @@ export class AuthenticationService {
     }
 
     public changeUserBackEmailAddress(newEmailAddress, password) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/changeBackupEmail', {
-            params: {
-                newEmailAddress,
-                password: this.getHashedPassword(password)
-            }
+        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/changeBackupEmail', {
+            newEmailAddress,
+            password: this.getHashedPassword(password)
         }).toPromise().then(res => {
             if (res) {
                 return this.getLoggedInUser();
@@ -278,11 +267,9 @@ export class AuthenticationService {
     }
 
     public changeUserMobile(newMobile, password) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/changeMobile', {
-            params: {
-                newMobile,
-                password: this.getHashedPassword(password)
-            }
+        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/changeMobile', {
+            newMobile,
+            password: this.getHashedPassword(password)
         }).toPromise().then(res => {
             if (res) {
                 return this.getLoggedInUser();

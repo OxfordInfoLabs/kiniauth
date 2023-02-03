@@ -61,88 +61,79 @@ trait UserTrait {
     /**
      * Update the email and name for the supplied user
      *
-     * @http GET /changeDetails
+     * @http POST /changeDetails
      *
-     * @param $newEmailAddress
-     * @param $newName
-     * @param $password
+     * @param $payload
      * @param string $userId
      * @return boolean
      */
-    public function changeUserDetails($newEmailAddress, $newName, $password, $userId = User::LOGGED_IN_USER) {
-        return $this->userService->changeUserDetails($newEmailAddress, $newName, $password, $userId);
+    public function changeUserDetails($payload, $userId = User::LOGGED_IN_USER) {
+        return $this->userService->changeUserDetails($payload["newEmailAddress"], $payload["newName"], $payload["password"], $userId);
     }
 
 
     /**
-     * Update the name of the logged in user
+     * Update the name of the logged-in user
      *
-     * @http GET /changeName
+     * @http POST /changeName
      *
-     * @param $newName
-     * @param $password
+     * @param mixed $payload
      * @return bool
      */
-    public function changeUserName($newName, $password) {
-        return $this->userService->changeUserName($newName, $password);
+    public function changeUserName($payload) {
+        return $this->userService->changeUserName($payload["newName"], $payload["password"]);
     }
 
     /**
-     * Change the logged in users email
+     * Change the logged-in users email
      *
      * @http GET /changeEmail
      *
-     * @param $newEmailAddress
-     * @param $password
-     * @param null $hashedPassword
+     * @param mixed $payload
      * @param string $userId
      * @return boolean
      */
-    public function changeUserEmail($newEmailAddress, $password, $hashedPassword = null, $userId = User::LOGGED_IN_USER) {
-        return $this->userService->changeUserEmail($newEmailAddress, $password, $hashedPassword, $userId);
+    public function changeUserEmail($payload, $userId = User::LOGGED_IN_USER) {
+        return $this->userService->changeUserEmail($payload["newEmailAddress"], $payload["password"], $payload["hashedPassword"] ?? null, $userId);
     }
 
 
     /**
      * Change user password
      *
-     * @http GET /changeUserPassword
+     * @http POST /changeUserPassword
      *
-     * @param $newPassword
-     * @param $password
-     * @param string $userId
+     * @param mixed $payload
      */
-    public function changeUserPassword($newPassword, $password) {
-        $this->userService->changeUserPassword($newPassword, $password);
+    public function changeUserPassword($payload) {
+        $this->userService->changeUserPassword($payload["newPassword"], $payload["password"]);
     }
 
 
     /**
-     * Change the logged in user backup email
+     * Change the logged-in user backup email
      *
-     * @http GET /changeBackupEmail
+     * @http POST /changeBackupEmail
      *
-     * @param $newEmailAddress
-     * @param $password
+     * @param mixed $payload
      * @param string $userId
      * @return boolean
      */
-    public function changeUserBackupEmail($newEmailAddress, $password, $userId = User::LOGGED_IN_USER) {
-        return $this->userService->changeUserBackupEmail($newEmailAddress, $password, $userId);
+    public function changeUserBackupEmail($payload, $userId = User::LOGGED_IN_USER) {
+        return $this->userService->changeUserBackupEmail($payload["newEmailAddress"], $payload["password"], $userId);
     }
 
     /**
-     * Change the logged in user mobile number
+     * Change the logged-in user mobile number
      *
-     * @http GET /changeMobile
+     * @http POST /changeMobile
      *
-     * @param $newMobile
-     * @param $password
+     * @param mixed $payload
      * @param string $userId
      * @return boolean
      */
-    public function changeUserMobile($newMobile, $password, $userId = User::LOGGED_IN_USER) {
-        return $this->userService->changeUserMobile($newMobile, $password, $userId);
+    public function changeUserMobile($payload, $userId = User::LOGGED_IN_USER) {
+        return $this->userService->changeUserMobile($payload["newMobile"], $payload["password"], $userId);
     }
 
 

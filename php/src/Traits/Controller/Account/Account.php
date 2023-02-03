@@ -37,16 +37,15 @@ trait Account {
     }
 
     /**
-     * Update the name of the logged in user
+     * Update the name of the logged-in user
      *
-     * @http GET /changeName
+     * @http POST /changeName
      *
-     * @param $newName
-     * @param $password
+     * @param mixed $payload
      * @return bool
      */
-    public function changeAccountName($newName, $password) {
-        return $this->accountService->changeAccountName($newName, $password);
+    public function changeAccountName($payload) {
+        return $this->accountService->changeAccountName($payload["newName"], $payload["password"]);
     }
 
     /**

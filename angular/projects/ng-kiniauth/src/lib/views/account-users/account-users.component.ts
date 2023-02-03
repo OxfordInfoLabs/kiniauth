@@ -3,7 +3,6 @@ import {debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators
 import {BehaviorSubject, merge, Subject} from 'rxjs';
 import * as lodash from 'lodash';
 const _ = lodash.default;
-import * as moment from 'moment';
 import {UserService} from '../../services/user.service';
 import {Router} from '@angular/router';
 import {AuthenticationService} from '../../services/authentication.service';
@@ -37,8 +36,6 @@ export class AccountUsersComponent implements OnInit {
     public newAdminEmail = '';
     public newAdminPassword: string = null;
     public newAdminAdded = false;
-
-    private moment = moment;
 
     constructor(private userService: UserService,
                 private router: Router,

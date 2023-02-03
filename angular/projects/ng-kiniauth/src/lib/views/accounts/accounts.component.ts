@@ -5,7 +5,6 @@ import {Router} from '@angular/router';
 import {debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
 import * as lodash from 'lodash';
 const _ = lodash.default;
-import * as moment from 'moment';
 
 @Component({
     selector: 'ka-accounts',
@@ -34,8 +33,6 @@ export class AccountsComponent implements OnInit {
     public newAccountName = '';
     public newAccountPassword: string = null;
     public newAccountAdded = false;
-
-    private moment = moment;
 
     constructor(private accountService: AccountService,
                 private router: Router) {

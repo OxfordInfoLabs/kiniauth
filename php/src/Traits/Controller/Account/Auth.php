@@ -32,15 +32,13 @@ trait Auth {
     /**
      * Validate the users password
      *
-     * @http GET /validatePassword
+     * @http POST /validatePassword
      *
-     * @param $emailAddress
-     * @param $password
-     * @param null $parentAccountId
+     * @param mixed $payload
      * @return bool
      */
-    public function validateUserPassword($emailAddress, $password, $parentAccountId = null) {
-        return $this->authenticationService->validateUserPassword($emailAddress, $password, $parentAccountId);
+    public function validateUserPassword($payload) {
+        return $this->authenticationService->validateUserPassword($payload["emailAddress"], $payload["password"], $payload["parentAccountId"] ?? null);
     }
 
 

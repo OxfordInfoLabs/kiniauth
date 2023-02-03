@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { KinibindRequestService } from 'ng-kinibind';
-import { KiniAuthModuleConfig } from '../../ng-kiniauth.module';
-import { AuthenticationService } from './authentication.service';
+import {Injectable} from '@angular/core';
+import {KinibindRequestService} from 'ng-kinibind';
+import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
+import {AuthenticationService} from './authentication.service';
 import * as lodash from 'lodash';
+
 const _ = lodash.default;
 
 @Injectable({
@@ -65,11 +66,9 @@ export class AccountService {
     }
 
     public changeAccountName(newName, password) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/account/changeName', {
-            params: {
-                newName,
-                password: this.authService.getHashedPassword(password)
-            }
+        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/account/changeName', {
+            newName,
+            password: this.authService.getHashedPassword(password)
         }).toPromise().then(res => {
             if (res) {
                 return true;
