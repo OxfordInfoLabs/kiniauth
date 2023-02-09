@@ -299,6 +299,10 @@ export class AuthenticationService {
         this.loadingRequests.next(value);
     }
 
+    public sessionTransfer(token) {
+        return this.http.post(this.config.guestHttpURL + '/auth/sessionTransfer', token).toPromise();
+    }
+
     public getSessionData() {
         return this.kbRequest.makeGetRequest(this.config.guestHttpURL + '/session')
             .toPromise()
