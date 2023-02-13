@@ -300,7 +300,7 @@ export class AuthenticationService {
     }
 
     public sessionTransfer(token) {
-        return this.http.post(this.config.guestHttpURL + '/auth/sessionTransfer', token).toPromise();
+        return this.http.post(this.config.guestHttpURL + '/auth/sessionTransfer', '"' + token + '"').toPromise();
     }
 
     public getSessionData() {
