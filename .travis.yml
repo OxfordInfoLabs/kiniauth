@@ -2,7 +2,7 @@ language: php
 php:
 - '7.2'
 before_script: composer clearcache; composer install; composer update;  cd php/test
-script: phpunit .
+script: phpunit --exclude-group nontravis .
 after_success:
   - "../trigger_travis_build.sh kinicart"
 notifications:
