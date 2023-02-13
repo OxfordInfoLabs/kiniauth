@@ -110,7 +110,7 @@ class PendingAction extends ActiveRecord {
 
 
         $this->data = $data;
-        $this->identifier = StringUtils::generateRandomString(16);
+        $this->identifier = StringUtils::generateRandomString(64);
         $this->objectType = $objectType;
     }
 

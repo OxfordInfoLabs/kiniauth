@@ -5,8 +5,10 @@ namespace Kiniauth\Traits\Controller\Guest;
 
 
 use Kiniauth\Services\Account\UserService;
+use Kiniauth\Services\Application\SessionData;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\ValueObjects\Security\NewPasswordDescriptor;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
 
 
@@ -62,7 +64,7 @@ trait Auth {
     /**
      * Authenticate the two fa code prior to login
      *
-     * @http GET /twoFactor
+     * @http POST /twoFactor
      *
      * @param $code
      * @return bool
@@ -122,6 +124,17 @@ trait Auth {
      */
     public function unlockUser($unlockCode) {
         $this->userService->unlockUser($unlockCode);
+    }
+
+
+    /**
+     * @http POST /sessionTransfer
+     *
+     * @param string $sessionToken
+     */
+    public function sessionTransfer($sessionToken) {
+        $this->authenticationService->activateSessionUsingTransferToken($sessionToken);
+        return Container::instance()->get(SessionData::class);
     }
 
 

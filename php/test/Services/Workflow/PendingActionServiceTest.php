@@ -10,6 +10,8 @@ use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
+include_once "autoloader.php";
+
 class PendingActionServiceTest extends TestBase {
 
     /**
@@ -100,6 +102,31 @@ class PendingActionServiceTest extends TestBase {
         $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 4, "text");
         $this->assertEquals(1, sizeof($allActions));
         $this->assertEquals(PendingAction::filter("WHERE identifier = ?", $identifier4)[0], $allActions[0]);
+
+    }
+
+    public function testCanRemoveAllActionsForTypeAndObjectIdAndOptionalType() {
+        $identifier1 = $this->pendingActionService->createPendingAction("NEW", 3);
+        $identifier2 = $this->pendingActionService->createPendingAction("NEW", 3);
+        $identifier3 = $this->pendingActionService->createPendingAction("NEW", 3);
+        $identifier4 = $this->pendingActionService->createPendingAction("NEW", 4, null, null, null, "text");
+        $identifier5 = $this->pendingActionService->createPendingAction("NEW", 4, null, null, null);
+
+        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 3);
+        $this->assertEquals(3, sizeof($allActions));
+
+        $this->pendingActionService->removeAllPendingActionsForTypeAndObjectId("NEW", 3);
+
+        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 3);
+        $this->assertEquals(0, sizeof($allActions));
+
+        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 4, "text");
+        $this->assertEquals(1, sizeof($allActions));
+
+        $this->pendingActionService->removeAllPendingActionsForTypeAndObjectId("NEW", 4, "text");
+
+        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 4, "text");
+        $this->assertEquals(0, sizeof($allActions));
 
     }
 

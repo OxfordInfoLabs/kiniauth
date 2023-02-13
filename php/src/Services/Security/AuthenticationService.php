@@ -23,9 +23,11 @@ use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
+use Kinikit\Core\Util\StringUtils;
 use Kinikit\MVC\Request\Request;
 use Kinikit\MVC\Request\URL;
 
@@ -56,6 +58,11 @@ class AuthenticationService {
      */
     private $userSessionService;
 
+    /**
+     * @var PendingActionService
+     */
+    private $pendingActionService;
+
     const STATUS_LOGGED_IN = "LOGGED_IN";
     const STATUS_REQUIRES_2FA = "REQUIRES_2FA";
     const STATUS_ACTIVE_SESSION = "ACTIVE_SESSION";
@@ -68,8 +75,10 @@ class AuthenticationService {
      * @param HashProvider $hashProvider
      * @param UserService $userService
      * @param UserSessionService $userSessionService
+     * @param PendingActionService $pendingActionService
      */
-    public function __construct($settingsService, $session, $securityService, $twoFactorProvider, $hashProvider, $userService, $userSessionService) {
+    public function __construct($settingsService, $session, $securityService, $twoFactorProvider, $hashProvider, $userService, $userSessionService,
+                                $pendingActionService) {
         $this->settingsService = $settingsService;
         $this->session = $session;
         $this->securityService = $securityService;
@@ -77,6 +86,7 @@ class AuthenticationService {
         $this->hashProvider = $hashProvider;
         $this->userService = $userService;
         $this->userSessionService = $userSessionService;
+        $this->pendingActionService = $pendingActionService;
     }
 
     /**
@@ -305,6 +315,46 @@ class AuthenticationService {
             throw new InvalidAPICredentialsException();
         }
 
+
+    }
+
+
+    /**
+     * Generate a random session transfer token
+     */
+    public function generateSessionTransferToken() {
+
+        $loggedInUser = $this->session->__getLoggedInSecurable();
+
+        // If not a user logged in thrown
+        if (!$loggedInUser || !($loggedInUser instanceof User)) {
+            throw new AccessDeniedException("Not logged in");
+        }
+
+        $this->pendingActionService->removeAllPendingActionsForTypeAndObjectId("Session Token", $loggedInUser->getId(), "User");
+
+        // Create a pending action
+        $sessionToken = $this->pendingActionService->createPendingAction("Session Token", $loggedInUser->getId(), $this->session->getId(),
+            "PT1M", null, "User");
+
+
+        // Return the session token
+        return $sessionToken;
+
+    }
+
+
+    /**
+     * Activate a session using transfer token
+     */
+    public function activateSessionUsingTransferToken($sessionToken) {
+
+        $action = $this->pendingActionService->getPendingActionByIdentifier("Session Token", $sessionToken);
+
+        // Join a session identified by the passed data
+        $this->session->join($action->getData());
+
+        return true;
 
     }
 

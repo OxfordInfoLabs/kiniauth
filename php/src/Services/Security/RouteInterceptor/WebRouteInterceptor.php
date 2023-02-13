@@ -85,6 +85,8 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
             return $response;
         }
 
+
+
         // If enforcing csrf do the main job
         if ($this->csrf) {
 
@@ -98,6 +100,7 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
             return $this->beforeWebRoute($request, $user, $account);
 
         } else {
+
             return $this->beforeWebRoute($request, $user, $account);
         }
     }

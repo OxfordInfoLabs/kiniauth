@@ -20,6 +20,7 @@ use Kinikit\Core\Validation\FieldValidationError;
  *
  * @table ka_user
  * @generate
+ * @interceptors \Kiniauth\Objects\Security\UserInterceptor
  */
 class User extends UserSummary {
 

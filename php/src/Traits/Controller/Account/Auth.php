@@ -4,6 +4,8 @@
 namespace Kiniauth\Traits\Controller\Account;
 
 
+use Kinikit\Core\Logging\Logger;
+
 trait Auth {
 
 
@@ -39,6 +41,19 @@ trait Auth {
      */
     public function validateUserPassword($payload) {
         return $this->authenticationService->validateUserPassword($payload["emailAddress"], $payload["password"], $payload["parentAccountId"] ?? null);
+    }
+
+
+    /**
+     * Generate a session transfer token
+     *
+     * @http GET /sessionTransfer
+     *
+     * @return string
+     *
+     */
+    public function generateSessionTransferToken() {
+        return $this->authenticationService->generateSessionTransferToken();
     }
 
 

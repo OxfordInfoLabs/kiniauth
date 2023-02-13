@@ -17,6 +17,7 @@ use Kiniauth\Objects\Security\APIKey;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserSession;
 use Kiniauth\Objects\Security\UserSessionProfile;
+use Kiniauth\Objects\Workflow\PendingAction;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\SettingsService;
 use Kiniauth\Services\Communication\Email\EmailService;
@@ -32,6 +33,7 @@ use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
@@ -77,7 +79,7 @@ class AuthenticationServiceTest extends TestBase {
         $this->authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class),
             $this->session, Container::instance()->get(SecurityService::class), $this->twoFactorProvider,
             Container::instance()->get(HashProvider::class), Container::instance()->get(UserService::class),
-            Container::instance()->get(UserSessionService::class));
+            Container::instance()->get(UserSessionService::class), Container::instance()->get(PendingActionService::class));
 
 
         // Assume two factor is not required
@@ -796,6 +798,100 @@ class AuthenticationServiceTest extends TestBase {
             $this->assertNull($this->session->__getPendingTwoFactorData());
             $this->assertEquals($bob, $this->session->__getLoggedInSecurable());
         });
+
+
+    }
+
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testCannotGenerateOneTimeShortLivedSessionTransferTokenIfNotLoggedIn() {
+
+        // Log out first
+        $this->authenticationService->logout();
+
+        try {
+            $this->authenticationService->generateSessionTransferToken();
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+        }
+
+
+    }
+
+    public function testCanGenerateOneTimeShortLivedSessionTransferToken() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        // Token
+        $token = $this->authenticationService->generateSessionTransferToken();
+
+        // Check token right length
+        $this->assertEquals(64, strlen($token));
+
+        $oneMinutesTime = new \DateTime();
+        $oneMinutesTime->add(new \DateInterval("PT1M"));
+
+        // Check pending action created
+        $matchingPendingActions = PendingAction::filter("WHERE object_type = 'User' and object_id = 2 and type = 'Session Token'");
+        $this->assertEquals(1, sizeof($matchingPendingActions));
+        $this->assertEquals("Session Token", $matchingPendingActions[0]->getType());
+        $this->assertEquals($token, $matchingPendingActions[0]->getIdentifier());
+        $this->assertEquals($this->session->getId(), $matchingPendingActions[0]->getData());
+        $this->assertTrue($matchingPendingActions[0]->getExpiryDateTime() < $oneMinutesTime);
+
+        // Now confirm if we resubmit that we get a new one and that only the last one is stored
+        $secondToken = $this->authenticationService->generateSessionTransferToken();
+
+        // Check token right length
+        $this->assertEquals(64, strlen($secondToken));
+        $this->assertNotEquals($secondToken, $token);
+
+        $oneMinutesTime = new \DateTime();
+        $oneMinutesTime->add(new \DateInterval("PT1M"));
+
+        // Check pending action created
+        $matchingPendingActions = PendingAction::filter("WHERE object_type = 'User' and object_id = 2 and type = 'Session Token'");
+        $this->assertEquals(1, sizeof($matchingPendingActions));
+        $this->assertEquals("Session Token", $matchingPendingActions[0]->getType());
+        $this->assertEquals($secondToken, $matchingPendingActions[0]->getIdentifier());
+        $this->assertEquals($this->session->getId(), $matchingPendingActions[0]->getData());
+        $this->assertTrue($matchingPendingActions[0]->getExpiryDateTime() < $oneMinutesTime);
+
+
+    }
+
+
+    public function testExceptionRaisedIfAttemptToActivateASessionUsingInvalidTransferToken() {
+
+
+    }
+
+
+    public function testCanActivateASessionUsingATransferToken() {
+
+        $mockSession = MockObjectProvider::instance()->getMockInstance(Session::class);
+
+        $authService = new AuthenticationService(Container::instance()->get(SettingsService::class),
+            $mockSession, Container::instance()->get(SecurityService::class), $this->twoFactorProvider,
+            Container::instance()->get(HashProvider::class), Container::instance()->get(UserService::class),
+            Container::instance()->get(UserSessionService::class), Container::instance()->get(PendingActionService::class));
+
+
+        $mockSession->returnValue("__getLoggedInSecurable", new User("test@test", "WHOOO", "Test", 0, 2));
+        $mockSession->returnValue("getId", "t3445536uiu");
+
+        // Token
+        $token = $authService->generateSessionTransferToken();
+
+
+        // Activate session
+        $active = $authService->activateSessionUsingTransferToken($token);
+        $this->assertTrue($active);
+
+        // Check session id updated
+        $this->assertTrue($mockSession->methodWasCalled("join", ["t3445536uiu"]));
 
 
     }

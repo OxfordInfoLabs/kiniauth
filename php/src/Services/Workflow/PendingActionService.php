@@ -91,4 +91,19 @@ class PendingActionService {
         $action->remove();
     }
 
+
+    /**
+     * Remove all pending actions for a specific type and object id (optionally a type).
+     *
+     * @param $type
+     * @param $objectId
+     * @param null $objectType
+     */
+    public function removeAllPendingActionsForTypeAndObjectId($type, $objectId, $objectType = null) {
+        $matches = $this->getAllPendingActionsForTypeAndObjectId($type, $objectId, $objectType);
+        foreach ($matches as $match) {
+            $match->remove();
+        }
+    }
+
 }
