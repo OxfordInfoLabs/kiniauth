@@ -13,7 +13,7 @@ class PendingActionTest extends TestBase {
 
         $pendingAction = new PendingAction(1, 3, "Test Action");
 
-        $this->assertEquals(16, strlen($pendingAction->getIdentifier()));
+        $this->assertEquals(64, strlen($pendingAction->getIdentifier()));
 
         $now = new \DateTime();
         $now->add(new \DateInterval("P1D"));

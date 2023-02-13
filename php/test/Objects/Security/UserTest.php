@@ -13,11 +13,14 @@ include_once "autoloader.php";
 class UserTest extends TestBase {
 
 
+    /**
+     * @nontravis
+     */
     public function testCannotUpdatePasswordWithPreviouslyUsedHash() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
-        $user = new User("hello@myworld.com", hash("sha512", "newpassword1"), "Hello World");
+        $user = new User("hello@myworld.com", hash("sha512", "newpassword1"), "Zebra World");
         $user->save();
 
         // Update to new password

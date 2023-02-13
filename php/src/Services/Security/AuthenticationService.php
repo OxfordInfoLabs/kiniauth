@@ -24,6 +24,7 @@ use Kiniauth\Services\Workflow\PendingActionService;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
@@ -346,13 +347,20 @@ class AuthenticationService {
 
     /**
      * Activate a session using transfer token
+     *
      */
     public function activateSessionUsingTransferToken($sessionToken) {
 
-        $action = $this->pendingActionService->getPendingActionByIdentifier("Session Token", $sessionToken);
+        try {
+            $action = $this->pendingActionService->getPendingActionByIdentifier("Session Token", $sessionToken);
+        } catch (ItemNotFoundException $e) {
+            throw new AccessDeniedException("Invalid session");
+        }
 
         // Join a session identified by the passed data
         $this->session->join($action->getData());
+
+        $this->pendingActionService->removePendingAction("Session Token", $sessionToken);
 
         return true;
 

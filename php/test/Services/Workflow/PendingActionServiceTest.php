@@ -106,26 +106,26 @@ class PendingActionServiceTest extends TestBase {
     }
 
     public function testCanRemoveAllActionsForTypeAndObjectIdAndOptionalType() {
-        $identifier1 = $this->pendingActionService->createPendingAction("NEW", 3);
-        $identifier2 = $this->pendingActionService->createPendingAction("NEW", 3);
-        $identifier3 = $this->pendingActionService->createPendingAction("NEW", 3);
-        $identifier4 = $this->pendingActionService->createPendingAction("NEW", 4, null, null, null, "text");
-        $identifier5 = $this->pendingActionService->createPendingAction("NEW", 4, null, null, null);
+        $identifier1 = $this->pendingActionService->createPendingAction("REMOVABLE", 3);
+        $identifier2 = $this->pendingActionService->createPendingAction("REMOVABLE", 3);
+        $identifier3 = $this->pendingActionService->createPendingAction("REMOVABLE", 3);
+        $identifier4 = $this->pendingActionService->createPendingAction("REMOVABLE", 4, null, null, null, "text");
+        $identifier5 = $this->pendingActionService->createPendingAction("REMOVABLE", 4, null, null, null);
 
-        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 3);
+        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("REMOVABLE", 3);
         $this->assertEquals(3, sizeof($allActions));
 
-        $this->pendingActionService->removeAllPendingActionsForTypeAndObjectId("NEW", 3);
+        $this->pendingActionService->removeAllPendingActionsForTypeAndObjectId("REMOVABLE", 3);
 
-        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 3);
+        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("REMOVABLE", 3);
         $this->assertEquals(0, sizeof($allActions));
 
-        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 4, "text");
+        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("REMOVABLE", 4, "text");
         $this->assertEquals(1, sizeof($allActions));
 
-        $this->pendingActionService->removeAllPendingActionsForTypeAndObjectId("NEW", 4, "text");
+        $this->pendingActionService->removeAllPendingActionsForTypeAndObjectId("REMOVABLE", 4, "text");
 
-        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("NEW", 4, "text");
+        $allActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("REMOVABLE", 4, "text");
         $this->assertEquals(0, sizeof($allActions));
 
     }

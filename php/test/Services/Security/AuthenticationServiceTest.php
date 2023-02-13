@@ -675,7 +675,7 @@ class AuthenticationServiceTest extends TestBase {
                 $this->twoFactorProvider,
                 Container::instance()->get(HashProvider::class),
                 Container::instance()->get(UserService::class),
-                $mockUserSessionService);
+                $mockUserSessionService, Container::instance()->get(PendingActionService::class));
 
             $authenticationService->updateActiveParentAccount(new URL("http://kinicart.example/mark"));
 
@@ -863,8 +863,28 @@ class AuthenticationServiceTest extends TestBase {
     }
 
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testExceptionRaisedIfAttemptToActivateASessionUsingInvalidTransferToken() {
 
+
+        $mockSession = MockObjectProvider::instance()->getMockInstance(Session::class);
+
+        $authService = new AuthenticationService(Container::instance()->get(SettingsService::class),
+            $mockSession, Container::instance()->get(SecurityService::class), $this->twoFactorProvider,
+            Container::instance()->get(HashProvider::class), Container::instance()->get(UserService::class),
+            Container::instance()->get(UserSessionService::class), Container::instance()->get(PendingActionService::class));
+
+
+        $mockSession->returnValue("__getLoggedInSecurable", new User("test@test", "WHOOO", "Test", 0, 2));
+        $mockSession->returnValue("getId", "t3445536uiu");
+
+        try {
+            $authService->activateSessionUsingTransferToken("IMADETHISUP");
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+        }
 
     }
 
@@ -892,6 +912,10 @@ class AuthenticationServiceTest extends TestBase {
 
         // Check session id updated
         $this->assertTrue($mockSession->methodWasCalled("join", ["t3445536uiu"]));
+
+        // Check transfer token removed
+        $matches = PendingAction::filter("WHERE identifier = ?", $token);
+        $this->assertEquals(0, sizeof($matches));
 
 
     }
