@@ -1,7 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../../services/authentication.service';
 import { BaseComponent } from '../../base-component';
+
 
 @Component({
     selector: 'ka-login',
@@ -10,6 +11,8 @@ import { BaseComponent } from '../../base-component';
     encapsulation: ViewEncapsulation.None
 })
 export class LoginComponent extends BaseComponent implements OnInit {
+
+    @ViewChild('captchaRef') captchaRef: any;
 
     @Input() loginRoute: string;
     @Input() recaptchaKey: string;
@@ -75,6 +78,10 @@ export class LoginComponent extends BaseComponent implements OnInit {
                 .catch(err => {
                     this.authService.getSessionData();
                     this.loginError = true;
+                    if (this.captchaRef) {
+                        this.captchaRef.reset();
+                    }
+
                     this.loading = false;
                 });
         }
@@ -129,6 +136,9 @@ export class LoginComponent extends BaseComponent implements OnInit {
                     this.authService.getSessionData();
                     this.twoFAError = true;
                     this.loading = false;
+                    if (this.captchaRef) {
+                        this.captchaRef.reset();
+                    }
                     return error;
                 });
         }
