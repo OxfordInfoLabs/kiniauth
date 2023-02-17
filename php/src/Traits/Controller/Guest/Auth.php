@@ -80,9 +80,11 @@ trait Auth {
     /**
      * Request a password reset
      *
-     * @http GET /passwordReset
+     * @http POST /passwordResetRequest
      *
      * @param $emailAddress
+     *
+     * @captcha
      *
      */
     public function requestPasswordReset($emailAddress) {
@@ -109,8 +111,6 @@ trait Auth {
      * @http POST /passwordReset
      *
      * @param NewPasswordDescriptor $newPasswordDescriptor
-     *
-     * @captcha
      */
     public function resetPassword($newPasswordDescriptor) {
         $this->userService->changePassword($newPasswordDescriptor->getResetCode(), $newPasswordDescriptor->getNewPassword());
