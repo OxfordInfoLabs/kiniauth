@@ -17,6 +17,8 @@ export class LoginComponent extends BaseComponent implements OnInit {
     @Input() loginRoute: string;
     @Input() recaptchaKey: string;
     @Input() preventRedirect = false;
+    @Input() hideForgottenPassword = false;
+    @Input() forgottenPasswordURL: string;
 
     @Output() loggedIn = new EventEmitter();
 
@@ -53,6 +55,14 @@ export class LoginComponent extends BaseComponent implements OnInit {
 
     public recaptchaResolved(response) {
         this.recaptchaResponse = response;
+    }
+
+    public startForgottenPassword() {
+        if (this.forgottenPasswordURL) {
+            window.location.href = this.forgottenPasswordURL;
+        } else {
+            this.forgottenPassword = true;
+        }
     }
 
     public login() {

@@ -22,6 +22,12 @@ export class PasswordResetComponent extends BaseComponent implements OnInit {
     public password: string;
     public confirmPassword: string;
     public recaptchaResponse: string;
+    public isLengthOk = false;
+    public isLowerCaseOk = false;
+    public isUpperCaseOk = false;
+    public isDigitOk = false;
+    public isSpecialOk = false;
+    public isPasswordOk = false;
 
     constructor(kcAuthService: AuthenticationService,
                 private route: ActivatedRoute) {
@@ -38,6 +44,23 @@ export class PasswordResetComponent extends BaseComponent implements OnInit {
         }).catch(err => {
             this.codeError = true;
         });
+    }
+
+    public passwordChange() {
+        const strongPassword = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})');
+        this.isPasswordOk = strongPassword.test(this.password);
+
+        const lower = new RegExp('(?=.*[a-z])');
+        const upper = new RegExp('(?=.*[A-Z])');
+        const digit = new RegExp('(?=.*[0-9])');
+        const special = new RegExp('(?=.*[^A-Za-z0-9])');
+        const length = new RegExp('(?=.{8,})');
+
+        this.isLengthOk = length.test(this.password);
+        this.isLowerCaseOk = lower.test(this.password);
+        this.isUpperCaseOk = upper.test(this.password);
+        this.isDigitOk = digit.test(this.password);
+        this.isSpecialOk = special.test(this.password);
     }
 
     public recaptchaResolved(response) {

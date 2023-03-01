@@ -23,8 +23,8 @@
             [disabled]="!email || !password">Sign in
         </button>
 
-        <a class="text-center text-secondary mt-4 cursor-pointer hover:underline"
-           (click)="forgottenPassword = true">I've forgotten my password</a>
+        <a *ngIf="!hideForgottenPassword" class="text-center text-secondary mt-4 cursor-pointer hover:underline"
+           (click)="startForgottenPassword()">I've forgotten my password</a>
     </div>
 
     <div class="login-container" *ngIf="forgottenPassword">
