@@ -14,6 +14,7 @@ class ObjectCategory {
 
     /**
      * @var string
+     * @maxLength 50
      * @primaryKey
      */
     private $objectType;
@@ -23,6 +24,7 @@ class ObjectCategory {
      *
      * @var string
      * @primaryKey
+     * @maxLength 100
      */
     private $objectId;
 
@@ -43,6 +45,7 @@ class ObjectCategory {
     /**
      * @var string
      * @primaryKey
+     * @maxLength 50
      */
     private $categoryProjectKey = "";
 

@@ -17,6 +17,7 @@ class ObjectTag {
 
     /**
      * @var string
+     * @maxLength 50
      * @primaryKey
      */
     private $objectType;
@@ -25,6 +26,7 @@ class ObjectTag {
      * Assume related object has single pk
      *
      * @var string
+     * @maxLength 100
      * @primaryKey
      */
     private $objectId;
@@ -45,6 +47,7 @@ class ObjectTag {
 
     /**
      * @var string
+     * @maxLength 50
      * @primaryKey
      */
     private $tagProjectKey = "";
