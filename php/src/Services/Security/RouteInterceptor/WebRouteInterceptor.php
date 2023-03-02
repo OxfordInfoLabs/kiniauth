@@ -67,7 +67,7 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
 
 
         // Handle options requests to allow headers
-        if (strtolower($request->getRequestMethod()) == "options") {
+        if (strtolower($request->getRequestMethod() ?? "") == "options") {
             $response = new SimpleResponse("");
 
             // Allow content type

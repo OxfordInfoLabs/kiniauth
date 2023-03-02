@@ -132,7 +132,7 @@ class GoogleAuthenticatorProvider implements TwoFactorProvider {
 
         // Generate a secret key
         $secretFactory = new SecretFactory();
-        $secret = $secretFactory->create(null, $user->getEmailAddress());
+        $secret = $secretFactory->create("", $user->getEmailAddress());
         $secretKey = $secret->getSecretKey();
 
         // Generate a QR code

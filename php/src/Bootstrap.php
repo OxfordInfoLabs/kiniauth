@@ -33,6 +33,7 @@ class Bootstrap implements ApplicationBootstrap {
     private $validator;
     private $captchaProvider;
     private $request;
+    private $session;
 
     /**
      * Construct with authentication service
