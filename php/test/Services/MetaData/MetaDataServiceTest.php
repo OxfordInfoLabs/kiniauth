@@ -442,6 +442,7 @@ class MetaDataServiceTest extends TestBase {
         $this->service->removeCategory("topLevel");
         $this->assertEquals(0, sizeof(Category::filter("WHERE key = 'topLevel'")));
 
+
         // Check removal of account level category
         $this->assertEquals(2, sizeof(Category::filter("WHERE key = 'sharedAccount'")));
         $this->service->removeCategory("sharedAccount", null, 1);

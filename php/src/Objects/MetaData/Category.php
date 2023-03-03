@@ -56,10 +56,6 @@ class Category extends CategorySummary {
     protected $parentProjectkey;
 
 
-
-
-
-
     /**
      * Category constructor.
      *
@@ -72,8 +68,8 @@ class Category extends CategorySummary {
         if ($categorySummary instanceof CategorySummary) {
             parent::__construct($categorySummary->getCategory(), $categorySummary->getDescription(), $categorySummary->getKey());
         }
-        $this->accountId = $accountId;
-        $this->projectKey = $projectKey;
+        $this->accountId = $accountId ?? -1;
+        $this->projectKey = $projectKey ?? "";
 
         if ($parentCategory) {
             $this->parentKey = $parentCategory->getKey();

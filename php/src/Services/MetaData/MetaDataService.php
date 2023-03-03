@@ -95,12 +95,12 @@ class MetaDataService {
         $params = [$key];
 
         if ($accountId) {
-            $clause .= " AND (account_id IS NULL or account_id = ?)";
+            $clause .= " AND (account_id IS NULL or account_id = -1 or account_id = ?)";
             $params[] = $accountId;
         }
 
         if ($projectKey) {
-            $clause .= " AND (project_key IS NULL or project_key = ?)";
+            $clause .= " AND (project_key IS NULL or project_key = '' or project_key = ?)";
             $params[] = $projectKey;
         }
 
@@ -139,14 +139,14 @@ class MetaDataService {
             $clauses[] = "(accountId = ?)";
             $params[] = $accountId;
         } else {
-            $clauses[] = "(accountId IS NULL)";
+            $clauses[] = "(accountId IS NULL or accountId = -1)";
         }
 
         if ($projectKey) {
-            $clauses[] = "(projectKey = ? OR projectKey IS NULL)";
+            $clauses[] = "(projectKey = ? OR projectKey IS NULL or projectKey = '')";
             $params[] = $projectKey;
         } else {
-            $clauses[] = "(projectKey IS NULL)";
+            $clauses[] = "(projectKey IS NULL or projectKey = '')";
         }
 
         // Handle the limiting and offsetting in memory for now.
@@ -194,14 +194,14 @@ class MetaDataService {
             $clauses[] = "(accountId = ?)";
             $params[] = $accountId;
         } else {
-            $clauses[] = "(accountId IS NULL)";
+            $clauses[] = "(accountId IS NULL OR accountId = -1)";
         }
 
         if ($projectKey) {
-            $clauses[] = "(projectKey = ? OR projectKey IS NULL)";
+            $clauses[] = "(projectKey = ? OR projectKey IS NULL OR projectKey = '')";
             $params[] = $projectKey;
         } else {
-            $clauses[] = "(projectKey IS NULL)";
+            $clauses[] = "(projectKey IS NULL OR projectKey = '')";
         }
 
         $matches = Category::filter("WHERE " . join(" AND ", $clauses) . " ORDER BY category", $params);
@@ -281,9 +281,9 @@ class MetaDataService {
             $params[] = $projectKey;
         }
 
-        $tags = Category::filter("WHERE $clause", $params);
-        if (sizeof($tags) > 0) {
-            $tags[0]->remove();
+        $categories = Category::filter("WHERE $clause", $params);
+        if (sizeof($categories) > 0) {
+            $categories[0]->remove();
         } else {
             throw new ObjectNotFoundException(Category::class, [$accountId, $projectKey, $key]);
         }
@@ -316,14 +316,14 @@ class MetaDataService {
             $clauses[] = "(accountId = ?)";
             $params[] = $accountId;
         } else {
-            $clauses[] = "(accountId IS NULL)";
+            $clauses[] = "(accountId IS NULL or accountId = -1)";
         }
 
         if ($projectKey) {
-            $clauses[] = "(projectKey = ? OR projectKey IS NULL)";
+            $clauses[] = "(projectKey = ? OR projectKey IS NULL OR projectKey = '')";
             $params[] = $projectKey;
         } else {
-            $clauses[] = "(projectKey IS NULL)";
+            $clauses[] = "(projectKey IS NULL OR projectKey = '')";
         }
 
         // Handle the limiting and offsetting in memory for now.

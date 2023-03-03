@@ -46,8 +46,8 @@ class Tag extends TagSummary {
     public function __construct($tagSummary = null, $accountId = null, $projectKey = null) {
         if ($tagSummary instanceof TagSummary)
             parent::__construct($tagSummary->getTag(), $tagSummary->getDescription(), $tagSummary->getKey());
-        $this->accountId = $accountId;
-        $this->projectKey = $projectKey;
+        $this->accountId = $accountId ?? -1;
+        $this->projectKey = $projectKey ?? "";
     }
 
     /**

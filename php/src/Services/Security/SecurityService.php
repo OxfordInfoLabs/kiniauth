@@ -321,9 +321,9 @@ class SecurityService {
                 if ($objectMember && $classInspector->hasAccessor($objectMember)) {
                     $scopeId = $classInspector->getPropertyData($object, $objectMember);
 
-                    // Handle special null scope id case separately.  Here we assume that any missing account_id
+                    // Handle special null / -1 scope id case separately.  Here we assume that any missing or -1 account_id
                     // objects become read only, other objects are fine as they are downstream and controlled separately
-                    if ($scopeId === null) {
+                    if ($scopeId === null || $scopeId === -1) {
                         if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT)
                             $access = $access && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
                     } else {

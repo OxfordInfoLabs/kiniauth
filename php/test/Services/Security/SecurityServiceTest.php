@@ -131,7 +131,10 @@ class SecurityServiceTest extends TestBase {
     }
 
 
-    public function testObjectsWithNullAccountIdAreAccessibleToAllLoggedInUsersInReadAccessMode() {
+    public function testObjectsWithNullOrNegativeOneAccountIdAreAccessibleToAllLoggedInUsersInReadAccessMode() {
+
+
+        // NULL ACCOUNT ID
         $contact = new Contact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
             "Oxon", "OX4 7YY", "GB", null, "test@test.com", null, Contact::ADDRESS_TYPE_GENERAL);
 
@@ -151,6 +154,30 @@ class SecurityServiceTest extends TestBase {
         // API login
         $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
         $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
+
+
+        // -1 Account Id
+        $contact = new Contact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
+            "Oxon", "OX4 7YY", "GB", null, "test@test.com", -1, Contact::ADDRESS_TYPE_GENERAL);
+
+
+        // Logged out
+        $this->authenticationService->logout();
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // Super user
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // User login
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // API login
+        $this->authenticationService->apiAuthenticate("GLOBALACCOUNTAPIKEY", "GLOBALACCOUNTAPISECRET");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact));
+
+
     }
 
     public function testObjectsWithNullAccountIdAreOnlyAccessibleToSuperUsersInWriteAccessMode() {
