@@ -195,10 +195,10 @@ class RoleService {
 
             $realRoleIds = [];
             foreach ($roleIds as $roleId) {
-                if (is_numeric($roleId))
+                if (is_numeric($roleId) && $roleId > 0)
                     $realRoleIds[] = $roleId;
-                else if (is_null($roleId))
-                    $candidateRoles[] = new UserRole($scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId(), null, $accountId, $userId);
+                else
+                    $candidateRoles[] = new UserRole($scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId(), 0, $accountId, $userId);
             }
 
             $roles = sizeof($realRoleIds) > 0 ? Role::multiFetch($realRoleIds) : [];
