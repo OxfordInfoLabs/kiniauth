@@ -68,7 +68,7 @@ class ScheduledTaskServiceTest extends TestBase {
         $this->assertEquals("Test Scheduled Task", $task->getDescription());
         $this->assertEquals(["myParam" => "Hello", "anotherParam" => "Goodbye"], $task->getConfiguration());
 
-        $this->assertEquals($expectedNextStartTime, $task->getNextStartTime());
+        $this->assertEquals($expectedNextStartTime->format("Y-m-d H:i:s"), $task->getNextStartTime());
         $this->assertEquals(2, sizeof($task->getTimePeriods()));
 
         $this->assertEquals(new ScheduledTaskTimePeriod($date, null, 15, 30, $task->getTimePeriods()[0]->getId(),
@@ -145,7 +145,7 @@ class ScheduledTaskServiceTest extends TestBase {
         $task1 = new ScheduledTask(new ScheduledTaskSummary("test", "Test Scheduled Task",
             ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
                 new ScheduledTaskTimePeriod(20, null, 15, 30)
-            ], null, $nextStartTime), null, 1);
+            ], null, $nextStartTime->format("Y-m-d H:i:s")), null, 1);
         $task1->save();
         $task1Id = $task1->getId();
 
@@ -153,7 +153,7 @@ class ScheduledTaskServiceTest extends TestBase {
         $task2 = new ScheduledTask(new ScheduledTaskSummary("test", "Test Scheduled Task",
             ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
                 new ScheduledTaskTimePeriod(null, 3, 15, 30)
-            ], null, $nextStartTime), null, 1);
+            ], null, $nextStartTime->format("Y-m-d H:i:s")), null, 1);
         $task2->save();
         $task2Id = $task2->getId();
 
@@ -168,7 +168,7 @@ class ScheduledTaskServiceTest extends TestBase {
         $task4 = new ScheduledTask(new ScheduledTaskSummary("test", "Test Scheduled Task",
             ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
                 new ScheduledTaskTimePeriod(null, null, null, 22)
-            ], null, $nextStartTime), null, 1);
+            ], null, $nextStartTime->format("Y-m-d H:i:s")), null, 1);
         $task4->save();
         $task4Id = $task4->getId();
 
@@ -199,7 +199,7 @@ class ScheduledTaskServiceTest extends TestBase {
         $task1 = new ScheduledTask(new ScheduledTaskSummary("test", "Test Scheduled Task",
             ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
                 new ScheduledTaskTimePeriod(null, null, null, 30)
-            ], ScheduledTaskSummary::STATUS_RUNNING, null, null, null, $timeoutDate, 3600), null, 1);
+            ], ScheduledTaskSummary::STATUS_RUNNING, null, null, null, $timeoutDate->format("Y-m-d H:i:s"), 3600), null, 1);
 
         $task1->save();
         $task1Id = $task1->getId();
@@ -222,7 +222,7 @@ class ScheduledTaskServiceTest extends TestBase {
         $nextStartTime = (new \DateTime())->format("Y-m-d H:i:s");
 
         $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("test timeout", "Timed Out Task", ["game" => "set"], [new ScheduledTaskTimePeriod(null, null, 0, 0)], ScheduledTaskSummary::STATUS_RUNNING,
-            $nextStartTime, $lastStartTime, null, $timeoutTime, 3500), null, 1);
+            $nextStartTime, $lastStartTime->format("Y-m-d H:i:s"), null, $timeoutTime->format("Y-m-d H:i:s"), 3500), null, 1);
 
         $scheduledTask->save();
 

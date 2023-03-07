@@ -18,6 +18,28 @@ use Kiniauth\Traits\Account\AccountProject;
 class ScheduledTask extends ScheduledTaskSummary {
     use AccountProject;
 
+    /**
+     * @var \DateTime
+     */
+    protected $lastStartTime;
+
+    /**
+     * @var \DateTime
+     */
+    protected $lastEndTime;
+
+
+    /**
+     * @var \DateTime
+     */
+    protected $nextStartTime;
+
+
+    /**
+     * @var \DateTime
+     */
+    protected $timeoutTime;
+
 
     /**
      * ScheduledTask constructor.
@@ -27,20 +49,77 @@ class ScheduledTask extends ScheduledTaskSummary {
      */
     public function __construct($scheduledTaskSummary, $projectKey = null, $accountId = null) {
         if ($scheduledTaskSummary) {
+
             parent::__construct($scheduledTaskSummary->getTaskIdentifier(),
                 $scheduledTaskSummary->getDescription(),
                 $scheduledTaskSummary->getConfiguration(),
                 $scheduledTaskSummary->getTimePeriods(),
                 $scheduledTaskSummary->getStatus(),
-                $scheduledTaskSummary->getNextStartTime(),
-                $scheduledTaskSummary->getLastStartTime(),
-                $scheduledTaskSummary->getLastEndTime(),
-                $scheduledTaskSummary->getTimeoutTime(),
+                $scheduledTaskSummary->getNextStartTime() ? date_create_from_format("Y-m-d H:i:s", $scheduledTaskSummary->getNextStartTime()) : null,
+                $scheduledTaskSummary->getLastStartTime() ? date_create_from_format("Y-m-d H:i:s", $scheduledTaskSummary->getLastStartTime()) : null,
+                $scheduledTaskSummary->getLastEndTime() ? date_create_from_format("Y-m-d H:i:s", $scheduledTaskSummary->getLastEndTime()) : null,
+                $scheduledTaskSummary->getTimeoutTime() ? date_create_from_format("Y-m-d H:i:s", $scheduledTaskSummary->getTimeoutTime()) : null,
                 $scheduledTaskSummary->getTimeoutSeconds(),
                 $scheduledTaskSummary->getId());
         }
         $this->projectKey = $projectKey;
         $this->accountId = $accountId;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastStartTime() {
+        return $this->lastStartTime;
+    }
+
+    /**
+     * @param \DateTime $lastStartTime
+     */
+    public function setLastStartTime($lastStartTime) {
+        $this->lastStartTime = $lastStartTime;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastEndTime() {
+        return $this->lastEndTime;
+    }
+
+    /**
+     * @param \DateTime $lastEndTime
+     */
+    public function setLastEndTime($lastEndTime) {
+        $this->lastEndTime = $lastEndTime;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getNextStartTime() {
+        return $this->nextStartTime;
+    }
+
+    /**
+     * @param \DateTime $nextStartTime
+     */
+    public function setNextStartTime($nextStartTime) {
+        $this->nextStartTime = $nextStartTime;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getTimeoutTime() {
+        return $this->timeoutTime;
+    }
+
+    /**
+     * @param \DateTime $timeoutTime
+     */
+    public function setTimeoutTime($timeoutTime) {
+        $this->timeoutTime = $timeoutTime;
     }
 
 
@@ -51,7 +130,12 @@ class ScheduledTask extends ScheduledTaskSummary {
      */
     public function returnSummary() {
         return new ScheduledTaskSummary($this->taskIdentifier, $this->description, $this->configuration,
-            $this->timePeriods, $this->status, $this->nextStartTime, $this->lastStartTime, $this->lastEndTime, $this->timeoutTime, $this->timeoutSeconds, $this->id);
+            $this->timePeriods, $this->status,
+            $this->nextStartTime ? $this->nextStartTime->format("Y-m-d H:i:s") : null,
+            $this->lastStartTime ? $this->lastStartTime->format("Y-m-d H:i:s") : null,
+            $this->lastEndTime ? $this->lastEndTime->format("Y-m-d H:i:s") : null,
+            $this->timeoutTime ? $this->timeoutTime->format("Y-m-d H:i:s") : null,
+            $this->timeoutSeconds, $this->id);
     }
 
     /**

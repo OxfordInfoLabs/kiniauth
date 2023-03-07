@@ -62,18 +62,18 @@ class ScheduledTaskSummary extends ActiveRecord {
 
 
     /**
-     * @var \DateTime
+     * @var string
      */
     protected $lastStartTime;
 
     /**
-     * @var \DateTime
+     * @var string
      */
     protected $lastEndTime;
 
 
     /**
-     * @var \DateTime
+     * @var string
      */
     protected $nextStartTime;
 
@@ -85,7 +85,7 @@ class ScheduledTaskSummary extends ActiveRecord {
 
 
     /**
-     * @var \DateTime
+     * @var string
      */
     protected $timeoutTime;
 
@@ -106,9 +106,9 @@ class ScheduledTaskSummary extends ActiveRecord {
      * @param ScheduledTaskTimePeriod[] $timePeriods
      * @param string $status
      * @param integer $id
-     * @param \DateTime $lastStartTime
-     * @param \DateTime $lastEndTime
-     * @param null $timeoutTime
+     * @param string $lastStartTime
+     * @param string $lastEndTime
+     * @param string $timeoutTime
      * @param int $timeoutSeconds
      */
     public function __construct($taskIdentifier, $description, $configuration, $timePeriods, $status = self::STATUS_PENDING,
@@ -213,42 +213,42 @@ class ScheduledTaskSummary extends ActiveRecord {
     }
 
     /**
-     * @return \DateTime
+     * @return string
      */
     public function getLastStartTime() {
         return $this->lastStartTime;
     }
 
     /**
-     * @param \DateTime $lastStartTime
+     * @param string $lastStartTime
      */
     public function setLastStartTime($lastStartTime) {
         $this->lastStartTime = $lastStartTime;
     }
 
     /**
-     * @return \DateTime
+     * @return string
      */
     public function getLastEndTime() {
         return $this->lastEndTime;
     }
 
     /**
-     * @param \DateTime $lastEndTime
+     * @param string $lastEndTime
      */
     public function setLastEndTime($lastEndTime) {
         $this->lastEndTime = $lastEndTime;
     }
 
     /**
-     * @return \DateTime
+     * @return string
      */
     public function getNextStartTime() {
         return $this->nextStartTime;
     }
 
     /**
-     * @param \DateTime $nextStartTime
+     * @param string $nextStartTime
      */
     public function setNextStartTime($nextStartTime) {
         $this->nextStartTime = $nextStartTime;
@@ -269,14 +269,14 @@ class ScheduledTaskSummary extends ActiveRecord {
     }
 
     /**
-     * @return \DateTime
+     * @return string
      */
     public function getTimeoutTime() {
         return $this->timeoutTime;
     }
 
     /**
-     * @param \DateTime $timeoutTime
+     * @param string $timeoutTime
      */
     public function setTimeoutTime($timeoutTime) {
         $this->timeoutTime = $timeoutTime;

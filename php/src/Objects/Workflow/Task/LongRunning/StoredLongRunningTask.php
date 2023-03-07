@@ -22,7 +22,6 @@ class StoredLongRunningTask extends StoredLongRunningTaskSummary {
 
     /**
      * @var integer
-     * @required
      */
     protected $accountId;
 
