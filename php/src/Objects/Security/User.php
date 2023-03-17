@@ -341,7 +341,7 @@ class User extends UserSummary {
      */
     public function validate() {
 
-        $validationErrors = [];  
+        $validationErrors = [];
 
         // Check for duplication of email address across parent accounts
         $matchingUsers = self::values("COUNT(*)", "WHERE emailAddress = ? AND parent_account_id = ? AND id <> ?", $this->emailAddress,
