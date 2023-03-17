@@ -7,6 +7,7 @@ use Kiniauth\Exception\Security\PasswordUsedBeforeException;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
+use Kinikit\Core\Validation\ValidationException;
 
 include_once "autoloader.php";
 
@@ -31,7 +32,7 @@ class UserTest extends TestBase {
             $user->setHashedPassword(hash("sha512", "newpassword1"));
             $user->save();
             $this->fail("Should have thrown here");
-        } catch (PasswordUsedBeforeException $e) {
+        } catch (ValidationException $e) {
             $this->assertTrue(true);
         }
 

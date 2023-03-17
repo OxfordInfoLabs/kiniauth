@@ -20,7 +20,7 @@ use Kinikit\Core\Validation\FieldValidationError;
  *
  * @table ka_user
  * @generate
- * @interceptors \Kiniauth\Objects\Security\UserInterceptor
+ * @interceptor \Kiniauth\Objects\Security\UserInterceptor
  */
 class User extends UserSummary {
 
@@ -343,13 +343,26 @@ class User extends UserSummary {
 
         $validationErrors = [];
 
-        // Check for duplication across parent accounts
+        // Check for duplication of email address across parent accounts
         $matchingUsers = self::values("COUNT(*)", "WHERE emailAddress = ? AND parent_account_id = ? AND id <> ?", $this->emailAddress,
             $this->parentAccountId ? $this->parentAccountId : 0, $this->id ? $this->id : -1);
 
 
         if ($matchingUsers[0] > 0)
             $validationErrors["emailAddress"] = new FieldValidationError("emailAddress", "duplicateEmail", "A user already exists with this email address");
+
+
+        // Check for previously used password if new one supplied
+        if ($this->getId()) {
+            $passwordChange = self::values("COUNT(*)", "WHERE id = ? AND hashedPassword <> ?",
+                $this->getId(), $this->hashedPassword);
+
+            if ($passwordChange[0] > 0) {
+                $previousPassword = UserPasswordHistory::values("COUNT(*)", "WHERE user_id = ? AND hashed_password = ?", $this->getId(), $this->hashedPassword);
+                if ($previousPassword[0] > 0)
+                    $validationErrors["hashedPassword"] = new FieldValidationError("hashedPassword", "previousPassword", "The supplied password has been used before");
+            }
+        }
 
         return $validationErrors;
     }
