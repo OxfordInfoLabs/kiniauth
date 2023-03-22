@@ -26,6 +26,7 @@ class ProjectServiceTest extends TestBase {
 
 
     public function testCanListProjectsForLoggedInUser() {
+
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
         $this->assertEquals([], $this->service->listProjects());
 
@@ -35,6 +36,12 @@ class ProjectServiceTest extends TestBase {
             new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds"),
             new ProjectSummary("Wiper Blades", "Wiper blades project", "wiperBlades"),
         ], $this->service->listProjects());
+
+        AuthenticationHelper::login("regularuser@smartcoasting.org", "password");
+        $this->assertEquals([
+            new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds")
+        ], $this->service->listProjects());
+
 
 
     }

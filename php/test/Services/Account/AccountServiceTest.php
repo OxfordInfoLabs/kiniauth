@@ -533,5 +533,18 @@ class AccountServiceTest extends TestBase {
 
     }
 
+    public function testCanGetAndSaveAccountSettings() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $this->assertEquals([], $this->accountService->getAccountSettings(1));
+
+        $this->accountService->updateAccountSettings(["key1" => "Hello World", "key2" => "Good call", "key3" => "My one"]);
+
+        $this->assertEquals(["key1" => "Hello World", "key2" => "Good call", "key3" => "My one"], $this->accountService->getAccountSettings(1));
+
+
+    }
+
 
 }

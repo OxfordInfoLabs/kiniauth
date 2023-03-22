@@ -48,6 +48,28 @@ trait Account {
         return $this->accountService->changeAccountName($payload["newName"], $payload["password"]);
     }
 
+
+    /**
+     * Get account settings
+     *
+     * @http GET /settings
+     */
+    public function getAccountSettings() {
+        return $this->accountService->getAccountSettings();
+    }
+
+    /**
+     * Update account settings with a new full set
+     *
+     * @http PUT /settings
+     *
+     * @param mixed $settings
+     */
+    public function updateAccountSettings($settings) {
+        $this->accountService->updateAccountSettings($settings);
+    }
+
+
     /**
      * Get a user object by userId (optional), defaults to the logged in user
      *

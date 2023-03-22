@@ -32,6 +32,14 @@ class Account extends AccountSummary {
     protected $createdDate;
 
 
+    /**
+     * @var mixed
+     * @json
+     * @sqlType LONGTEXT
+     */
+    protected $settings;
+
+
     // Logged in account constant for default value usage.
     const LOGGED_IN_ACCOUNT = "LOGGED_IN_ACCOUNT";
 
@@ -101,6 +109,20 @@ class Account extends AccountSummary {
      */
     public function getCreatedDate() {
         return $this->createdDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSettings() {
+        return $this->settings ?? [];
+    }
+
+    /**
+     * @param mixed $settings
+     */
+    public function setSettings($settings) {
+        $this->settings = $settings;
     }
 
 

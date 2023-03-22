@@ -128,7 +128,7 @@
     "id": 10,
     "emailAddress": "regularuser@smartcoasting.org",
     "hashedPassword": "fbabf30389e2802e578feedb2c23e2466a5c7d9369baed8a6fb197a2b50bcba5632a88fc54d54d942a4c8317842d6db89ee691ffed8805fa05f32fc58619c7c7",
-    "activeAccountId": 3,
+    "activeAccountId": 1,
     "name": "Regular User",
     "status": "ACTIVE",
     "roles": [
@@ -136,6 +136,12 @@
         "scopeId": 1,
         "accountId": 1,
         "roleId": 2
+      },
+      {
+        "scopeId": 1,
+        "accountId": 1,
+        "roleId": 4,
+        "scope": "PROJECT"
       }
     ]
   },

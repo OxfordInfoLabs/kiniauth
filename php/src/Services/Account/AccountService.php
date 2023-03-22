@@ -378,4 +378,24 @@ class AccountService {
     }
 
 
+    /**
+     * Get account settings
+     */
+    public function getAccountSettings($accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        return $account->getSettings();
+    }
+
+    /**
+     * Update account settings with a new full set
+     *
+     * @param mixed $settings
+     */
+    public function updateAccountSettings($settings, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        $account->setSettings($settings);
+        $account->save();
+    }
+
+
 }
