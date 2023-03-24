@@ -252,7 +252,7 @@ class SecurityServiceTest extends TestBase {
         AuthenticationHelper::login("regularuser@smartcoasting.org", "password");
         $this->assertTrue($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "editdata"));
         $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "deletedata"));
-        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "editdata", 2));
+        $this->assertFalse($this->securityService->checkLoggedInHasPrivilege(Role::SCOPE_ACCOUNT, "editdata", 1));
 
     }
 

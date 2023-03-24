@@ -327,6 +327,7 @@ class SecurityService {
                         if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT)
                             $access = $access && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
                     } else {
+
                         $access = $access && $this->getLoggedInScopePrivileges($scopeAccess->getScope(),
                                 $scopeId);
                     }

@@ -55,6 +55,7 @@ class ProjectService {
      * @return ProjectSummary[]
      */
     public function listProjects($accountId = Account::LOGGED_IN_ACCOUNT) {
+
         $projects = Project::filter("WHERE account_id = ? ORDER BY name", $accountId);
         return array_map(function ($project) {
             return new ProjectSummary($project->getName(), $project->getDescription(), $project->getProjectKey(), $project->getSettings());
