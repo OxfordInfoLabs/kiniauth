@@ -3,6 +3,7 @@ import {KinibindRequestService} from 'ng-kinibind';
 import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
 import {AuthenticationService} from './authentication.service';
 import * as lodash from 'lodash';
+import {HttpClient} from '@angular/common/http';
 
 const _ = lodash.default;
 
@@ -13,7 +14,8 @@ export class AccountService {
 
     constructor(private kbRequest: KinibindRequestService,
                 private config: KiniAuthModuleConfig,
-                private authService: AuthenticationService) {
+                private authService: AuthenticationService,
+                private http: HttpClient) {
     }
 
     public getAccount(accountId?) {
@@ -46,6 +48,17 @@ export class AccountService {
             this.config.accessHttpURL + '/account/' + accountId + '/suspend', {
                 params: {note}
             })
+            .toPromise();
+    }
+
+    public async getAccountSettings() {
+        const settings = await this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/account/settings')
+            .toPromise();
+        return (!settings || Array.isArray(settings)) ? {} : settings;
+    }
+
+    public updateAccountSettings(settings) {
+        return this.http.put(this.config.accessHttpURL + '/account/settings', settings)
             .toPromise();
     }
 
