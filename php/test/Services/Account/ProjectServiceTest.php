@@ -38,6 +38,8 @@ class ProjectServiceTest extends TestBase {
         ], $this->service->listProjects());
 
         AuthenticationHelper::login("regularuser@smartcoasting.org", "password");
+
+
         $this->assertEquals([
             new ProjectSummary("Soap Suds", "Soap suds project", "soapSuds")
         ], $this->service->listProjects());

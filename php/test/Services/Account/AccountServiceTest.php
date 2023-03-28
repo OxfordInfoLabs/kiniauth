@@ -255,7 +255,7 @@ class AccountServiceTest extends TestBase {
 
         try {
 
-            $this->mockedAccountService->inviteUserToAccount(1, "regularuser@smartcoasting.org", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
+            $this->mockedAccountService->inviteUserToAccount(1, "bob@twofactor.com", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
             $this->fail("Should have thrown here");
         } catch (UserAlreadyAttachedToAccountException $e) {
             $this->assertTrue(true);

@@ -13,5 +13,10 @@
     "key": "deletedata",
     "description": "Test Delete Data Privilege.",
     "scope": "ACCOUNT"
+  },
+  {
+    "key": "access",
+    "description": "Test Access Project Privilege.",
+    "scope": "PROJECT"
   }
 ]

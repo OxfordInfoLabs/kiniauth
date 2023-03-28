@@ -148,7 +148,7 @@ class ObjectInterceptorTest extends TestBase {
 
         // Now try logging in as a user without the delete data privilege
         AuthenticationHelper::login("regularuser@smartcoasting.org", "password");
-        $this->assertEquals(array("Mark", 1), $this->testMethodService->loggedInAccountInjection("Mark"));
+        $this->assertEquals(array("Mark", 2), $this->testMethodService->loggedInAccountInjection("Mark"));
 
     }
 

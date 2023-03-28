@@ -564,9 +564,8 @@ class UserServiceTest extends TestBase {
 
         // Account restricted search.
         $accountUsers = $this->userService->searchForUsers("", 0, 100, 1);
-        $this->assertEquals(4, sizeof($accountUsers["results"]));
-        $this->assertEquals("Regular User", $accountUsers["results"][0]->getName());
-        $this->assertEquals("Sam Davis", $accountUsers["results"][1]->getName());
+        $this->assertEquals(3, sizeof($accountUsers["results"]));
+        $this->assertEquals("Sam Davis", $accountUsers["results"][0]->getName());
 
 
     }
@@ -699,10 +698,11 @@ class UserServiceTest extends TestBase {
 
         $accountUsers = $this->userService->getUsersWithRole(Role::SCOPE_ACCOUNT, 2);
 
-        $this->assertEquals(3, sizeof($accountUsers));
+        $this->assertEquals(4, sizeof($accountUsers));
         $this->assertEquals(User::fetch(3), $accountUsers[0]);
         $this->assertEquals(User::fetch(4), $accountUsers[1]);
         $this->assertEquals(User::fetch(7), $accountUsers[2]);
+        $this->assertEquals(User::fetch(10), $accountUsers[3]);
 
 
         $accountUsersWithRole = $this->userService->getUsersWithRole(Role::SCOPE_ACCOUNT, 2, 3);
@@ -870,10 +870,6 @@ class UserServiceTest extends TestBase {
 
 
     }
-
-
-
-
 
 
 }
