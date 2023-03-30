@@ -7,6 +7,7 @@ use Kiniauth\Exception\QueuedTask\NoQueuedTaskImplementationException;
 use Kiniauth\Services\Workflow\Task\Queued\Processor\QueuedTaskProcessor;
 use Kiniauth\ValueObjects\QueuedTask\QueueItem;
 use Kinikit\Core\Configuration\ConfigFile;
+use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
 
 /**
@@ -28,12 +29,20 @@ class QueuedTaskService {
 
 
     /**
+     * @var FileResolver
+     */
+    private $fileResolver;
+
+
+    /**
      * QueuedTaskService constructor.
      *
      * @param QueuedTaskProcessor $queuedTaskProcessor
+     * @param FileResolver $fileResolver
      */
-    public function __construct($queuedTaskProcessor) {
+    public function __construct($queuedTaskProcessor, $fileResolver) {
         $this->queuedTaskProcessor = $queuedTaskProcessor;
+        $this->fileResolver = $fileResolver;
     }
 
 
@@ -107,11 +116,23 @@ class QueuedTaskService {
     }
 
 
+    /**
+     * Get installed task classes
+     */
+    public function getInstalledTaskClasses() {
+        $this->loadTaskClasses();
+        return $this->taskClasses;
+    }
+
+
     // Load product classes if required
     private function loadTaskClasses() {
         if (!$this->taskClasses) {
-            $config = new ConfigFile("Config/queued-tasks.txt");
-            $this->taskClasses = $config->getAllParameters();
+            $this->taskClasses = [];
+            foreach ($this->fileResolver->getSearchPaths() as $searchPath) {
+                $config = new ConfigFile($searchPath . "/Config/queued-tasks.txt");
+                $this->taskClasses = array_merge($this->taskClasses, $config->getAllParameters());
+            }
         }
     }
 

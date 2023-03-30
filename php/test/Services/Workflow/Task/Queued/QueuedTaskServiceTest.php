@@ -8,6 +8,7 @@ use Kiniauth\Services\Workflow\Task\Queued\QueuedTaskService;
 use Kiniauth\Services\Workflow\Task\Task;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\QueuedTask\QueueItem;
+use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
@@ -33,6 +34,11 @@ class QueuedTaskServiceTest extends TestBase {
 
 
     /**
+     * @var FileResolver
+     */
+    private $fileResolver;
+
+    /**
      * @var MockObject
      */
     private $mockQueuedTask;
@@ -46,11 +52,25 @@ class QueuedTaskServiceTest extends TestBase {
         $mockObjectProvider = Container::instance()->get(MockObjectProvider::class);
         $this->mockQueuedTaskProcessor = $mockObjectProvider->getMockInstance(QueuedTaskProcessor::class);
 
-        $this->queuedTaskService = new QueuedTaskService($this->mockQueuedTaskProcessor);
+        $this->fileResolver = Container::instance()->get(FileResolver::class);
+
+        $this->queuedTaskService = new QueuedTaskService($this->mockQueuedTaskProcessor, $this->fileResolver);
 
         // Set mock task to respond to our test configured one.
         $this->mockQueuedTask = $mockObjectProvider->getMockInstance(Task::class);
         Container::instance()->set("MyLittlePony", $this->mockQueuedTask);
+
+    }
+
+
+    public function testCanGetInstalledQueuedTasksAndTheseLoadAllTasksFromIncludedPath() {
+
+        $this->fileResolver->addSearchPath(__DIR__);
+
+        $installedClasses = $this->queuedTaskService->getInstalledTaskClasses();
+        $this->assertEquals(2, sizeof($installedClasses));
+        $this->assertEquals(["mylittlepony" => "MyLittlePony", "othertask" => "OtherTask"], $installedClasses);
+
 
     }
 
