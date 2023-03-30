@@ -168,8 +168,8 @@ export class AuthenticationService {
     }
 
     public async authenticateTwoFactor(code) {
-        const url = this.config.guestHttpURL + `/auth/twoFactor?code=${code}`;
-        const result = await this.kbRequest.makeGetRequest(url).toPromise();
+        const url = this.config.guestHttpURL + `/auth/twoFactor`;
+        const result = await this.kbRequest.makePostRequest(url, JSON.stringify(code)).toPromise();
         if (result) {
             sessionStorage.removeItem('pendingLoginSession');
             await this.getLoggedInUser(true);
