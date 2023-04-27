@@ -1,6 +1,4 @@
-<img src="./img/logo_with_banner.SVG" width="100%">
-
-<img src="./img/Auth_Logo.svg" width="302" id="tool-logo"/>
+<img src="./img/Auth_Graphic.svg" width="100%" id="tool-logo"/>
 
 ## Usage
 
