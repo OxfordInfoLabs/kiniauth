@@ -1,42 +1,6 @@
-<style type="text/css">
-	#header {
-		background-image: url('./img/1pxbanner.png');
-		background-repeat: repeat-x;
-		width: 100%;
-	}
-	#suite-logo {
-		margin-top:7.5px;
-		margin-left: 10px
-	}
-	#frame  {
-		background-color: #F5F5F5;
-		padding: 20px;
-	}
-	#tool-logo {
-		margin-bottom: 12px;
-		display: block;
-	}
-	.whitetxt {
-		color: white;
-	}
-	#sub-title  {
-		background-color: #E51E25;
-		display: inline-block;
-		font-weight: bold;
-		font-size: 13px;
-		text-align: center;
-	}
-</style>
+<img src="./img/logo_with_banner.SVG" width="100%">
 
-<div id="header"> 
-	<img src="./img/bannerlogo.png" id="suite-logo"/>
-</div>
-
-<div id="frame">
-
-	<img src="./img/Auth_Logo.svg" width="302" id="tool-logo"/>
-	
-</div>
+<img src="./img/Auth_Logo.svg" width="302" id="tool-logo"/>
 
 ## Usage
 
