@@ -339,7 +339,7 @@ class AccountService {
 
             $objectBinder = Container::instance()->get(ObjectBinder::class);
 
-            $this->roleService->updateAssignedScopeObjectRolesForUser($user->getId(), $objectBinder->bindFromArray($pendingData["initialRoles"], ScopeObjectRolesAssignment::class . "[]"), $pendingAction->getObjectId());
+            $this->roleService->updateAssignedScopeObjectRoles(Role::APPLIES_TO_USER, $user->getId(), $objectBinder->bindFromArray($pendingData["initialRoles"], ScopeObjectRolesAssignment::class . "[]"), $pendingAction->getObjectId());
 
             // Remove the pending action once completed.
             $this->pendingActionService->removePendingAction("USER_INVITE", $invitationCode);

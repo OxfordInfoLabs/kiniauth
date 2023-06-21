@@ -126,7 +126,6 @@ class SecurityService {
                 throw new InvalidLoginException();
             }
 
-
             $accountId = $securable->getActiveAccountId();
 
             if (!$accountId && $securable->getAccountIds()) {

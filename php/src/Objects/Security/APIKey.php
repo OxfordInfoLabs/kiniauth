@@ -3,6 +3,7 @@
 
 namespace Kiniauth\Objects\Security;
 
+use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Util\StringUtils;
 
 /**
@@ -17,16 +18,6 @@ class APIKey extends Securable {
      * @var integer
      */
     private $id;
-
-    /**
-     * @var integer
-     */
-    private $accountId;
-
-    /**
-     * @var string
-     */
-    private $projectKey;
 
     /**
      * @var string
@@ -45,6 +36,16 @@ class APIKey extends Securable {
     private $description;
 
     /**
+     * An array of explicit role objects
+     *
+     * @oneToMany
+     * @childJoinColumns api_key_id
+     * @var APIKeyRole[]
+     */
+    protected $roles = array();
+
+
+    /**
      * @var string
      */
     private $status = User::STATUS_ACTIVE;
@@ -54,54 +55,28 @@ class APIKey extends Securable {
      * APIKey constructor.
      *
      * @param string $description
-     * @param string $accountId
-     * @param string $projectKey
+     * @param APIKeyRole[] $roles
      */
-    public function __construct($description, $accountId, $projectKey) {
+    public function __construct($description, $roles = [], $apiKey = null, $apiSecret = null, $status = null, $id = null) {
         $this->description = $description;
-        $this->accountId = $accountId;
-        $this->projectKey = $projectKey;
+        $this->roles = $roles;
+        $this->status = $status ?? User::STATUS_ACTIVE;
+        $this->id = $id;
 
-        $this->regenerate();
+        if ($apiKey) {
+            $this->apiKey = $apiKey;
+            $this->apiSecret = $apiSecret;
+        } else
+            $this->regenerate();
     }
 
-    
+
     /**
      * @return int
      */
     public function getId() {
         return $this->id;
     }
-
-
-    /**
-     * @return int
-     */
-    public function getAccountId() {
-        return $this->accountId;
-    }
-
-    /**
-     * @param int $accountId
-     */
-    public function setAccountId($accountId) {
-        $this->accountId = $accountId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getProjectKey() {
-        return $this->projectKey;
-    }
-
-    /**
-     * @param string $projectKey
-     */
-    public function setProjectKey($projectKey) {
-        $this->projectKey = $projectKey;
-    }
-
 
     /**
      * @return string
@@ -132,31 +107,13 @@ class APIKey extends Securable {
     }
 
 
-    /**
-     * @return UserRole[]
-     */
-    public function getRoles() {
-
-        // Create account role
-        $accountRole = new UserRole(Role::SCOPE_ACCOUNT, $this->accountId, -1, $this->accountId);
-        $accountRole->setRole(new Role(Role::SCOPE_ACCOUNT, "API Key Account Role", "API Key Account Role", [
-            $this->projectKey ? "access" : "*"
-        ]));
-
-        $roles = [$accountRole];
-
-        // If project key, add role for this.
-        if ($this->projectKey) {
-            $projectRole = new UserRole("PROJECT", $this->projectKey, -2, $this->accountId);
-            $projectRole->setRole(new Role("PROJECT", "API Key Project Role", "API Key Project Role", [
-                "*"
-            ]));
-            $roles[] = $projectRole;
+    public function getAccountIds() {
+        $accountIds = array();
+        foreach ($this->roles as $role) {
+            if ($role->getAccountId())
+                $accountIds[$role->getAccountId()] = 1;
         }
-
-        return $roles;
-
-
+        return array_keys($accountIds);
     }
 
 
@@ -166,7 +123,7 @@ class APIKey extends Securable {
      * @return int
      */
     public function getActiveAccountId() {
-        return $this->accountId;
+        return ObjectArrayUtils::getMemberValueArrayForObjects("accountId", $this->getRoles())[0] ?? null;
     }
 
     /**

@@ -308,7 +308,7 @@ class AuthenticationService {
 
         $matchingKeys = APIKey::filter("WHERE apiKey = ? AND apiSecret = ?", $apiKey, $apiSecret);
 
-        // If there is a matching user, return it now.
+        // If there is a matching api key, return it now.
         if (sizeof($matchingKeys) > 0) {
             $this->securityService->login($matchingKeys[0], null);
             ActivityLogger::log("API Login");

@@ -76,11 +76,11 @@ class ProjectScopeAccessTest extends TestBase {
 
     public function testIfExplicitRolesSuppliedForUserTheseAreEvaluatedToPrivilegesAndReturned() {
 
-        $role1 = new Role(ProjectScopeAccess::SCOPE_PROJECT, "Access Project", "Access Project", [
+        $role1 = new Role(ProjectScopeAccess::SCOPE_PROJECT, "Access Project", "Access Project", "Access Project", [
             "access"
         ]);
 
-        $role2 = new Role(ProjectScopeAccess::SCOPE_PROJECT, "Edit Project", "Edit Project", [
+        $role2 = new Role(ProjectScopeAccess::SCOPE_PROJECT, "Edit Project", "Edit Project", "Edit Project", [
             "access",
             "edit"
         ]);

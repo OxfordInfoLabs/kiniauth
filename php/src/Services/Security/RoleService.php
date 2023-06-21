@@ -4,6 +4,7 @@
 namespace Kiniauth\Services\Security;
 
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Security\APIKeyRole;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\ValueObjects\Security\AssignedRole;
@@ -45,13 +46,17 @@ class RoleService {
     /**
      * Get all possible account roles by scope - useful for drawing the roles GUI
      *
+     * @param string $appliesTo
      * @param integer $accountId
      *
      * @return ScopeRoles[]
      */
-    public function getAllPossibleAccountScopeRoles($accountId = Account::LOGGED_IN_ACCOUNT) {
+    public function getAllPossibleAccountScopeRoles($appliesTo = Role::APPLIES_TO_USER, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
-        $allRoles = ObjectArrayUtils::groupArrayOfObjectsByMember("scope", Role::filter("WHERE defined_account_id = $accountId OR defined_account_id IS NULL ORDER BY id"));
+        $allRoles = ObjectArrayUtils::groupArrayOfObjectsByMember("scope", Role::filter("WHERE (defined_account_id = ?
+            OR defined_account_id IS NULL)
+            AND (appliesTo = ? OR appliesTo = 'ALL') 
+            ORDER BY id", $accountId, $appliesTo));
 
         $scopeRoles = [];
         foreach ($this->scopeManager->getScopeAccesses() as $scopeAccess) {
@@ -67,42 +72,47 @@ class RoleService {
 
 
     /**
-     * Get filtered user assignable scope roles.  This returns an array of UserScopeRoles objects where the roles collection
-     * represents just the roles which are assignable for the user.  If a filter string is passed this will be passed
-     * as a filter to the scope object description and offset and limit will be applied to allow paging of these results.
+     * Get filtered assignable account scope roles for a given scope and applicable type (user / apikey)
      *
-     * @param integer $userId
+     * @param string $appliesTo
+     * @param integer $securableId
+     * @param string $scope
      * @param string $filterString
-     * @param integer $offset
-     * @param integer $limit
-     * @param integer $accountId
+     * @param int $offset
+     * @param int $limit
+     * @param string $accountId
+     *
+     * @return ScopeObjectRoles[]
      */
-    public function getFilteredUserAssignableAccountScopeRoles($userId, $scope, $filterString = "", $offset = 0, $limit = 10, $accountId = Account::LOGGED_IN_ACCOUNT) {
+    public function getFilteredAssignableAccountScopeRoles($appliesTo, $securableId, $scope, $filterString = "", $offset = 0, $limit = 10, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
         // Get the scope access.
         $scopeAccess = $this->scopeManager->getScopeAccess($scope);
 
-        $allScopeRoles = Role::filter("WHERE scope = ? ORDER BY id", $scope);
+        $allScopeRoles = Role::filter("WHERE scope = ? and (appliesTo = ? OR appliesTo = 'ALL') ORDER BY id", $scope, $appliesTo);
 
         // Grab matching descriptions
         $matchingDescriptions = $scopeAccess->getFilteredScopeObjectDescriptions($filterString, $offset, $limit, $accountId);
 
         // Loop through each matching description, create all possible user roles.
-        $userRoles = [];
+        $securableRoles = [];
         foreach ($matchingDescriptions as $scopeId => $scopeObjectDescription) {
 
             foreach ($allScopeRoles as $scopeRole) {
-                $userRoles[] = new UserRole($scope, $scopeId, $scopeRole->getId(), $accountId, $userId);
+                if ($appliesTo == Role::APPLIES_TO_USER)
+                    $securableRoles[] = new UserRole($scope, $scopeId, $scopeRole->getId(), $accountId, $securableId);
+                else if ($appliesTo == Role::APPLIES_TO_API_KEY)
+                    $securableRoles[] = new APIKeyRole($scope, $scopeId, $scopeRole->getId(), $accountId, $securableId);
             }
         }
 
         // Eliminate unassignable roles
         $assignableUserRoles = ObjectArrayUtils::groupArrayOfObjectsByMember(["scopeId", "roleId"],
-            $scopeAccess->getAssignableUserRoles($userRoles));
+            $scopeAccess->getAssignableSecurableRoles($securableRoles));
 
 
         // Now construct array of user scope roles
-        $userScopeRoles = [];
+        $securableScopeRoles = [];
         foreach ($matchingDescriptions as $scopeId => $scopeObjectDescription) {
 
             $roles = [];
@@ -114,11 +124,11 @@ class RoleService {
                 }
             }
 
-            $userScopeRoles[] = new ScopeObjectRoles($scope, $scopeId, $scopeObjectDescription, $roles);
+            $securableScopeRoles[] = new ScopeObjectRoles($scope, $scopeId, $scopeObjectDescription, $roles);
         }
 
 
-        return $userScopeRoles;
+        return $securableScopeRoles;
 
     }
 
@@ -126,16 +136,21 @@ class RoleService {
     /**
      * Get all user roles for the supplied account
      *
-     * @param integer $userId
+     * @param string $appliesTo
+     * @param integer $securableId
      * @param integer $accountId
      */
-    public function getAllUserAccountRoles($userId, $accountId = Account::LOGGED_IN_ACCOUNT) {
+    public function getAllAccountRoles($appliesTo, $securableId, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
-        $allUserRoles = UserRole::filter("WHERE userId = ? AND accountId = ?", $userId, $accountId);
+        if ($appliesTo == Role::APPLIES_TO_USER) {
+            $allSecurableRoles = UserRole::filter("WHERE userId = ? AND accountId = ?", $securableId, $accountId);
+        } else {
+            $allSecurableRoles = APIKeyRole::filter("WHERE apiKeyId = ? AND accountId = ?", $securableId, $accountId);
+        }
 
-        $groupedRoles = ObjectArrayUtils::groupArrayOfObjectsByMember(["scope", "scopeId"], $allUserRoles);
+        $groupedRoles = ObjectArrayUtils::groupArrayOfObjectsByMember(["scope", "scopeId"], $allSecurableRoles);
 
-        $userScopeRolesArray = [];
+        $scopeRolesArray = [];
 
         // All scopes
         $allScopes = $this->scopeManager->getScopeAccesses();
@@ -148,7 +163,7 @@ class RoleService {
 
             // Grab the scope description and create the array entry
             $scopeDescription = $scopeAccess->getScopeDescription();
-            $userScopeRolesArray[$scopeDescription] = [];
+            $scopeRolesArray[$scopeDescription] = [];
 
             if (sizeof($scopeObjectRoles) > 0) {
 
@@ -158,7 +173,7 @@ class RoleService {
 
                 foreach ($scopeObjectRoles as $scopeId => $userRoles) {
                     $roles = ObjectArrayUtils::getMemberValueArrayForObjects("role", $userRoles);
-                    $userScopeRolesArray[$scopeDescription][] = new ScopeObjectRoles($scope, $scopeId, $scopeObjectDescriptions[$scopeId], $roles);
+                    $scopeRolesArray[$scopeDescription][] = new ScopeObjectRoles($scope, $scopeId, $scopeObjectDescriptions[$scopeId], $roles);
                 }
             }
 
@@ -166,7 +181,7 @@ class RoleService {
         }
 
 
-        return $userScopeRolesArray;
+        return $scopeRolesArray;
 
 
     }
@@ -176,12 +191,11 @@ class RoleService {
      * Update the roles for a given scope object for a user using a Scope Object Roles object.  This operates only on the
      * passed account (defaulting to the logged in account).
      *
-     * @param integer $userId
+     * @param $appliesTo
+     * @param integer $securableId
      * @param ScopeObjectRolesAssignment[] $scopeObjectRolesAssignments
      */
-    public function updateAssignedScopeObjectRolesForUser($userId, $scopeObjectRolesAssignments, $accountId = Account::LOGGED_IN_ACCOUNT) {
-
-
+    public function updateAssignedScopeObjectRoles($appliesTo, $securableId, $scopeObjectRolesAssignments, $accountId = Account::LOGGED_IN_ACCOUNT) {
         /**
          * Process each scope object roles assignment object
          */
@@ -197,8 +211,12 @@ class RoleService {
             foreach ($roleIds as $roleId) {
                 if (is_numeric($roleId) && $roleId > 0)
                     $realRoleIds[] = $roleId;
-                else
-                    $candidateRoles[] = new UserRole($scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId(), 0, $accountId, $userId);
+                else {
+                    if ($appliesTo == Role::APPLIES_TO_USER)
+                        $candidateRoles[] = new UserRole($scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId(), 0, $accountId, $securableId);
+                    else
+                        $candidateRoles[] = new APIKeyRole($scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId(), 0, $accountId, $securableId);
+                }
             }
 
             $roles = sizeof($realRoleIds) > 0 ? Role::multiFetch($realRoleIds) : [];
@@ -206,17 +224,20 @@ class RoleService {
             foreach ($realRoleIds as $roleId) {
                 if (isset($roles[$roleId])) {
                     $role = $roles[$roleId];
-                    $userRole = new UserRole($role->getScope(), $scopeObjectRolesAssignment->getScopeId(), $roleId, $accountId, $userId);
-                    $candidateRoles[] = $userRole;
+                    if ($appliesTo == Role::APPLIES_TO_USER)
+                        $securableRole = new UserRole($role->getScope(), $scopeObjectRolesAssignment->getScopeId(), $roleId, $accountId, $securableId);
+                    else
+                        $securableRole = new APIKeyRole($role->getScope(), $scopeObjectRolesAssignment->getScopeId(), $roleId, $accountId, $securableId);
+                    $candidateRoles[] = $securableRole;
                 }
             }
 
             // Limit the roles to just assignable ones.
             $scopeAccess = $this->scopeManager->getScopeAccess($scopeObjectRolesAssignment->getScope());
-            $newRoles = $scopeAccess->getAssignableUserRoles($candidateRoles);
+            $newRoles = $scopeAccess->getAssignableSecurableRoles($candidateRoles);
 
             // Move old roles out of the way.
-            $userRoles = UserRole::filter("WHERE userId = ? AND accountId = ? AND scope = ? AND scope_id = ?", $userId, $accountId, $scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId());
+            $userRoles = UserRole::filter("WHERE userId = ? AND accountId = ? AND scope = ? AND scope_id = ?", $securableId, $accountId, $scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId());
             foreach ($userRoles as $userRole) {
                 $userRole->remove();
             }

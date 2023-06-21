@@ -6,24 +6,26 @@ namespace Kiniauth\Services\Security;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\APIKey;
+use Kiniauth\Objects\Security\APIKeyRole;
 use Kiniauth\Objects\Security\APIKeySummary;
+use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 
 class APIKeyService {
 
 
     /**
-     * List API keys
+     * List API keys by accountId and optionally project key
      *
      * @param string $accountId
      * @param string $projectKey
      */
     public function listAPIKeys($projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
-        $sql = "WHERE account_id = ?" . ($projectKey ? " AND project_key = ?" : "") . " ORDER BY description";
+        $sql = "WHERE roles.account_id = ?" . ($projectKey ? " AND roles.scope = 'PROJECT' AND roles.scope_id = ?" : "") . " ORDER BY description";
         $params = $projectKey ? [$accountId, $projectKey] : [$accountId];
 
-        return APIKeySummary::filter($sql, $params);
+        return APIKey::filter($sql, $params);
     }
 
 
@@ -31,13 +33,37 @@ class APIKeyService {
      * Create an API key
      *
      * @param string $description
-     * @param string $accountId
-     * @param string $projectKey
+     * @param APIKeyRole[]
      */
-    public function createAPIKey($description = "", $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        $newAPIKey = new APIKey($description, $accountId, $projectKey);
+    public function createAPIKey($description = "", $roles = []) {
+        $newAPIKey = new APIKey($description, $roles);
         $newAPIKey->save();
         return $newAPIKey->getId();
+    }
+
+
+    /**
+     * Convenience method for creating an API key for an account and optionally a project.
+     * In the case of a project primary key, the
+     *
+     * @param string $description
+     * @param string $projectKey
+     * @param string $accountId
+     */
+    public function createAPIKeyForAccountAndProject($description = "", $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
+
+        // Grab access role id otherwise grant full access
+        $accountAccessRoleId = Role::filter("WHERE privileges = ?", '["access"]')[0]->getId() ?? 0;
+
+        // Generate account role
+        $roles = [new APIKeyRole(Role::SCOPE_ACCOUNT, $accountId, $projectKey ? $accountAccessRoleId : 0, $accountId)];
+
+        // If need be generate account role
+        if ($projectKey) {
+            $roles[] = new APIKeyRole(Role::SCOPE_PROJECT, $projectKey, 0, $accountId);
+        }
+
+        return $this->createAPIKey($description, $roles);
     }
 
 
@@ -54,6 +80,10 @@ class APIKeyService {
     }
 
 
+    public function updateAPIKeyScopeRoles(){
+
+    }
+
     /**
      * Regenerate an existing API key
      *
@@ -64,7 +94,7 @@ class APIKeyService {
         $key = APIKey::fetch($apiKeyId);
         $key->regenerate();
         $key->save();
-        return new APIKeySummary($key->getId(), $key->getAPIKey(), $key->getAPISecret(), $key->getDescription(), $key->getStatus());
+        return $key;
     }
 
     /**
@@ -77,7 +107,7 @@ class APIKeyService {
         $key = APIKey::fetch($apiKeyId);
         $key->setStatus(User::STATUS_SUSPENDED);
         $key->save();
-        return new APIKeySummary($key->getId(), $key->getAPIKey(), $key->getAPISecret(), $key->getDescription(), $key->getStatus());
+        return $key;
     }
 
 
@@ -91,7 +121,7 @@ class APIKeyService {
         $key = APIKey::fetch($apiKeyId);
         $key->setStatus(User::STATUS_ACTIVE);
         $key->save();
-        return new APIKeySummary($key->getId(), $key->getAPIKey(), $key->getAPISecret(), $key->getDescription(), $key->getStatus());
+        return $key;
     }
 
 

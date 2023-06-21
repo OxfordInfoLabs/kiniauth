@@ -3,22 +3,19 @@
 
 namespace Kiniauth\Objects\Security;
 
-
 /**
- * Encodes a role for a user on an account.
+ * API Key Role mapping
  *
- * @table ka_user_role
+ * @table ka_api_key_role
  * @generate
  */
-class UserRole extends SecurableRole {
+class APIKeyRole extends SecurableRole {
 
     /**
-     * The user id for which this account role is being attached
-     *
      * @var integer
      * @primaryKey
      */
-    protected $userId;
+    private $apiKeyId;
 
 
     /**
@@ -29,17 +26,17 @@ class UserRole extends SecurableRole {
      * @param integer $roleId
      * @param integer $userId
      */
-    public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $accountId = null, $userId = null) {
+    public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $accountId = null, $apiKeyId = null) {
         parent::__construct($scope, $scopeId, $roleId, $accountId);
-        $this->userId = $userId;
+        $this->apiKeyId = $apiKeyId;
     }
 
 
     /**
      * @return int
      */
-    public function getUserId() {
-        return $this->userId;
+    public function getApiKeyId() {
+        return $this->apiKeyId;
     }
 
 

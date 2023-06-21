@@ -3,8 +3,9 @@
     "name": "Viewer",
     "description": "Can view key data in our test system",
     "privileges": [
-      "viewdata"
-    ]
+      "access"
+    ],
+    "appliesTo": "ALL"
   },
   {
     "name": "Editor",
@@ -29,6 +30,16 @@
     "privileges": [
       "access"
     ],
-    "scope": "PROJECT"
+    "scope": "PROJECT",
+    "appliesTo": "ALL"
+  },
+  {
+    "name": "Project API Access",
+    "description": "API access to a project",
+    "privileges": [
+      "editdata"
+    ],
+    "scope": "PROJECT",
+    "appliesTo": "API_KEY"
   }
 ]

@@ -39,25 +39,25 @@ class AccountScopeAccess extends ScopeAccess {
      * Use * as the scope key to indicate all accounts.
      *
      *
-     * @param User $user
+     * @param Securable $securable
      * @param Account $account
      * @param string[] $accountPrivileges
      *
      * @return array
      */
-    public function generateScopePrivileges($user, $account, $accountPrivileges) {
+    public function generateScopePrivileges($securable, $account, $accountPrivileges) {
 
         $scopePrivileges = array();
         $superUser = false;
         $accountIds = array();
 
-        if ($user) {
+        if ($securable) {
 
 
             /**
              * @var $role UserRole
              */
-            foreach ($user->getRoles() as $role) {
+            foreach ($securable->getRoles() as $role) {
 
                 // Only assess roles of type Account or Parent Account.
                 if ($role->getScope() == Role::SCOPE_ACCOUNT || $role->getScope() == Role::SCOPE_PARENT_ACCOUNT) {

@@ -4,6 +4,8 @@
 namespace Kiniauth\Test\Services\Security;
 
 
+use Kiniauth\Objects\Security\APIKey;
+use Kiniauth\Objects\Security\APIKeyRole;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
@@ -19,6 +21,8 @@ use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Testing\MockObjectProvider;
 use Kinikit\Core\Validation\ValidationException;
+
+include_once "autoloader.php";
 
 class RoleServiceTest extends TestBase {
 
@@ -47,17 +51,19 @@ class RoleServiceTest extends TestBase {
 
     public function testCanGetAllPossibleAccountScopeRoles() {
 
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
         // Add example scope
         $this->scopeManager->addScopeAccess(new ExampleScopeAccess());
 
-        $role1 = new Role("EXAMPLE", "Example Role 1", "Example Role 1", ["testpriv"]);
-        $role2 = new Role("EXAMPLE", "Example Role 2", "Example Role 2", ["testpriv2"]);
+        $role1 = new Role("EXAMPLE", Role::APPLIES_TO_ALL, "Example Role 1", "Example Role 1", ["testpriv"]);
+        $role2 = new Role("EXAMPLE", Role::APPLIES_TO_USER, "Example Role 2", "Example Role 2", ["testpriv2"]);
 
         $role1->save();
         $role2->save();
 
-
-        $allScopeRoles = $this->roleService->getAllPossibleAccountScopeRoles();
+        // Check applies to user
+        $allScopeRoles = $this->roleService->getAllPossibleAccountScopeRoles(Role::APPLIES_TO_USER, 1);
         $this->assertEquals(3, sizeof($allScopeRoles));
 
         $accountScopeRoles = $allScopeRoles[0];
@@ -80,6 +86,27 @@ class RoleServiceTest extends TestBase {
         $this->assertEquals("Example Role 1", $exampleRoles[0]->getName());
         $this->assertEquals("Example Role 2", $exampleRoles[1]->getName());
 
+        // Check applies to api key
+        $allScopeRoles = $this->roleService->getAllPossibleAccountScopeRoles(Role::APPLIES_TO_API_KEY, 1);
+        $this->assertEquals(3, sizeof($allScopeRoles));
+
+        $accountScopeRoles = $allScopeRoles[0];
+        $this->assertTrue($accountScopeRoles instanceof ScopeRoles);
+        $this->assertEquals("ACCOUNT", $accountScopeRoles->getScope());
+        $this->assertEquals("Account", $accountScopeRoles->getScopeDescription());
+
+        $this->assertEquals(1, sizeof($accountScopeRoles->getRoles()));
+        $accountRoles = $accountScopeRoles->getRoles();
+        $this->assertEquals("Viewer", $accountRoles[0]->getName());
+
+        $exampleScopeRoles = $allScopeRoles[2];
+        $this->assertTrue($exampleScopeRoles instanceof ScopeRoles);
+        $this->assertEquals("EXAMPLE", $exampleScopeRoles->getScope());
+        $this->assertEquals("Example", $exampleScopeRoles->getScopeDescription());
+        $exampleRoles = $exampleScopeRoles->getRoles();
+        $this->assertEquals(1, sizeof($exampleRoles));
+        $this->assertEquals("Example Role 1", $exampleRoles[0]->getName());
+
 
     }
 
@@ -88,15 +115,18 @@ class RoleServiceTest extends TestBase {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
-        $userRole1 = new UserRole("EXAMPLE", 1, 5, 1, 2);
-        $userRole2 = new UserRole("EXAMPLE", 2, 6, 1, 2);
-        $userRole3 = new UserRole("EXAMPLE", 1, 5, 2, 3);
+
+        // User case first
+
+        $userRole1 = new UserRole("EXAMPLE", 1, 6, 1, 2);
+        $userRole2 = new UserRole("EXAMPLE", 2, 7, 1, 2);
+        $userRole3 = new UserRole("EXAMPLE", 1, 6, 2, 3);
 
         $userRole1->save();
         $userRole2->save();
         $userRole3->save();
 
-        $allUserRoles = $this->roleService->getAllUserAccountRoles(2, 1);
+        $allUserRoles = $this->roleService->getAllAccountRoles(Role::APPLIES_TO_USER, 2, 1);
 
         $this->assertEquals(3, sizeof($allUserRoles));
         $accountUserRoles = $allUserRoles["Account"];
@@ -110,19 +140,42 @@ class RoleServiceTest extends TestBase {
 
         $this->assertEquals(2, sizeof($exampleUserRoles));
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 1, "EXAMPLE 1", [
-            new Role("EXAMPLE", "Example Role 1", "Example Role 1", ["testpriv"], 5),
+            new Role("EXAMPLE", "ALL", "Example Role 1", "Example Role 1", ["testpriv"], 6),
         ]), $exampleUserRoles[0]);
+
+
+        // API Key case next
+
+        $apiRole2 = new APIKeyRole("EXAMPLE", 2, 6, 2, 1);
+        $apiRole2->save();
+
+        $allAPIRoles = $this->roleService->getAllAccountRoles(Role::APPLIES_TO_API_KEY, 1, 2);
+
+        $this->assertEquals(3, sizeof($allAPIRoles));
+        $accountAPIRoles = $allAPIRoles["Account"];
+        $exampleAPIRoles = $allAPIRoles["Example"];
+
+        $this->assertEquals(1, sizeof($accountAPIRoles));
+        $this->assertEquals(new ScopeObjectRoles("ACCOUNT", 2, "Peter Jones Car Washing", [
+            null
+        ]), $accountAPIRoles[0]);
+
+
+        $this->assertEquals(1, sizeof($exampleAPIRoles));
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 2, "EXAMPLE 2", [
+            new Role("EXAMPLE", "ALL", "Example Role 1", "Example Role 1", ["testpriv"], 6),
+        ]), $exampleAPIRoles[0]);
 
 
     }
 
 
-    public function testCanGetFilteredUserAssignableAccountScopeRolesAndAppropriateCallsAreMade() {
+    public function testCanGetFilteredAssignableAccountScopeRolesForUsersAndAPICallsAndAppropriateCallsAreMade() {
 
         // Log in as real user
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
-        $scopeRoles = $this->roleService->getFilteredUserAssignableAccountScopeRoles(2, "ACCOUNT");
+        $scopeRoles = $this->roleService->getFilteredAssignableAccountScopeRoles(Role::APPLIES_TO_USER, 2, "ACCOUNT");
 
         $this->assertEquals(1, sizeof($scopeRoles));
         $this->assertEquals(new ScopeObjectRoles("ACCOUNT", 1, "Sam Davis Design",
@@ -131,44 +184,87 @@ class RoleServiceTest extends TestBase {
                 3 => Role::fetch(3)]), $scopeRoles[0]);
 
 
-        $scopeRoles = $this->roleService->getFilteredUserAssignableAccountScopeRoles(2, "EXAMPLE");
+        $scopeRoles = $this->roleService->getFilteredAssignableAccountScopeRoles(Role::APPLIES_TO_USER, 2, "EXAMPLE");
         $this->assertEquals(5, sizeof($scopeRoles));
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 1, "EXAMPLE 1",
             [
-                5 => null,
-                6 => Role::fetch(6),
+                6 => null,
+                7 => Role::fetch(7),
             ]), $scopeRoles[0]);
 
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 2, "EXAMPLE 2",
             [
-                5 => null,
-                6 => Role::fetch(6),
+                6 => null,
+                7 => Role::fetch(7),
             ]), $scopeRoles[1]);
 
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 3, "EXAMPLE 3",
             [
-                5 => null,
-                6 => Role::fetch(6),
+                6 => null,
+                7 => Role::fetch(7),
             ]), $scopeRoles[2]);
 
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 4, "EXAMPLE 4",
             [
-                5 => null,
-                6 => Role::fetch(6),
+                6 => null,
+                7 => Role::fetch(7),
             ]), $scopeRoles[3]);
 
         $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 5, "EXAMPLE 5",
             [
-                5 => null,
-                6 => Role::fetch(6),
+                6 => null,
+                7 => Role::fetch(7),
             ]), $scopeRoles[4]);
+
+
+        // NOW TRY API KEY ASSIGNABLE ROLES
+
+
+        $scopeRoles = $this->roleService->getFilteredAssignableAccountScopeRoles(Role::APPLIES_TO_API_KEY, 1, "ACCOUNT");
+
+        $this->assertEquals(1, sizeof($scopeRoles));
+        $this->assertEquals(new ScopeObjectRoles("ACCOUNT", 1, "Sam Davis Design",
+            [1 => Role::fetch(1)]), $scopeRoles[0]);
+
+
+        $scopeRoles = $this->roleService->getFilteredAssignableAccountScopeRoles(Role::APPLIES_TO_API_KEY, 1, "EXAMPLE");
+        $this->assertEquals(5, sizeof($scopeRoles));
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 1, "EXAMPLE 1",
+            [
+                6 => Role::fetch(6)
+            ]), $scopeRoles[0]);
+
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 2, "EXAMPLE 2",
+            [
+                6 => Role::fetch(6)
+            ]), $scopeRoles[1]);
+
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 3, "EXAMPLE 3",
+            [
+                6 => Role::fetch(6)
+            ]), $scopeRoles[2]);
+
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 4, "EXAMPLE 4",
+            [
+                6 => Role::fetch(6)
+            ]), $scopeRoles[3]);
+
+        $this->assertEquals(new ScopeObjectRoles("EXAMPLE", 5, "EXAMPLE 5",
+            [
+                6 => Role::fetch(6)
+            ]), $scopeRoles[4]);
+
 
     }
 
 
-    public function testCanUpdateAssignedScopeObjectRolesForUser() {
+    public function testCanUpdateAssignedScopeObjectRoles() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
+
+
+        // USER CASE FIRST
+
 
         $user = new User("crossaccount@test.com", AuthenticationHelper::hashNewPassword("Password12345"));
         $user->setRoles([
@@ -192,7 +288,7 @@ class RoleServiceTest extends TestBase {
             new  ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [1, 2])
         ];
 
-        $this->roleService->updateAssignedScopeObjectRolesForUser($user->getId(), $scopeObjectRoles);
+        $this->roleService->updateAssignedScopeObjectRoles(Role::APPLIES_TO_USER, $user->getId(), $scopeObjectRoles);
 
 
         // Now recheck the roles have been updated
@@ -200,6 +296,24 @@ class RoleServiceTest extends TestBase {
 
         $userRoles = UserRole::filter("WHERE user_id = ?", $user->getId());
         $this->assertEquals(6, sizeof($userRoles));
+
+
+        // API CASE NEXT
+
+        $apiKey = new APIKey("Test one", [
+            new APIKeyRole(Role::SCOPE_ACCOUNT, 1, 1, 1),
+            new APIKeyRole("EXAMPLE", 1, 6, 1)
+        ]);
+        $apiKey->save();
+
+        $scopeObjectRoles = [
+            new ScopeObjectRolesAssignment("EXAMPLE", 2, [6], 1)
+        ];
+
+        $this->roleService->updateAssignedScopeObjectRoles(Role::APPLIES_TO_API_KEY, $apiKey->getId(), $scopeObjectRoles);
+
+        $apiKeyRoles = APIKeyRole::filter("WHERE api_key_id = ?", $apiKey->getId());
+        $this->assertEquals(3, sizeof($apiKeyRoles));
 
     }
 

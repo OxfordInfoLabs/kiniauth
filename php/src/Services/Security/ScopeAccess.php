@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Security;
 
 
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Security\SecurableRole;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 
@@ -83,13 +84,13 @@ abstract class ScopeAccess {
      *
      * Use * as the scope key to indicate all accounts.
      *
-     * @param User $user
+     * @param Securable $securable
      * @param Account $account
      * @param string[] $accountPrivileges
      *
      * @return
      */
-    public abstract function generateScopePrivileges($user, $account, $accountPrivileges);
+    public abstract function generateScopePrivileges($securable, $account, $accountPrivileges);
 
 
     /**
@@ -114,19 +115,19 @@ abstract class ScopeAccess {
 
 
     /**
-     * An optional method which may be overloaded to filter a set of user roles based upon whether
-     * the user is permitted to have each role assigned.
-     * This is particularly useful if e.g. the number of users assigned a particular role is capped
+     * An optional method which may be overloaded to filter a set of securable roles based upon whether
+     * the securable is permitted to have each role assigned.
+     * This is particularly useful if e.g. the number of securables assigned a particular role is capped
      * or additional security checks should be made.
      *
      * Simply returns a boolean indicator which should be true if the assignment is able to proceed.
      *
      * Defaults to open assignment access.
      *
-     * @param UserRole[] $userRoles
-     * @return UserRole[]
+     * @param SecurableRole[] $userRoles
+     * @return SecurableRole[]
      */
-    public function getAssignableUserRoles($userRoles) {
+    public function getAssignableSecurableRoles($userRoles) {
         return $userRoles;
     }
 

@@ -6,6 +6,7 @@ namespace Kiniauth\Test\Services\Security;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Security\ScopeAccess;
 
 class ExampleScopeAccess extends ScopeAccess {
@@ -24,13 +25,13 @@ class ExampleScopeAccess extends ScopeAccess {
      *
      * Use * as the scope key to indicate all accounts.
      *
-     * @param User $user
+     * @param User $securable
      * @param Account $account
      * @param string[] $accountPrivileges
      *
      * @return
      */
-    public function generateScopePrivileges($user, $account, $accountPrivileges) {
+    public function generateScopePrivileges($securable, $account, $accountPrivileges) {
 
     }
 
@@ -71,11 +72,11 @@ class ExampleScopeAccess extends ScopeAccess {
 
     }
 
-    public function getAssignableUserRoles($userRoles) {
+    public function getAssignableSecurableRoles($userRoles) {
 
         $assignables = [];
         foreach ($userRoles as $userRole) {
-            if ($userRole->getRoleId() != 5)
+            if (!($userRole instanceof UserRole) || $userRole->getRoleId() != 6)
                 $assignables[] = $userRole;
         }
 

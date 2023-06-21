@@ -4,12 +4,12 @@ namespace Kiniauth\Traits\Controller\Account;
 
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserSummary;
-use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\RoleService;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kiniauth\ValueObjects\Security\UserExtended;
-use Kinikit\Core\Logging\Logger;
+use Kiniauth\Objects\Security\Role;
+
 
 trait UserTrait {
 
@@ -159,7 +159,7 @@ trait UserTrait {
      * @return array
      */
     public function getAllUserAccountRoles($userId) {
-        return $this->roleService->getAllUserAccountRoles($userId);
+        return $this->roleService->getAllAccountRoles(Role::APPLIES_TO_USER, $userId);
     }
 
     /**
@@ -189,7 +189,7 @@ trait UserTrait {
      * @param $limit
      */
     public function getFilteredAssignableAccountScopeRoles($userId, $scope, $filterString = "", $offset = 0, $limit = 10) {
-        return $this->roleService->getFilteredUserAssignableAccountScopeRoles($userId, $scope, $filterString, $offset, $limit);
+        return $this->roleService->getFilteredAssignableAccountScopeRoles(Role::APPLIES_TO_USER, $userId, $scope, $filterString, $offset, $limit);
     }
 
     /**
@@ -201,7 +201,7 @@ trait UserTrait {
      * @param string $userId
      */
     public function updateAssignedScopeObjectRolesForUser($scopeObjectRolesAssignments, $userId) {
-        $this->roleService->updateAssignedScopeObjectRolesForUser($userId, $scopeObjectRolesAssignments);
+        $this->roleService->updateAssignedScopeObjectRoles(Role::APPLIES_TO_USER, $userId, $scopeObjectRolesAssignments);
     }
 
     /**

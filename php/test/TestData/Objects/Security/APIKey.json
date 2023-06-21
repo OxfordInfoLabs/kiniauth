@@ -2,12 +2,30 @@
   {
     "accountId": 2,
     "apiKey": "GLOBALACCOUNTAPIKEY",
-    "apiSecret": "GLOBALACCOUNTAPISECRET"
+    "apiSecret": "GLOBALACCOUNTAPISECRET",
+    "roles": [
+      {
+        "scopeId": 2,
+        "accountId": 2,
+        "roleId": 0
+      }
+    ]
   },
   {
-    "accountId": 2,
-    "projectKey": "soapSuds",
     "apiKey": "PROJECTSPECIFICKEY",
-    "apiSecret": "PROJECTSPECIFICSECRET"
+    "apiSecret": "PROJECTSPECIFICSECRET",
+    "roles": [
+      {
+        "scopeId": 2,
+        "accountId": 2,
+        "roleId": 2
+      },
+      {
+        "scopeId": "soapSuds",
+        "accountId": 2,
+        "roleId": 4,
+        "scope": "PROJECT"
+      }
+    ]
   }
 ]

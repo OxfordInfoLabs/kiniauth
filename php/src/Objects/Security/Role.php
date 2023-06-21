@@ -32,14 +32,21 @@ class Role extends ActiveRecord {
 
 
     /**
-     * Scope of this role.  This is one of the following
+     * Scope of this role.  The following are built in scopes but can be extended with others
      *
      * PARENT_ACCOUNT - Where the role only applies to accounts which have the subAccountsEnabled flag set.
      * ACCOUNT - Where the role applies to any account.
+     * PROJECT - Where the role applies to a project
      *
      * @var string
      */
-    private $scope = self::SCOPE_ACCOUNT;
+    private $scope;
+
+
+    /**
+     * @var string
+     */
+    private $appliesTo;
 
 
     /**
@@ -73,21 +80,30 @@ class Role extends ActiveRecord {
     // SCOPE CONSTANTS
     const SCOPE_PARENT_ACCOUNT = "PARENT_ACCOUNT";
     const SCOPE_ACCOUNT = "ACCOUNT";
+    const SCOPE_PROJECT = "PROJECT";
+
+    // APPLIES TO CONSTANTS
+    const APPLIES_TO_USER = "USER";
+    const APPLIES_TO_API_KEY = "API_KEY";
+    const APPLIES_TO_ALL = "ALL";
 
     /**
      * Role constructor.
      *
      * @param string $scope
+     * @param $appliesTo
      * @param string $name
      * @param string $description
      * @param string[] $privileges
      */
-    public function __construct($scope, $name, $description, $privileges, $id = null) {
-        $this->scope = $scope ?? Role::SCOPE_ACCOUNT;
+    public function __construct($scope, $appliesTo, $name, $description, $privileges, $id = null) {
+        $this->scope = $scope ?? self::SCOPE_ACCOUNT;
+        $this->appliesTo = $appliesTo ?? self::APPLIES_TO_USER;
         $this->name = $name;
         $this->description = $description;
         $this->privileges = $privileges;
         $this->id = $id;
+
     }
 
 
@@ -125,6 +141,20 @@ class Role extends ActiveRecord {
      */
     public function setScope($scope) {
         $this->scope = $scope;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAppliesTo() {
+        return $this->appliesTo;
+    }
+
+    /**
+     * @param string $appliesTo
+     */
+    public function setAppliesTo($appliesTo) {
+        $this->appliesTo = $appliesTo;
     }
 
     /**

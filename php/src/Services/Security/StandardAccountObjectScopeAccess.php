@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Security;
 
 
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 
@@ -26,11 +27,11 @@ abstract class StandardAccountObjectScopeAccess extends ScopeAccess {
     /**
      * Generate scope privileges for a user / account
      *
-     * @param User $user
+     * @param Securable $securable
      * @param Account $account
      * @param string[] $accountPrivileges
      */
-    public function generateScopePrivileges($user, $account, $accountPrivileges) {
+    public function generateScopePrivileges($securable, $account, $accountPrivileges) {
 
         // If super user or account admin, shortcut this process and allow full access
         foreach ($accountPrivileges as $accountId => $privileges) {
@@ -41,12 +42,12 @@ abstract class StandardAccountObjectScopeAccess extends ScopeAccess {
 
         $scopePrivileges = [];
 
-        if ($user) {
+        if ($securable) {
 
             /**
              * @var $role UserRole
              */
-            foreach ($user->getRoles() as $role) {
+            foreach ($securable->getRoles() as $role) {
 
                 if ($role->getScope() == $this->getScope()) {
 
