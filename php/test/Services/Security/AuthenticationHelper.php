@@ -26,6 +26,22 @@ class AuthenticationHelper {
 
 
     /**
+     * Login as an api key
+     *
+     * @param $apiKey
+     * @param $apiSecret
+     * @return void
+     */
+    public static function apiAuthenticate($apiKey, $apiSecret) {
+        /**
+         * @var AuthenticationService $authenticationService
+         */
+        $authenticationService = Container::instance()->get(AuthenticationService::class);
+        return $authenticationService->apiAuthenticate($apiKey, $apiSecret);
+    }
+
+
+    /**
      * Logout function
      *
      * @return mixed
