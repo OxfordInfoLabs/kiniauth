@@ -1,5 +1,4 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { NgKinibindModule } from 'ng-kinibind';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AccountSummaryComponent } from './lib/views/account-summary/account-summary.component';
@@ -38,6 +37,7 @@ import { InvitationComponent } from './lib/views/invitation/invitation.component
 import {HttpClientModule} from '@angular/common/http';
 import { PasswordResetComponent } from './lib/views/password-reset/password-reset.component';
 import { ChangePasswordComponent } from './lib/views/account-summary/change-password/change-password.component';
+import { ApiKeysComponent } from './lib/views/api-keys/api-keys.component';
 
 @NgModule({
     declarations: [
@@ -65,10 +65,10 @@ import { ChangePasswordComponent } from './lib/views/account-summary/change-pass
         AccountsComponent,
         InvitationComponent,
         PasswordResetComponent,
-        ChangePasswordComponent
+        ChangePasswordComponent,
+        ApiKeysComponent
     ],
     imports: [
-        NgKinibindModule,
         RouterModule,
         CommonModule,
         FormsModule,
@@ -100,7 +100,8 @@ import { ChangePasswordComponent } from './lib/views/account-summary/change-pass
         NotificationComponent,
         AccountsComponent,
         InvitationComponent,
-        PasswordResetComponent
+        PasswordResetComponent,
+        ApiKeysComponent
     ]
 })
 export class NgKiniAuthModule {

@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
-import { KinibindRequestService } from 'ng-kinibind';
 import { KiniAuthModuleConfig } from '../../ng-kiniauth.module';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ContactService {
 
-    constructor(private kbRequest: KinibindRequestService,
+    constructor(private http: HttpClient,
                 private config: KiniAuthModuleConfig) {
     }
 
     public getContact(contactId) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/contact', {
+        return this.http.get(this.config.accessHttpURL + '/contact', {
             params: {
                 contactId
             }
@@ -20,22 +20,18 @@ export class ContactService {
     }
 
     public getContacts() {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/contact/contacts').toPromise();
+        return this.http.get(this.config.accessHttpURL + '/contact/contacts').toPromise();
     }
 
     public setDefaultContact(contactId) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/contact/default', {
-            params: {
-                contactId: contactId
-            }
+        return this.http.get(this.config.accessHttpURL + '/contact/default', {
+            params: {contactId}
         }).toPromise();
     }
 
     public deleteContact(contactId) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/contact/delete', {
-            params: {
-                contactId: contactId
-            }
+        return this.http.get(this.config.accessHttpURL + '/contact/delete', {
+            params: {contactId}
         }).toPromise();
     }
 }

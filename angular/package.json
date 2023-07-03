@@ -22,7 +22,6 @@
     "@angular/router": "^14.2.6",
     "core-js": "^2.5.4",
     "js-sha512": "^0.8.0",
-    "ng-kinibind": "0.0.7",
     "ng-recaptcha": "^6.0.2",
     "rxjs": "~6.6.7",
     "tslib": "^2.0.0",

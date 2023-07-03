@@ -62,14 +62,14 @@ export class UserRolesComponent implements OnInit {
         this.userService.getUser(userId).then(user => {
             this.user = user;
         });
-        this.roleService.getScopeAccesses().then(scopeAccesses => {
+        this.roleService.getScopeAccesses().then((scopeAccesses: any) => {
             delete scopeAccesses.ACCOUNT;
             this.scopeAccesses = _.values(scopeAccesses);
             _.forEach(scopeAccesses, scopeAccess => {
                 this.scopeRoles[scopeAccess.scope] = {};
             });
         });
-        this.userService.getAllUserAccountRoles(userId).then(roles => {
+        this.userService.getAllUserAccountRoles(userId).then((roles: any) => {
             const role = _.values(roles.Account).length ? _.values(roles.Account)[0] : null;
             if (role) {
                 this.accountOwner = role.roles[0] === null;

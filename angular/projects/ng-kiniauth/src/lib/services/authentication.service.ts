@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
-import {KinibindRequestService} from 'ng-kinibind';
 import {BehaviorSubject} from 'rxjs/internal/BehaviorSubject';
 import * as lodash from 'lodash';
 
@@ -18,8 +17,7 @@ export class AuthenticationService {
     public sessionData: BehaviorSubject<any> = new BehaviorSubject<any>(null);
     public loadingRequests: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-    constructor(private kbRequest: KinibindRequestService,
-                private config: KiniAuthModuleConfig,
+    constructor(private config: KiniAuthModuleConfig,
                 private http: HttpClient) {
 
         const user = sessionStorage.getItem('loggedInUser');
@@ -36,7 +34,7 @@ export class AuthenticationService {
             await this.getSessionData();
         }
 
-        const res = await this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user')
+        const res = await this.http.get(this.config.accessHttpURL + '/user')
             .toPromise();
 
         if (res) {
@@ -58,7 +56,7 @@ export class AuthenticationService {
         const headers = new HttpHeaders({'X-CAPTCHA-TOKEN': recaptcha || ''});
         const options: any = {headers};
 
-        return this.kbRequest.makePostRequest(request, {
+        return this.http.post(request, {
             emailAddress: username,
             password: this.getHashedPassword(password, username),
             clientTwoFactorData: clientTwoFactorData || null
@@ -141,7 +139,7 @@ export class AuthenticationService {
     }
 
     public closeActiveSession() {
-        return this.kbRequest.makeGetRequest('/guest/auth/closeActiveSessions').toPromise()
+        return this.http.get('/guest/auth/closeActiveSessions').toPromise()
             .then(res => {
                 return this.getSessionData().then(() => {
                     return res;
@@ -150,12 +148,12 @@ export class AuthenticationService {
     }
 
     public generateTwoFactorSettings() {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/twoFactorSettings')
+        return this.http.get(this.config.accessHttpURL + '/user/twoFactorSettings')
             .toPromise();
     }
 
     public authenticateNewTwoFactor(code, secret) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/user/newTwoFactor',
+        return this.http.get(this.config.accessHttpURL + '/user/newTwoFactor',
             {
                 params: {code, secret}
             }
@@ -169,7 +167,7 @@ export class AuthenticationService {
 
     public async authenticateTwoFactor(code) {
         const url = this.config.guestHttpURL + `/auth/twoFactor`;
-        const result = await this.kbRequest.makePostRequest(url, JSON.stringify(code)).toPromise();
+        const result = await this.http.post(url, JSON.stringify(code)).toPromise();
         if (result) {
             sessionStorage.removeItem('pendingLoginSession');
             await this.getLoggedInUser(true);
@@ -181,7 +179,7 @@ export class AuthenticationService {
 
     public disableTwoFactor() {
         const url = this.config.accessHttpURL + '/user/disableTwoFA';
-        return this.kbRequest.makeGetRequest(url).toPromise().then(user => {
+        return this.http.get(url).toPromise().then(user => {
             this.setSessionUser(user);
         });
     }
@@ -191,7 +189,7 @@ export class AuthenticationService {
     }
 
     public emailAvailable(emailAddress) {
-        return this.kbRequest.makeGetRequest(
+        return this.http.get(
             this.config.accessHttpURL + `/auth/emailExists?emailAddress=${emailAddress}`
         ).toPromise().then(res => {
             return !res;
@@ -199,27 +197,27 @@ export class AuthenticationService {
     }
 
     public getInvitationDetails(invitationCode) {
-        return this.kbRequest.makeGetRequest(
+        return this.http.get(
             this.config.guestHttpURL + `/registration/invitation/${invitationCode}`
         ).toPromise();
     }
 
     public acceptInvitation(invitationCode, name = '', password = '', email = '') {
-        return this.kbRequest.makePostRequest(
+        return this.http.post(
             this.config.guestHttpURL + `/registration/invitation/${invitationCode}`,
             {name, password: this.getHashedPassword(password, email, true)}
         ).toPromise();
     }
 
     public validateUserPassword(emailAddress, password) {
-        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/auth/validatePassword', {
+        return this.http.post(this.config.accessHttpURL + '/auth/validatePassword', {
             emailAddress,
             password: this.getHashedPassword(password)
         }).toPromise();
     }
 
     public changeUserDetails(newEmailAddress, newName, password, userId?) {
-        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/changeDetails', {
+        return this.http.post(this.config.accessHttpURL + '/user/changeDetails', {
             newEmailAddress,
             newName,
             password: this.getHashedPassword(password)
@@ -231,7 +229,7 @@ export class AuthenticationService {
     }
 
     public changeUserName(newName, password) {
-        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/changeName', {
+        return this.http.post(this.config.accessHttpURL + '/user/changeName', {
             newName,
             password: this.getHashedPassword(password)
         }).toPromise().then(res => {
@@ -248,7 +246,7 @@ export class AuthenticationService {
             params.password = this.getHashedPassword(password);
             params.hashedPassword = sha512.sha512(password + newEmailAddress);
         }
-        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/changeEmail', params).toPromise().then(res => {
+        return this.http.post(this.config.accessHttpURL + '/user/changeEmail', params).toPromise().then(res => {
             if (res) {
                 return this.getLoggedInUser();
             }
@@ -256,7 +254,7 @@ export class AuthenticationService {
     }
 
     public changeUserBackEmailAddress(newEmailAddress, password) {
-        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/changeBackupEmail', {
+        return this.http.post(this.config.accessHttpURL + '/user/changeBackupEmail', {
             newEmailAddress,
             password: this.getHashedPassword(password)
         }).toPromise().then(res => {
@@ -267,7 +265,7 @@ export class AuthenticationService {
     }
 
     public changeUserMobile(newMobile, password) {
-        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/user/changeMobile', {
+        return this.http.post(this.config.accessHttpURL + '/user/changeMobile', {
             newMobile,
             password: this.getHashedPassword(password)
         }).toPromise().then(res => {
@@ -285,7 +283,7 @@ export class AuthenticationService {
         this.authUser.next(null);
         this.sessionData.next(null);
         sessionStorage.clear();
-        return this.kbRequest.makeGetRequest(this.config.guestHttpURL + '/auth/logout')
+        return this.http.get(this.config.guestHttpURL + '/auth/logout')
             .toPromise();
     }
 
@@ -304,7 +302,7 @@ export class AuthenticationService {
     }
 
     public getSessionData() {
-        return this.kbRequest.makeGetRequest(this.config.guestHttpURL + '/session')
+        return this.http.get(this.config.guestHttpURL + '/session')
             .toPromise()
             .then(sessionData => {
                 if (sessionData) {

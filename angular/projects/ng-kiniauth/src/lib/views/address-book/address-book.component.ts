@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { KinibindModel, KinibindRequestService } from 'ng-kinibind';
 import { ContactService } from '../../services/contact.service';
 
 @Component({
@@ -15,17 +14,16 @@ export class AddressBookComponent implements OnInit {
     @Input() defaultContactURL: string;
     @Input() source: string;
 
-    public contacts: KinibindModel = new KinibindModel();
+    public contacts: any = {};
     public reload: EventEmitter<boolean> = new EventEmitter<boolean>();
     public contactLoading;
 
-    constructor(private contactService: ContactService,
-                private kbRequest: KinibindRequestService) {
+    constructor(private contactService: ContactService) {
     }
 
     ngOnInit() {
         this.contactService.getContacts().then(contacts => {
-            this.contacts.data = contacts;
+            this.contacts = contacts;
         });
     }
 

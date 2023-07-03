@@ -19,7 +19,7 @@ export class NotificationComponent implements OnInit {
 
     ngOnInit() {
         this.notificationId = this.route.snapshot.params.id;
-        this.notificationService.getNotification(this.notificationId).then(notification => {
+        this.notificationService.getNotification(this.notificationId).then((notification: any) => {
             if (notification && !notification.read) {
                 notification.read = true;
                 this.notificationService.markNotificationsRead([this.notificationId]);

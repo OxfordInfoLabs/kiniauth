@@ -5,7 +5,7 @@
         <span>New Contact</span>
     </div>
 
-    <div class="contact-block existing" *ngFor="let contact of contacts.data; let i = index">
+    <div class="contact-block existing" *ngFor="let contact of contacts; let i = index">
         <div class="contact-loading" *ngIf="contactLoading === i">
             <span style="color: white">loading...</span>
         </div>

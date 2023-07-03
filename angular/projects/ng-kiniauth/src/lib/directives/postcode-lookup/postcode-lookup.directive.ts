@@ -1,6 +1,6 @@
 import { Directive, Input } from '@angular/core';
-import { KinibindRequestService } from 'ng-kinibind';
 import { Observable } from 'rxjs/internal/Observable';
+import {HttpClient} from '@angular/common/http';
 
 @Directive({
     selector: '[netPostcodeLookup]',
@@ -17,13 +17,13 @@ export class PostcodeLookupDirective {
     @Input() postcode: Observable<string>;
     @Input() country: Observable<string>;
 
-    constructor(private kbRequest: KinibindRequestService) {
+    constructor(private http: HttpClient) {
     }
 
     public search(postcode, country) {
         this.results = [];
         this.complete = false;
-        return this.kbRequest.makePostRequest(this.searchURL,
+        return this.http.post(this.searchURL,
             { term: postcode, countryCode: country }).toPromise()
             .then((results: any) => {
                 this.results = results;

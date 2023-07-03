@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
-import { KinibindRequestService } from 'ng-kinibind';
 import { KiniAuthModuleConfig } from '../../ng-kiniauth.module';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'
 })
 export class RoleService {
 
-    constructor(private kbRequest: KinibindRequestService,
+    constructor(private http: HttpClient,
                 private config: KiniAuthModuleConfig) {
     }
 
     public getScopeAccesses() {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/role/scopeAccesses')
+        return this.http.get(this.config.accessHttpURL + '/role/scopeAccesses')
             .toPromise();
     }
 }

@@ -1,5 +1,5 @@
 import { Directive, Input, OnInit } from '@angular/core';
-import { KinibindRequestService } from 'ng-kinibind';
+import {HttpClient} from '@angular/common/http';
 
 @Directive({
     selector: '[netCountryCodes]',
@@ -15,7 +15,7 @@ export class CountryCodesDirective implements OnInit {
     @Input() valueFormat: string;
     @Input() onInit: boolean;
 
-    constructor(private kbRequest: KinibindRequestService) {
+    constructor(private http: HttpClient) {
     }
 
     public search() {
@@ -29,7 +29,7 @@ export class CountryCodesDirective implements OnInit {
             params.valueFormat = this.valueFormat;
         }
 
-        return this.kbRequest.makePostRequest(this.searchURL, params).toPromise()
+        return this.http.post(this.searchURL, params).toPromise()
             .then((results: any) => this.results = results);
     }
 

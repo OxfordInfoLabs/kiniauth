@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {KinibindRequestService} from 'ng-kinibind';
 import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
 import {AuthenticationService} from './authentication.service';
 import * as lodash from 'lodash';
@@ -12,22 +11,21 @@ const _ = lodash.default;
 })
 export class AccountService {
 
-    constructor(private kbRequest: KinibindRequestService,
-                private config: KiniAuthModuleConfig,
+    constructor(private config: KiniAuthModuleConfig,
                 private authService: AuthenticationService,
                 private http: HttpClient) {
     }
 
     public getAccount(accountId?) {
         const accountString = accountId ? `/${accountId}` : '';
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/account' + accountString).toPromise()
+        return this.http.get(this.config.accessHttpURL + '/account' + accountString).toPromise()
             .catch(err => {
                 return null;
             });
     }
 
     public searchForAccounts(searchString?, limit?, offset?) {
-        return this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/account', {
+        return this.http.get(this.config.accessHttpURL + '/account', {
             params: _.pickBy({searchString, limit, offset}, _.identity)
         });
     }
@@ -38,13 +36,13 @@ export class AccountService {
             password = this.authService.getHashedPassword(rawPassword, emailAddress, true);
         }
 
-        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/account',
+        return this.http.post(this.config.accessHttpURL + '/account',
             _.omitBy({accountName, emailAddress, password, name}, _.isNil)
         ).toPromise();
     }
 
     public suspendAccount(accountId, note) {
-        return this.kbRequest.makeRequest('PUT',
+        return this.http.put(
             this.config.accessHttpURL + '/account/' + accountId + '/suspend', {
                 params: {note}
             })
@@ -52,7 +50,7 @@ export class AccountService {
     }
 
     public async getAccountSettings() {
-        const settings = await this.kbRequest.makeGetRequest(this.config.accessHttpURL + '/account/settings')
+        const settings = await this.http.get(this.config.accessHttpURL + '/account/settings')
             .toPromise();
         return (!settings || Array.isArray(settings)) ? {} : settings;
     }
@@ -63,7 +61,7 @@ export class AccountService {
     }
 
     public updateAccountName(accountId, newAccountName) {
-        return this.kbRequest.makeRequest('PUT',
+        return this.http.put(
             this.config.accessHttpURL + '/account/' + accountId + '/name', {
                 params: {newAccountName}
             })
@@ -71,7 +69,7 @@ export class AccountService {
     }
 
     public reactivateAccount(accountId, note) {
-        return this.kbRequest.makeRequest('PUT',
+        return this.http.put(
             this.config.accessHttpURL + '/account/' + accountId + '/reactivate', {
                 params: {note}
             })
@@ -79,7 +77,7 @@ export class AccountService {
     }
 
     public changeAccountName(newName, password) {
-        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/account/changeName', {
+        return this.http.post(this.config.accessHttpURL + '/account/changeName', {
             newName,
             password: this.authService.getHashedPassword(password)
         }).toPromise().then(res => {
@@ -90,7 +88,7 @@ export class AccountService {
     }
 
     public inviteUserToAccount(emailAddress, assignedRoles) {
-        return this.kbRequest.makePostRequest(this.config.accessHttpURL + '/account/invite?emailAddress=' + emailAddress,
+        return this.http.post(this.config.accessHttpURL + '/account/invite?emailAddress=' + emailAddress,
             assignedRoles).toPromise();
     }
 
