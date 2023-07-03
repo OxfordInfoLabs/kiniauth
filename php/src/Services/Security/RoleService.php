@@ -237,9 +237,16 @@ class RoleService {
             $newRoles = $scopeAccess->getAssignableSecurableRoles($candidateRoles);
 
             // Move old roles out of the way.
-            $userRoles = UserRole::filter("WHERE userId = ? AND accountId = ? AND scope = ? AND scope_id = ?", $securableId, $accountId, $scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId());
-            foreach ($userRoles as $userRole) {
-                $userRole->remove();
+            if ($appliesTo == Role::APPLIES_TO_USER) {
+                $userRoles = UserRole::filter("WHERE userId = ? AND accountId = ? AND scope = ? AND scope_id = ?", $securableId, $accountId, $scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId());
+                foreach ($userRoles as $userRole) {
+                    $userRole->remove();
+                }
+            } else {
+                $apiKeyRoles = APIKeyRole::filter("WHERE apiKeyId = ? AND accountId = ? AND scope = ? AND scope_id = ?", $securableId, $accountId, $scopeObjectRolesAssignment->getScope(), $scopeObjectRolesAssignment->getScopeId());
+                foreach ($apiKeyRoles as $apiKeyRole) {
+                    $apiKeyRole->remove();
+                }
             }
 
             // Save new roles
