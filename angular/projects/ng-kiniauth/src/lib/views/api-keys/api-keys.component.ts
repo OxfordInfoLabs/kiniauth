@@ -22,9 +22,9 @@ export class ApiKeysComponent implements OnInit {
     public assignableRoles: any;
     public roleAssignments: any = {};
     public _ = _;
+    public activeProject: any;
 
     private projectSub: Subscription;
-    private activeProject: any;
 
     constructor(private authService: AuthenticationService,
                 private apiKeysService: ApiKeysService,
