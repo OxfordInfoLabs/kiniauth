@@ -57,7 +57,7 @@ export class UserService {
     }
 
     public updateUserScope(scopeObjects, userId) {
-        return this.http.get(this.config.accessHttpURL + `/user/updateUserScope?userId=${userId}`,
+        return this.http.post(this.config.accessHttpURL + `/user/updateUserScope?userId=${userId}`,
             scopeObjects).toPromise();
     }
 
