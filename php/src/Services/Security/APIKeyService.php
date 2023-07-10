@@ -30,6 +30,24 @@ class APIKeyService {
 
 
     /**
+     * Get the first API Key with the supplied privilege on the passed project
+     *
+     * @param string $privilegeKey
+     * @param string $projectKey
+     * @return APIKey
+     */
+    public function getFirstAPIKeyWithPrivilege($privilegeKey, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $allKeys = $this->listAPIKeys($projectKey, $accountId);
+        foreach ($allKeys as $key) {
+            foreach ($key->getRoles() as $role) {
+                if (in_array($privilegeKey, $role->getPrivileges()))
+                    return $key;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Create an API key
      *
      * @param string $description
@@ -80,7 +98,7 @@ class APIKeyService {
     }
 
 
-    public function updateAPIKeyScopeRoles(){
+    public function updateAPIKeyScopeRoles() {
 
     }
 

@@ -43,10 +43,25 @@ trait APIKey {
      *
      * @param string $projectKey
      *
-     * @return APIKeySummary[]
+     * @return \Kiniauth\Objects\Security\APIKey[]
      */
     public function listAPIKeys($projectKey = null) {
         return $this->apiKeyService->listAPIKeys($projectKey);
+    }
+
+
+    /**
+     * Get first key with a privilege
+     *
+     * @http GET /first/$privilegeKey
+     *
+     * @param $privilegeKey
+     * @param $projectKey
+     *
+     * @return \Kiniauth\Objects\Security\APIKey
+     */
+    public function getFirstAPIKeyWithPrivilege($privilegeKey, $projectKey = null) {
+        return $this->apiKeyService->getFirstAPIKeyWithPrivilege($privilegeKey, $projectKey);
     }
 
 

@@ -197,4 +197,28 @@ class APIKeyServiceTest extends TestBase {
     }
 
 
+    public function testCanGetFirstAPIKeyWithPrivilege() {
+
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
+
+        $accessKeyId = $this->apiKeyService->createAPIKey("Access Key", [new APIKeyRole(Role::SCOPE_PROJECT, "wiperBlades", 4, 2)]);
+        $editKeyId = $this->apiKeyService->createAPIKey("Edit Key", [new APIKeyRole(Role::SCOPE_PROJECT, "wiperBlades", 5, 2)]);
+
+        /**
+         * @var APIKey $accessKey
+         */
+        $accessKey = APIKey::fetch($accessKeyId);
+
+        /**
+         * @var APIKey $editKey
+         */
+        $editKey = APIKey::fetch($editKeyId);
+
+        $this->assertEquals($accessKey, $this->apiKeyService->getFirstAPIKeyWithPrivilege("access", "wiperBlades", 2));
+        $this->assertEquals($editKey, $this->apiKeyService->getFirstAPIKeyWithPrivilege("editdata", "wiperBlades", 2));
+
+
+    }
+
+
 }
