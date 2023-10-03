@@ -76,15 +76,15 @@ class UserSummary extends Securable {
      * @json
      * @sqlType LONGTEXT
      */
-    protected $applicationSettings = null;
+    protected $applicationSettings = [];
 
 
     /**
      * UserSummary constructor.
-     * @param null $name
-     * @param null $status
+     * @param string $name
+     * @param string $status
      */
-    public function __construct($name = null, $status = null, $emailAddress = null, $successfulLogins = 0, $applicationSettings = null) {
+    public function __construct($name = null, $status = null, $emailAddress = null, $successfulLogins = 0, $applicationSettings = []) {
         $this->name = $name;
         $this->status = $status;
         $this->emailAddress = $emailAddress;

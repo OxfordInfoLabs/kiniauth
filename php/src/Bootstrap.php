@@ -12,6 +12,7 @@ use Kiniauth\Services\Security\RouteInterceptor\AccountRouteInterceptor;
 use Kiniauth\Services\Security\RouteInterceptor\AdminRouteInterceptor;
 use Kiniauth\Services\Security\RouteInterceptor\APIRouteInterceptor;
 use Kiniauth\Services\Security\RouteInterceptor\GuestRouteInterceptor;
+use Kiniauth\Services\Security\RouteInterceptor\InternalRouteInterceptor;
 use Kiniauth\Services\Security\RouteInterceptor\TestRouteInterceptor;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\Validation\PasswordFieldValidator;
@@ -81,6 +82,8 @@ class Bootstrap implements ApplicationBootstrap {
         $this->routeInterceptorProcessor->addInterceptor("admin/*", AdminRouteInterceptor::class);
         $this->routeInterceptorProcessor->addInterceptor("api/*", APIRouteInterceptor::class);
         $this->routeInterceptorProcessor->addInterceptor("test/*", TestRouteInterceptor::class);
+        $this->routeInterceptorProcessor->addInterceptor("internal/*", InternalRouteInterceptor::class);
+
 
         if (!Configuration::readParameter("default.decorator")) {
             Configuration::instance()->addParameter("default.decorator", "DefaultDecorator");

@@ -6,8 +6,10 @@ namespace Kiniauth\Test\Services\Security;
 
 use Kiniauth\Exception\Security\NonExistentPrivilegeException;
 use Kiniauth\Objects\Account\Contact;
+use Kiniauth\Objects\Security\APIKey;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
+use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Test\TestBase;
@@ -257,7 +259,7 @@ class SecurityServiceTest extends TestBase {
     }
 
 
-    public function testCanLoginAsSuperUser(){
+    public function testCanLoginAsSuperUser() {
 
         $this->securityService->logout();
 
@@ -269,5 +271,30 @@ class SecurityServiceTest extends TestBase {
 
     }
 
+
+    public function testCanLoginAsUserById() {
+
+        $this->securityService->logout();
+
+        $this->securityService->loginBySecurableId("USER", 3);
+
+        list($user, $account) = $this->securityService->getLoggedInSecurableAndAccount();
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertEquals(3, $user->getId());
+
+    }
+
+
+    public function testCanLoginAnAPIKeyById() {
+
+        $this->securityService->logout();
+
+        $this->securityService->loginBySecurableId("API_KEY", 1);
+
+        list($apiKey, $account) = $this->securityService->getLoggedInSecurableAndAccount();
+        $this->assertInstanceOf(APIKey::class, $apiKey);
+        $this->assertEquals(1, $apiKey->getId());
+
+    }
 
 }

@@ -208,6 +208,25 @@ class SecurityService {
 
     }
 
+
+    /**
+     * Login by user id (Dangerous method, should be used with caution !!)
+     *
+     * @param $securableType
+     * @param $securableId
+     *
+     * @objectInterceptorDisabled
+     */
+    public function loginBySecurableId($securableType, $securableId) {
+        if ($securableType == "USER") {
+            $securable = User::fetch($securableId);
+        } else if ($securableType == "API_KEY") {
+            $securable = APIKey::fetch($securableId);
+        }
+        $this->login($securable);
+    }
+
+
     /**
      * Log out implementation.  Usually called from authentication service.
      */
