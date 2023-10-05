@@ -5,6 +5,7 @@ namespace Kiniauth\Test\Services\Security;
 
 
 use Kiniauth\Exception\Security\NonExistentPrivilegeException;
+use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\Contact;
 use Kiniauth\Objects\Security\APIKey;
 use Kiniauth\Objects\Security\Privilege;
@@ -282,6 +283,11 @@ class SecurityServiceTest extends TestBase {
         $this->assertInstanceOf(User::class, $user);
         $this->assertEquals(3, $user->getId());
 
+        $this->assertInstanceOf(Account::class, $account);
+        $this->assertEquals(2, $account->getAccountId());
+
+        $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 2));
+
     }
 
 
@@ -294,6 +300,13 @@ class SecurityServiceTest extends TestBase {
         list($apiKey, $account) = $this->securityService->getLoggedInSecurableAndAccount();
         $this->assertInstanceOf(APIKey::class, $apiKey);
         $this->assertEquals(1, $apiKey->getId());
+
+
+        $this->assertInstanceOf(Account::class, $account);
+        $this->assertEquals(2, $account->getAccountId());
+
+        $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 2));
+
 
     }
 

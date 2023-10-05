@@ -218,12 +218,37 @@ class SecurityService {
      * @objectInterceptorDisabled
      */
     public function loginBySecurableId($securableType, $securableId) {
+
         if ($securableType == "USER") {
             $securable = User::fetch($securableId);
         } else if ($securableType == "API_KEY") {
             $securable = APIKey::fetch($securableId);
         }
-        $this->login($securable);
+        $this->session->__setLoggedInSecurable($securable);
+
+        // If active account id, add to session
+        if ($securable->getActiveAccountId()) {
+            $account = Account::fetch($securable->getActiveAccountId());
+            $this->session->__setLoggedInAccount($account);
+        }
+
+        /**
+         * Process all scope accesses and build the global privileges array
+         */
+        $privileges = array();
+
+        // Add account scope access
+        $accountPrivileges = null;
+        foreach ($this->scopeManager->getScopeAccesses() as $scopeAccess) {
+
+            $scopePrivileges = $scopeAccess->generateScopePrivileges($securable, $account, $accountPrivileges);
+
+            $privileges[$scopeAccess->getScope()] = $scopePrivileges;
+            if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT) $accountPrivileges = $scopePrivileges;
+        }
+
+        $this->session->__setLoggedInPrivileges($privileges);
+
     }
 
 
