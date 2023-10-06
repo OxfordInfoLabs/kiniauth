@@ -7,6 +7,7 @@ use Kiniauth\ValueObjects\Util\Asynchronous\HttpLoopbackRequest;
 use Kiniauth\ValueObjects\Util\Asynchronous\HttpLoopbackResponse;
 use Kinikit\Core\Asynchronous\AsynchronousClassMethod;
 use Kinikit\Core\Binding\ObjectBinder;
+use Kinikit\Core\Logging\Logger;
 
 
 class CallMethod {
@@ -44,7 +45,9 @@ class CallMethod {
     public function callMethod($httpLoopbackRequest) {
 
         if ($httpLoopbackRequest->getSecurableId()) {
-            $this->securityService->loginBySecurableId($httpLoopbackRequest->getSecurableType(), $httpLoopbackRequest->getSecurableId());
+            $this->securityService->becomeSecurable($httpLoopbackRequest->getSecurableType(), $httpLoopbackRequest->getSecurableId());
+        } else if ($httpLoopbackRequest->getAccountId()){
+            $this->securityService->becomeAccount($httpLoopbackRequest->getAccountId());
         }
 
         $boundParameters = [];
@@ -66,6 +69,8 @@ class CallMethod {
             // Return the response
             return new HttpLoopbackResponse(HttpLoopbackResponse::STATUS_SUCCESS, $result, $returnType);
         } catch (\Exception $e) {
+
+            Logger::log($e->getMessage());
             return new HttpLoopbackResponse(HttpLoopbackResponse::STATUS_EXCEPTION, $e, get_class($e));
         }
 

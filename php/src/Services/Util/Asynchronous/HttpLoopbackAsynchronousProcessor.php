@@ -58,18 +58,26 @@ class HttpLoopbackAsynchronousProcessor implements AsynchronousProcessor {
 
 
     /**
+     * @var Session
+     */
+    private $session;
+
+
+    /**
      * @param HttpMultiRequestDispatcher $multiRequestDispatcher
      * @param SHA512HashProvider $hashProvider
      * @param ClassInspectorProvider $classInspectorProvider
      * @param ObjectBinder $objectBinder
      * @param ObjectToJSONConverter $objectToJSONConverter
+     * @param Session $session
      */
-    public function __construct($multiRequestDispatcher, $hashProvider, $classInspectorProvider, $objectBinder, $objectToJSONConverter) {
+    public function __construct($multiRequestDispatcher, $hashProvider, $classInspectorProvider, $objectBinder, $objectToJSONConverter, $session) {
         $this->multiRequestDispatcher = $multiRequestDispatcher;
         $this->hashProvider = $hashProvider;
         $this->classInspectorProvider = $classInspectorProvider;
         $this->objectBinder = $objectBinder;
         $this->objectToJSONConverter = $objectToJSONConverter;
+        $this->session = $session;
     }
 
     /**
@@ -84,9 +92,9 @@ class HttpLoopbackAsynchronousProcessor implements AsynchronousProcessor {
         /**
          * @var Session $session
          */
-        $session = Container::instance()->get(Session::class);
-        $securableId = $session->__getLoggedInSecurable() ? $session->__getLoggedInSecurable()->getId() : null;
-        $securableType = $session->__getLoggedInSecurable() ? ($session->__getLoggedInSecurable() instanceof User ? "USER" : "API_KEY") : null;
+        $securableId = $this->session->__getLoggedInSecurable() ? $this->session->__getLoggedInSecurable()->getId() : null;
+        $securableType = $this->session->__getLoggedInSecurable() ? ($this->session->__getLoggedInSecurable() instanceof User ? "USER" : "API_KEY") : null;
+        $accountId = $this->session->__getLoggedInAccount() ? $this->session->__getLoggedInAccount()->getAccountId() : null;
 
         // Check upfront that all the passed instances are class method lookups
         foreach ($asynchronousInstances as $asynchronousInstance) {
@@ -114,7 +122,7 @@ class HttpLoopbackAsynchronousProcessor implements AsynchronousProcessor {
 
 
             // Create a loopback request
-            $loopbackRequest = new HttpLoopbackRequest($asynchronousInstance->getClassName(), $asynchronousInstance->getMethodName(), $asynchronousInstance->getParameters(), $asynchronousInstance->getParameterTypes(), $asynchronousInstance->getReturnValueType(), $securableId, $securableType);
+            $loopbackRequest = new HttpLoopbackRequest($asynchronousInstance->getClassName(), $asynchronousInstance->getMethodName(), $asynchronousInstance->getParameters(), $asynchronousInstance->getParameterTypes(), $asynchronousInstance->getReturnValueType(), $securableId, $securableType, $accountId);
 
             // Make the request
             $requests[] = new Request($loopbackHost . "/internal/callMethod", Request::METHOD_POST, [],

@@ -2,9 +2,11 @@
 
 namespace Kiniauth\Test\Services\Util\Asynchronous;
 
+use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Account\UserService;
+use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Util\Asynchronous\HttpLoopbackAsynchronousProcessor;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Util\Asynchronous\HttpLoopbackRequest;
@@ -48,12 +50,18 @@ class HttpLoopbackAsynchronousProcessorTest extends TestBase {
      */
     private $hashProvider;
 
+    /**
+     * @var MockObject
+     */
+    private $session;
+
 
     public function setUp(): void {
         $this->hashProvider = new SHA512HashProvider();
+        $this->session = MockObjectProvider::instance()->getMockInstance(Session::class);
         $this->multiRequestDispatcher = MockObjectProvider::instance()->getMockInstance(HttpMultiRequestDispatcher::class);
         $this->processor = new HttpLoopbackAsynchronousProcessor($this->multiRequestDispatcher, $this->hashProvider, Container::instance()->get(ClassInspectorProvider::class),
-            Container::instance()->get(ObjectBinder::class), Container::instance()->get(ObjectToJSONConverter::class));
+            Container::instance()->get(ObjectBinder::class), Container::instance()->get(ObjectToJSONConverter::class), $this->session);
     }
 
 
@@ -76,7 +84,11 @@ class HttpLoopbackAsynchronousProcessorTest extends TestBase {
     }
 
 
-    public function testAsynchronousRequestsAreSentAndUpdatedCorrectlyWithResultsUsingHttpMultiRequest() {
+    public function testAsynchronousRequestsAreSentAndUpdatedCorrectlyWithResultsUsingHttpMultiRequestFor() {
+
+        $this->session->returnValue("__getLoggedInSecurable", new User("mark@test.com", "123", "Mark", 0, 1));
+        $this->session->returnValue("__getLoggedInAccount", new Account("Mark", 0, Account::STATUS_ACTIVE, 1));
+
 
         $objectToJSONConverter = Container::instance()->get(ObjectToJSONConverter::class);
 
@@ -85,13 +97,13 @@ class HttpLoopbackAsynchronousProcessorTest extends TestBase {
         $converter = Container::instance()->get(ObjectToJSONConverter::class);
 
         $expectedRequest1 = new Request("http://kiniauth.test/internal/callMethod", Request::METHOD_POST, [],
-            $converter->convert(new HttpLoopbackRequest(UserService::class, "getUserAccounts", [], ["userId" => "mixed"], "void", 1)), new Headers([
+            $converter->convert(new HttpLoopbackRequest(UserService::class, "getUserAccounts", [], ["userId" => "mixed"], "void", 1, "USER", 1)), new Headers([
                 "AUTH-HASH" => $authHash
             ]));
 
 
         $expectedRequest2 = new Request("http://kiniauth.test/internal/callMethod", Request::METHOD_POST, [],
-            $converter->convert(new HttpLoopbackRequest(UserService::class, "getUser", ["id" => 2], ["id" => "mixed"], "\\" . User::class, 1)), new Headers([
+            $converter->convert(new HttpLoopbackRequest(UserService::class, "getUser", ["id" => 2], ["id" => "mixed"], "\\" . User::class, 1, "USER", 1)), new Headers([
                 "AUTH-HASH" => $authHash
             ]));
 

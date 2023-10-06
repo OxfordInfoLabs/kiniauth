@@ -57,7 +57,7 @@ class CallMethodTest extends TestBase {
     }
 
 
-    public function testUserLoggedInForPassedIdIfRequestPassedWithUserId() {
+    public function testBecomesUserForPassedIdIfRequestPassedWithUserId() {
 
         /**
          * @var Session $session
@@ -71,7 +71,7 @@ class CallMethodTest extends TestBase {
         $httpLoopbackRequest = new HttpLoopbackRequest(TestCallObject::class, "firstMethod", [
             "int" => 3, "string" => "Hello", "float" => 3.56, "boolean" => true, "intArray" => [1, 2, 3, 4, 5]
         ], ["int" => "integer", "string" => "string", "float" => "float", "boolean" => "boolean",
-            "intArray" => "int[]"], "string", 3);
+            "intArray" => "int[]"], "string", 3, "USER", 2);
 
 
         // Call the method
@@ -87,7 +87,7 @@ class CallMethodTest extends TestBase {
     }
 
 
-    public function testUserLoggedInForPassedAPIKeyIfRequestPassedWithUserId() {
+    public function testBecomesAPIKeyForPassedAPIKeyIfRequestPassedWithApiKeyId() {
 
         /**
          * @var Session $session
@@ -103,7 +103,7 @@ class CallMethodTest extends TestBase {
         $httpLoopbackRequest = new HttpLoopbackRequest(TestCallObject::class, "firstMethod", [
             "int" => 3, "string" => "Hello", "float" => 3.56, "boolean" => true, "intArray" => [1, 2, 3, 4, 5]
         ], ["int" => "integer", "string" => "string", "float" => "float", "boolean" => "boolean",
-            "intArray" => "int[]"], "string", 1, "API_KEY");
+            "intArray" => "int[]"], "string", 1, "API_KEY", 2);
 
 
         // Call the method
@@ -119,5 +119,37 @@ class CallMethodTest extends TestBase {
 
     }
 
+
+    public function testBecomesAccountIfRequestPassedWithoutSecurableIdButWithAccountId() {
+
+        /**
+         * @var Session $session
+         */
+        $session = Container::instance()->get(Session::class);
+
+        $session->clearAll();
+
+        // Check not logged in as user 3
+        $this->assertNull($session->__getLoggedInSecurable());
+
+
+        $httpLoopbackRequest = new HttpLoopbackRequest(TestCallObject::class, "firstMethod", [
+            "int" => 3, "string" => "Hello", "float" => 3.56, "boolean" => true, "intArray" => [1, 2, 3, 4, 5]
+        ], ["int" => "integer", "string" => "string", "float" => "float", "boolean" => "boolean",
+            "intArray" => "int[]"], "string", null, null, 3);
+
+
+        // Call the method
+        $response = $this->callMethod->callMethod($httpLoopbackRequest);
+
+        $this->assertEquals(new HttpLoopbackResponse(HttpLoopbackResponse::STATUS_SUCCESS, "Success", "string"), $response);
+
+
+        // Check logged in as api key 1
+        $this->assertNull($session->__getLoggedInSecurable());
+        $this->assertEquals(3, $session->__getLoggedInAccount()->getAccountId());
+
+
+    }
 
 }

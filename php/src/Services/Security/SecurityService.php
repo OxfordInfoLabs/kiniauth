@@ -194,9 +194,9 @@ class SecurityService {
 
 
     /**
-     * Log in as super user
+     * Become super user (Dangerous method, should be used with caution !!)
      */
-    public function loginAsSuperUser() {
+    public function becomeSuperUser() {
 
         // Create adhoc user
         $user = new User("admin@admin", null, "Super User", 0, 0);
@@ -210,14 +210,14 @@ class SecurityService {
 
 
     /**
-     * Login by user id (Dangerous method, should be used with caution !!)
+     * Become a securable of the passed type and id (Dangerous method, should be used with caution !!)
      *
-     * @param $securableType
-     * @param $securableId
+     * @param string $securableType
+     * @param integer $securableId
      *
      * @objectInterceptorDisabled
      */
-    public function loginBySecurableId($securableType, $securableId) {
+    public function becomeSecurable($securableType, $securableId) {
 
         if ($securableType == "USER") {
             $securable = User::fetch($securableId);
@@ -227,10 +227,37 @@ class SecurityService {
         $this->session->__setLoggedInSecurable($securable);
 
         // If active account id, add to session
+        $account = null;
         if ($securable->getActiveAccountId()) {
-            $account = Account::fetch($securable->getActiveAccountId());
-            $this->session->__setLoggedInAccount($account);
+            $account = $this->becomeAccount($securable->getActiveAccountId());
         }
+
+        $this->populateSessionPrivileges($securable, $account);
+
+    }
+
+
+    /**
+     * Become and account (Dangerous method, should be used with caution)
+     *
+     * @param $accountId
+     * @return void
+     *
+     * @objectInterceptorDisabled
+     */
+    public function becomeAccount($accountId) {
+
+        $account = Account::fetch($accountId);
+        $this->session->__setLoggedInAccount($account);
+
+        $this->populateSessionPrivileges(null, $account);
+
+        return $account;
+    }
+
+
+    // Populate session privileges
+    private function populateSessionPrivileges($securable, $account) {
 
         /**
          * Process all scope accesses and build the global privileges array

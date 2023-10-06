@@ -41,6 +41,10 @@ class HttpLoopbackRequest {
      */
     private $securableType;
 
+    /**
+     * @var integer
+     */
+    private $accountId;
 
     /**
      * @param string $className
@@ -50,8 +54,9 @@ class HttpLoopbackRequest {
      * @param string $returnType
      * @param integer $securableId
      * @param string $securableType
+     * @param integer $accountId
      */
-    public function __construct($className, $methodName, $parameterValues, $parameterValueTypes, $returnType, $securableId = null, $securableType = "USER") {
+    public function __construct($className, $methodName, $parameterValues, $parameterValueTypes, $returnType, $securableId = null, $securableType = "USER", $accountId = null) {
         $this->className = $className;
         $this->methodName = $methodName;
         $this->parameterValues = $parameterValues;
@@ -59,6 +64,7 @@ class HttpLoopbackRequest {
         $this->returnType = $returnType;
         $this->securableId = $securableId;
         $this->securableType = $securableType;
+        $this->accountId = $accountId;
     }
 
     /**
@@ -108,6 +114,13 @@ class HttpLoopbackRequest {
      */
     public function getSecurableType() {
         return $this->securableType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAccountId() {
+        return $this->accountId;
     }
 
 

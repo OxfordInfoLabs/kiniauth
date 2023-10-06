@@ -260,12 +260,12 @@ class SecurityServiceTest extends TestBase {
     }
 
 
-    public function testCanLoginAsSuperUser() {
+    public function testCanBecomeSuperUser() {
 
         $this->securityService->logout();
 
         // Login as a machine super user
-        $this->securityService->loginAsSuperUser();
+        $this->securityService->becomeSuperUser();
 
         // Should now be a super user
         $this->assertTrue($this->securityService->isSuperUserLoggedIn());
@@ -273,11 +273,11 @@ class SecurityServiceTest extends TestBase {
     }
 
 
-    public function testCanLoginAsUserById() {
+    public function testCanBecomeUser() {
 
         $this->securityService->logout();
 
-        $this->securityService->loginBySecurableId("USER", 3);
+        $this->securityService->becomeSecurable("USER", 3);
 
         list($user, $account) = $this->securityService->getLoggedInSecurableAndAccount();
         $this->assertInstanceOf(User::class, $user);
@@ -291,11 +291,11 @@ class SecurityServiceTest extends TestBase {
     }
 
 
-    public function testCanLoginAnAPIKeyById() {
+    public function testCanBecomeApiKey() {
 
         $this->securityService->logout();
 
-        $this->securityService->loginBySecurableId("API_KEY", 1);
+        $this->securityService->becomeSecurable("API_KEY", 1);
 
         list($apiKey, $account) = $this->securityService->getLoggedInSecurableAndAccount();
         $this->assertInstanceOf(APIKey::class, $apiKey);
@@ -306,6 +306,23 @@ class SecurityServiceTest extends TestBase {
         $this->assertEquals(2, $account->getAccountId());
 
         $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 2));
+
+
+    }
+
+
+    public function testCanBecomeAccount(){
+        $this->securityService->logout();
+
+        $this->securityService->becomeAccount(1);
+
+        list($securable, $account) = $this->securityService->getLoggedInSecurableAndAccount();
+        $this->assertNull($securable);
+
+        $this->assertInstanceOf(Account::class, $account);
+        $this->assertEquals(1, $account->getAccountId());
+
+        $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 1));
 
 
     }
