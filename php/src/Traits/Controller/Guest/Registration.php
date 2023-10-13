@@ -38,6 +38,8 @@ trait Registration {
      *
      * @http POST /create
      *
+     * @captcha
+     *
      * @param NewUserAccountDescriptor $userAccountDescriptor
      */
     public function createUserWithAccount($userAccountDescriptor) {
