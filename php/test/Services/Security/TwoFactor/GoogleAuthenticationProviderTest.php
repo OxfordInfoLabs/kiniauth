@@ -13,7 +13,6 @@ use Kiniauth\Services\Security\TwoFactor\GoogleAuthenticatorProvider;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
-use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 include_once "autoloader.php";
 

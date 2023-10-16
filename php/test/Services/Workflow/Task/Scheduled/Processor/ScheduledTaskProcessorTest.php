@@ -12,8 +12,6 @@ use Kiniauth\Services\Workflow\Task\Task;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\DependencyInjection\Proxy;
-use Kinikit\Core\Proxy\ProxyGenerator;
 use Kinikit\Core\Testing\ConcreteClassGenerator;
 use Kinikit\Core\Testing\MockObjectProvider;
 use Kinikit\Persistence\Database\Connection\DatabaseConnectionProvider;

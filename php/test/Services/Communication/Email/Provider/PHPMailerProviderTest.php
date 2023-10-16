@@ -2,7 +2,6 @@
 
 namespace Kiniauth\Test\Services\Communication\Email\Provider;
 
-use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Services\Communication\Email\Provider\PHPMailerProvider;
 use Kiniauth\Test\TestBase;
 

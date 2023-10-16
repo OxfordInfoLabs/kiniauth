@@ -14,13 +14,10 @@ use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\ScopeManager;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Security\AssignedRole;
+use Kiniauth\ValueObjects\Security\ScopeObjectRoles;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kiniauth\ValueObjects\Security\ScopeRoles;
-use Kiniauth\ValueObjects\Security\ScopeObjectRoles;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Exception\AccessDeniedException;
-use Kinikit\Core\Testing\MockObjectProvider;
-use Kinikit\Core\Validation\ValidationException;
 
 include_once "autoloader.php";
 

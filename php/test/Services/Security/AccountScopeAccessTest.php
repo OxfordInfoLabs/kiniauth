@@ -5,7 +5,6 @@ namespace Kiniauth\Test\Services\Security;
 
 
 use Kiniauth\Objects\Account\AccountSummary;
-use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\AccountScopeAccess;
 use Kiniauth\Services\Security\AuthenticationService;

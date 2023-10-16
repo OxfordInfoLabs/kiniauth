@@ -5,8 +5,6 @@ namespace Kiniauth\Test\Services\Security\RouteInterceptor;
 use Kiniauth\Services\Security\RouteInterceptor\InternalRouteInterceptor;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Exception\AccessDeniedException;
-use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\MVC\Request\Headers;

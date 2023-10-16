@@ -4,7 +4,6 @@ namespace Kiniauth\Services\Workflow\Task\Queued;
 
 use Kiniauth\Exception\QueuedTask\NoQueuedTaskImplementationException;
 use Kiniauth\Services\Workflow\Task\Queued\Processor\QueuedTaskProcessor;
-use Kiniauth\Services\Workflow\Task\Queued\QueuedTaskService;
 use Kiniauth\Services\Workflow\Task\Task;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\QueuedTask\QueueItem;

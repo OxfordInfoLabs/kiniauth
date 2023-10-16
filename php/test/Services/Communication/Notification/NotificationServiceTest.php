@@ -9,7 +9,6 @@ use Kiniauth\Objects\Communication\Notification\NotificationGroupMember;
 use Kiniauth\Objects\Communication\Notification\NotificationGroupSummary;
 use Kiniauth\Objects\Communication\Notification\NotificationSummary;
 use Kiniauth\Objects\Communication\Notification\UserNotification;
-use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserCommunicationData;
 use Kiniauth\Services\Communication\Notification\CommunicationMethod\NotificationCommunicationMethod;
 use Kiniauth\Services\Communication\Notification\NotificationService;

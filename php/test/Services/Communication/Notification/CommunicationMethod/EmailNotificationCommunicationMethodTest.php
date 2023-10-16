@@ -4,7 +4,6 @@
 namespace Kiniauth\Test\Services\Communication\Notification\CommunicationMethod;
 
 
-use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Objects\Communication\Email\BrandedTemplatedEmail;
 use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Communication\Notification\Notification;

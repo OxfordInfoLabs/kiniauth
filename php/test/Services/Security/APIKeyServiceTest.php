@@ -7,7 +7,6 @@ use Kiniauth\Objects\Security\APIKey;
 use Kiniauth\Objects\Security\APIKeyRole;
 use Kiniauth\Objects\Security\APIKeySummary;
 use Kiniauth\Objects\Security\Role;
-use Kiniauth\Objects\Security\SecurableRole;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\APIKeyService;
 use Kiniauth\Test\TestBase;

@@ -5,17 +5,13 @@ namespace Kiniauth\Test\Services\Security;
 
 
 use Kiniauth\Objects\Account\Account;
-use Kiniauth\Objects\Account\Project;
 use Kiniauth\Objects\Account\ProjectSummary;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Account\ProjectService;
-use Kiniauth\Services\Security\AccountScopeAccess;
-use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\ProjectScopeAccess;
 use Kiniauth\Test\TestBase;
-use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
 

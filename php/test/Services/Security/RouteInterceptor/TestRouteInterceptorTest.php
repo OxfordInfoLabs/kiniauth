@@ -4,7 +4,6 @@ namespace Kiniauth\Services\Security\RouteInterceptor;
 
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\MVC\Request\Headers;
 use Kinikit\MVC\Request\Request;
 use Kinikit\MVC\Routing\RouteNotFoundException;

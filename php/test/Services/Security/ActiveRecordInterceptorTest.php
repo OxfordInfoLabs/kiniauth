@@ -5,8 +5,8 @@ namespace Kiniauth\Test\Services\Application;
 
 
 use Kiniauth\Objects\Account\Contact;
-use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
+use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\Services\Security\TestNonAccountObject;
 use Kiniauth\Test\TestBase;

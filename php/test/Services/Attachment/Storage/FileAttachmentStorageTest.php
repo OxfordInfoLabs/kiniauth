@@ -8,7 +8,6 @@ use Kiniauth\Objects\Attachment\Attachment;
 use Kiniauth\Objects\Attachment\AttachmentSummary;
 use Kiniauth\Services\Attachment\Storage\FileAttachmentStorage;
 use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\Stream\File\ReadOnlyFileStream;
 use Kinikit\Core\Stream\String\ReadOnlyStringStream;
 use PHPUnit\Framework\TestCase;
 

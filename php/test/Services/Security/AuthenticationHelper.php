@@ -4,7 +4,6 @@
 namespace Kiniauth\Test\Services\Security;
 
 
-use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kinikit\Core\DependencyInjection\Container;

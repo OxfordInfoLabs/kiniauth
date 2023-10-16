@@ -14,7 +14,6 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Account\AccountService;
 use Kiniauth\Services\Account\UserService;
-use Kiniauth\Services\Application\ActivityLogger;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;

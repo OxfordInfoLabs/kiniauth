@@ -3,7 +3,6 @@
 
 namespace Kiniauth\Test\Objects\Security;
 
-use Kiniauth\Exception\Security\PasswordUsedBeforeException;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;

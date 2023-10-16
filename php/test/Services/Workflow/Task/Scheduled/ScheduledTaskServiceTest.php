@@ -13,10 +13,8 @@ use Kiniauth\Services\Workflow\Task\Scheduled\Processor\ScheduledTaskProcessor;
 use Kiniauth\Services\Workflow\Task\Scheduled\ScheduledTaskService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
-use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
-use Kinikit\Core\Validation\ValidationException;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 include_once "autoloader.php";
