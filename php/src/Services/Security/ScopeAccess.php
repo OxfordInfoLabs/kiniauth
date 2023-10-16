@@ -6,8 +6,6 @@ namespace Kiniauth\Services\Security;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\SecurableRole;
-use Kiniauth\Objects\Security\User;
-use Kiniauth\Objects\Security\UserRole;
 
 /**
  * Scope access objects allow for configuration of both the Object and Method interceptors for a given scope.

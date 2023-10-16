@@ -7,9 +7,7 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
-use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
-use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Util\ObjectArrayUtils;
 
 /**

@@ -7,7 +7,6 @@ namespace Kiniauth\Traits\Controller\Guest;
 use Kiniauth\Services\Account\AccountService;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\ValueObjects\Registration\NewUserAccountDescriptor;
-use Kinikit\Core\Logging\Logger;
 
 /**
  * Trait Register

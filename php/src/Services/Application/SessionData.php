@@ -9,7 +9,6 @@ use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Security\SecurityService;
-use Kinikit\Core\Configuration\Configuration;
 
 /**
  * Simple container containing common session data for return back to the

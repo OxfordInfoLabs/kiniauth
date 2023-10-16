@@ -3,7 +3,6 @@
 namespace Kiniauth\Services\Security\RouteInterceptor;
 
 use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\MVC\Routing\RouteInterceptor;
 use Kinikit\MVC\Routing\RouteNotFoundException;
 

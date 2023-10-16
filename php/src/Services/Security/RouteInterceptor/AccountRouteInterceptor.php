@@ -7,7 +7,6 @@ namespace Kiniauth\Services\Security\RouteInterceptor;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
 use Kinikit\Core\Exception\AccessDeniedException;
-use Kinikit\Core\Logging\Logger;
 
 class AccountRouteInterceptor extends WebRouteInterceptor {
 

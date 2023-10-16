@@ -4,8 +4,6 @@
 namespace Kiniauth\Objects\Security;
 
 
-use Kinikit\Persistence\ORM\ActiveRecord;
-
 /**
  * Class UserSummary
  * @package Kiniauth\Objects\Security

@@ -5,7 +5,6 @@ namespace Kiniauth\Objects\Workflow\Task\Scheduled;
 
 
 use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
-use Kinikit\Persistence\ORM\Interceptor\ORMInterceptor;
 
 class ScheduledTaskInterceptor extends DefaultORMInterceptor {
 

@@ -2,11 +2,7 @@
 
 namespace Kiniauth\Traits\Controller\Account;
 
-use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Account\Account;
-use Kiniauth\Objects\Security\User;
-use Kiniauth\Services\Account\AccountService;
-use Kinikit\Core\Logging\Logger;
 
 trait Contact {
 

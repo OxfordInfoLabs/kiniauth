@@ -14,7 +14,6 @@ use Kiniauth\Objects\MetaData\Tag;
 use Kiniauth\Objects\MetaData\TagSummary;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
-use PHPMailer\PHPMailer\Exception;
 
 class MetaDataService {
 

@@ -6,10 +6,8 @@ namespace Kiniauth\Services\Workflow\Task\Scheduled\Processor;
 
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTask;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskLog;
-use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskSummary;
 use Kiniauth\Services\Workflow\Task\Task;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 /**
  * Class ScheduledTaskProcessor

@@ -3,9 +3,7 @@
 namespace Kiniauth\Traits\Controller\Admin;
 
 use Kiniauth\Objects\Account\AccountSummary;
-use Kiniauth\Services\Account\AccountService;
 use Kiniauth\ValueObjects\Registration\NewUserAccountDescriptor;
-use Kiniauth\ValueObjects\Registration\NewUserDescriptor;
 
 trait Account {
 

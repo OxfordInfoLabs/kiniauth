@@ -5,7 +5,6 @@ namespace Kiniauth\Services\Attachment;
 
 
 use Kinikit\Core\Stream\ReadableStream;
-use Kinikit\Core\Stream\Stream;
 use Kinikit\Core\Stream\String\ReadOnlyStringStream;
 
 /**

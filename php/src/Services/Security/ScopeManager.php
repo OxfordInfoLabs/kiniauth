@@ -4,8 +4,6 @@
 namespace Kiniauth\Services\Security;
 
 
-use Kinikit\Core\Util\ObjectArrayUtils;
-
 class ScopeManager {
 
     /**

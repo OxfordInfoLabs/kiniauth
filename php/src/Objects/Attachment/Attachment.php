@@ -3,9 +3,6 @@
 
 namespace Kiniauth\Objects\Attachment;
 
-use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\Stream\Stream;
-
 /**
  *
  * @table ka_attachment

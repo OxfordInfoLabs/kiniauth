@@ -4,7 +4,6 @@
 namespace Kiniauth\Objects\Workflow\Task\Scheduled;
 
 
-use Kiniauth\Objects\Account\Account;
 use Kiniauth\Traits\Account\AccountProject;
 
 /**

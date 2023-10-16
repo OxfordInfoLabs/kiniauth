@@ -4,7 +4,6 @@
 namespace Kiniauth\Services\Application;
 
 use Kiniauth\Objects\Account\Account;
-
 use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\User;
 use Kinikit\Core\Util\StringUtils;

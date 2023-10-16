@@ -4,10 +4,7 @@
 namespace Kiniauth\Objects\Communication\Email;
 
 
-use Kiniauth\Objects\Account\Account;
-use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
-use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Security\SecurityService;
 use Kinikit\Core\Communication\Email\Attachment\EmailAttachment;
 use Kinikit\Core\DependencyInjection\Container;

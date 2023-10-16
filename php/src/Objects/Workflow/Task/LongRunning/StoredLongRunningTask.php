@@ -5,7 +5,6 @@ namespace Kiniauth\Objects\Workflow\Task\LongRunning;
 
 
 use Kiniauth\Objects\Account\Account;
-use Kinikit\Persistence\ORM\ActiveRecord;
 
 /**
  * Long running task -

@@ -7,11 +7,9 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\MVC\Request\Request;
 use Kinikit\MVC\Request\URL;
 use Kinikit\MVC\Response\Headers;
-use Kinikit\MVC\Response\Response;
 use Kinikit\MVC\Response\SimpleResponse;
 use Kinikit\MVC\Routing\RouteInterceptor;
 

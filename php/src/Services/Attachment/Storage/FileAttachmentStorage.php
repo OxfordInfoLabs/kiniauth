@@ -8,7 +8,6 @@ use Kiniauth\Objects\Attachment\Attachment;
 use Kiniauth\Services\Attachment\AttachmentStorage;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\Stream\File\ReadOnlyFileStream;
-use League\Flysystem\Config;
 
 
 /**

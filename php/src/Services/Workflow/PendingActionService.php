@@ -3,7 +3,6 @@
 namespace Kiniauth\Services\Workflow;
 
 
-use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Workflow\PendingAction;
 use Kinikit\Core\Exception\ItemNotFoundException;
 

@@ -4,7 +4,6 @@ namespace Kiniauth\Traits\Controller\Account;
 
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\User;
-use Kiniauth\Services\Account\AccountService;
 use Kiniauth\Services\Security\RoleService;
 
 trait Account {

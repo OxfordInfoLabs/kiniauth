@@ -8,7 +8,6 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Application\Session;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ValidationException;
-use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Util\StringUtils;

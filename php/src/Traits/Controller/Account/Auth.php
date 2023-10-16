@@ -4,8 +4,6 @@
 namespace Kiniauth\Traits\Controller\Account;
 
 
-use Kinikit\Core\Logging\Logger;
-
 trait Auth {
 
 

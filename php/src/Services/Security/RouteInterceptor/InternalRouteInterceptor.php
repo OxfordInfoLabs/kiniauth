@@ -3,9 +3,6 @@
 namespace Kiniauth\Services\Security\RouteInterceptor;
 
 use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\Exception\AccessDeniedException;
-use Kinikit\Core\Exception\ItemNotFoundException;
-use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\MVC\Request\Request;
 use Kinikit\MVC\Routing\RouteInterceptor;

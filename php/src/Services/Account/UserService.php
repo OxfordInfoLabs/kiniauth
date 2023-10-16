@@ -25,21 +25,15 @@ use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Security\AssignedRole;
-use Kiniauth\ValueObjects\Security\UserExtended;
 use Kinikit\Core\Binding\ObjectBinder;
-use Kinikit\Core\Communication\Email\TemplatedEmail;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
-use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
-use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 
 class UserService {

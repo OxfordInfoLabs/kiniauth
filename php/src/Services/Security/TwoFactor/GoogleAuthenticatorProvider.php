@@ -4,9 +4,7 @@ namespace Kiniauth\Services\Security\TwoFactor;
 
 use Cache\Adapter\Filesystem\FilesystemCachePool;
 use Dolondro\GoogleAuthenticator\GoogleAuthenticator;
-use Dolondro\GoogleAuthenticator\QrImageGenerator\EndroidQrImageGenerator;
 use Dolondro\GoogleAuthenticator\QrImageGenerator\GoogleQrImageGenerator;
-use Dolondro\GoogleAuthenticator\Secret;
 use Dolondro\GoogleAuthenticator\SecretFactory;
 use Kiniauth\Objects\MetaData\ObjectStructuredData;
 use Kiniauth\Objects\Security\User;

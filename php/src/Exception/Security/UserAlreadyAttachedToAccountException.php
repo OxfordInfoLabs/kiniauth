@@ -4,8 +4,6 @@
 namespace Kiniauth\Exception\Security;
 
 
-use Throwable;
-
 /**
  * Exception raised if an attempt to attach an already attached user to an account.
  *

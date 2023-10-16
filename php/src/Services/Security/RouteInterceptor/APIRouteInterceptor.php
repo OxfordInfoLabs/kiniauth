@@ -5,12 +5,8 @@ namespace Kiniauth\Services\Security\RouteInterceptor;
 
 
 use Kiniauth\Exception\Security\MissingAPICredentialsException;
-use Kiniauth\Objects\Security\User;
-use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
-use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\MVC\Request\URL;
 use Kinikit\MVC\Response\Headers;
 use Kinikit\MVC\Response\SimpleResponse;

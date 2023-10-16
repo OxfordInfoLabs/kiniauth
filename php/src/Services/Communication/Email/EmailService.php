@@ -4,12 +4,9 @@
 namespace Kiniauth\Services\Communication\Email;
 
 
-use Kiniauth\Objects\Account\Account;
-use Kiniauth\Objects\Attachment\Attachment;
 use Kiniauth\Objects\Attachment\AttachmentSummary;
 use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Communication\Email\StoredEmailSendResult;
-use Kiniauth\Objects\Communication\Email\StoredEmailSummary;
 use Kiniauth\Services\Attachment\AttachmentService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kinikit\Core\Communication\Email\Email;

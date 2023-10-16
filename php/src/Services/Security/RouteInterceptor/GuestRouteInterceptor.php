@@ -8,7 +8,6 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
-use Kinikit\Core\Logging\Logger;
 
 /**
  * Dummy guest route interceptor to allow for web route core logic to run with csrf disabled.

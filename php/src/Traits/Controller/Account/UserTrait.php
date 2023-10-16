@@ -2,13 +2,13 @@
 
 namespace Kiniauth\Traits\Controller\Account;
 
+use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\RoleService;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kiniauth\ValueObjects\Security\UserExtended;
-use Kiniauth\Objects\Security\Role;
 
 
 trait UserTrait {

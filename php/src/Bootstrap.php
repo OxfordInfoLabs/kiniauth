@@ -18,7 +18,6 @@ use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\Validation\PasswordFieldValidator;
 use Kinikit\Core\ApplicationBootstrap;
 use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Validation\Validator;
 use Kinikit\MVC\Request\Request;

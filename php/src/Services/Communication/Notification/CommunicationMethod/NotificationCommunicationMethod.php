@@ -6,7 +6,6 @@ namespace Kiniauth\Services\Communication\Notification\CommunicationMethod;
 
 use Kiniauth\Objects\Communication\Notification\Notification;
 use Kiniauth\Objects\Communication\Notification\NotificationGroupMember;
-use Kiniauth\Objects\Communication\Notification\NotificationSummary;
 
 /**
  * Main communication method interface

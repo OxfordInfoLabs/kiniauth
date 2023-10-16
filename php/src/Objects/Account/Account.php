@@ -4,8 +4,6 @@ namespace Kiniauth\Objects\Account;
 
 
 use Kiniauth\Objects\Application\Session;
-use Kinikit\Core\Logging\Logger;
-use Kinikit\Core\Util\StringUtils;
 
 /**
  * Main account business object.  Users can belong to one or more accounts.

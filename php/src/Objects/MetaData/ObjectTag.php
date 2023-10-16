@@ -4,8 +4,6 @@
 namespace Kiniauth\Objects\MetaData;
 
 
-use Kinikit\Persistence\ORM\ActiveRecord;
-
 /**
  * Encode a relationship between an object and a tag.  This is designed for
  * generic use in relationships of concrete entities as required

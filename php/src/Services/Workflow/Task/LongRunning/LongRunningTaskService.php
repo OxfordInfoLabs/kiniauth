@@ -6,8 +6,6 @@ namespace Kiniauth\Services\Workflow\Task\LongRunning;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Workflow\Task\LongRunning\StoredLongRunningTask;
 use Kiniauth\Objects\Workflow\Task\LongRunning\StoredLongRunningTaskSummary;
-use Kiniauth\Services\Workflow\Task\Task;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 /**

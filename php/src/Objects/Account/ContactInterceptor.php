@@ -4,7 +4,6 @@
 namespace Kiniauth\Objects\Account;
 
 
-use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
 

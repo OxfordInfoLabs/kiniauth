@@ -5,7 +5,6 @@ namespace Kiniauth\Services\Account;
 
 
 use Kiniauth\Objects\Account\Account;
-use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Account\Contact;
 use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 

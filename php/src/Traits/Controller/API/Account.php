@@ -4,8 +4,6 @@
 namespace Kiniauth\Traits\Controller\API;
 
 
-use Kiniauth\Objects\Account\AccountSummary;
-
 trait Account {
 
     private $securityService;

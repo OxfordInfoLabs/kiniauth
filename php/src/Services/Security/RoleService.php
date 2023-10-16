@@ -8,15 +8,10 @@ use Kiniauth\Objects\Security\APIKeyRole;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\ValueObjects\Security\AssignedRole;
+use Kiniauth\ValueObjects\Security\ScopeObjectRoles;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kiniauth\ValueObjects\Security\ScopeRoles;
-use Kiniauth\ValueObjects\Security\ScopeObjectRoles;
-use Kinikit\Core\Exception\AccessDeniedException;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Util\ObjectArrayUtils;
-use Kinikit\Core\Validation\FieldValidationError;
-use Kinikit\Core\Validation\ValidationException;
-use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 /**
  * Service for managing the assignment and retrieval of roles.

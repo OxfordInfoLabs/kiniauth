@@ -4,8 +4,6 @@ namespace Kiniauth\Traits\Controller\Admin;
 
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserSummary;
-use Kiniauth\Services\Account\UserService;
-use Kiniauth\Services\Application\Session;
 use Kiniauth\ValueObjects\Registration\NewUserDescriptor;
 use Kiniauth\ValueObjects\Security\UserExtended;
 

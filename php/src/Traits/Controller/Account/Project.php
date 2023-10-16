@@ -7,7 +7,6 @@ namespace Kiniauth\Traits\Controller\Account;
 use Kiniauth\Objects\Account\ProjectSummary;
 use Kiniauth\Services\Account\ProjectService;
 use Kiniauth\ValueObjects\Account\ProjectUpdateDescriptor;
-use Kinikit\Core\Logging\Logger;
 
 trait Project {
 
