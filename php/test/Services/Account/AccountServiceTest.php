@@ -169,7 +169,8 @@ class AccountServiceTest extends TestBase {
         $adminUser = User::filter("WHERE name = 'Zoo Bernard'")[0];
         $this->assertEquals("bernard@shaw.com", $adminUser->getEmailAddress());
         $this->assertEquals([
-            UserRole::fetch([$adminUser->getId(), Role::SCOPE_ACCOUNT, $account->getAccountId(), 0])
+            UserRole::fetch([$adminUser->getId(), Role::SCOPE_ACCOUNT, $account->getAccountId(), 0]),
+            UserRole::fetch([$adminUser->getId(), Role::SCOPE_PROJECT, "*", 0])
         ], $adminUser->getRoles());
         $this->assertEquals(User::STATUS_ACTIVE, $adminUser->getStatus());
 

@@ -149,7 +149,8 @@ class AccountService {
 
         if ($adminEmailAddress) {
             $this->userService->createUser($adminEmailAddress, $adminHashedPassword, $adminName, [
-                new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId(), 0, $account->getAccountId())
+                new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId(), 0, $account->getAccountId()),
+                new UserRole(Role::SCOPE_PROJECT, "*", 0, $account->getAccountId())
             ]);
         }
 

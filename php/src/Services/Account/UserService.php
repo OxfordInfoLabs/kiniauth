@@ -207,7 +207,8 @@ class UserService {
             $account->save();
 
             // Activate and save the user
-            $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId(), 0, $account->getAccountId())));
+            $user->setRoles(array(new UserRole(Role::SCOPE_ACCOUNT, $account->getAccountId(), 0, $account->getAccountId()),
+                new UserRole(Role::SCOPE_PROJECT, "*", 0, $account->getAccountId())));
             $user->setStatus(User::STATUS_ACTIVE);
             $user->save();
 

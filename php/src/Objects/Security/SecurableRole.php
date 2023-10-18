@@ -144,6 +144,16 @@ abstract class SecurableRole extends ActiveRecord {
         return $this->account ? $this->account->getStatus() : null;
     }
 
+
+    /**
+     * Return array of account roles
+     *
+     * @return string[]
+     */
+    public function getAccountPrivileges() {
+        return $this->account ? $this->account->returnAccountPrivileges() : [];
+    }
+
     /**
      * For testing purposes
      *

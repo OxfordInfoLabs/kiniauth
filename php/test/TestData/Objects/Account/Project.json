@@ -16,5 +16,10 @@
     "projectKey": "pressureWashing",
     "name": "Pressure Washing",
     "description": "Pressure washing project"
+  },
+  {
+    "accountId": 5,
+    "projectKey": "limitedProject",
+    "name": "Limited Project"
   }
 ]

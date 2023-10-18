@@ -235,7 +235,7 @@ class UserServiceTest extends TestBase {
         $user = $this->session->__getLoggedInSecurable();
         $this->assertEquals("John Smith", $user->getName());
         $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
-        $this->assertEquals(1, sizeof($user->getRoles()));
+        $this->assertEquals(2, sizeof($user->getRoles()));
         $this->assertNotNull($user->getCreatedDate());
 
 

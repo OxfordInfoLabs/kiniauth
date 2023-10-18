@@ -48,6 +48,8 @@ class AccountScopeAccess extends ScopeAccess {
         $scopePrivileges = array();
         $superUser = false;
         $accountIds = array();
+        $accountPrivileges = [];
+
 
         if ($securable) {
 
@@ -63,15 +65,27 @@ class AccountScopeAccess extends ScopeAccess {
                     if (!$role->getScopeId()) {
                         $accountId = "*";
                         $superUser = true;
+                        $accountPrivileges["*"] = ["*"];
                     } else {
                         $accountId = $role->getScopeId();
+
+                        // Add account privileges to array if not already seen for this account
+                        if (!isset($accountPrivileges[$accountId])) $accountPrivileges[$accountId] = [];
+
+                        // Get the account privileges
+                        $allAccountPrivileges = $role->getAccountPrivileges();
+                        $accountPrivileges[$accountId] = $accountPrivileges[$accountId] + ($allAccountPrivileges[Role::SCOPE_ACCOUNT] ?? []);
+
+
                         $accountIds[] = $accountId;
                     }
 
+
+                    // Ensure we only include account privileges if they exist
                     if ($role->getRoleId()) {
-                        $privileges = $role->getPrivileges();
+                        $privileges = sizeof($accountPrivileges[$accountId]) ? array_intersect($accountPrivileges[$accountId], $role->getPrivileges()) : $role->getPrivileges();
                     } else {
-                        $privileges = ["*"];
+                        $privileges = sizeof($accountPrivileges[$accountId]) ? array_unique($accountPrivileges[$accountId]) : ["*"];
                     }
 
 
@@ -88,8 +102,9 @@ class AccountScopeAccess extends ScopeAccess {
 
 
         } else if ($account) {
-            $scopePrivileges[$account->getAccountId()] = ["*"];
             $accountIds = [$account->getAccountId()];
+            $accountPrivileges = $account->returnAccountPrivileges();
+            $scopePrivileges[$account->getAccountId()] = sizeof($accountPrivileges) ? array_unique($accountPrivileges) : ["*"];
         }
 
         // If we have at least one account, check for child accounts and add privileges for these.

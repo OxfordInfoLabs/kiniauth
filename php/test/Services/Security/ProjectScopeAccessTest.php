@@ -110,6 +110,24 @@ class ProjectScopeAccessTest extends TestBase {
 
     }
 
+
+    public function testIfAccountRolesSuppliedForThisScopeTypeUserRolesAreReducedAccordingly() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $user = User::fetch(12);
+
+        $scopePrivileges = $this->projectScopeAccess->generateScopePrivileges($user, null, []);
+
+        $this->assertEquals([
+            "limitedProject" => [
+                "access"
+            ]
+        ], $scopePrivileges);
+
+    }
+
+
     public function testCanGetScopeObjectDescriptionsById() {
 
 
@@ -134,14 +152,14 @@ class ProjectScopeAccessTest extends TestBase {
     public function testCanGetFilteredScopeObjectDescriptions() {
 
         $this->projectService->returnValue("filterProjects", [
-            new ProjectSummary("Bingo","", "myBigOne"),
+            new ProjectSummary("Bingo", "", "myBigOne"),
             new ProjectSummary("Bongo", "", "myTestOne")
         ], [
             "filterstring",
-                0, 10, 5
+            0, 10, 5
         ]);
 
-        $projectDescriptions = $this->projectScopeAccess->getFilteredScopeObjectDescriptions("filterstring",0, 10, 5);
+        $projectDescriptions = $this->projectScopeAccess->getFilteredScopeObjectDescriptions("filterstring", 0, 10, 5);
 
 
         $this->assertEquals(["myBigOne" => "Bingo", "myTestOne" => "Bongo"], $projectDescriptions);

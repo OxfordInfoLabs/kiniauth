@@ -81,7 +81,7 @@ class BrandedTemplatedEmailTest extends TestBase {
 
         $this->assertEquals("Sam Davis Retail <info@samdavis.org>", $accountTemplatedEmail->getFrom());
         $this->assertEquals("noreply@samdavis.org", $accountTemplatedEmail->getReplyTo());
-        $this->assertEquals(["James Smart Coasting <james@smartcoasting.org>"], $accountTemplatedEmail->getRecipients());
+        $this->assertEquals(["James Smart Coasting <james@smartcoasting.org>", "Peter Smartcoasting <peter@smartcoasting.org>"], $accountTemplatedEmail->getRecipients());
 
 
     }

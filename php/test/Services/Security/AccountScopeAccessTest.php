@@ -4,6 +4,7 @@
 namespace Kiniauth\Test\Services\Security;
 
 
+use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\AccountScopeAccess;
@@ -25,7 +26,7 @@ class AccountScopeAccessTest extends TestBase {
      */
     private $authenticationService;
 
-    public function setUp():void {
+    public function setUp(): void {
         parent::setUp();
         $this->accountScopeAccess = new AccountScopeAccess();
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
@@ -62,10 +63,27 @@ class AccountScopeAccessTest extends TestBase {
 
 
         // Account logged in by API
-        $account = AccountSummary::fetch(1);
+        $account = Account::fetch(1);
         $privileges = $this->accountScopeAccess->generateScopePrivileges(null, $account, null);
         $this->assertEquals(["*"], $privileges[1]);
         $this->assertEquals(["*"], $privileges[5]);
+
+
+    }
+
+
+    public function testAccountScopePrivilegesReducedIfAccountRolesDefined() {
+
+        // Test user where * privilege defined
+        $user = User::fetch(9);
+        $privileges = $this->accountScopeAccess->generateScopePrivileges($user, null, null);
+        $this->assertEquals(["viewdata", "editdata"], $privileges[5]);
+
+
+        // Test user where explicit role granted with more privileges
+        $user = User::fetch(12);
+        $privileges = $this->accountScopeAccess->generateScopePrivileges($user, null, null);
+        $this->assertEquals(["viewdata", "editdata"], $privileges[5]);
 
 
     }

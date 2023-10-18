@@ -32,6 +32,15 @@
     "status": "ACTIVE",
     "parentAccountId": 1,
     "apiKey": "HELLOWORLD",
-    "apiSecret": "HAPPYCAMPERS"
+    "apiSecret": "HAPPYCAMPERS",
+    "privileges": {
+      "ACCOUNT": [
+        "viewdata",
+        "editdata"
+      ],
+      "PROJECT": [
+        "access"
+      ]
+    }
   }
 ]

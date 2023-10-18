@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Security;
 
 
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\UserRole;
 
@@ -40,6 +41,7 @@ abstract class StandardAccountObjectScopeAccess extends ScopeAccess {
         }
 
         $scopePrivileges = [];
+        $accountPrivileges = [];
 
         if ($securable) {
 
@@ -54,10 +56,18 @@ abstract class StandardAccountObjectScopeAccess extends ScopeAccess {
                         $scopePrivileges[$role->getScopeId()] = [];
                     }
 
-                    if ($role->getRoleId()){
-                        $privileges = $role->getPrivileges();
+                    // Ensure we have account privilege objects
+                    $accountId = $role->getAccountId();
+                    if (!isset($accountPrivileges[$accountId])) $accountPrivileges[$accountId] = [];
+
+                    $allAccountPrivileges = $role->getAccountPrivileges();
+                    $accountPrivileges[$accountId] = $accountPrivileges[$accountId] + ($allAccountPrivileges[$this->getScope()] ?? []);
+
+
+                    if ($role->getRoleId()) {
+                        $privileges = sizeof($accountPrivileges[$accountId]) ? array_intersect($accountPrivileges[$accountId], $role->getPrivileges()) : $role->getPrivileges();
                     } else {
-                        $privileges = ["*"];
+                        $privileges = sizeof($accountPrivileges[$accountId]) ? array_unique($accountPrivileges[$accountId]) : ["*"];
                     }
 
                     $scopePrivileges[$role->getScopeId()] = array_merge($scopePrivileges[$role->getScopeId()], $privileges);
@@ -65,7 +75,7 @@ abstract class StandardAccountObjectScopeAccess extends ScopeAccess {
             }
 
         } else if ($account) {
-            return ["*" => ["*"]];
+            $scopePrivileges = ["*" => ["*"]];
         }
 
 

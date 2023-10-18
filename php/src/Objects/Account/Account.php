@@ -4,6 +4,8 @@ namespace Kiniauth\Objects\Account;
 
 
 use Kiniauth\Objects\Application\Session;
+use Kiniauth\Objects\Security\AccountRole;
+use Kiniauth\Objects\Security\Privilege;
 
 /**
  * Main account business object.  Users can belong to one or more accounts.
@@ -36,6 +38,17 @@ class Account extends AccountSummary {
      * @sqlType LONGTEXT
      */
     protected $settings;
+
+
+    /**
+     * An array of explicit privileges which this account has access to
+     * This is used to limit user access.  This should be encoded as arrays
+     * of privilege keys indexed by SCOPE
+     *
+     * @var string[]
+     * @json
+     */
+    protected $privileges = array();
 
 
     // Logged in account constant for default value usage.
@@ -121,6 +134,31 @@ class Account extends AccountSummary {
      */
     public function setSettings($settings) {
         $this->settings = $settings;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPrivileges() {
+        return $this->privileges;
+    }
+
+    /**
+     * @param string[] $privileges
+     */
+    public function setPrivileges($privileges) {
+        $this->privileges = $privileges;
+    }
+
+
+    /**
+     * Return the account roles, used by the scope access objects and designed to be overloaded if required.
+     *
+     * @return Privilege[]
+     */
+    public function returnAccountPrivileges() {
+
+        return $this->privileges;
     }
 
 

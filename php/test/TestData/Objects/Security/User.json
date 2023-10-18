@@ -159,5 +159,26 @@
       }
     ],
     "twoFactorData": "H5OW4O4TUP4W2CGP"
+  },
+  {
+    "id": 12,
+    "emailAddress": "peter@smartcoasting.org",
+    "name": "Peter Smartcoasting",
+    "hashedPassword": "cb0e0a23e435afbc206395e4e3ad25bf2a36c9ec775ebb85dbe7b289d92654497379fe7cbbc7258ef278c68fa56442ab53d91a752c6320dbd7663266c0ed356d",
+    "status": "ACTIVE",
+    "roles": [
+      {
+        "scopeId": 5,
+        "accountId": 5,
+        "roleId": 3
+      },
+      {
+        "scopeId": "limitedProject",
+        "accountId": 5,
+        "roleId": 0,
+        "scope": "PROJECT"
+      }
+    ],
+    "twoFactorData": "H5OW4O4TUP4W2CGP"
   }
 ]
