@@ -12,7 +12,10 @@ use Kiniauth\Services\Security\Captcha\CaptchaProvider;
 use Kinikit\Core\DependencyInjection\ContainerInterceptor;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Reflection\Method;
+use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\MVC\Request\Request;
+use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
+use Kinikit\Persistence\ORM\ORM;
 
 /**
  * Generic method interceptor.  Currently allows for privilege based enforcement at the method level as well
@@ -40,6 +43,11 @@ class ObjectInterceptor extends ContainerInterceptor {
      */
     private $session;
 
+    /**
+     * @var ORM
+     */
+    private $orm;
+
 
     /**
      * @param \Kiniauth\Services\Security\ActiveRecordInterceptor $objectInterceptor
@@ -47,13 +55,15 @@ class ObjectInterceptor extends ContainerInterceptor {
      * @param CaptchaProvider
      * @param Request
      * @param Session
+     * @param ORM
      */
-    public function __construct($objectInterceptor, $securityService, $captchaProvider, $request, $session) {
+    public function __construct($objectInterceptor, $securityService, $captchaProvider, $request, $session, $orm) {
         $this->objectInterceptor = $objectInterceptor;
         $this->securityService = $securityService;
         $this->captchaProvider = $captchaProvider;
         $this->request = $request;
         $this->session = $session;
+        $this->orm = $orm;
     }
 
 
@@ -71,6 +81,35 @@ class ObjectInterceptor extends ContainerInterceptor {
      */
     public function beforeMethod($objectInstance, $methodName, $params, $methodInspector) {
 
+        // Resolve any referenceParams
+        if ($referenceParams = $methodInspector->getMethodAnnotations()["referenceParameter"] ?? []) {
+            foreach ($referenceParams as $referenceParam) {
+
+                // Split the value up into two parts for param name and lookup data.
+                $splitValue = preg_split("/ +/", $referenceParam->getValue());
+
+                // Grab lookup data
+                preg_match("/^(.*?)\\(\\$(.*?)\\)$/", $splitValue[1], $pkLookupData);
+
+
+                if (sizeof($pkLookupData) == 3) {
+                    // Grab the PK Value
+                    $pkValue = ObjectArrayUtils::getObjectMemberValue($params, $pkLookupData[2]);
+
+                    // Resolve the class using installed namespaces
+                    $lookupClassName = $methodInspector->getDeclaringClassInspector()->getDeclaredNamespaceClasses()[$pkLookupData[1]] ?? $pkLookupData[1];
+
+                    // Attempt PK lookup
+                    try {
+                        $params[trim($splitValue[0], " $")] = $this->orm->fetch($lookupClassName, $pkValue);
+                    } catch (ObjectNotFoundException $e) {
+                        throw new AccessDeniedException();
+                    }
+
+                }
+            }
+        }
+
         if ($matches =
             $methodInspector->getMethodAnnotations()["hasPrivilege"] ?? []
         ) {
@@ -87,7 +126,8 @@ class ObjectInterceptor extends ContainerInterceptor {
                     $paramName = ltrim($matches[2], "$");
 
                     // Locate the parameter in the method signature
-                    $scopeId = isset($params[$paramName]) ? $params[$paramName] : null;
+                    $scopeId = ObjectArrayUtils::getObjectMemberValue($params, $paramName);
+
 
                 } else {
                     $privilegeKey = trim($matchValue);

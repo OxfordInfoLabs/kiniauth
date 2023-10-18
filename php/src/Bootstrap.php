@@ -23,6 +23,7 @@ use Kinikit\Core\Validation\Validator;
 use Kinikit\MVC\Request\Request;
 use Kinikit\MVC\Routing\RouteInterceptorProcessor;
 use Kinikit\Persistence\ORM\Interceptor\ORMInterceptorProcessor;
+use Kinikit\Persistence\ORM\ORM;
 
 class Bootstrap implements ApplicationBootstrap {
 
@@ -35,6 +36,7 @@ class Bootstrap implements ApplicationBootstrap {
     private $captchaProvider;
     private $request;
     private $session;
+    private $orm;
 
     /**
      * Construct with authentication service
@@ -48,10 +50,11 @@ class Bootstrap implements ApplicationBootstrap {
      * @param CaptchaProvider $captchaProvider
      * @param Request $request
      * @param Session $session
+     * @param ORM $orm
      *
      */
     public function __construct($authenticationService, $activeRecordInterceptor, $securityService, $ormInterceptorProcessor, $routeInterceptorProcessor,
-                                $validator, $captchaProvider, $request, $session) {
+                                $validator, $captchaProvider, $request, $session, $orm) {
 
         $this->authenticationService = $authenticationService;
         $this->activeRecordInterceptor = $activeRecordInterceptor;
@@ -62,6 +65,7 @@ class Bootstrap implements ApplicationBootstrap {
         $this->captchaProvider = $captchaProvider;
         $this->request = $request;
         $this->session = $session;
+        $this->orm = $orm;
     }
 
 
@@ -73,7 +77,7 @@ class Bootstrap implements ApplicationBootstrap {
         $this->ormInterceptorProcessor->addInterceptor("*", get_class($this->activeRecordInterceptor));
 
         // Add the generic object method interceptor
-        Container::instance()->addInterceptor(new ObjectInterceptor($this->activeRecordInterceptor, $this->securityService, $this->captchaProvider, $this->request, $this->session));
+        Container::instance()->addInterceptor(new ObjectInterceptor($this->activeRecordInterceptor, $this->securityService, $this->captchaProvider, $this->request, $this->session, $this->orm));
 
         // Add the built in route interceptors
         $this->routeInterceptorProcessor->addInterceptor("guest/*", GuestRouteInterceptor::class);
