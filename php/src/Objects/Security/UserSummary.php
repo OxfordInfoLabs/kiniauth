@@ -4,6 +4,9 @@
 namespace Kiniauth\Objects\Security;
 
 
+use Kiniauth\Objects\MetaData\ObjectStructuredData;
+use Kiniauth\ValueObjects\MetaData\ObjectStructuredDataItem;
+
 /**
  * Class UserSummary
  * @package Kiniauth\Objects\Security
@@ -76,6 +79,15 @@ class UserSummary extends Securable {
      */
     protected $applicationSettings = [];
 
+
+    /**
+     *
+     * @oneToMany
+     * @childJoinColumns object_id,object_type=\Kiniauth\Objects\Security\User
+     *
+     * @var ObjectStructuredData[]
+     */
+    protected $userStructuredData = [];
 
     /**
      * UserSummary constructor.
@@ -160,6 +172,34 @@ class UserSummary extends Securable {
      */
     public function setRoles($roles) {
         $this->roles = $roles;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getCustomData() {
+
+        $items = [];
+        foreach ($this->userStructuredData ?? [] as $item) {
+            $items[$item->getPrimaryKey()] = $item->getData();
+        }
+
+        return $items;
+
+    }
+
+    /**
+     * @param mixed[] $customData
+     */
+    public function setCustomData($customData) {
+
+        $items = [];
+        foreach ($customData ?? [] as $key => $value) {
+            $items[] = new ObjectStructuredData(null, null, "CustomData", $key, $value);
+        }
+
+
+        $this->userStructuredData = $items;
     }
 
 
