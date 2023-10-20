@@ -46,8 +46,10 @@ class CallMethod {
 
         if ($httpLoopbackRequest->getSecurableId()) {
             $this->securityService->becomeSecurable($httpLoopbackRequest->getSecurableType(), $httpLoopbackRequest->getSecurableId());
-        } else if ($httpLoopbackRequest->getAccountId()){
+        } else if ($httpLoopbackRequest->getAccountId()) {
             $this->securityService->becomeAccount($httpLoopbackRequest->getAccountId());
+        } else if ($httpLoopbackRequest->getAccountId() === 0) {
+            $this->securityService->becomeSuperUser();
         }
 
         $boundParameters = [];

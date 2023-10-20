@@ -91,7 +91,7 @@ class HttpLoopbackAsynchronousProcessor implements AsynchronousProcessor {
          */
         $securableId = $this->session->__getLoggedInSecurable() ? $this->session->__getLoggedInSecurable()->getId() : null;
         $securableType = $this->session->__getLoggedInSecurable() ? ($this->session->__getLoggedInSecurable() instanceof User ? "USER" : "API_KEY") : null;
-        $accountId = $this->session->__getLoggedInAccount() ? $this->session->__getLoggedInAccount()->getAccountId() : null;
+        $accountId = $this->session->__getLoggedInAccount() ? $this->session->__getLoggedInAccount()->getAccountId() : 0;
 
         // Check upfront that all the passed instances are class method lookups
         foreach ($asynchronousInstances as $asynchronousInstance) {
@@ -134,7 +134,6 @@ class HttpLoopbackAsynchronousProcessor implements AsynchronousProcessor {
         // Loop through the responses and match up with asynchronous instances
         foreach ($responses as $index => $response) {
             $asynchronousInstance = $asynchronousInstances[$index];
-
 
             /**
              * @var HttpLoopbackResponse $loopbackResponse
