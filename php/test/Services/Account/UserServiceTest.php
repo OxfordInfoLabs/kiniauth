@@ -108,7 +108,7 @@ class UserServiceTest extends TestBase {
         // Now do one with a user and account name, check propagation to account name.
         // Simple one with just email address and password.
         $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "John Smith",
-            "Smith Enterprises");
+            "Smith Enterprises", ["testProp" => 3, "testOtherProp" => "Hello"]);
 
         $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
 
@@ -122,6 +122,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(0, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
         $this->assertEquals(0, sizeof($newUser->getRoles()));
+        $this->assertEquals(["testProp" => 3, "testOtherProp" => "Hello"], $newUser->getCustomData());
 
         // Activate john3
         $this->userService->activateAccount($activationCode);
@@ -152,7 +153,7 @@ class UserServiceTest extends TestBase {
         // Now do one with a user and account name and parent account id. check propagation to account name.
         // Simple one with just email address and password.
         $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "John Smith",
-            "Smith Enterprises", 1);
+            "Smith Enterprises", [], 1);
 
         $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
 
@@ -166,6 +167,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(1, $newUser->getParentAccountId());
         $this->assertEquals(User::STATUS_PENDING, $newUser->getStatus());
 
+
         $this->assertEquals(0, sizeof($newUser->getRoles()));
 
 
@@ -178,7 +180,7 @@ class UserServiceTest extends TestBase {
         $this->authenticationService->logout();
 
         $newUser = $this->userService->createPendingUserWithAccount("john4@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "John Smith",
-            "Smythe Enterprises", 0);
+            "Smythe Enterprises", [], 0);
 
 
         // Check for an action and grab the identifier
@@ -210,7 +212,7 @@ class UserServiceTest extends TestBase {
         $this->authenticationService->logout();
 
         $activationCode = $this->userService->createPendingUserWithAccount("john5@test.com", AuthenticationHelper::hashNewPassword(AuthenticationHelper::hashNewPassword("Helloworld1")), "John Smith",
-            "Smythe Enterprises", 0);
+            "Smythe Enterprises", ["testProp" => 3, "testOtherProp" => "Hello"], 0);
 
         try {
             $this->userService->activateAccount("BADCODE");
@@ -237,6 +239,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals(User::STATUS_ACTIVE, $user->getStatus());
         $this->assertEquals(2, sizeof($user->getRoles()));
         $this->assertNotNull($user->getCreatedDate());
+        $this->assertEquals(["testProp" => 3, "testOtherProp" => "Hello"], $user->getCustomData());
 
 
         $account = $this->session->__getLoggedInAccount();
