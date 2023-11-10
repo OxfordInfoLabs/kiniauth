@@ -97,11 +97,12 @@ class UserService {
      *
      * The action identifier is returned as a string
      *
+     * @param array $customData
      * @objectInterceptorDisabled
      *
      * @return string
      */
-    public function createPendingUserWithAccount($emailAddress, $password, $name = null, $accountName = null, $parentAccountId = null) {
+    public function createPendingUserWithAccount($emailAddress, $password, $name = null, $accountName = null, $customData = [], $parentAccountId = null) {
 
         // Grab the parent account id if necessary.
         $parentAccountId = $parentAccountId === null ? $this->session->__getActiveParentAccountId() : $parentAccountId;
@@ -112,6 +113,7 @@ class UserService {
         $user->setHashedPassword($password);
         $user->setName($name);
         $user->setParentAccountId($parentAccountId);
+        $user->setCustomData($customData);
 
         $validationErrors = $user->validate();
 

@@ -4,6 +4,7 @@
 namespace Kiniauth\Test\Services\Application;
 
 
+use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
@@ -126,10 +127,21 @@ class ObjectInterceptorTest extends TestBase {
             // Success
         }
 
+
+        try {
+            $this->testMethodService->nestedPropertyPermissionRestricted(new AccountSummary(1), "marko");
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+
         // Now try logging in as an administrator
         AuthenticationHelper::login("james@smartcoasting.org", "password");
         $this->assertEquals("DONE", $this->testMethodService->otherAccountPermissionRestricted(2, "Heydude"));
         $this->assertEquals("DONE", $this->testMethodService->otherAccountPermissionRestricted(3, "Heydude"));
+        $this->assertEquals("COMPLETE", $this->testMethodService->nestedPropertyPermissionRestricted(new AccountSummary(2), "Heydude"));
+        $this->assertEquals("COMPLETE", $this->testMethodService->nestedPropertyPermissionRestricted(new AccountSummary(3), "Heydude"));
 
         try {
             $this->testMethodService->otherAccountPermissionRestricted(4, "marko");
@@ -137,6 +149,40 @@ class ObjectInterceptorTest extends TestBase {
         } catch (AccessDeniedException $e) {
             // Success
         }
+
+        try {
+            $this->testMethodService->nestedPropertyPermissionRestricted(new AccountSummary(4), "marko");
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+    }
+
+
+    public function testCanIntroduceReferenceParametersForUseInPrivilegeEvaluation() {
+
+
+        $this->authenticationService->logout();
+
+        try {
+            $this->testMethodService->referenceParameterPermissionRestricted(1);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+        // Now try logging in as an administrator
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        $this->assertEquals("YES", $this->testMethodService->referenceParameterPermissionRestricted(1));
+
+        try {
+            $this->testMethodService->referenceParameterPermissionRestricted(2);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
 
     }
 

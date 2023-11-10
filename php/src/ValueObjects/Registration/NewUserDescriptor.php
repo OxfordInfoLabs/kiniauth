@@ -19,6 +19,11 @@ class NewUserDescriptor {
     protected $name;
 
     /**
+     * @var mixed[]
+     */
+    protected $customData;
+
+    /**
      * @param string $emailAddress
      */
     public function setEmailAddress($emailAddress) {
@@ -59,4 +64,20 @@ class NewUserDescriptor {
     public function getName() {
         return $this->name;
     }
+
+    /**
+     * @return mixed[]
+     */
+    public function getCustomData() {
+        return $this->customData;
+    }
+
+    /**
+     * @param mixed[] $customData
+     */
+    public function setCustomData($customData) {
+        $this->customData = $customData;
+    }
+
+
 }

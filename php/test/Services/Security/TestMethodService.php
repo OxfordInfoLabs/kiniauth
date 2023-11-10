@@ -64,6 +64,32 @@ class TestMethodService {
 
 
     /**
+     * @hasPrivilege ACCOUNT:editdata($account.accountId)
+     *
+     * @param $account
+     * @param $newName
+     *
+     * @return string
+     */
+    public function nestedPropertyPermissionRestricted($account, $newName){
+        return "COMPLETE";
+    }
+
+
+    /**
+     * @param $contactId
+     *
+     * @referenceParameter $contact Contact($contactId)
+     * @hasPrivilege ACCOUNT:editdata($contact.accountId)
+     *
+     * @return string
+     */
+    public function referenceParameterPermissionRestricted($contactId){
+       return "YES";
+    }
+
+
+    /**
      * Special magic logged in constant
      *
      * @param $param1

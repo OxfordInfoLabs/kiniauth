@@ -157,8 +157,7 @@ class Account extends AccountSummary {
      * @return Privilege[]
      */
     public function returnAccountPrivileges() {
-
-        return $this->privileges;
+        return $this->privileges ?? [];
     }
 
 
