@@ -23,7 +23,7 @@ export class ApiKeysService {
         return this.http.post('/account/apikey?projectKey=' + projectKey, '"' + description + '"').toPromise();
     }
 
-    public assignableRoles(apiKeyId = null, scope = 'PROJECT', filterString = '', offset = 0, limit = 10) {
+    public assignableRoles(apiKeyId = null, scope = 'PROJECT', filterString = '', offset = 0, limit = 10000) {
         return this.http.get('/account/apikey/assignableRoles', {
             params: {apiKeyId, scope, filterString, offset, limit}
         }).toPromise();

@@ -33,7 +33,8 @@
                 <div *ngIf="newAccount" class="px-6 pb-6 mt-4 flex flex-col border-b">
                     <p><b>Add New Account</b></p>
                     <input type="text" [(ngModel)]="newAccountName" placeholder="Enter name for the new account">
-
+                    <input class="mt-2" type="email" [(ngModel)]="newUserName"
+                           placeholder="Enter name for account user">
                     <input class="mt-2" type="email" [(ngModel)]="newAccountEmail"
                            placeholder="Enter email address for account user">
                     <input class="mt-2" type="password" [(ngModel)]="newAccountPassword"

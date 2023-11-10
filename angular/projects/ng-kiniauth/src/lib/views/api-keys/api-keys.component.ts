@@ -23,6 +23,7 @@ export class ApiKeysComponent implements OnInit {
     public roleAssignments: any = {};
     public _ = _;
     public activeProject: any;
+    public canAccessAPIKeys = false;
 
     private projectSub: Subscription;
 
@@ -33,15 +34,18 @@ export class ApiKeysComponent implements OnInit {
 
     async ngOnInit(): Promise<any> {
         this.isAdmin = this.authService.isAdminNow();
+        this.canAccessAPIKeys = this.projectService.doesActiveProjectHavePrivilege('feedaccess');
 
-        this.projectSub = this.projectService.activeProject.subscribe(change => {
+        if (this.canAccessAPIKeys) {
+            this.projectSub = this.projectService.activeProject.subscribe(change => {
+                this.loadApiKeys();
+                this.activeProject = change;
+                this.setupRoles();
+            });
+
             this.loadApiKeys();
-            this.activeProject = change;
             this.setupRoles();
-        });
-
-        this.loadApiKeys();
-        this.setupRoles();
+        }
     }
 
     public createNew() {

@@ -74,6 +74,32 @@ export class ProjectService {
         return false;
     }
 
+    public doesActiveProjectHavePrivilege(privilegeKey: string) {
+        const session: any = this.authService.sessionData.getValue();
+        if (session && session.privileges) {
+            const projectKey = this.activeProject.getValue() ? this.activeProject.getValue().projectKey : null;
+            const privileges = session.privileges.PROJECT;
+
+            const scope = (privileges['*'] || privileges[projectKey]) || [];
+
+            return scope.indexOf('*') > -1 || scope.indexOf(privilegeKey) > -1;
+        }
+        return false;
+    }
+
+    public canAccountManageProjects() {
+        const session: any = this.authService.sessionData.getValue();
+        if (session && session.privileges) {
+            const projectKey = this.activeProject.getValue() ? this.activeProject.getValue().projectKey : null;
+            const privileges = session.privileges.ACCOUNT;
+
+            const scope = (privileges['*'] || privileges[projectKey]) || [];
+
+            return scope.indexOf('*') > -1 || scope.indexOf('projectmanager') > -1;
+        }
+        return false;
+    }
+
     public setDataItemPagingValue(limit, offset, page, itemName?) {
         const projectKey = this.activeProject.getValue() ? this.activeProject.getValue().projectKey : '';
         itemName = itemName || window.location.pathname + projectKey;

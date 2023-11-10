@@ -10,6 +10,11 @@
     "scope": "ACCOUNT"
   },
   {
+    "key": "projectmanager",
+    "description": "Manage projects within account.",
+    "scope": "ACCOUNT"
+  },
+  {
     "key": "access",
     "description": "Basic access to a project.",
     "scope": "PROJECT"

@@ -37,7 +37,8 @@
 
                 <div *ngIf="newAdminUser" class="px-6 pb-6 mt-4 flex flex-col border-b">
                     <p><b>Add New Admin User</b></p>
-                    <input type="email" [(ngModel)]="newAdminEmail" placeholder="Enter email address for user">
+                    <input type="text" [(ngModel)]="newAdminName" placeholder="Enter name for user">
+                    <input class="mt-2" type="email" [(ngModel)]="newAdminEmail" placeholder="Enter email address for user">
                     <input class="mt-2" type="password" [(ngModel)]="newAdminPassword"
                            placeholder="Enter password for user"
                            [ngClass]="{'border border-red-600': newAdminPassword && newAdminPassword.length < 8}">

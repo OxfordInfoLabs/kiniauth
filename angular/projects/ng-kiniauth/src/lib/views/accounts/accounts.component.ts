@@ -31,6 +31,7 @@ export class AccountsComponent implements OnInit {
     public newAccount = false;
     public newAccountEmail = '';
     public newAccountName = '';
+    public newUserName = '';
     public newAccountPassword: string = null;
     public newAccountAdded = false;
 
@@ -63,10 +64,11 @@ export class AccountsComponent implements OnInit {
             return true;
         }
 
-        return this.accountService.createAccount(this.newAccountName, this.newAccountEmail, this.newAccountPassword || null, null)
+        return this.accountService.createAccount(this.newAccountName, this.newAccountEmail, this.newAccountPassword || null, this.newUserName || null)
             .then(res => {
                 this.newAccountName = '';
                 this.newAccountEmail = '';
+                this.newUserName = '';
                 this.newAccountPassword = null;
                 this.newAccount = false;
                 this.newAccountAdded = true;

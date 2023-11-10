@@ -34,6 +34,7 @@ export class AccountUsersComponent implements OnInit {
     public userSuspended = false;
     public newAdminUser = false;
     public newAdminEmail = '';
+    public newAdminName = '';
     public newAdminPassword: string = null;
     public newAdminAdded = false;
 
@@ -61,9 +62,10 @@ export class AccountUsersComponent implements OnInit {
             return true;
         }
 
-        return this.userService.createAdminUser(this.newAdminEmail, this.newAdminPassword || null, null)
+        return this.userService.createAdminUser(this.newAdminEmail, this.newAdminPassword || null, this.newAdminName || null)
             .then(res => {
                 this.newAdminEmail = '';
+                this.newAdminName = '';
                 this.newAdminPassword = null;
                 this.newAdminUser = false;
                 this.newAdminAdded = true;
