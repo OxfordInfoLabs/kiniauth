@@ -3,13 +3,15 @@
 namespace Kiniauth\Test\Services\Security;
 
 use Kiniauth\Traits\Application\Timestamped;
+use Kinikit\Persistence\ORM\ActiveRecord;
 
-class TestTimestampObject {
+class TestTimestampObject extends ActiveRecord {
 
     use Timestamped;
 
     /**
      * @var integer
+     * @primaryKey
      */
     private $id;
 

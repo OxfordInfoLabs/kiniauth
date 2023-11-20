@@ -13,6 +13,7 @@ use Kiniauth\Test\Services\Security\TestTimestampObject;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 
 include_once __DIR__ . "/../../autoloader.php";
 
@@ -37,16 +38,26 @@ class ActiveRecordInterceptorTest extends TestBase {
 
     public function testObjectsImplementingTheTimestampTraitAreAutomaticallyTimestampedWithCreateAndLastModifiedDatesOnPreSave() {
 
+        /**
+         * @var DatabaseConnection $databaseConnection
+         */
+        $databaseConnection = Container::instance()->get(DatabaseConnection::class);
+        $databaseConnection->query("DROP TABLE IF EXISTS test_timestamp_object");
+        $databaseConnection->query("CREATE TABLE test_timestamp_object (id INTEGER AUTO_INCREMENT, name VARCHAR, created_date DATETIME, last_modified_date DATETIME)");
+
+
         // try new one
-        $object = new TestTimestampObject(1, "mark");
+        $object = new TestTimestampObject(null, "mark");
         $this->objectInterceptor->preSave($object);
 
         $this->assertEquals((new \DateTime())->format("Y-m-d H:i:s"), $object->getCreatedDate()->format("Y-m-d H:i:s"));
         $this->assertEquals((new \DateTime())->format("Y-m-d H:i:s"), $object->getLastModifiedDate()->format("Y-m-d H:i:s"));
 
+        $databaseConnection->query("INSERT INTO test_timestamp_object VALUES(1, 'mark', '2020-01-01 10:00:00','2020-01-01 10:00:00') ");
+
 
         // Check creation date preserved on save
-        $object = new TestTimestampObject(1, "mark", date_create_from_format("Y-m-d H:i:s", "2020-01-01 10:00:00"),
+        $object = new TestTimestampObject(1, "mark", null,
             date_create_from_format("Y-m-d H:i:s", "2020-01-01 10:00:00"));
 
         $this->objectInterceptor->preSave($object);

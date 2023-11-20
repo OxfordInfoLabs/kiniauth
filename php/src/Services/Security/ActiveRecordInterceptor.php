@@ -8,7 +8,11 @@ use Kiniauth\Traits\Application\Timestamped;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Object\SerialisableObject;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
+use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
+use Kinikit\Persistence\ORM\Mapping\ORMMapping;
+use Kinikit\Persistence\ORM\ORM;
+use Kinikit\Persistence\TableMapper\Exception\WrongPrimaryKeyLengthException;
 
 
 /**
@@ -27,6 +31,11 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
      */
     private $classInspectorProvider;
 
+    /**
+     * @var ORM
+     */
+    private $orm;
+
     private $disabled = false;
 
 
@@ -34,11 +43,13 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
      * @param \Kiniauth\Services\Security\SecurityService $securityService
      * @param \Kiniauth\Services\Application\Session $session
      * @param ClassInspectorProvider $classInspectorProvider
+     * @param ORM $orm
      */
-    public function __construct($securityService, $session, $classInspectorProvider) {
+    public function __construct($securityService, $session, $classInspectorProvider, $orm) {
         $this->securityService = $securityService;
         $this->session = $session;
         $this->classInspectorProvider = $classInspectorProvider;
+        $this->orm = $orm;
     }
 
 
@@ -50,9 +61,24 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
 
         if (in_array(Timestamped::class, class_uses($object))) {
             $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
-            if (!$object->getCreatedDate()) {
-                $classInspector->setPropertyData($object, new \DateTime(), "createdDate", false);
+
+            // Grab orm mapping
+            $ormMapping = ORMMapping::get(get_class($object));
+
+            // Get the PK from table mapping
+            $pk = $ormMapping->getReadTableMapping()->getPrimaryKeyValues($classInspector->getPropertyData($object));
+
+            // Fetch object by pk
+            $hasCreatedDate = false;
+
+            try {
+                $existingObject = $this->orm->fetch(get_class($object), array_values($pk));
+                $hasCreatedDate = $existingObject->getCreatedDate();
+            } catch (ObjectNotFoundException|WrongPrimaryKeyLengthException $e) {
             }
+
+
+            $classInspector->setPropertyData($object, $hasCreatedDate ?: new \DateTime(), "createdDate", false);
             $classInspector->setPropertyData($object, new \DateTime(), "lastModifiedDate", false);
         }
 
