@@ -4,8 +4,10 @@
 namespace Kiniauth\Services\Security;
 
 use Kiniauth\Objects\Application\Session;
+use Kiniauth\Traits\Application\Timestamped;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Object\SerialisableObject;
+use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
 
 
@@ -20,16 +22,23 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
     private $securityService;
     private $session;
 
+    /**
+     * @var ClassInspectorProvider
+     */
+    private $classInspectorProvider;
+
     private $disabled = false;
 
 
     /**
      * @param \Kiniauth\Services\Security\SecurityService $securityService
      * @param \Kiniauth\Services\Application\Session $session
+     * @param ClassInspectorProvider $classInspectorProvider
      */
-    public function __construct($securityService, $session) {
+    public function __construct($securityService, $session, $classInspectorProvider) {
         $this->securityService = $securityService;
         $this->session = $session;
+        $this->classInspectorProvider = $classInspectorProvider;
     }
 
 
@@ -38,6 +47,15 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
     }
 
     public function preSave($object = null, $upfInstance = null) {
+
+        if (in_array(Timestamped::class, class_uses($object))) {
+            $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
+            if (!$object->getCreatedDate()) {
+                $classInspector->setPropertyData($object, new \DateTime(), "createdDate", false);
+            }
+            $classInspector->setPropertyData($object, new \DateTime(), "lastModifiedDate", false);
+        }
+
         return $this->disabled || $this->resolveAccessForObject($object, true, SecurityService::ACCESS_WRITE);
     }
 

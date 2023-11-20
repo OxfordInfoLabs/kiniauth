@@ -9,6 +9,7 @@ use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\Services\Security\TestNonAccountObject;
+use Kiniauth\Test\Services\Security\TestTimestampObject;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
@@ -31,6 +32,29 @@ class ActiveRecordInterceptorTest extends TestBase {
         parent::setUp();
         $this->objectInterceptor = Container::instance()->get(ActiveRecordInterceptor::class);
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
+    }
+
+
+    public function testObjectsImplementingTheTimestampTraitAreAutomaticallyTimestampedWithCreateAndLastModifiedDatesOnPreSave() {
+
+        // try new one
+        $object = new TestTimestampObject(1, "mark");
+        $this->objectInterceptor->preSave($object);
+
+        $this->assertEquals((new \DateTime())->format("Y-m-d H:i:s"), $object->getCreatedDate()->format("Y-m-d H:i:s"));
+        $this->assertEquals((new \DateTime())->format("Y-m-d H:i:s"), $object->getLastModifiedDate()->format("Y-m-d H:i:s"));
+
+
+        // Check creation date preserved on save
+        $object = new TestTimestampObject(1, "mark", date_create_from_format("Y-m-d H:i:s", "2020-01-01 10:00:00"),
+            date_create_from_format("Y-m-d H:i:s", "2020-01-01 10:00:00"));
+
+        $this->objectInterceptor->preSave($object);
+
+        $this->assertEquals("2020-01-01 10:00:00", $object->getCreatedDate()->format("Y-m-d H:i:s"));
+        $this->assertEquals((new \DateTime())->format("Y-m-d H:i:s"), $object->getLastModifiedDate()->format("Y-m-d H:i:s"));
+
+
     }
 
 
