@@ -5,6 +5,7 @@ namespace Kiniauth\Test\Services\Communication\Email;
 use Kiniauth\Objects\Attachment\Attachment;
 use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Communication\Email\StoredEmailSendResult;
+use Kiniauth\Objects\Communication\Email\StoredEmailSummary;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
@@ -128,6 +129,55 @@ class EmailServiceTest extends TestBase {
         $overrideResult = $this->emailService->send($email, 1, null, true);
         $this->assertEquals(StoredEmailSendResult::STATUS_SENT, $overrideResult->getStatus());
         $this->assertNotNull($overrideResult->getEmailId());
+    }
+
+
+    public function testCanFilterStoredEmails() {
+
+        $email = new Email("mark@oxil.co.uk", ["test@somewhere.com", "test@somewhereelse.com"], "A Letter to Joe", "Hello Joe, this is clearly a test",
+            ["jean@test.com", "any@world.co.uk"], ["mary@test.com", "badger@haslanded.org"], "info@oxil.co.uk", 1);
+
+        $result1 = $this->emailService->send($email, 1);
+
+        $email = new Email("mark@oxil.co.uk", ["test@somewhere.com", "test2@somewhereelse.com"], "A Letter to Mary", "Hello Mary, this is clearly a test",
+            ["jean@test.com", "the@world.co.uk"], ["mary@test.com", "otter@haslanded.org"], "info@oxil.co.uk", 1);
+
+        $result2 = $this->emailService->send($email, 1);
+
+        $email1 = StoredEmailSummary::fetch($result1->getEmailId());
+        $email2 = StoredEmailSummary::fetch($result2->getEmailId());
+
+
+        // Check recipient address matches
+        $matches = $this->emailService->filterStoredEmails(["recipientAddress" => "test@somewhere.com"]);
+        $this->assertEquals([$email2, $email1], $matches);
+
+        $matches = $this->emailService->filterStoredEmails(["recipientAddress" => "test2@somewhereelse.com"]);
+        $this->assertEquals([$email2], $matches);
+
+
+        // Check search match against all fields
+        $matches = $this->emailService->filterStoredEmails(["search" => "Letter"]);
+        $this->assertEquals([$email2, $email1], $matches);
+
+        $matches = $this->emailService->filterStoredEmails(["search" => "jean"]);
+        $this->assertEquals([$email2, $email1], $matches);
+
+        $matches = $this->emailService->filterStoredEmails(["search" => "otter"]);
+        $this->assertEquals([$email2], $matches);
+
+        $matches = $this->emailService->filterStoredEmails(["search" => "any"]);
+        $this->assertEquals([$email1], $matches);
+
+
+        // Offsets and limits
+        $matches = $this->emailService->filterStoredEmails(["recipientAddress" => "test@somewhere.com"], 1);
+        $this->assertEquals([$email2], $matches);
+
+        $matches = $this->emailService->filterStoredEmails(["recipientAddress" => "test@somewhere.com"], 10, 1);
+        $this->assertEquals([$email1], $matches);
+
+
     }
 
 

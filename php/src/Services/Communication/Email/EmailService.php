@@ -7,12 +7,16 @@ namespace Kiniauth\Services\Communication\Email;
 use Kiniauth\Objects\Attachment\AttachmentSummary;
 use Kiniauth\Objects\Communication\Email\StoredEmail;
 use Kiniauth\Objects\Communication\Email\StoredEmailSendResult;
+use Kiniauth\Objects\Communication\Email\StoredEmailSummary;
 use Kiniauth\Services\Attachment\AttachmentService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kinikit\Core\Communication\Email\Email;
 use Kinikit\Core\Communication\Email\Provider\EmailProvider;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Stream\String\ReadOnlyStringStream;
+use Kinikit\Core\Util\ArrayUtils;
+use Kinikit\Persistence\ORM\Query\Filter\LikeFilter;
+use Kinikit\Persistence\ORM\Query\Query;
 
 /**
  * Service for sending and querying for sent emails.
@@ -86,6 +90,40 @@ class EmailService {
         $response = new StoredEmailSendResult($response->getStatus(), $response->getErrorMessage(), $storedEmail->getId());
 
         return $response;
+    }
+
+
+    /**
+     * Filter stored emails either via a free search or a recipient specific filter.
+     *
+     * @param string[] $filters
+     * @param int $limit
+     * @param int $offset
+     * @return StoredEmailSummary[]
+     */
+    public function filterStoredEmails($filters = [], $limit = 10, $offset = 0) {
+
+        if (isset($filters["recipientAddress"])) {
+            $filters["recipientAddress"] = new LikeFilter("recipients", "%" . $filters["recipientAddress"] . "%");
+        }
+
+        if (isset($filters["search"])) {
+            $filters["search"] = new LikeFilter(["sender", "recipients", "cc", "bcc", "subject", "replyTo"], "%" . $filters["search"] . "%");
+        }
+
+        $query = new Query(StoredEmailSummary::class);
+        return $query->query($filters, "id DESC", $limit, $offset);
+
+    }
+
+    /**
+     * Get a full stored email by id
+     *
+     * @param $id
+     * @return StoredEmail
+     */
+    public function getStoredEmail($id) {
+        return StoredEmail::fetch($id);
     }
 
 
