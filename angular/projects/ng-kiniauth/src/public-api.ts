@@ -8,6 +8,7 @@ export * from './lib/services/authentication.service';
 export * from './lib/services/user.service';
 export * from './lib/services/notification.service';
 export * from './lib/services/account.service';
+export * from './lib/services/communication.service';
 
 // Components
 export * from './lib/views/account-summary/account-summary.component';
