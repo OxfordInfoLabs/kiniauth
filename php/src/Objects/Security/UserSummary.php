@@ -94,12 +94,13 @@ class UserSummary extends Securable {
      * @param string $name
      * @param string $status
      */
-    public function __construct($name = null, $status = null, $emailAddress = null, $successfulLogins = 0, $applicationSettings = []) {
+    public function __construct($name = null, $status = null, $emailAddress = null, $successfulLogins = 0, $applicationSettings = [], $id = null) {
         $this->name = $name;
         $this->status = $status;
         $this->emailAddress = $emailAddress;
         $this->successfulLogins = $successfulLogins;
         $this->applicationSettings = $applicationSettings;
+        $this->id = $id;
     }
 
     /**
