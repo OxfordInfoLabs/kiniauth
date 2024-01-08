@@ -44,6 +44,12 @@ export class UserService {
         });
     }
 
+    public getAdminUsers(searchString?, limit?, offset?) {
+        return this.http.get(this.config.accessHttpURL + '/user/adminSearch', {
+            params: _.pickBy({searchString, limit, offset}, _.identity)
+        });
+    }
+
     public getAllUserAccountRoles(userId) {
         return this.http.get(this.config.accessHttpURL + '/user/roles', {
             params: {userId}

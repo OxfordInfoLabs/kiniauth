@@ -60,7 +60,7 @@ trait Project {
      * @http PUT /$projectKey
      *
      * @param $projectKey
-     * @param $projectUpdateDescriptor
+     * @param ProjectUpdateDescriptor $projectUpdateDescriptor
      */
     public function updateProject($projectKey, $projectUpdateDescriptor) {
         $projectSummary = new ProjectSummary($projectUpdateDescriptor->getName(), $projectUpdateDescriptor->getDescription(), $projectKey);
