@@ -74,6 +74,20 @@ trait UserTrait {
         return $this->userService->searchForUsers($searchString, $offset, $limit);
     }
 
+    /**
+     * Search for Admin users
+     *
+     * @http GET /adminSearch
+     *
+     * @param string $searchString
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     */
+    public function searchForAdminUsers($searchString = "", $offset = 0, $limit = 10) {
+        return $this->userService->searchForUsers($searchString, $offset, $limit, 0);
+    }
+
 
     /**
      * Change the logged in users email

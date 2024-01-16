@@ -397,6 +397,8 @@ class UserService {
         if ($accountId) {
             $query .= " AND roles.account_id = ?";
             $filterValues[] = $accountId;
+        } else if ($accountId === 0) {
+            $query .= " AND roles.account_id IS NULL";
         }
 
         $totalRecords = UserSummary::values("COUNT(DISTINCT(id))", $query, $filterValues);
