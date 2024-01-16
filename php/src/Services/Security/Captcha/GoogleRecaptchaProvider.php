@@ -16,14 +16,37 @@ class GoogleRecaptchaProvider implements CaptchaProvider {
     private $recaptchaSecretKey;
 
     /**
+     * If using Recaptcha v3, a score threshold for which this will be successful
+     *
+     * @var integer
+     */
+    private $recaptchaScoreThreshold;
+
+
+    /**
      * GoogleRecaptchaProvider constructor.
      *
      * @param string $recaptchaSecretKey
      */
-    public function __construct($recaptchaSecretKey = null) {
-        $this->recaptchaSecretKey = $recaptchaSecretKey ?
-            $recaptchaSecretKey : Configuration::readParameter("recaptcha.secret.key");
+    public function __construct($recaptchaSecretKey = null, $recaptchaScoreThreshold = null) {
+        $this->recaptchaSecretKey = $recaptchaSecretKey ?: Configuration::readParameter("recaptcha.secret.key");
+        $this->recaptchaScoreThreshold = $recaptchaScoreThreshold ?: Configuration::readParameter("recaptcha.score.threshold");
     }
+
+    /**
+     * @param mixed|string|null $recaptchaSecretKey
+     */
+    public function setRecaptchaSecretKey($recaptchaSecretKey) {
+        $this->recaptchaSecretKey = $recaptchaSecretKey;
+    }
+
+    /**
+     * @param int|mixed|null $recaptchaScoreThreshold
+     */
+    public function setRecaptchaScoreThreshold($recaptchaScoreThreshold) {
+        $this->recaptchaScoreThreshold = $recaptchaScoreThreshold;
+    }
+
 
     /**
      * Verify a client side Captcha using captcha specific data
@@ -42,7 +65,13 @@ class GoogleRecaptchaProvider implements CaptchaProvider {
         $recaptcha = new \ReCaptcha\ReCaptcha($this->recaptchaSecretKey);
         $response = $recaptcha->verify($verificationData, $remoteIp);
 
-        return $response->isSuccess();
+        $success = $response->isSuccess();
+
+        if ($success && isset($this->recaptchaScoreThreshold)) {
+            $success = ($response->getScore() ?? 0 >= $this->recaptchaScoreThreshold);
+        }
+
+        return $success;
 
     }
 }
