@@ -6,6 +6,7 @@ namespace Kiniauth\Services\Workflow\Task\Scheduled;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTask;
+use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskInterceptor;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskLog;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskSummary;
 use Kiniauth\Services\Workflow\Task\Scheduled\Processor\ScheduledTaskProcessor;
@@ -40,6 +41,29 @@ class ScheduledTaskService {
         return $task->getId();
     }
 
+
+    /**
+     * Trigger a scheduled task immediately, overriding the current schedule.
+     * The current schedule will be resumed after the task has run.
+     *
+     * @param $taskId
+     * @return void
+     */
+    public function triggerScheduledTask($taskId) {
+
+        // Grab the scheduled task and reset the time and status
+        $task = ScheduledTask::fetch($taskId);
+        $task->setNextStartTime(new \DateTime());
+        $task->setStatus(ScheduledTask::STATUS_PENDING);
+
+        // Suppress interceptor on save to avoid the time being immediately reset
+        $preDisabled = ScheduledTaskInterceptor::$disabled;
+        ScheduledTaskInterceptor::$disabled = true;
+        $task->save();
+        ScheduledTaskInterceptor::$disabled = $preDisabled;
+    }
+
+
     /**
      * Get a scheduled task by id
      *
@@ -70,7 +94,7 @@ class ScheduledTaskService {
 
         // Process any timed out tasks
         $timedOutTasks = ScheduledTask::filter("WHERE timeoutTime <= ? AND status LIKE ?",
-        date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING);
+            date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING);
 
         if (sizeof($timedOutTasks)) {
             foreach ($timedOutTasks as $task) {

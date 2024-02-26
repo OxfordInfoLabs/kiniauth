@@ -91,6 +91,7 @@ class ScheduledTaskServiceTest extends TestBase {
     }
 
 
+
     public function testNewlyCreatedTasksAreNotExecutedUntilFirstDuePoint() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
@@ -240,5 +241,40 @@ class ScheduledTaskServiceTest extends TestBase {
         $this->assertEquals(ScheduledTaskSummary::STATUS_TIMED_OUT, $logEntry->getStatus());
         $this->assertEquals("Timed Out", $logEntry->getLogOutput());
     }
+
+    public function testCanTriggerAScheduledTaskToRunImmediately() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $date = new \DateTime();
+        $weekDay = $date->add(new \DateInterval("P1D"))->format("N");
+        $expectedNextStartTime = date_create_from_format("d/m/Y H:i", $date->format("d/m/Y 12:20"));
+        $date = 1 + ($date->add(new \DateInterval("P1D"))->format("d") % 28);
+
+        $newTaskSummary = new ScheduledTaskSummary("test", "Test Scheduled Task",
+            ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
+                new ScheduledTaskTimePeriod($date, null, 15, 30),
+                new ScheduledTaskTimePeriod(null, $weekDay, 12, 20)
+            ]);
+
+
+        $taskId = $this->scheduledTaskService->saveScheduledTask($newTaskSummary, null, 1);
+        $this->assertNotNull($taskId);
+
+        $task = $this->scheduledTaskService->getScheduledTask($taskId);
+        $this->assertEquals($expectedNextStartTime->format("Y-m-d H:i:s"), $task->getNextStartTime());
+
+        $this->scheduledTaskService->triggerScheduledTask($taskId);
+
+        $task = $this->scheduledTaskService->getScheduledTask($taskId);
+
+        // Check that the next start time is reset and the status is pending
+        $this->assertEquals((new \DateTime())->format("Y-m-d H:i:s"), $task->getNextStartTime());
+        $this->assertEquals(ScheduledTask::STATUS_PENDING, $task->getStatus());
+
+
+    }
+
+
 
 }
