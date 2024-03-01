@@ -3,7 +3,9 @@
 
 namespace Kiniauth\Services\Security;
 
-use Kiniauth\Objects\Application\Session;
+use Kiniauth\Objects\Workflow\PropertyChangeWorkflow;
+use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Workflow\ObjectWorkflowService;
 use Kiniauth\Traits\Application\Timestamped;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Object\SerialisableObject;
@@ -36,20 +38,33 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
      */
     private $orm;
 
+    /**
+     * @var ObjectWorkflowService
+     */
+    private $objectWorkflowService;
+
+    /**
+     * The original object (stored between pre-save and post-save)
+     * @var mixed
+     */
+    private $originalObject;
+
     private $disabled = false;
 
 
     /**
-     * @param \Kiniauth\Services\Security\SecurityService $securityService
-     * @param \Kiniauth\Services\Application\Session $session
+     * @param SecurityService $securityService
+     * @param Session $session
      * @param ClassInspectorProvider $classInspectorProvider
      * @param ORM $orm
+     * @param ObjectWorkflowService $objectWorkflowService
      */
-    public function __construct($securityService, $session, $classInspectorProvider, $orm) {
+    public function __construct($securityService, $session, $classInspectorProvider, $orm, $objectWorkflowService) {
         $this->securityService = $securityService;
         $this->session = $session;
         $this->classInspectorProvider = $classInspectorProvider;
         $this->orm = $orm;
+        $this->objectWorkflowService = $objectWorkflowService;
     }
 
 
@@ -59,31 +74,49 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
 
     public function preSave($object = null, $upfInstance = null) {
 
-        if (in_array(Timestamped::class, class_uses($object))) {
-            $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
+        if (in_array(Timestamped::class, class_uses($object)) || in_array(PropertyChangeWorkflow::class, class_implements($object))) {
 
-            // Grab orm mapping
-            $ormMapping = ORMMapping::get(get_class($object));
+            $pk = $this->getPrimaryKeyValues($object);
 
-            // Get the PK from table mapping
-            $pk = $ormMapping->getReadTableMapping()->getPrimaryKeyValues($classInspector->getPropertyData($object));
-
-            // Fetch object by pk
-            $hasCreatedDate = false;
 
             try {
-                $existingObject = $this->orm->fetch(get_class($object), array_values($pk));
-                $hasCreatedDate = $existingObject->getCreatedDate();
+                $this->originalObject = $this->orm->fetch(get_class($object), array_values($pk));
             } catch (ObjectNotFoundException|WrongPrimaryKeyLengthException $e) {
+                $this->originalObject = null;
             }
 
 
-            $classInspector->setPropertyData($object, $hasCreatedDate ?: new \DateTime(), "createdDate", false);
-            $classInspector->setPropertyData($object, new \DateTime(), "lastModifiedDate", false);
+            if (in_array(Timestamped::class, class_uses($object))) {
+
+                // Fetch object by pk
+                $hasCreatedDate = $this->originalObject?->getCreatedDate();
+
+                $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
+
+                $classInspector->setPropertyData($object, $hasCreatedDate ?: new \DateTime(), "createdDate", false);
+                $classInspector->setPropertyData($object, new \DateTime(), "lastModifiedDate", false);
+            }
         }
 
         return $this->disabled || $this->resolveAccessForObject($object, true, SecurityService::ACCESS_WRITE);
     }
+
+    public function postSave($object) {
+
+        if (in_array(PropertyChangeWorkflow::class, class_implements($object))) {
+
+            $pk = $this->getPrimaryKeyValues($object);
+
+            if ($pk) {
+
+                $newObject = $this->orm->fetch(get_class($object), array_values($pk));
+
+                // Process property change workflow
+                $this->objectWorkflowService->processPropertyChangeWorkflowSteps(get_class($object), array_values($pk)[0], $this->originalObject, $newObject);
+            }
+        }
+    }
+
 
     public function preDelete($object = null, $upfInstance = null) {
         return $this->disabled || $this->resolveAccessForObject($object, true, SecurityService::ACCESS_WRITE);
@@ -131,6 +164,20 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
             else
                 return false;
         }
+    }
+
+    /**
+     * @param $object
+     * @return array
+     */
+    private function getPrimaryKeyValues($object) {
+        $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
+
+        // Grab orm mapping
+        $ormMapping = ORMMapping::get(get_class($object));
+
+        $pk = $ormMapping->getReadTableMapping()->getPrimaryKeyValues($classInspector->getPropertyData($object));
+        return $pk;
     }
 
 

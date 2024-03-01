@@ -1,0 +1,45 @@
+[
+  {
+    "objectClass": "Kiniauth\\Objects\\Account\\Account",
+    "stepKey": "manualCheck",
+    "stepDescription": "Manual Account Check",
+    "stepTrigger": "manual",
+    "taskIdentifier": "test-workflow",
+    "taskConfiguration": "manual"
+  },
+  {
+    "objectClass": "Kiniauth\\Objects\\Account\\Account",
+    "stepKey": "created-first",
+    "stepDescription": "First Created Check",
+    "stepTrigger": "date_offset_days",
+    "stepTriggerData": "createdDate:0",
+    "taskIdentifier": "test-workflow",
+    "taskConfiguration": "createdDate"
+  },
+  {
+    "objectClass": "Kiniauth\\Objects\\Account\\Account",
+    "stepKey": "created-second",
+    "stepDescription": "Second Created Check",
+    "stepTrigger": "date_offset_days",
+    "stepTriggerData": "createdDate:1",
+    "taskIdentifier": "test-workflow",
+    "taskConfiguration": "createdDate+1"
+  },
+  {
+    "objectClass": "Kiniauth\\Objects\\Account\\Account",
+    "stepKey": "property-change",
+    "stepDescription": "Property Change",
+    "stepTrigger": "property_change",
+    "stepTriggerData": "status",
+    "taskIdentifier": "test-workflow",
+    "taskConfiguration": "status"
+  },
+  {
+    "objectClass": "Kiniauth\\Objects\\Account\\Account",
+    "stepKey": "invalid",
+    "stepDescription": "Invalid Task",
+    "stepTrigger": "manual",
+    "taskIdentifier": "invalid-task",
+    "taskConfiguration": ""
+  }
+]

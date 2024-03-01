@@ -3,7 +3,9 @@
 namespace Kiniauth\Services\Workflow\Task;
 
 /**
- * Queued task
+ * Generic task interface
+ *
+ * @implementation dueworkflow \Kiniauth\Services\Workflow\DueWorkflowStepsTask
  *
  * Interface Task
  */
