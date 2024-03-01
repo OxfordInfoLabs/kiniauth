@@ -242,7 +242,7 @@ class MetaDataService {
     /**
      * Save a tag and return the tag key
      *
-     * @param $categorySummary
+     * @param CategorySummary $categorySummary
      * @param string $projectKey
      * @param string $accountId
      *
@@ -256,7 +256,6 @@ class MetaDataService {
         return $category->getKey();
 
     }
-
 
     /**
      * Remove a category at the specified scope

@@ -12,7 +12,7 @@ namespace Kiniauth\Traits\Account;
 trait AccountProject {
 
     /**
-     * @var integer
+     * @var int
      */
     protected $accountId;
 
