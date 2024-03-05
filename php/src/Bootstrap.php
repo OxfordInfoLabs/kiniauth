@@ -15,8 +15,10 @@ use Kiniauth\Services\Security\RouteInterceptor\GuestRouteInterceptor;
 use Kiniauth\Services\Security\RouteInterceptor\InternalRouteInterceptor;
 use Kiniauth\Services\Security\RouteInterceptor\TestRouteInterceptor;
 use Kiniauth\Services\Security\SecurityService;
+use Kiniauth\Services\Util\Asynchronous\AMPParallelAsynchronousProcessor;
 use Kiniauth\Services\Workflow\Validation\PasswordFieldValidator;
 use Kinikit\Core\ApplicationBootstrap;
+use Kinikit\Core\Asynchronous\Processor\AsynchronousProcessor;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Validation\Validator;
@@ -73,6 +75,8 @@ class Bootstrap implements ApplicationBootstrap {
      * Run the bootstrapping logic.
      */
     public function setup() {
+
+        Container::instance()->addInterfaceImplementation(AsynchronousProcessor::class, "ampparallel", AMPParallelAsynchronousProcessor::class);
 
         $this->ormInterceptorProcessor->addInterceptor("*", get_class($this->activeRecordInterceptor));
 

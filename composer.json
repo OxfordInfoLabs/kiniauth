@@ -16,7 +16,9 @@
     "oxil/kinikit-persistence": "dev-master",
     "dolondro/google-authenticator": "^2.0",
     "cache/filesystem-adapter": "^1.0",
-    "google/recaptcha": "^1.2"
+    "google/recaptcha": "^1.2",
+    "amphp/parallel": "*",
+    "amphp/http-client": "*"
   },
   "scripts": {
     "dev": "rm -rf vendor/oxil/kini*; ln -s ../../../kinikit/kinikit-core vendor/oxil/kinikit-core; ln -s ../../../kinikit/kinikit-mvc vendor/oxil/kinikit-mvc; ln -s ../../../kinikit/kinikit-persistence vendor/oxil/kinikit-persistence;"

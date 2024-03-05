@@ -135,10 +135,15 @@ class HttpLoopbackAsynchronousProcessor implements AsynchronousProcessor {
         foreach ($responses as $index => $response) {
             $asynchronousInstance = $asynchronousInstances[$index];
 
-            /**
-             * @var HttpLoopbackResponse $loopbackResponse
-             */
-            $loopbackResponse = $this->objectBinder->bindFromArray(json_decode($response->getBody(), true), HttpLoopbackResponse::class);
+
+            $bodyJson = $response->getBody();
+            $bodyArray = json_decode($bodyJson, true);
+            if ($bodyArray === false){
+                throw new \Exception("Failed to encode HttpLoopbackAsynchronousProcessor response as JSON");
+            }
+
+            /** @var HttpLoopbackResponse $loopbackResponse */
+            $loopbackResponse = $this->objectBinder->bindFromArray($bodyArray, HttpLoopbackResponse::class);
 
 
             // Derive the status

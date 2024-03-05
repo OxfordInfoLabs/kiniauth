@@ -1,7 +1,7 @@
 dist: focal
 language: php
 php:
-- '8.1'
+- '8.2'
 before_script: composer clearcache; composer install; composer update;  cd php/test
 script: phpunit --exclude-group nontravis .
 after_success:
