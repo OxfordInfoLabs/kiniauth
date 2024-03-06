@@ -275,6 +275,45 @@ class ScheduledTaskServiceTest extends TestBase {
 
     }
 
+    public function testThatNextStartTimeIsNullWhenAfterExpiryTime() {
 
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $now = new \DateTime();
+        $nextStartTime = $now->sub(new \DateInterval("PT1H"))->format("Y-m-d H:i:s");
+
+        $now = new \DateTime();
+        $expiryTime1 = $now->add(new \DateInterval("P1M"))->format("Y-m-d 00:00:00");
+
+        $now = new \DateTime();
+        $expiryTime2 = $now->add(new \DateInterval("PT10S"))->format("Y-m-d H:i:s");
+
+        // Expiry in the future
+        $taskSummary1 = new ScheduledTaskSummary("test", "Test Scheduled Task",
+            ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
+                new ScheduledTaskTimePeriod(null, null, 10, 30),
+            ], ScheduledTaskSummary::STATUS_PENDING,
+            $nextStartTime, null, null, null, 3500, $expiryTime1);
+
+        $taskId1 = $this->scheduledTaskService->saveScheduledTask($taskSummary1, null, 1);
+
+        // Expiry before next run time
+        $taskSummary2 = new ScheduledTaskSummary("test", "Test Scheduled Task",
+            ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
+                new ScheduledTaskTimePeriod(null, null, 8, 30),
+            ], ScheduledTaskSummary::STATUS_PENDING,
+            $nextStartTime, null, null, null, 3500, $expiryTime2);
+
+        $taskId2 = $this->scheduledTaskService->saveScheduledTask($taskSummary2, null, 1);
+
+        // Process tasks
+        $this->scheduledTaskService->processDueTasks();
+
+        $task1 = $this->scheduledTaskService->getScheduledTask($taskId1);
+        $task2 = $this->scheduledTaskService->getScheduledTask($taskId2);
+
+        $this->assertNotNull($task1->getNextStartTime());
+        $this->assertNull($task2->getNextStartTime());
+    }
 
 }

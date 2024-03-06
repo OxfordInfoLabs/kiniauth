@@ -39,6 +39,11 @@ class ScheduledTask extends ScheduledTaskSummary {
      */
     protected $timeoutTime;
 
+    /**
+     * @var \DateTime
+     */
+    protected $expiryTime;
+
 
     /**
      * ScheduledTask constructor.
@@ -59,6 +64,7 @@ class ScheduledTask extends ScheduledTaskSummary {
                 $scheduledTaskSummary->getLastEndTime() ? date_create_from_format("Y-m-d H:i:s", $scheduledTaskSummary->getLastEndTime()) : null,
                 $scheduledTaskSummary->getTimeoutTime() ? date_create_from_format("Y-m-d H:i:s", $scheduledTaskSummary->getTimeoutTime()) : null,
                 $scheduledTaskSummary->getTimeoutSeconds(),
+                $scheduledTaskSummary->getExpiryTime() ? date_create_from_format("Y-m-d H:i:s", $scheduledTaskSummary->getExpiryTime()) : null,
                 $scheduledTaskSummary->getId());
         }
         $this->projectKey = $projectKey;
@@ -121,6 +127,19 @@ class ScheduledTask extends ScheduledTaskSummary {
         $this->timeoutTime = $timeoutTime;
     }
 
+    /**
+     * @return \DateTime
+     */
+    public function getExpiryTime() {
+        return $this->expiryTime;
+    }
+
+    /**
+     * @param \DateTime $expiryTime
+     */
+    public function setExpiryTime($expiryTime) {
+        $this->expiryTime = $expiryTime;
+    }
 
     /**
      * Return a summary object
@@ -210,6 +229,8 @@ class ScheduledTask extends ScheduledTaskSummary {
             }
         }
 
+        if ($this->expiryTime && $nextStartTime > $this->expiryTime)
+            $nextStartTime = null;
 
         $this->nextStartTime = $nextStartTime;
 

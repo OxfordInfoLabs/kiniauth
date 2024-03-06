@@ -90,6 +90,12 @@ class ScheduledTaskSummary extends ActiveRecord {
     protected $timeoutTime;
 
 
+    /**
+     * @var string
+     */
+    protected $expiryTime;
+
+
     // Status constants
     const STATUS_PENDING = "PENDING";
     const STATUS_RUNNING = "RUNNING";
@@ -110,10 +116,10 @@ class ScheduledTaskSummary extends ActiveRecord {
      * @param string $lastEndTime
      * @param string $timeoutTime
      * @param int $timeoutSeconds
+     * @param string $expiryTime
      */
-    public function __construct($taskIdentifier, $description, $configuration, $timePeriods, $status = self::STATUS_PENDING,
-                                $nextStartTime = null,
-                                $lastStartTime = null, $lastEndTime = null, $timeoutTime = null, $timeoutSeconds = 86000, $id = null) {
+    public function __construct($taskIdentifier, $description, $configuration, $timePeriods, $status = self::STATUS_PENDING, $nextStartTime = null,
+                                $lastStartTime = null, $lastEndTime = null, $timeoutTime = null, $timeoutSeconds = 86000, $expiryTime = null, $id = null) {
         $this->taskIdentifier = $taskIdentifier;
         $this->description = $description;
         $this->configuration = $configuration;
@@ -125,6 +131,7 @@ class ScheduledTaskSummary extends ActiveRecord {
         $this->id = $id;
         $this->timeoutTime = $timeoutTime;
         $this->timeoutSeconds = $timeoutSeconds;
+        $this->expiryTime = $expiryTime;
     }
 
 
@@ -282,5 +289,18 @@ class ScheduledTaskSummary extends ActiveRecord {
         $this->timeoutTime = $timeoutTime;
     }
 
+    /**
+     * @return string
+     */
+    public function getExpiryTime() {
+        return $this->expiryTime;
+    }
+
+    /**
+     * @param string $expiryTime
+     */
+    public function setExpiryTime($expiryTime) {
+        $this->expiryTime = $expiryTime;
+    }
 
 }
