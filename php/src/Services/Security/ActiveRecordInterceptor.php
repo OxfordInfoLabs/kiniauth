@@ -139,7 +139,7 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
         try {
             $result = $callable();
         } catch (\Throwable $e) {
-            $this->disabled = false;
+            $this->disabled = $previousDisabled;
             throw($e);
         }
 
