@@ -5,10 +5,12 @@ namespace Kiniauth\Services\Util\Asynchronous;
 
 
 use Kinikit\Core\Asynchronous\Asynchronous;
+use function Amp\delay;
 
 class TestAMPAsynchronous extends Asynchronous {
 
-    private string $evaluatedProperty;
+    /** @var string */
+    private $evaluatedProperty;
 
     /**
      * Construct this class
@@ -16,7 +18,8 @@ class TestAMPAsynchronous extends Asynchronous {
      * TestAsynchronous constructor.
      */
     public function __construct(
-        private string $name
+        private string $name,
+        private float $timeout = 0
     ) {
     }
 
@@ -27,7 +30,7 @@ class TestAMPAsynchronous extends Asynchronous {
      * @return string
      */
     public function run() : string{
-
+        delay($this->timeout);
         if ($this->name == "FAIL") {
             throw new \Exception("Failed");
         }
@@ -40,7 +43,7 @@ class TestAMPAsynchronous extends Asynchronous {
         return $this->name;
     }
 
-    public function getEvaluatedProperty() : string {
+    public function getEvaluatedProperty() : ?string {
         return $this->evaluatedProperty;
     }
 

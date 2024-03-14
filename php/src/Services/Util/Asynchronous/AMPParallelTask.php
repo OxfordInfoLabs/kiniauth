@@ -2,9 +2,11 @@
 
 namespace Kiniauth\Services\Util\Asynchronous;
 
+use Amp\Cache\LocalCache;
 use Amp\Cancellation;
 use Amp\Parallel\Worker\Task;
 use Amp\Sync\Channel;
+use Amp\TimeoutException;
 use Kiniauth\Services\Security\SecurityService;
 use Kinikit\Core\Asynchronous\Asynchronous;
 use Kiniauth\Test\Services\Util\Asynchronous\AsynchronousProcessor;
@@ -13,6 +15,9 @@ use Kinikit\Core\Bootstrapper;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Template\ValueFunction\ValueFunctionEvaluator;
+use function Amp\async;
+use function Amp\delay;
+use function Amp\Future\awaitFirst;
 
 
 class AMPParallelTask implements Task {
@@ -21,12 +26,33 @@ class AMPParallelTask implements Task {
         private Asynchronous $asynchronous,
         private $securableId,
         private $securableType,
-        private ?int $accountId
+        private ?int $accountId,
+        private int $timeout = 120
     ) {
     }
 
     public function run(Channel $channel, Cancellation $cancellation): mixed {
+        try {
+            $result = awaitFirst([
+                async(fn() => $this->runAsynchronous()),
+                async(function () {
+                    delay($this->timeout);
+                    throw new TimeoutException();
+                })
+            ]);
+            return $result;
+        } catch (TimeoutException $exception){
+            // Timed out
+            $this->asynchronous->setStatus(Asynchronous::STATUS_FAILED);
+            Logger::log("TIMED OUT WITH ASYNC " . get_class($this->asynchronous));
+            $objectBinder = Container::instance()->get(ObjectBinder::class);
+            $exceptionArray = $objectBinder->bindToArray($exception);
+            $this->asynchronous->setExceptionData($exceptionArray);
+            return $this->asynchronous;
+        }
+    }
 
+    private function runAsynchronous(){
         Container::instance()->get(Bootstrapper::class);
 
         $securityService = Container::instance()->get(SecurityService::class);
@@ -45,6 +71,8 @@ class AMPParallelTask implements Task {
             $this->asynchronous->setStatus(Asynchronous::STATUS_COMPLETED);
             $this->asynchronous->setReturnValue($result);
         } catch (\Exception $e) {
+            Logger::log("TASK FAILED WITH EXCEPTION: " . $e->getMessage());
+            Logger::log(get_class($e));
             $this->asynchronous->setStatus(Asynchronous::STATUS_FAILED);
             $objectBinder = Container::instance()->get(ObjectBinder::class);
             $exceptionArray = $objectBinder->bindToArray($e);

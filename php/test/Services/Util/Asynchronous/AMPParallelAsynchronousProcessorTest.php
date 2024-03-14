@@ -99,4 +99,20 @@ class AMPParallelAsynchronousProcessorTest extends TestBase {
         $this->assertTrue(str_contains($responseAbout->getBody(), "dnsrf"));
     }
 
+    public function testTimeoutWorksCorrectly(){
+        $asyncInstances = [new TestAMPAsynchronous("Joe", 0.02)];
+        $results = $this->processor->executeAndWait($asyncInstances, 0.01);
+        $this->assertEquals($results[0]->getStatus(), Asynchronous::STATUS_FAILED);
+
+        $asyncInstances = [
+            new TestAMPAsynchronous("Joe", 0.02),
+            new TestAMPAsynchronous("Jim", 0),
+            new TestAMPAsynchronous("FAIL", 0)
+        ];
+        $results = $this->processor->executeAndWait($asyncInstances, 0.01);
+        $this->assertEquals($results[0]->getStatus(), Asynchronous::STATUS_FAILED);
+        $this->assertEquals($results[1]->getStatus(), Asynchronous::STATUS_COMPLETED);
+        $this->assertEquals($results[2]->getStatus(), Asynchronous::STATUS_FAILED);
+    }
+
 }
