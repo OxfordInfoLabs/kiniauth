@@ -20,12 +20,14 @@ class ObjectWorkflowCompletedStep extends ActiveRecord {
 
     /**
      * @var string
+     * @maxLength 50
      * @primaryKey
      */
     private $objectPk;
 
     /**
      * @var string
+     * @maxLength 50
      * @primaryKey
      */
     private $stepKey;
