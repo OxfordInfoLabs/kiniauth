@@ -29,6 +29,8 @@ class AMPParallelAsynchronousProcessor implements AsynchronousProcessor {
     }
 
     public function executeAndWait($asynchronousInstances, $timeout = 120) {
+        $configEnvironmentVar = getenv("KINIKIT_CONFIG_FILE");
+
         $session = Container::instance()->get(Session::class);
         $securableId = $session->__getLoggedInSecurable() ? $session->__getLoggedInSecurable()->getId() : null;
         $securableType = $session->__getLoggedInSecurable() ? ($session->__getLoggedInSecurable() instanceof User ? "USER" : "API_KEY") : null;
@@ -38,7 +40,7 @@ class AMPParallelAsynchronousProcessor implements AsynchronousProcessor {
 
         // Turn an async instance to a future using an AMPParallelTask wrapper.
         $toFuture = fn(Asynchronous $instance) => $workerPool->submit(
-            new AMPParallelTask($instance, $securableId, $securableType, $accountId, $timeout)
+            new AMPParallelTask($instance, $securableId, $securableType, $configEnvironmentVar, $accountId, $timeout)
         )->getFuture();
 
         // Await execution of all queued tasks.

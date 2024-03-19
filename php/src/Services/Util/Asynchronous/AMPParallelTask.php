@@ -6,6 +6,7 @@ use Amp\Cache\LocalCache;
 use Amp\Cancellation;
 use Amp\Parallel\Worker\Task;
 use Amp\Sync\Channel;
+use Amp\TimeoutCancellation;
 use Amp\TimeoutException;
 use Kiniauth\Services\Security\SecurityService;
 use Kinikit\Core\Asynchronous\Asynchronous;
@@ -26,12 +27,22 @@ class AMPParallelTask implements Task {
         private Asynchronous $asynchronous,
         private $securableId,
         private $securableType,
+        private string $configEnvironmentVar,
         private ?int $accountId,
         private int $timeout = 120
     ) {
     }
 
     public function run(Channel $channel, Cancellation $cancellation): mixed {
+        // This looks a bit more complicated than necessary.
+        // The reason for this is that I tried to use the builtin cancellation methods for timeout,
+        // but this led to, upon a long function being interrupted in a try catch block:
+        //
+        // try { longTask(); ***CancellationException thrown here*** } catch (Exception $e) { /* behaviour */ }
+        //
+        // This means that the task was not successfully cancelled.
+        // The awaitFirst method puts the parent thread in charge of the cancellation.
+        putenv("KINIKIT_CONFIG_FILE=$this->configEnvironmentVar");
         try {
             $result = awaitFirst([
                 async(fn() => $this->runAsynchronous()),
@@ -41,7 +52,7 @@ class AMPParallelTask implements Task {
                 })
             ]);
             return $result;
-        } catch (TimeoutException $exception){
+        } catch (\Exception $exception){
             // Timed out
             $this->asynchronous->setStatus(Asynchronous::STATUS_FAILED);
             Logger::log("TIMED OUT WITH ASYNC " . get_class($this->asynchronous));
