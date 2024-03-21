@@ -796,7 +796,8 @@ class AuthenticationServiceTest extends TestBase {
 
             $this->assertNull($this->session->__getPendingLoggedInUser());
             $this->assertNull($this->session->__getPendingTwoFactorData());
-            $this->assertEquals($bob, $this->session->__getLoggedInSecurable());
+            $this->assertEquals(User::fetch(11), $this->session->__getLoggedInSecurable());
+
         });
 
 
