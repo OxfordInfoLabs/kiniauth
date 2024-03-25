@@ -3,8 +3,8 @@
 namespace Kiniauth\Tools;
 
 use Kiniauth\Services\Workflow\Task\Queued\QueuedTaskService;
+use Kinikit\Core\Bootstrapper;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Init;
 
 
 class QueuedTaskRunner {
@@ -47,7 +47,7 @@ class QueuedTaskRunner {
         include_once "../vendor/autoload.php";
 
         // Ensure basic initialisation has occurred.
-        Container::instance()->get(Init::class);
+        Container::instance()->get(Bootstrapper::class);
 
         Container::instance()->get(QueuedTaskRunner::class)->run($queueName);
     }
