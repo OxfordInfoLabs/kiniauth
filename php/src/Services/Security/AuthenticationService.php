@@ -15,12 +15,16 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\ActivityLogger;
+use Kiniauth\Services\Security\SSOProvider\AppleSSOAuthenticator;
+use Kiniauth\Services\Security\SSOProvider\FacebookSSOAuthenticator;
+use Kiniauth\Services\Security\SSOProvider\GoogleSSOAuthenticator;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\MVC\Request\Request;
@@ -424,5 +428,42 @@ class AuthenticationService {
         $this->securityService->logOut();
     }
 
+
+    /**
+     * Perform single sign-on with the relevant provider
+     *
+     * @param $provider
+     * @param $data
+     * @return void
+     */
+    public function authenticateBySSO($provider, $data) {
+
+        switch ($provider) {
+            case "facebook":
+                $authenticator = Container::instance()->get(FacebookSSOAuthenticator::class);
+                $email = $authenticator->authenticate($data);
+                break;
+            case "google":
+                $authenticator = Container::instance()->get(GoogleSSOAuthenticator::class);
+                $email = $authenticator->authenticate($data);
+                break;
+            case "apple":
+                $authenticator = Container::instance()->get(AppleSSOAuthenticator::class);
+                $email = $authenticator->authenticate($data);
+                break;
+            default:
+                $email = null;
+                break;
+        }
+
+        $user = $this->userService->getUserByEmail($email);
+
+        if ($user) {
+            $this->securityService->login($user);
+        } else {
+            throw new \Exception("User doesn't have an account");
+        }
+
+    }
 
 }

@@ -137,4 +137,14 @@ trait Auth {
     }
 
 
+    /**
+     * @http POST /sso/$provider
+     *
+     * @param string $provider
+     * @param mixed $data
+     */
+    public function authenticateSSO($provider, $data){
+        $this->authenticationService->authenticateBySSO($provider, $data);
+    }
+
 }
