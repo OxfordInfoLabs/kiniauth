@@ -93,11 +93,4 @@ class FacebookSSOAuthenticatorTest extends TestBase {
 
     }
 
-    public function testTempTest() {
-
-        $authenticator = Container::instance()->get(FacebookSSOAuthenticator::class);
-        $authenticator->authenticate("");
-
-    }
-
 }
