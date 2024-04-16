@@ -56,19 +56,14 @@ class FacebookSSOAuthenticatorTest extends TestBase {
             200, new Headers(), $inspectTokenRequest);
         $this->requestDispatcher->returnValue("dispatch", $inspectTokenResponse, [$inspectTokenRequest]);
 
-        $userNameRequest = new Request("https://graph.facebook.com/v19.0/$personId?access_token=$accessToken", Request::METHOD_GET);
+        $userInfoRequest = new Request("https://graph.facebook.com/v19.0/$personId?fields=name,email&access_token=$accessToken", Request::METHOD_GET);
         $userInfoResponse = new Response(
-            new ReadOnlyStringStream('{"name":"Sam Davis"}'),
-            200, new Headers(), $userNameRequest);
-        $this->requestDispatcher->returnValue("dispatch", $userInfoResponse, [$userNameRequest]);
-
-        $userEmailRequest = new Request("https://graph.facebook.com/v19.0/$personId/email?access_token=$accessToken", Request::METHOD_GET);
-        $userEmailResponse = new Response(
-            new ReadOnlyStringStream('{"email":"sam@test.com"}'),
-            200, new Headers(), $userEmailRequest);
-        $this->requestDispatcher->returnValue("dispatch", $userEmailResponse, [$userEmailRequest]);
+            new ReadOnlyStringStream('{"name":"Sam Davis","email":"sam@test.com"}'),
+            200, new Headers(), $userInfoRequest);
+        $this->requestDispatcher->returnValue("dispatch", $userInfoResponse, [$userInfoRequest]);
 
         $email = $this->authenticator->authenticate($code);
+
 
         $this->assertEquals("sam@test.com", $email);
 

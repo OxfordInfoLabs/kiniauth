@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Security\SSOProvider;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
 use Kinikit\Core\HTTP\Request\Request;
+use Kinikit\Core\Logging\Logger;
 
 class FacebookSSOAuthenticator extends SSOAuthenticator {
 
@@ -33,7 +34,6 @@ class FacebookSSOAuthenticator extends SSOAuthenticator {
         $accessToken = $this->exchangeCodeForAccessToken($data);
 
         // Save Token - should persist until expiry
-//        $accessToken = "EAAFzBeRHUxIBOZBgFtv0He1qXt3bM311bIxSigyhk44SDXutVKBPFBeaSyHz1nuOPEVeovTSXCywLrZCEfliidpvo62H9wVQqdjSbuo7Yj6VPCZAovfEEn8dJimBCZC4rFrPTUQqFgV9ksnZA4yNs0SvYZBEqEd3jVjJLGKTFgTD1zgXm6imY8sfVi1LZCy6q83Xt0DbHITa71x6Y5x8ejjKCjqvOQoPJOYcUHpXQ2K3TzAhq8VqPoZAdbZCdb5Uh";
         [$tokenExpiry, $userID] = $this->inspectAccessToken($accessToken);
 
         // Get user's name and email
@@ -106,17 +106,12 @@ class FacebookSSOAuthenticator extends SSOAuthenticator {
      */
     private function getUserInfo($personId, $token) {
 
-        $url = "https://graph.facebook.com/v19.0/$personId?access_token=$token";
+        $url = "https://graph.facebook.com/v19.0/$personId?fields=name,email&access_token=$token";
         $request = new Request($url, Request::METHOD_GET);
         $response = $this->requestDispatcher->dispatch($request);
         $data = json_decode($response->getBody(), true);
 
         $name = $data["name"];
-
-        $url = "https://graph.facebook.com/v19.0/$personId/email?access_token=$token";
-        $request = new Request($url, Request::METHOD_GET);
-        $response = $this->requestDispatcher->dispatch($request);
-        $data = json_decode($response->getBody(), true);
         $email = $data["email"] ?? null;
 
         if (!$email) {
