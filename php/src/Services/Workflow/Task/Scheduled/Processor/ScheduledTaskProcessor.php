@@ -8,6 +8,7 @@ use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTask;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskLog;
 use Kiniauth\Services\Workflow\Task\Task;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Exception\DebugException;
 
 /**
  * Class ScheduledTaskProcessor
@@ -67,7 +68,7 @@ abstract class ScheduledTaskProcessor {
 
 
         } catch (\Exception $e) {
-            $output = $e->getMessage();
+            $output = $e instanceof DebugException ? $e->returnDebugMessage() : $e->getMessage();
             $scheduledTask->setStatus(ScheduledTask::STATUS_FAILED);
         }
 
