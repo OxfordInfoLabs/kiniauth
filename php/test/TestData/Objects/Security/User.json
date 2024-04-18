@@ -164,7 +164,7 @@
     "id": 12,
     "emailAddress": "peter@smartcoasting.org",
     "name": "Peter Smartcoasting",
-    "hashedPassword": "cb0e0a23e435afbc206395e4e3ad25bf2a36c9ec775ebb85dbe7b289d92654497379fe7cbbc7258ef278c68fa56442ab53d91a752c6320dbd7663266c0ed356d",
+    "hashedPassword": "1aa9a8bc3225a2ecac144e212cae03b6b3578443740d13df99659493970f879e6ad3940fb055eec8d934c221cca36fceed75c716878a83232fb11428ba58f27d",
     "status": "ACTIVE",
     "roles": [
       {

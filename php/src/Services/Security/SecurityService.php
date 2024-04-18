@@ -4,6 +4,7 @@
 namespace Kiniauth\Services\Security;
 
 
+use Kiniauth\Attributes\Security\AccessNonActiveScopes;
 use Kiniauth\Exception\Security\AccountSuspendedException;
 use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Exception\Security\MissingScopeObjectIdForPrivilegeException;
@@ -11,12 +12,14 @@ use Kiniauth\Exception\Security\NonExistentPrivilegeException;
 use Kiniauth\Exception\Security\UserSuspendedException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\APIKey;
+use Kiniauth\Objects\Security\ObjectScopeAccess;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Application\Session;
+use Kiniauth\Traits\Security\Sharable;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
@@ -74,6 +77,7 @@ class SecurityService {
     // Access mode constants for permission checking
     const ACCESS_READ = "READ";
     const ACCESS_WRITE = "WRITE";
+    const ACCESS_GRANT = "GRANT";
 
 
     /**
@@ -383,30 +387,70 @@ class SecurityService {
 
             $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
 
-            $access = true;
+            $accessGroupGranted = [];
             foreach ($this->scopeManager->getScopeAccesses() as $scopeAccess) {
                 $objectMember = $scopeAccess->getObjectMember();
+
+                $objectScopeAccesses = [];
+
+                // Ensure that any direct scope values identified by object member are mapped to full
+                // Write and grant access.
                 if ($objectMember && $classInspector->hasAccessor($objectMember)) {
-                    $scopeId = $classInspector->getPropertyData($object, $objectMember);
-
-                    // Handle special null / -1 scope id case separately.  Here we assume that any missing or -1 account_id
-                    // objects become read only, other objects are fine as they are downstream and controlled separately
-                    if ($scopeId === null || $scopeId === -1) {
-                        if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT)
-                            $access = $access && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
-                    } else {
-
-                        $access = $access && $this->getLoggedInScopePrivileges($scopeAccess->getScope(),
-                                $scopeId);
-                    }
+                    $objectScopeAccesses[] = new ObjectScopeAccess($scopeAccess->getScope(), $classInspector->getPropertyData($object, $objectMember), "OWNER", true, true);
                 }
-                if (!$access)
-                    break;
+
+                // If we are using the sharable trait, also check for other permissions
+                if ($classInspector->usesTrait(Sharable::class)) {
+                    $objectScopeAccesses = array_merge($objectScopeAccesses, $object->getValidObjectScopeAccessesForScope($scopeAccess->getScope()));
+                }
+
+
+                // Only continue if at least one object scope access detected
+                if (sizeof($objectScopeAccesses)) {
+
+                    // Now loop through the detected object scope accesses and calculate
+                    foreach ($objectScopeAccesses as $objectScopeAccess) {
+                        $scopeId = $objectScopeAccess->getRecipientPrimaryKey();
+                        $accessGroup = $objectScopeAccess->getAccessGroup();
+
+                        // Ensure access group granted defined
+                        if (!isset($accessGroupGranted[$accessGroup])) {
+                            $accessGroupGranted[$accessGroup] = true;
+                        }
+
+                        if ($scopeId === null || $scopeId == -1) {
+                            if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT)
+                                $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
+                        } else {
+
+                            // Calculate an initial check as to whether this object has been granted the right level of access
+                            $accessModeMatches = ($accessMode == self::ACCESS_READ) || (($accessMode == self::ACCESS_WRITE) && $objectScopeAccess->getWriteAccess())
+                                || (($accessMode == self::ACCESS_GRANT) && $objectScopeAccess->getGrantAccess());
+
+                            // Compare with logged in privileges if we are accessing non active scopes
+                            // or the scope id matches
+                            if ($accessModeMatches && ($classInspector->hasClassAttribute(AccessNonActiveScopes::class)
+                                    || (!$scopeAccess->getActiveScopeValue() ||
+                                        ($scopeId == $scopeAccess->getActiveScopeValue())))) {
+                                $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && $this->getLoggedInScopePrivileges($scopeAccess->getScope(),
+                                        $scopeId);
+                            } // Otherwise assume false for this
+                            else {
+                                $accessGroupGranted[$accessGroup] = false;
+                            }
+                        }
+
+                    }
+
+                }
+
+
             }
 
         }
 
-        return $access;
+        // Return at least one true
+        return sizeof($accessGroupGranted) == 0 || in_array(true, $accessGroupGranted);
 
     }
 

@@ -3,6 +3,7 @@
 
 namespace Kiniauth\Objects\Account;
 
+use Kiniauth\Attributes\Security\AccessNonActiveScopes;
 use Kinikit\Persistence\ORM\ActiveRecord;
 
 
@@ -11,6 +12,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  *
  * @table ka_account
  */
+#[AccessNonActiveScopes]
 class AccountSummary extends ActiveRecord {
 
     /**

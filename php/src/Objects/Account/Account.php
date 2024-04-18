@@ -3,6 +3,7 @@
 namespace Kiniauth\Objects\Account;
 
 
+use Kiniauth\Attributes\Security\AccessNonActiveScopes;
 use Kiniauth\Objects\Application\Session;
 use Kiniauth\Objects\Security\AccountRole;
 use Kiniauth\Objects\Security\Privilege;
@@ -16,6 +17,7 @@ use Kiniauth\Objects\Security\Privilege;
  * @generate
  *
  */
+#[AccessNonActiveScopes]
 class Account extends AccountSummary {
 
 
