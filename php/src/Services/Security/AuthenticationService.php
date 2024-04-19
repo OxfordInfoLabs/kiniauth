@@ -435,6 +435,8 @@ class AuthenticationService {
      * @param $provider
      * @param $data
      * @return void
+     * 
+     * @objectInterceptorDisabled
      */
     public function authenticateBySSO($provider, $data) {
 

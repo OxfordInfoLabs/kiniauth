@@ -115,7 +115,7 @@ class FacebookSSOAuthenticator extends SSOAuthenticator {
         $email = $data["email"] ?? null;
 
         if (!$email) {
-            // No email set - bad
+            throw new \Exception("No email linked to the account");
         }
 
         return [$name, $email];
