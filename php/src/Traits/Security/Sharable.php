@@ -21,13 +21,6 @@ trait Sharable {
      */
     private ?array $objectScopeAccesses = [];
 
-    /**
-     * @return ObjectScopeAccess[]
-     */
-    public function getObjectScopeAccesses(): ?array {
-        return $this->objectScopeAccesses;
-    }
-
 
     /**
      * Get the recipient pk objects for a given scope
@@ -35,7 +28,7 @@ trait Sharable {
      * @param string $recipientScope
      * @return string[]
      */
-    public function getValidObjectScopeAccessesForScope($recipientScope) {
+    public function returnValidObjectScopeAccessesForScope($recipientScope) {
         $scopedObjects = ObjectArrayUtils::filterArrayOfObjectsByMember("recipientScope", $this->objectScopeAccesses ?? [], $recipientScope);
         return array_filter($scopedObjects, function ($object) {
             return !$object->getExpiryDate() || $object->getExpiryDate() >= new \DateTime();

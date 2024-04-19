@@ -34,9 +34,11 @@ class SharableTest extends TestBase {
         $reSharable = TestSharable::fetch(1);
         $this->assertEquals("Person 1", $reSharable->getName());
 
-        $this->assertEquals(2, sizeof($reSharable->getObjectScopeAccesses()));
-        $this->assertEquals(["ACCOUNT", 1], [$reSharable->getObjectScopeAccesses()[0]->getRecipientScope(), $reSharable->getObjectScopeAccesses()[0]->getRecipientPrimaryKey()]);
-        $this->assertEquals(["ACCOUNT", 2], [$reSharable->getObjectScopeAccesses()[1]->getRecipientScope(), $reSharable->getObjectScopeAccesses()[1]->getRecipientPrimaryKey()]);
+        $accesses = $reSharable->returnValidObjectScopeAccessesForScope(Role::SCOPE_ACCOUNT);
+
+        $this->assertEquals(2, sizeof($accesses));
+        $this->assertEquals(["ACCOUNT", 1], [$accesses[0]->getRecipientScope(), $accesses[0]->getRecipientPrimaryKey()]);
+        $this->assertEquals(["ACCOUNT", 2], [$accesses[1]->getRecipientScope(), $accesses[1]->getRecipientPrimaryKey()]);
 
     }
 
