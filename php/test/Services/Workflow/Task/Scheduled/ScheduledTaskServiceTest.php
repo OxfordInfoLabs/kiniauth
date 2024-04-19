@@ -269,7 +269,10 @@ class ScheduledTaskServiceTest extends TestBase {
         $task = $this->scheduledTaskService->getScheduledTask($taskId);
 
         // Check that the next start time is reset and the status is pending
-        $this->assertEquals((new \DateTime())->format("Y-m-d H:i:s"), $task->getNextStartTime());
+        $this->assertTrue(
+            $task->getNextStartTime() == date("Y-m-d H:i:s") ||
+            $task->getNextStartTime() == date("Y-m-d H:i:s", strtotime("-1 second"))            // In case we roll over a second during execution
+        );
         $this->assertEquals(ScheduledTask::STATUS_PENDING, $task->getStatus());
 
 
