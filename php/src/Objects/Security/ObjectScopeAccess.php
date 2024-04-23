@@ -26,6 +26,7 @@ class ObjectScopeAccess extends ActiveRecord {
      * Primary key of the object being shared
      *
      * @primaryKey
+     * @maxLength 25
      */
     private ?string $sharedObjectPrimaryKey;
 
@@ -40,12 +41,14 @@ class ObjectScopeAccess extends ActiveRecord {
 
     /**
      * @primaryKey
+     * @maxLength 25
      */
     private ?string $recipientPrimaryKey;
 
 
     /**
      * Access group - for grouping accesses together logically.
+     * @primaryKey
      */
     private ?string $accessGroup;
 
