@@ -5,6 +5,7 @@ namespace Kiniauth\Traits\Controller\Account;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\RoleService;
+use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
 
 trait Account {
 
@@ -57,6 +58,7 @@ trait Account {
         return $this->accountService->getAccountSettings();
     }
 
+
     /**
      * Update account settings with a new full set
      *
@@ -66,6 +68,53 @@ trait Account {
      */
     public function updateAccountSettings($settings) {
         $this->accountService->updateAccountSettings($settings);
+    }
+
+
+    /**
+     * Get account discovery settings
+     *
+     * @http GET /discovery
+     *
+     * @return AccountDiscoveryItem
+     */
+    public function getAccountDiscoverySettings() {
+        return $this->accountService->getAccountDiscoverySettings();
+    }
+
+
+    /**
+     * Set discoverability for an account
+     *
+     * @http PUT /discoverable
+     *
+     * @param mixed $discoverable
+     */
+    public function setAccountDiscoverable($discoverable = false) {
+        $this->accountService->setAccountDiscoverable($discoverable);
+    }
+
+    /**
+     * Generate account external identifier
+     *
+     * @http PUT /externalIdentifier
+     *
+     * @return string
+     */
+    public function generateAccountExternalIdentifier() {
+        return $this->accountService->generateAccountExternalIdentifier();
+    }
+
+
+    /**
+     * Unset account external identifier
+     *
+     * @http DELETE /externalIdentifier
+     *
+     * @return string
+     */
+    public function unsetAccountExternalIdentifier() {
+        $this->accountService->unsetAccountExternalIdentifier();
     }
 
 

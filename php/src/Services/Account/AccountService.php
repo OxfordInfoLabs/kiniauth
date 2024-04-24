@@ -17,11 +17,13 @@ use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
+use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
 use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
+use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
 
@@ -397,5 +399,60 @@ class AccountService {
         $account->save();
     }
 
+
+    /**
+     * Get account discovery settings for an account
+     *
+     * @param $accountId
+     * @return AccountDiscoveryItem
+     */
+    public function getAccountDiscoverySettings($accountId = Account::LOGGED_IN_ACCOUNT): AccountDiscoveryItem {
+        $account = $this->getAccount($accountId);
+        return new AccountDiscoveryItem($account->getName(), $account->isDiscoverable(), $account->getExternalIdentifier());
+    }
+
+
+    /**
+     * Generate an external identifier for the account
+     *
+     * @param $accountId
+     * @return string
+     */
+    public function generateAccountExternalIdentifier($accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        $identifier = StringUtils::generateRandomString(16);
+        $account->setExternalIdentifier($identifier);
+        $account->save();
+        return $identifier;
+    }
+
+
+    /**
+     * Unset the external identifier for an account
+     *
+     * @param $accountId
+     */
+    public function unsetAccountExternalIdentifier($accountId = Account::LOGGED_IN_ACCOUNT){
+        $account = Account::fetch($accountId);
+        $account->setExternalIdentifier(null);
+        $account->save();
+    }
+
+
+    /**
+     * @param bool $discoverable
+     * @param integer $accountId
+     *
+     * @return void
+     */
+    public function setAccountDiscoverable($discoverable, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        $account->setDiscoverable($discoverable);
+        $account->save();
+
+        // If discoverable and no external identifier, generate one.
+        if ($discoverable && !$account->getExternalIdentifier())
+            $this->generateAccountExternalIdentifier($accountId);
+    }
 
 }

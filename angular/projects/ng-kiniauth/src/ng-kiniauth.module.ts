@@ -38,6 +38,7 @@ import {HttpClientModule} from '@angular/common/http';
 import { PasswordResetComponent } from './lib/views/password-reset/password-reset.component';
 import { ChangePasswordComponent } from './lib/views/account-summary/change-password/change-password.component';
 import { ApiKeysComponent } from './lib/views/api-keys/api-keys.component';
+import { AccountDiscoverabilityComponent } from './lib/views/account-discoverability/account-discoverability.component';
 
 @NgModule({
     declarations: [
@@ -66,7 +67,8 @@ import { ApiKeysComponent } from './lib/views/api-keys/api-keys.component';
         InvitationComponent,
         PasswordResetComponent,
         ChangePasswordComponent,
-        ApiKeysComponent
+        ApiKeysComponent,
+        AccountDiscoverabilityComponent
     ],
     imports: [
         RouterModule,
@@ -101,7 +103,8 @@ import { ApiKeysComponent } from './lib/views/api-keys/api-keys.component';
         AccountsComponent,
         InvitationComponent,
         PasswordResetComponent,
-        ApiKeysComponent
+        ApiKeysComponent,
+        AccountDiscoverabilityComponent
     ]
 })
 export class NgKiniAuthModule {

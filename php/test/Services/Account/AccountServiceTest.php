@@ -22,6 +22,7 @@ use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
+use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
 use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\DependencyInjection\Container;
@@ -546,5 +547,48 @@ class AccountServiceTest extends TestBase {
 
     }
 
+    public function testCanGetAndUpdateAccountDiscoverySettings() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        // Check initial state
+        $this->assertEquals(new AccountDiscoveryItem("Sam Davis Design"), $this->accountService->getAccountDiscoverySettings(1));
+
+        // Generate external key
+        $key = $this->accountService->generateAccountExternalIdentifier(1);
+        $this->assertNotNull($key);
+
+        // Check saved correctly
+        $externalKey = Account::fetch(1)->getExternalIdentifier();
+        $this->assertEquals($key, $externalKey);
+
+        $this->assertEquals(new AccountDiscoveryItem("Sam Davis Design", false, $externalKey), $this->accountService->getAccountDiscoverySettings(1));
+
+
+        // Make discoverable
+        $this->accountService->setAccountDiscoverable(true, 1);
+        $this->assertEquals(new AccountDiscoveryItem("Sam Davis Design", true, $externalKey), $this->accountService->getAccountDiscoverySettings(1));
+
+
+        // Make undiscoverable
+        $this->accountService->setAccountDiscoverable(false);
+        $this->assertEquals(new AccountDiscoveryItem("Sam Davis Design", false, $externalKey), $this->accountService->getAccountDiscoverySettings(1));
+
+        // Set external key to null manually and check discoverable generates a new external key.
+        $account = Account::fetch(1);
+        $account->setExternalIdentifier(null);
+        $account->save();
+
+        $this->accountService->setAccountDiscoverable(true);
+        $externalKey = Account::fetch(1)->getExternalIdentifier();
+        $this->assertNotNull($externalKey);
+        $this->assertEquals(new AccountDiscoveryItem("Sam Davis Design", true, $externalKey), $this->accountService->getAccountDiscoverySettings(1));
+
+        $this->accountService->unsetAccountExternalIdentifier();
+        $externalKey = Account::fetch(1)->getExternalIdentifier();
+        $this->assertNull($externalKey);
+
+
+    }
 
 }

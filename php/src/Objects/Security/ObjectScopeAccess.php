@@ -35,6 +35,7 @@ class ObjectScopeAccess extends ActiveRecord {
      * Scope for the recipient of the shared object e.g. ACCOUNT
      *
      * @primaryKey
+     * @maxLength 25
      */
     private ?string $recipientScope;
 
@@ -49,6 +50,7 @@ class ObjectScopeAccess extends ActiveRecord {
     /**
      * Access group - for grouping accesses together logically.
      * @primaryKey
+     * @maxLength 80
      */
     private ?string $accessGroup;
 

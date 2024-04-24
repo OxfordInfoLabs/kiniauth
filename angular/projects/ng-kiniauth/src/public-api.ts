@@ -28,5 +28,6 @@ export * from './lib/views/accounts/accounts.component';
 export * from './lib/views/invitation/invitation.component';
 export * from './lib/views/password-reset/password-reset.component';
 export * from './lib/views/api-keys/api-keys.component';
+export * from './lib/views/account-discoverability/account-discoverability.component';
 
 export * from './ng-kiniauth.module';
