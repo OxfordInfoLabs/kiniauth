@@ -432,7 +432,7 @@ class AccountService {
      *
      * @param $accountId
      */
-    public function unsetAccountExternalIdentifier($accountId = Account::LOGGED_IN_ACCOUNT){
+    public function unsetAccountExternalIdentifier($accountId = Account::LOGGED_IN_ACCOUNT) {
         $account = Account::fetch($accountId);
         $account->setExternalIdentifier(null);
         $account->save();
@@ -453,6 +453,20 @@ class AccountService {
         // If discoverable and no external identifier, generate one.
         if ($discoverable && !$account->getExternalIdentifier())
             $this->generateAccountExternalIdentifier($accountId);
+    }
+
+
+    /**
+     * Search for discoverable accounts - optionally filtered by a search term
+     *
+     * @param string $searchTerm
+     * @param int $offset
+     * @param int $limit
+     *
+     * @return AccountDiscoveryItem[]
+     */
+    public function searchForDiscoverableAccounts($searchTerm, $offset = 0, $limit = 25) {
+
     }
 
 }

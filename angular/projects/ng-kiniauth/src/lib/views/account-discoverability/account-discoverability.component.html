@@ -54,7 +54,7 @@
                             class="inline-flex items-center justify-center ml-3 px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none"
                             (click)="generateExternalIdentifier()">Regenerate
                         </button>
-                        <button *ngIf="discoverabilitySettings.externalIdentifier"
+                        <button *ngIf="discoverabilitySettings.externalIdentifier && !discoverabilitySettings.discoverable"
                                 class="inline-flex items-center justify-center ml-3 px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-secondary focus:outline-none"
                                 (click)="unsetExternalIdentifier()">Unset
                         </button>
