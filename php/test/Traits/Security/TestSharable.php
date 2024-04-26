@@ -2,6 +2,7 @@
 
 namespace Kiniauth\Test\Traits\Security;
 
+use Kiniauth\Objects\Security\ObjectScopeAccess;
 use Kiniauth\Traits\Security\Sharable;
 use Kinikit\Persistence\ORM\ActiveRecord;
 
@@ -15,10 +16,12 @@ class TestSharable extends ActiveRecord {
     /**
      * @param int $id
      * @param string $name
+     * @param ObjectScopeAccess[] $objectScopeAccesses
      */
     public function __construct(
-        private ?int $id, private ?string $name
+        private ?int $id, private ?string $name, array $objectScopeAccesses = []
     ) {
+        $this->objectScopeAccesses = $objectScopeAccesses;
     }
 
     /**
@@ -34,8 +37,6 @@ class TestSharable extends ActiveRecord {
     public function getName(): ?string {
         return $this->name;
     }
-
-
 
 
     use Sharable;

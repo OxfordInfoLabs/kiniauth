@@ -401,7 +401,7 @@ class SecurityService {
 
                 // If we are using the sharable trait, also check for other permissions
                 if ($classInspector->usesTrait(Sharable::class)) {
-                    $objectScopeAccesses = array_merge($objectScopeAccesses, $object->returnValidObjectScopeAccessesForScope($scopeAccess->getScope()));
+                    $objectScopeAccesses = array_merge($objectScopeAccesses, $object->returnValidObjectScopeAccesses($scopeAccess->getScope()));
                 }
 
 

@@ -27,6 +27,7 @@ use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
 use Kinikit\Core\Validation\ValidationException;
@@ -549,44 +550,116 @@ class AccountServiceTest extends TestBase {
 
     public function testCanGetAndUpdateAccountDiscoverySettings() {
 
-        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
 
         // Check initial state
-        $this->assertEquals(new AccountDiscoveryItem("Sam Davis Design"), $this->accountService->getAccountDiscoverySettings(1));
+        $this->assertEquals(new AccountDiscoveryItem("Peter Jones Car Washing", false, "SHAREWITHME2"), $this->accountService->getAccountDiscoverySettings(2));
 
         // Generate external key
-        $key = $this->accountService->generateAccountExternalIdentifier(1);
+        $key = $this->accountService->generateAccountExternalIdentifier(2);
         $this->assertNotNull($key);
 
         // Check saved correctly
-        $externalKey = Account::fetch(1)->getExternalIdentifier();
+        $externalKey = Account::fetch(2)->getExternalIdentifier();
         $this->assertEquals($key, $externalKey);
 
-        $this->assertEquals(new AccountDiscoveryItem("Sam Davis Design", false, $externalKey), $this->accountService->getAccountDiscoverySettings(1));
+        $this->assertEquals(new AccountDiscoveryItem("Peter Jones Car Washing", false, $externalKey), $this->accountService->getAccountDiscoverySettings(2));
 
 
         // Make discoverable
-        $this->accountService->setAccountDiscoverable(true, 1);
-        $this->assertEquals(new AccountDiscoveryItem("Sam Davis Design", true, $externalKey), $this->accountService->getAccountDiscoverySettings(1));
+        $this->accountService->setAccountDiscoverable(true, 2);
+        $this->assertEquals(new AccountDiscoveryItem("Peter Jones Car Washing", true, $externalKey), $this->accountService->getAccountDiscoverySettings(2));
 
 
         // Make undiscoverable
         $this->accountService->setAccountDiscoverable(false);
-        $this->assertEquals(new AccountDiscoveryItem("Sam Davis Design", false, $externalKey), $this->accountService->getAccountDiscoverySettings(1));
+        $this->assertEquals(new AccountDiscoveryItem("Peter Jones Car Washing", false, $externalKey), $this->accountService->getAccountDiscoverySettings(2));
 
         // Set external key to null manually and check discoverable generates a new external key.
-        $account = Account::fetch(1);
+        $account = Account::fetch(2);
         $account->setExternalIdentifier(null);
         $account->save();
 
         $this->accountService->setAccountDiscoverable(true);
-        $externalKey = Account::fetch(1)->getExternalIdentifier();
+        $externalKey = Account::fetch(2)->getExternalIdentifier();
         $this->assertNotNull($externalKey);
-        $this->assertEquals(new AccountDiscoveryItem("Sam Davis Design", true, $externalKey), $this->accountService->getAccountDiscoverySettings(1));
+        $this->assertEquals(new AccountDiscoveryItem("Peter Jones Car Washing", true, $externalKey), $this->accountService->getAccountDiscoverySettings(2));
 
         $this->accountService->unsetAccountExternalIdentifier();
-        $externalKey = Account::fetch(1)->getExternalIdentifier();
+        $externalKey = Account::fetch(2)->getExternalIdentifier();
         $this->assertNull($externalKey);
+
+
+    }
+
+    public function testCanSearchForDiscoverableAccountsExcludingOwnAccount() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $account1Discoverable = new AccountDiscoveryItem("Sam Davis Design", true,
+            $this->accountService->getAccount(1)->getExternalIdentifier());
+
+        $account2Discoverable = new AccountDiscoveryItem("Peter Jones Car Washing", true,
+            $this->accountService->getAccount(2)->getExternalIdentifier());
+
+        $account3Discoverable = new AccountDiscoveryItem("Smart Coasting", true,
+            $this->accountService->getAccount(3)->getExternalIdentifier());
+
+        $account4Discoverable = new AccountDiscoveryItem("Smart Coasting - Design Account", true,
+            $this->accountService->getAccount(5)->getExternalIdentifier());
+
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+
+        $this->assertEquals([$account2Discoverable, $account3Discoverable, $account4Discoverable],
+            $this->accountService->searchForDiscoverableAccounts(""));
+
+        // Filtered
+        $this->assertEquals([$account3Discoverable, $account4Discoverable],
+            $this->accountService->searchForDiscoverableAccounts("sm"));
+
+
+        // Offset and limits
+        $this->assertEquals([$account3Discoverable, $account4Discoverable],
+            $this->accountService->searchForDiscoverableAccounts("", 1));
+
+        $this->assertEquals([$account2Discoverable, $account3Discoverable],
+            $this->accountService->searchForDiscoverableAccounts("", 0, 2));
+
+
+    }
+
+
+    public function testCanLookupDiscoverableAccountByExternalIdentifier() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $this->accountService->setAccountDiscoverable(true, 1);
+        $this->accountService->setAccountDiscoverable(true, 2);
+        $this->accountService->setAccountDiscoverable(true, 3);
+
+        $account1Discoverable = new AccountDiscoveryItem("Sam Davis Design", true,
+            $this->accountService->getAccount(1)->getExternalIdentifier());
+
+        $account2Discoverable = new AccountDiscoveryItem("Peter Jones Car Washing", true,
+            $this->accountService->getAccount(2)->getExternalIdentifier());
+
+        $account3Discoverable = new AccountDiscoveryItem("Smart Coasting", true,
+            $this->accountService->getAccount(3)->getExternalIdentifier());
+
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $this->assertEquals($account1Discoverable, $this->accountService->lookupDiscoverableAccountByExternalIdentifier($account1Discoverable->getExternalIdentifier()));
+        $this->assertEquals($account2Discoverable, $this->accountService->lookupDiscoverableAccountByExternalIdentifier($account2Discoverable->getExternalIdentifier()));
+        $this->assertEquals($account3Discoverable, $this->accountService->lookupDiscoverableAccountByExternalIdentifier($account3Discoverable->getExternalIdentifier()));
+
+        try {
+            $this->accountService->lookupDiscoverableAccountByExternalIdentifier("BADBOY");
+            $this->fail("Should have thrown here");
+        } catch (ItemNotFoundException $e) {
+        }
 
 
     }

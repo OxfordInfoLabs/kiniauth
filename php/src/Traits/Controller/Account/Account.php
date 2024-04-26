@@ -94,6 +94,38 @@ trait Account {
         $this->accountService->setAccountDiscoverable($discoverable);
     }
 
+
+    /**
+     * Search for discoverable accounts
+     *
+     * @http GET /discoverable
+     *
+     * @param $searchTerm
+     * @param $offset
+     * @param $limit
+     *
+     * @return AccountDiscoveryItem[]
+     */
+    public function searchForDiscoverableAccounts($searchTerm, $offset = 0, $limit = 25) {
+        return $this->accountService->searchForDiscoverableAccounts($searchTerm, $offset, $limit);
+    }
+
+
+    /**
+     * Lookup discoverable account by external identifier
+     *
+     * @http GET /discoverable/$externalIdentifier
+     *
+     * @param $externalIdentifier
+     *
+     * @return AccountDiscoveryItem
+     * @throws \Kinikit\Core\Exception\ItemNotFoundException
+     */
+    public function lookupDiscoverableAccountByExternalIdentifier($externalIdentifier) {
+        return $this->accountService->lookupDiscoverableAccountByExternalIdentifier($externalIdentifier);
+    }
+
+
     /**
      * Generate account external identifier
      *

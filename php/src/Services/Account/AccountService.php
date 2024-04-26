@@ -26,6 +26,7 @@ use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
+use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 class AccountService {
 
@@ -464,9 +465,33 @@ class AccountService {
      * @param int $limit
      *
      * @return AccountDiscoveryItem[]
+     * @objectInterceptorDisabled
      */
-    public function searchForDiscoverableAccounts($searchTerm, $offset = 0, $limit = 25) {
+    public function searchForDiscoverableAccounts($searchTerm, $offset = 0, $limit = 25, $omitAccount = Account::LOGGED_IN_ACCOUNT) {
+        $matches = Account::filter("WHERE discoverable = ? AND name LIKE ? AND account_id <> ? ORDER BY name LIMIT ? OFFSET ?",
+            1, "%" . $searchTerm . "%", $omitAccount ?: PHP_INT_MAX, $limit, $offset);
 
+        return array_map(function ($match) {
+            return new AccountDiscoveryItem($match->getName(), true, $match->getExternalIdentifier());
+        }, $matches);
+    }
+
+
+    /**
+     * Lookup a discovery item for an external identifier.
+     *
+     * @param string $externalIdentifier
+     *
+     * @return AccountDiscoveryItem
+     * @objectInterceptorDisabled
+     */
+    public function lookupDiscoverableAccountByExternalIdentifier($externalIdentifier) {
+        $matches = Account::filter("WHERE external_identifier = ?", $externalIdentifier);
+        if (sizeof($matches)) {
+            return new AccountDiscoveryItem($matches[0]->getName(), $matches[0]->isDiscoverable(), $externalIdentifier);
+        } else {
+            throw new ItemNotFoundException("No such account matches the external identifier: " . $externalIdentifier);
+        }
     }
 
 }
