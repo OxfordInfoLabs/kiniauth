@@ -98,7 +98,11 @@ class ObjectWorkflowServiceTest extends TestBase {
 
         // Check we can get an entry for completed steps.
         $completedStep = ObjectWorkflowCompletedStep::fetch([Account::class, 12, "manualCheck", "N/A"]);
-        $this->assertEquals(date("Y-m-d H:i:s"), $completedStep->getCompletedTime()->format("Y-m-d H:i:s"));
+        $completedTime = $completedStep->getCompletedTime()->format("Y-m-d H:i:s");
+        $this->assertTrue(
+            $completedTime == date("Y-m-d H:i:s") ||
+            $completedTime == date("Y-m-d H:i:s", strtotime("-1 second"))           // In case we roll over a second during execution
+        );
         $this->assertEquals(ObjectWorkflowCompletedStep::STATUS_COMPLETED, $completedStep->getStatus());
         $this->assertEquals("Sample Output", $completedStep->getLogOutput());
         $this->assertEquals("N/A", $completedStep->getTriggerValue());
