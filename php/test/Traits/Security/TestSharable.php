@@ -39,5 +39,14 @@ class TestSharable extends ActiveRecord {
     }
 
 
+    public function getSharableTypeLabel(): string {
+        return "Test Sharable";
+    }
+
+    public function getSharableTitle(): string {
+        return $this->getName();
+    }
+
+
     use Sharable;
 }

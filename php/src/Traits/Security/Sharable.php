@@ -25,6 +25,22 @@ trait Sharable {
 
 
     /**
+     * Get a label for this type to identify when sharing etc.
+     *
+     * @return string
+     */
+    public abstract function getSharableTypeLabel(): string;
+
+
+    /**
+     * Get a sharable title for this sharable item for use for labelling it for sharing etc.
+     *
+     * @return string
+     */
+    public abstract function getSharableTitle(): string;
+
+
+    /**
      * Get the recipient pk objects for a given scope
      *
      * @param string $recipientScope

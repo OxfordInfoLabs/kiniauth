@@ -87,7 +87,6 @@ class ObjectScopeAccess extends ActiveRecord {
     public function __construct(?string $recipientScope, ?string $recipientPrimaryKey, ?string $accessGroup, ?bool $writeAccess = false, ?bool $grantAccess = false, ?\DateTime $expiryDate = null, ?string $sharedObjectClassName = null, ?string $sharedObjectPrimaryKey = null) {
         $this->recipientScope = $recipientScope;
         $this->recipientPrimaryKey = $recipientPrimaryKey;
-        $this->accessGroup = $accessGroup;
         $this->writeAccess = $writeAccess;
         $this->grantAccess = $grantAccess;
         $this->expiryDate = $expiryDate;

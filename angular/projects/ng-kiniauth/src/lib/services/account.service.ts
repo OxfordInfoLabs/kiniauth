@@ -109,7 +109,7 @@ export class AccountService {
     public async searchForDiscoverableAccounts(searchTerm, offset = 0, limit = 25) {
         return this.http.get(this.config.accessHttpURL + '/account/discoverable?searchTerm=' + searchTerm + '&limit=' + limit + '&offset=' + offset).toPromise();
     }
-
+    
 
     public async lookupDiscoverableAccountByExternalIdentifier(externalIdentifier) {
         return await this.http.get(this.config.accessHttpURL + '/account/discoverable/' + externalIdentifier).toPromise();

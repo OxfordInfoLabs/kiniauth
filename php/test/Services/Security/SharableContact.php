@@ -16,4 +16,12 @@ class SharableContact extends Contact {
         parent::__construct($name, $organisation, $street1, $street2, $city, $county, $postcode, $countryCode, $telephoneNumber, $emailAddress, $accountId, $type);
         $this->objectScopeAccesses = $objectScopeAccesses;
     }
+
+    public function getSharableTypeLabel(): string {
+        return "Sharable Contact";
+    }
+
+    public function getSharableTitle(): string {
+        return $this->name;
+    }
 }
