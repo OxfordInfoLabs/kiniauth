@@ -84,6 +84,13 @@ class ScopeAccessGroup {
     }
 
 
-
+    /**
+     * Get expiry date as a string
+     *
+     * @return string
+     */
+    public function getExpiryDateString(): string {
+        return $this->expiryDate ? $this->expiryDate->format("Y-m-d") : "";
+    }
 
 }

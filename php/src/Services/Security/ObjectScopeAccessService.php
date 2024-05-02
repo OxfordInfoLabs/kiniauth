@@ -15,6 +15,7 @@ use Kiniauth\ValueObjects\Security\ScopeAccessGroup;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspector;
+use Kinikit\Core\Util\ArrayUtils;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Persistence\ORM\ORM;
 
@@ -54,32 +55,11 @@ class ObjectScopeAccessService {
         // Check sharable and return
         $object = $this->checkObjectSharableByLoggedInUser($objectClassName, $objectPrimaryKey);
 
-
-        // Group all items by scope
-        $scopedItems = ObjectArrayUtils::groupArrayOfObjectsByMember(["recipientScope", "recipientPrimaryKey"], $object->returnValidObjectScopeAccesses());
-
-
-        foreach ($scopedItems as $scope => $items) {
-
-            // Grab the scope access object
-            $scopeAccess = $this->scopeManager->getScopeAccess($scope);
-
-            // Resolve matching descriptions for passed ids
-            $matchingDescriptions = $scopeAccess->getScopeObjectDescriptionsById(array_keys($items));
-
-            $scopedItems[$scope] = ["items" => $matchingDescriptions, "label" => $scopeAccess->getScopeDescription()];
-
-        }
-
         // Get all scope groups.
         $scopeGroups = $object->returnValidScopeAccessGroups();
 
-        foreach ($scopeGroups as $scopeGroup) {
-            foreach ($scopeGroup->getScopeAccesses() as $scopeAccess) {
-                $scopeAccess->setScopeLabel($scopedItems[$scopeAccess->getScope()]["label"] ?? null);
-                $scopeAccess->setItemLabel($scopedItems[$scopeAccess->getScope()]["items"][$scopeAccess->getItemIdentifier()] ?? null);
-            }
-        }
+        // Add descriptions
+        $this->addScopeObjectDescriptionsToScopeGroups($scopeGroups);
 
         return $scopeGroups;
 
@@ -127,7 +107,9 @@ class ObjectScopeAccessService {
 
         // Remove all entries for the specified access groups
         foreach ($accessGroups as $accessGroup) {
-            $matchingScopes = ObjectScopeAccess::filter("WHERE accessGroup = ?", $accessGroup);
+            $matchingScopes = ObjectScopeAccess::filter("WHERE sharedObjectClassName = ? AND sharedObjectPrimaryKey = ? AND accessGroup = ?",
+                $objectClassName, $objectPrimaryKey,
+                $accessGroup);
             foreach ($matchingScopes as $scope) {
                 $scope->remove();
             }
@@ -159,8 +141,17 @@ class ObjectScopeAccessService {
         // Grab logged in use and account
         list($loggedInUser, $loggedInAccount) = $this->securityService->getLoggedInSecurableAndAccount();
 
+
+        // Existing access groups
+        $existingAccessGroups = ObjectArrayUtils::indexArrayOfObjectsByMember("groupName", $this->listInvitationsForSharedObject($objectClassName, $objectPrimaryKey));
+
         // Create a pending action for each access group.
         foreach ($accessGroups as $accessGroup) {
+
+            // If already invited, skip
+            if (isset($existingAccessGroups[$accessGroup->getGroupName()]))
+                continue;
+
             $invitationCode = $this->pendingActionService->createPendingAction("OBJECT_SHARING_INVITE", $objectPrimaryKey, $accessGroup, "P7D", null, $objectClassName);
 
             // Send email using email template
@@ -190,12 +181,72 @@ class ObjectScopeAccessService {
         $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("OBJECT_SHARING_INVITE", $invitationCode);
 
         // Get scope access group
-        $scopeAccessGroup = $this->objectBinder->bindFromArray($pendingAction->getData(),ScopeAccessGroup::class);
+        $scopeAccessGroup = $this->objectBinder->bindFromArray($pendingAction->getData(), ScopeAccessGroup::class);
 
         foreach ($scopeAccessGroup->getScopeAccesses() as $objectScopeItem) {
             $objectScopeAccess = new ObjectScopeAccess($objectScopeItem->getScope(), $objectScopeItem->getItemIdentifier(), $scopeAccessGroup->getGroupName(), $scopeAccessGroup->getWriteAccess(), $scopeAccessGroup->getGrantAccess(), $scopeAccessGroup->getExpiryDate(), $pendingAction->getObjectType(), $pendingAction->getObjectId());
             $objectScopeAccess->save();
         }
+
+
+    }
+
+
+    /**
+     * Cancel account invitations for access groups.
+     *
+     * @param string $objectClassName
+     * @param string $objectPrimaryKey
+     * @param string[] $accessGroups
+     *
+     * @return void
+     */
+    public function cancelAccountInvitationsForAccessGroups(string $objectClassName, string $objectPrimaryKey,
+                                                            array  $accessGroups) {
+
+        // Check the class being assigned is sharable
+        $this->checkObjectSharableByLoggedInUser($objectClassName, $objectPrimaryKey);
+
+
+        // Grab invitations
+        $invitations = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("OBJECT_SHARING_INVITE", $objectPrimaryKey, $objectClassName);
+
+        // Remove action if matching invite for group
+        foreach ($invitations as $invitation) {
+            if (in_array($invitation->getData()["groupName"] ?? null, $accessGroups))
+                $this->pendingActionService->removePendingAction("OBJECT_SHARING_INVITE", $invitation->getIdentifier());
+        }
+
+
+    }
+
+
+    /**
+     * List invitation scope access groups for a shared object
+     *
+     * @param string $objectClassName
+     * @param string $objectPrimaryKey
+     *
+     * @return ScopeAccessGroup[]
+     *
+     * @objectInterceptorDisabled
+     */
+    public function listInvitationsForSharedObject(string $objectClassName, string $objectPrimaryKey) {
+
+        // Check the class being assigned is sharable
+        $this->checkObjectSharableByLoggedInUser($objectClassName, $objectPrimaryKey);
+
+        // Grab invitations
+        $invitations = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("OBJECT_SHARING_INVITE", $objectPrimaryKey, $objectClassName);
+
+        $scopeGroups = array_map(function ($item) {
+            return $this->objectBinder->bindFromArray($item->getData(), ScopeAccessGroup::class);
+        }, $invitations);
+
+        // Add descriptions
+        $this->addScopeObjectDescriptionsToScopeGroups($scopeGroups);
+
+        return $scopeGroups;
 
 
     }
@@ -227,5 +278,36 @@ class ObjectScopeAccessService {
 
     }
 
+
+    private function addScopeObjectDescriptionsToScopeGroups($scopeGroups) {
+
+        $scopedItems = [];
+        foreach ($scopeGroups as $group) {
+            // Group all items by scope
+            $scopedItems = ArrayUtils::mergeArrayRecursive($scopedItems, ObjectArrayUtils::groupArrayOfObjectsByMember(["scope", "itemIdentifier"], $group->getScopeAccesses()));
+        }
+
+
+        // Now efficiently, obtain the scope descriptions
+        foreach ($scopedItems as $scope => $items) {
+
+            // Grab the scope access object
+            $scopeAccess = $this->scopeManager->getScopeAccess($scope);
+
+            // Resolve matching descriptions for passed ids
+            $matchingDescriptions = $scopeAccess->getScopeObjectDescriptionsById(array_keys($items));
+
+            $scopedItems[$scope] = ["items" => $matchingDescriptions, "label" => $scopeAccess->getScopeDescription()];
+
+        }
+
+
+        foreach ($scopeGroups as $scopeGroup) {
+            foreach ($scopeGroup->getScopeAccesses() as $scopeAccess) {
+                $scopeAccess->setScopeLabel($scopedItems[$scopeAccess->getScope()]["label"] ?? null);
+                $scopeAccess->setItemLabel($scopedItems[$scopeAccess->getScope()]["items"][$scopeAccess->getItemIdentifier()] ?? null);
+            }
+        }
+    }
 
 }

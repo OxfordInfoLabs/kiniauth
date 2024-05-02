@@ -495,7 +495,20 @@ class AccountService {
     }
 
 
-
+    /**
+     * Get an account summary by external identifier.
+     *
+     * @param $externalIdentifier
+     * @return AccountSummary
+     */
+    public function getAccountByExternalIdentifier($externalIdentifier) {
+        $matches = Account::filter("WHERE external_identifier = ?", $externalIdentifier);
+        if (sizeof($matches)) {
+            return $matches[0];
+        } else {
+            throw new ObjectNotFoundException(Account::class, $externalIdentifier);
+        }
+    }
 
 
 }

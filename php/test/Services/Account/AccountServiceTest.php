@@ -664,4 +664,23 @@ class AccountServiceTest extends TestBase {
 
     }
 
+    public function testCanGetAccountByExternalIdentifier() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+
+        try {
+            $this->accountService->getAccountByExternalIdentifier("12345678899");
+            $this->fail("Should have thrown here");
+        } catch (ObjectNotFoundException $e) {
+            // Success
+        }
+
+
+        // Valid one
+        $account3 = $this->accountService->getAccountByExternalIdentifier("SHAREWITHME3");
+        $this->assertEquals(Account::fetch(3), $account3);
+
+    }
+
 }

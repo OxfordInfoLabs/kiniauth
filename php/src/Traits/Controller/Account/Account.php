@@ -197,4 +197,10 @@ trait Account {
     public function inviteUserToAccount($initialAssignedRoles, $emailAddress, $accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
         $this->accountService->inviteUserToAccount($accountId, $emailAddress, $initialAssignedRoles);
     }
+
+
+
+
+
+
 }
