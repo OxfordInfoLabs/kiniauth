@@ -3,23 +3,22 @@
 namespace Kiniauth\Services\Security\SSOProvider;
 
 use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
 
 class GoogleSSOAuthenticator extends SSOAuthenticator {
 
     public function authenticate($data) {
 
-        $clientId =  Configuration::readParameter("sso.google.clientId");
-        $client = new \Google_Client(["client_id" => $clientId]);
+        if (!$data)
+            throw new \Exception("No access token supplied");
 
-        $payload = $client->verifyIdToken($data);
-        if ($payload) {
-            $userId = $payload["sub"];
-            $email = $payload["email"] ?? null;
+        $userDetails = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' . $data);
+
+        if (isset($userDetails["email"])) {
+            return $payload["email"] ?? null;
         } else {
-            throw new \Exception("Invalid ID token");
+            throw new \Exception("No email linked");
         }
-
-        return $email;
 
     }
 
