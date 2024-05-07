@@ -30,9 +30,9 @@ class ScheduledTaskRunner {
     /**
      * Run all due tasks
      */
-    public function run() {
+    public function run($taskGroup = null) {
 
-        $this->scheduledTaskService->processDueTasks();
+        $this->scheduledTaskService->processDueTasks($taskGroup);
     }
 
     /**
@@ -40,8 +40,11 @@ class ScheduledTaskRunner {
      */
     public static function runFromComposer($event) {
 
+        // Get task group if supplied
+        $taskGroup = $event->getArguments()[0] ?? null;
+
         // Wait seconds if defined
-        $waitSeconds = $event->getArguments()[0] ?? 0;
+        $waitSeconds = $event->getArguments()[1] ?? 0;
         sleep($waitSeconds);
 
         $sourceDirectory = $event->getComposer()->getPackage()->getConfig()["source-directory"] ?? "src";
@@ -60,9 +63,9 @@ class ScheduledTaskRunner {
          */
         $activeRecordInterceptor = Container::instance()->get(ActiveRecordInterceptor::class);
 
-        // Ececute the scheduled tasks with interceptor disabled
-        $activeRecordInterceptor->executeInsecure(function () {
-            Container::instance()->get(ScheduledTaskRunner::class)->run();
+        // Execute the scheduled tasks with interceptor disabled
+        $activeRecordInterceptor->executeInsecure(function () use ($taskGroup) {
+            Container::instance()->get(ScheduledTaskRunner::class)->run($taskGroup);
         });
 
     }

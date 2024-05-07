@@ -10,3 +10,5 @@ recaptcha.secret.key = 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
 
 http.loopback.host = http://kiniauth.test
 internal.controller.secret = ABCDEFGHIJKLM
+
+scheduled.task.default.group = defaultGroup
