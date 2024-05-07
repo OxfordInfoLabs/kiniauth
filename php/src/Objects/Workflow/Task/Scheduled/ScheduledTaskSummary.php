@@ -4,6 +4,7 @@
 namespace Kiniauth\Objects\Workflow\Task\Scheduled;
 
 
+use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Persistence\ORM\ActiveRecord;
 
 /**
@@ -132,7 +133,7 @@ class ScheduledTaskSummary extends ActiveRecord {
         $this->id = $id;
         $this->timeoutTime = $timeoutTime;
         $this->timeoutSeconds = $timeoutSeconds;
-        $this->taskGroup = $taskGroup;
+        $this->taskGroup = $taskGroup ?? Configuration::readParameter("scheduled.task.default.group");
     }
 
 
