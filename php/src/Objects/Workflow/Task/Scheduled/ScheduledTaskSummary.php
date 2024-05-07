@@ -89,6 +89,11 @@ class ScheduledTaskSummary extends ActiveRecord {
      */
     protected $timeoutTime;
 
+    /**
+     * @var string
+     */
+    protected $taskGroup;
+
 
     // Status constants
     const STATUS_PENDING = "PENDING";
@@ -106,14 +111,16 @@ class ScheduledTaskSummary extends ActiveRecord {
      * @param ScheduledTaskTimePeriod[] $timePeriods
      * @param string $status
      * @param integer $id
+     * @param string $nextStartTime
      * @param string $lastStartTime
      * @param string $lastEndTime
      * @param string $timeoutTime
      * @param int $timeoutSeconds
+     * @param string $taskGroup
      */
     public function __construct($taskIdentifier, $description, $configuration, $timePeriods, $status = self::STATUS_PENDING,
-                                $nextStartTime = null,
-                                $lastStartTime = null, $lastEndTime = null, $timeoutTime = null, $timeoutSeconds = 86000, $id = null) {
+                                $nextStartTime = null, $lastStartTime = null, $lastEndTime = null, $timeoutTime = null, $timeoutSeconds = 86000,
+                                $id = null, $taskGroup = null) {
         $this->taskIdentifier = $taskIdentifier;
         $this->description = $description;
         $this->configuration = $configuration;
@@ -125,6 +132,7 @@ class ScheduledTaskSummary extends ActiveRecord {
         $this->id = $id;
         $this->timeoutTime = $timeoutTime;
         $this->timeoutSeconds = $timeoutSeconds;
+        $this->taskGroup = $taskGroup;
     }
 
 
@@ -251,6 +259,7 @@ class ScheduledTaskSummary extends ActiveRecord {
      * @param string $nextStartTime
      */
     public function setNextStartTime($nextStartTime) {
+        print_r("HEY");
         $this->nextStartTime = $nextStartTime;
     }
 
@@ -280,6 +289,20 @@ class ScheduledTaskSummary extends ActiveRecord {
      */
     public function setTimeoutTime($timeoutTime) {
         $this->timeoutTime = $timeoutTime;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTaskGroup() {
+        return $this->taskGroup;
+    }
+
+    /**
+     * @param $group
+     */
+    public function setTaskGroup($taskGroup) {
+        $this->taskGroup = $taskGroup;
     }
 
 
