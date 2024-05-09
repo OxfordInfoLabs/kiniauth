@@ -58,6 +58,10 @@ class AMPParallelAsynchronousProcessor implements AsynchronousProcessor {
         $nInstances = count($asynchronousInstances);
         Logger::log("Parallel Processor Errors: " . $nFailed . " || Parallel Processor AsyncInstances " . $nInstances);
 
+        $workerPool->kill();
+        $workerPool->shutdown();
+        unset($workerPool);
+
         return $asynchronousInstances;
 
     }

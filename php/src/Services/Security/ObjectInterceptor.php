@@ -117,6 +117,8 @@ class ObjectInterceptor extends ContainerInterceptor {
             foreach ($matches as $match) {
 
                 // Work out which scenario we are in - implicit account or explicit parameter.
+                // EXAMPLE $matchValue:
+                // PROJECT:feedaccess($projectKey)
                 $matchValue = $match->getValue();
                 preg_match("/(.+)\((.+)\)/", $matchValue, $matches);
 
