@@ -18,7 +18,7 @@ class GoogleSSOAuthenticator extends SSOAuthenticator {
         $userDetails = json_decode($userDetails, true);
 
         if (isset($userDetails["email"])) {
-            return $payload["email"] ?? null;
+            return $userDetails["email"];
         } else {
             throw new \Exception("No email linked");
         }
