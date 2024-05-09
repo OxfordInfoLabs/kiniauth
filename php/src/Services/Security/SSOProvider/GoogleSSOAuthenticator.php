@@ -9,6 +9,8 @@ class GoogleSSOAuthenticator extends SSOAuthenticator {
         if (!$data)
             throw new \Exception("No access token supplied");
 
+        $data = json_decode($data);
+
         try {
             $userDetails = file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' . $data);
         } catch (\Exception $e) {
