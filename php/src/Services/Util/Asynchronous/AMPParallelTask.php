@@ -47,15 +47,18 @@ class AMPParallelTask implements Task {
             $result = awaitFirst([
                 async(fn() => $this->runAsynchronous()),
                 async(function () {
-                    delay($this->timeout);
+                    delay($this->timeout, false);
                     throw new TimeoutException();
                 })
             ]);
             return $result;
         } catch (\Exception $exception){
-            // Timed out
+            if ($exception instanceof TimeoutException) {
+                // Timed out
+                Logger::log("TIMED OUT WITH ASYNC " . get_class($this->asynchronous));
+            }
+
             $this->asynchronous->setStatus(Asynchronous::STATUS_FAILED);
-            Logger::log("TIMED OUT WITH ASYNC " . get_class($this->asynchronous));
             $objectBinder = Container::instance()->get(ObjectBinder::class);
             $exceptionArray = $objectBinder->bindToArray($exception);
             $this->asynchronous->setExceptionData($exceptionArray);
