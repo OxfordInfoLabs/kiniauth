@@ -1,9 +1,9 @@
 {
   "name": "application",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "scripts": {
     "watch": "ng build ng-kiniauth --watch",
-    "build": "ng build ng-kiniauth",
+    "build": "npm version patch && ng build ng-kiniauth",
     "build:prod": "ng build ng-kiniauth --configuration production",
     "test": "ng test ng-kiniauth",
     "publish": "cd projects/ng-kiniauth && npm version patch && cd ../.. && npm run build:prod && cd dist/ng-kiniauth && npm publish"
