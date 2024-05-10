@@ -90,11 +90,16 @@ class ScheduledTaskService {
     /**
      * Process all due tasks according to the schedule information
      */
-    public function processDueTasks() {
+    public function processDueTasks($taskGroup = null) {
 
         // Process any timed out tasks
-        $timedOutTasks = ScheduledTask::filter("WHERE timeoutTime <= ? AND status LIKE ?",
-            date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING);
+        if ($taskGroup) {
+            $timedOutTasks = ScheduledTask::filter("WHERE timeoutTime <= ? AND status LIKE ? AND task_group = ?",
+                date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING, $taskGroup);
+        } else {
+            $timedOutTasks = ScheduledTask::filter("WHERE timeoutTime <= ? AND status LIKE ?",
+                date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING);
+        }
 
         if (sizeof($timedOutTasks)) {
             foreach ($timedOutTasks as $task) {
@@ -109,8 +114,13 @@ class ScheduledTaskService {
 
 
         // Gather due tasks
-        $dueTasks = ScheduledTask::filter("WHERE nextStartTime <= ? AND (status IS NULL OR status <> ?)",
-            date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING);
+        if ($taskGroup) {
+            $dueTasks = ScheduledTask::filter("WHERE nextStartTime <= ? AND (status IS NULL OR status <> ?) AND taskGroup = ?",
+                date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING, $taskGroup);
+        } else {
+            $dueTasks = ScheduledTask::filter("WHERE nextStartTime <= ? AND (status IS NULL OR status <> ?)",
+                date('Y-m-d H:i:s'), ScheduledTask::STATUS_RUNNING);
+        }
 
         if (sizeof($dueTasks))
             $this->scheduledTaskProcessor->processScheduledTasks($dueTasks);

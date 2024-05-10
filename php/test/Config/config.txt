@@ -14,3 +14,5 @@ internal.controller.secret = ABCDEFGHIJKLM
 sso.facebook.appId = 1234
 sso.facebook.appSecret = abcdef
 sso.facebook.redirectURI = https://test.com/sso
+
+scheduled.task.default.group = defaultGroup
