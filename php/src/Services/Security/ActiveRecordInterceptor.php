@@ -3,10 +3,13 @@
 
 namespace Kiniauth\Services\Security;
 
+use Kiniauth\Objects\Security\ObjectScopeAccess;
+use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Workflow\PropertyChangeWorkflow;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Workflow\ObjectWorkflowService;
 use Kiniauth\Traits\Application\Timestamped;
+use Kiniauth\Traits\Security\Sharable;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Object\SerialisableObject;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
@@ -15,6 +18,7 @@ use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
 use Kinikit\Persistence\ORM\Mapping\ORMMapping;
 use Kinikit\Persistence\ORM\ORM;
 use Kinikit\Persistence\TableMapper\Exception\WrongPrimaryKeyLengthException;
+use phpDocumentor\Reflection\Types\Callable_;
 
 
 /**
@@ -51,6 +55,11 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
 
     private $disabled = false;
 
+    /**
+     * @var array
+     */
+    private $whitelistedReadAccounts = [];
+
 
     /**
      * @param SecurityService $securityService
@@ -65,6 +74,7 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
         $this->classInspectorProvider = $classInspectorProvider;
         $this->orm = $orm;
         $this->objectWorkflowService = $objectWorkflowService;
+        $this->whitelistedReadAccounts = [];
     }
 
 
@@ -150,6 +160,32 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
 
 
     /**
+     * Execute a callable
+     *
+     * @param Callable $callable
+     * @param int $accountId
+     *
+     */
+    public function executeWithWhitelistedAccountReadAccess($callable, $accountId) {
+
+        $previousWhiteListed = $this->whitelistedReadAccounts;
+
+        $this->whitelistedReadAccounts[] = $accountId;
+
+        // Run the callable
+        try {
+            $result = $callable();
+            $this->whitelistedReadAccounts = $previousWhiteListed;
+            return $result;
+        } catch (\Throwable $e) {
+            $this->whitelistedReadAccounts = $previousWhiteListed;
+            throw($e);
+        }
+
+    }
+
+
+    /**
      * @param mixed $object
      * @return bool
      */
@@ -158,12 +194,23 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
 
         if ($this->securityService->checkLoggedInObjectAccess($object, $accessMode))
             return true;
-        else {
-            if ($throwException)
-                throw new AccessDeniedException();
-            else
-                return false;
+
+        // If we are attempting to read a sharable object and we have whitelistings, ensure these are encoded
+        if (in_array(Sharable::class, class_uses($object)) && ($accessMode == SecurityService::ACCESS_READ)
+            && sizeof($this->whitelistedReadAccounts)) {
+            foreach ($this->whitelistedReadAccounts as $accountId) {
+                if ($this->securityService->checkObjectScopeAccess($object, Role::SCOPE_ACCOUNT, $accountId, SecurityService::ACCESS_GRANT))
+                    return true;
+            }
         }
+
+
+        // If fallen through, throw or return
+        if ($throwException)
+            throw new AccessDeniedException();
+        else
+            return false;
+
     }
 
     /**

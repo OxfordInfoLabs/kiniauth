@@ -167,25 +167,25 @@ class SecurityServiceTest extends TestBase {
         AuthenticationHelper::login("james@smartcoasting.org", "password");
         $session = Container::instance()->get(Session::class);
         $session->__setLoggedInAccount(new AccountSummary(3));
-        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_READ));
-        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_WRITE));
-        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_GRANT));
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_READ));
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_GRANT));
 
         // Grant access but not write access
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
-        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_READ));
-        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_WRITE));
-        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_GRANT));
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_READ));
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_GRANT));
 
     }
 
 
-    public function testObjectsSharedWithExpiredScopeAccessesAreNotResolvedForSecurity(){
+    public function testObjectsSharedWithExpiredScopeAccessesAreNotResolvedForSecurity() {
 
         $contact = new SharableContact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
             "Oxon", "OX4 7YY", "GB", null, "test@test.com", 2, Contact::ADDRESS_TYPE_GENERAL, [
-                new ObjectScopeAccess(Role::SCOPE_ACCOUNT, 3, "group1", true,false,(new \DateTime())->sub(new \DateInterval("P1D"))),
-                new ObjectScopeAccess(Role::SCOPE_ACCOUNT, 1, "group2", false, true,(new \DateTime())->sub(new \DateInterval("P1D")))
+                new ObjectScopeAccess(Role::SCOPE_ACCOUNT, 3, "group1", true, false, (new \DateTime())->sub(new \DateInterval("P1D"))),
+                new ObjectScopeAccess(Role::SCOPE_ACCOUNT, 1, "group2", false, true, (new \DateTime())->sub(new \DateInterval("P1D")))
             ]);
 
 
@@ -193,15 +193,15 @@ class SecurityServiceTest extends TestBase {
         AuthenticationHelper::login("james@smartcoasting.org", "password");
         $session = Container::instance()->get(Session::class);
         $session->__setLoggedInAccount(new AccountSummary(3));
-        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_READ));
-        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_WRITE));
-        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_GRANT));
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_READ));
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_GRANT));
 
         // No access granted as expired
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
-        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_READ));
-        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_WRITE));
-        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact,SecurityService::ACCESS_GRANT));
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_READ));
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_GRANT));
 
     }
 
@@ -424,5 +424,63 @@ class SecurityServiceTest extends TestBase {
 
 
     }
+
+
+    public function testCanCheckObjectAccessScope() {
+
+        // Simple object - no object scopes
+        $test = new TestNonAccountObject(23, "Hello", "Test");
+
+        // Simple non-sharable object with scope identified field
+        $contact = new Contact("Me", "Test", "1 The Lane", null, null, null, "OX3 2WR", "GB", null, null, 2);
+
+        // Sharable with extra scopes attached
+        $sharableContact = new SharableContact("Me", "Test", "1 The Lane", null, null, null, "OX3 2WR", "GB", null, null, 2, null, [
+            new ObjectScopeAccess(Role::SCOPE_ACCOUNT, 3, "TEST"),
+            new ObjectScopeAccess(Role::SCOPE_ACCOUNT, 4, "TEST", true),
+            new ObjectScopeAccess(Role::SCOPE_ACCOUNT, 5, "TEST", false, true),
+            new ObjectScopeAccess(Role::SCOPE_PROJECT, "HELLO", "TEST")
+        ]);
+
+
+        // None scoped objects should always be accessible to everything
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($test, Role::SCOPE_ACCOUNT, 2, SecurityService::ACCESS_READ));
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($test, Role::SCOPE_ACCOUNT, 2, SecurityService::ACCESS_WRITE));
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($test, Role::SCOPE_ACCOUNT, 2, SecurityService::ACCESS_GRANT));
+
+        // Explicit scoped objects (column based) should be fully accesible to account holder only
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($contact, Role::SCOPE_ACCOUNT, 2, SecurityService::ACCESS_READ));
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($contact, Role::SCOPE_ACCOUNT, 2, SecurityService::ACCESS_WRITE));
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($contact, Role::SCOPE_ACCOUNT, 2, SecurityService::ACCESS_GRANT));
+
+        $this->assertFalse($this->securityService->checkObjectScopeAccess($contact, Role::SCOPE_ACCOUNT, 3, SecurityService::ACCESS_READ));
+        $this->assertFalse($this->securityService->checkObjectScopeAccess($contact, Role::SCOPE_ACCOUNT, 3, SecurityService::ACCESS_WRITE));
+        $this->assertFalse($this->securityService->checkObjectScopeAccess($contact, Role::SCOPE_ACCOUNT, 3, SecurityService::ACCESS_GRANT));
+
+
+        // Shared objects should be accessible via sharing according to rules
+        $this->assertFalse($this->securityService->checkObjectScopeAccess($contact, Role::SCOPE_ACCOUNT, 1, SecurityService::ACCESS_READ));
+        $this->assertFalse($this->securityService->checkObjectScopeAccess($contact, Role::SCOPE_ACCOUNT, 1, SecurityService::ACCESS_WRITE));
+        $this->assertFalse($this->securityService->checkObjectScopeAccess($contact, Role::SCOPE_ACCOUNT, 1, SecurityService::ACCESS_GRANT));
+
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 2, SecurityService::ACCESS_READ));
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 2, SecurityService::ACCESS_WRITE));
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 2, SecurityService::ACCESS_GRANT));
+
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 3, SecurityService::ACCESS_READ));
+        $this->assertFalse($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 3, SecurityService::ACCESS_WRITE));
+        $this->assertFalse($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 3, SecurityService::ACCESS_GRANT));
+
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 4, SecurityService::ACCESS_READ));
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 4, SecurityService::ACCESS_WRITE));
+        $this->assertFalse($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 4, SecurityService::ACCESS_GRANT));
+
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 5, SecurityService::ACCESS_READ));
+        $this->assertFalse($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 5, SecurityService::ACCESS_WRITE));
+        $this->assertTrue($this->securityService->checkObjectScopeAccess($sharableContact, Role::SCOPE_ACCOUNT, 5, SecurityService::ACCESS_GRANT));
+
+
+    }
+
 
 }

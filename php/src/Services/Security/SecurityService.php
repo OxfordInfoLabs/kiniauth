@@ -389,21 +389,8 @@ class SecurityService {
 
             $accessGroupGranted = [];
             foreach ($this->scopeManager->getScopeAccesses() as $scopeAccess) {
-                $objectMember = $scopeAccess->getObjectMember();
 
-                $objectScopeAccesses = [];
-
-                // Ensure that any direct scope values identified by object member are mapped to full
-                // Write and grant access.
-                if ($objectMember && $classInspector->hasAccessor($objectMember)) {
-                    $objectScopeAccesses[] = new ObjectScopeAccess($scopeAccess->getScope(), $classInspector->getPropertyData($object, $objectMember), "OWNER", true, true);
-                }
-
-                // If we are using the sharable trait, also check for other permissions
-                if ($classInspector->usesTrait(Sharable::class)) {
-                    $objectScopeAccesses = array_merge($objectScopeAccesses, $object->returnValidObjectScopeAccesses($scopeAccess->getScope()));
-                }
-
+                $objectScopeAccesses = $this->scopeManager->generateObjectScopeAccesses($object, $scopeAccess->getScope());
 
                 // Only continue if at least one object scope access detected
                 if (sizeof($objectScopeAccesses)) {
@@ -451,6 +438,42 @@ class SecurityService {
 
         // Return at least one true
         return sizeof($accessGroupGranted) == 0 || in_array(true, $accessGroupGranted);
+
+    }
+
+
+    /**
+     * Lightweight check as to whether or not a passed object is accessible by a supplied scope object e.g. an account.
+     * Used when we are whitelisting accounts for access
+     *
+     * @param mixed $object
+     * @param string $scope
+     * @param mixed $scopeId
+     * @param string $accessMode
+     *
+     * @return boolean
+     */
+    public function checkObjectScopeAccess($object, $scope, $scopeId, $accessMode = self::ACCESS_READ) {
+
+        // Grab scope accesses for object
+        $objectScopeAccesses = ObjectArrayUtils::groupArrayOfObjectsByMember("recipientPrimaryKey", $this->scopeManager->generateObjectScopeAccesses($object, $scope));
+
+        // If no object scope accesses defined always return true.
+        if (sizeof($objectScopeAccesses) == 0) {
+            return true;
+        }
+
+        // If at least one scope
+        if (isset($objectScopeAccesses[$scopeId])) {
+            foreach ($objectScopeAccesses[$scopeId] as $scopeAccess) {
+                if (($accessMode == self::ACCESS_READ) || (($accessMode == self::ACCESS_WRITE) && $scopeAccess->getWriteAccess()) ||
+                    (($accessMode == self::ACCESS_GRANT) && $scopeAccess->getGrantAccess())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
 
     }
 

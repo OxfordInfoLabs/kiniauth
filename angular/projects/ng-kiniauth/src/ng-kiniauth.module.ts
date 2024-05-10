@@ -1,20 +1,20 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AccountSummaryComponent } from './lib/views/account-summary/account-summary.component';
-import { EditEmailComponent } from './lib/views/account-summary/edit-email/edit-email.component';
-import { TwoFactorComponent } from './lib/views/account-summary/two-factor/two-factor.component';
+import { AccountSummaryComponent } from './lib/views/user/account-summary.component';
+import { EditEmailComponent } from './lib/views/user/edit-email/edit-email.component';
+import { TwoFactorComponent } from './lib/views/user/two-factor/two-factor.component';
 import { LoginComponent } from './lib/views/auth/login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InlineModalComponent } from './lib/views/inline-modal/inline-modal.component';
 import { BaseComponent } from './lib/views/base-component';
-import { EditBackupEmailComponent } from './lib/views/account-summary/edit-backup-email/edit-backup-email.component';
-import { EditMobileComponent } from './lib/views/account-summary/edit-mobile/edit-mobile.component';
+import { EditBackupEmailComponent } from './lib/views/user/edit-backup-email/edit-backup-email.component';
+import { EditMobileComponent } from './lib/views/user/edit-mobile/edit-mobile.component';
 import { AddressBookComponent } from './lib/views/address-book/address-book.component';
 import { ContactDetailsComponent } from './lib/views/contact-details/contact-details.component';
 import { CountryCodesDirective } from './lib/directives/country-codes/country-codes.directive';
 import { PostcodeLookupDirective } from './lib/directives/postcode-lookup/postcode-lookup.directive';
-import { AccountUsersComponent } from './lib/views/account-users/account-users.component';
+import { AccountUsersComponent } from './lib/views/account/account-users/account-users.component';
 import { MatLegacyPaginatorModule as MatPaginatorModule } from '@angular/material/legacy-paginator';
 import { UserRolesComponent } from './lib/views/user-roles/user-roles.component';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,9 +23,9 @@ import { EditRolesComponent } from './lib/views/user-roles/edit-roles/edit-roles
 import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-menu';
 import { InviteUserComponent } from './lib/views/invite-user/invite-user.component';
 import { MatLegacyTabsModule as MatTabsModule } from '@angular/material/legacy-tabs';
-import { EditDetailsComponent } from './lib/views/account-summary/edit-details/edit-details.component';
-import { EditNameComponent } from './lib/views/account-summary/edit-name/edit-name.component';
-import { EditAccountNameComponent } from './lib/views/account-summary/edit-account-name/edit-account-name.component';
+import { EditDetailsComponent } from './lib/views/user/edit-details/edit-details.component';
+import { EditNameComponent } from './lib/views/user/edit-name/edit-name.component';
+import { AccountCoreDetailsComponent } from './lib/views/account/account-core-details/account-core-details.component';
 import { RecaptchaModule } from 'ng-recaptcha';
 import { NotificationsComponent } from './lib/views/notifications/notifications.component';
 import {MatLegacyTableModule as MatTableModule} from '@angular/material/legacy-table';
@@ -36,9 +36,9 @@ import { AccountsComponent } from './lib/views/accounts/accounts.component';
 import { InvitationComponent } from './lib/views/invitation/invitation.component';
 import {HttpClientModule} from '@angular/common/http';
 import { PasswordResetComponent } from './lib/views/password-reset/password-reset.component';
-import { ChangePasswordComponent } from './lib/views/account-summary/change-password/change-password.component';
+import { ChangePasswordComponent } from './lib/views/user/change-password/change-password.component';
 import { ApiKeysComponent } from './lib/views/api-keys/api-keys.component';
-import { AccountDiscoverabilityComponent } from './lib/views/account-discoverability/account-discoverability.component';
+import { AccountDiscoverabilityComponent } from './lib/views/account/account-discoverability/account-discoverability.component';
 
 @NgModule({
     declarations: [
@@ -60,7 +60,7 @@ import { AccountDiscoverabilityComponent } from './lib/views/account-discoverabi
         EditRolesComponent,
         InviteUserComponent,
         EditDetailsComponent,
-        EditAccountNameComponent,
+        AccountCoreDetailsComponent,
         NotificationsComponent,
         NotificationComponent,
         AccountsComponent,
@@ -97,7 +97,7 @@ import { AccountDiscoverabilityComponent } from './lib/views/account-discoverabi
         UserRolesComponent,
         EditRolesComponent,
         InviteUserComponent,
-        EditAccountNameComponent,
+        AccountCoreDetailsComponent,
         NotificationsComponent,
         NotificationComponent,
         AccountsComponent,

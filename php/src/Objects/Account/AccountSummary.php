@@ -25,6 +25,13 @@ class AccountSummary extends ActiveRecord {
 
 
     /**
+     * @var string
+     * @maxLength 4000
+     */
+    protected $logo;
+
+
+    /**
      * Auto increment id.  Strategically breaking naming convention to
      * enforce security based upon account id.
      *
@@ -61,11 +68,13 @@ class AccountSummary extends ActiveRecord {
      * @param integer $accountId
      * @param string $name
      * @param integer $parentAccountId
+     * @param string $logo
      */
-    public function __construct($accountId = null, $name = null, $parentAccountId = 0) {
+    public function __construct($accountId = null, $name = null, $parentAccountId = 0, $logo = null) {
         $this->accountId = $accountId;
         $this->name = $name;
         $this->parentAccountId = $parentAccountId;
+        $this->logo = $logo;
     }
 
 
@@ -75,6 +84,15 @@ class AccountSummary extends ActiveRecord {
     public function getName() {
         return $this->name;
     }
+
+    /**
+     * @return string
+     */
+    public function getLogo() {
+        return $this->logo;
+    }
+
+
 
     /**
      * @return int

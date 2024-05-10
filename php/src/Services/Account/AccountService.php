@@ -200,6 +200,21 @@ class AccountService {
 
 
     /**
+     * Update a logo for a supplied account (defaulting to logged in account)
+     *
+     * @param $url
+     * @param $accountId
+     * @return bool
+     */
+    public function updateLogo($url, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        $account->setLogo($url);
+        $account->save();
+
+    }
+
+
+    /**
      * Suspend an account
      *
      * @param $accountId

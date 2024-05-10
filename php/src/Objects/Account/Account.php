@@ -98,6 +98,15 @@ class Account extends AccountSummary {
         $this->name = $name;
     }
 
+
+    /**
+     * @param string $logo
+     * @return void
+     */
+    public function setLogo($logo){
+        $this->logo = $logo;
+    }
+
     /**
      * @return bool
      */

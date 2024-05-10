@@ -1,4 +1,4 @@
-import { EditAccountNameComponent } from './edit-account-name.component';
+import { AccountCoreDetailsComponent } from './account-core-details.component';
 
 class MockAuthService  {
 
@@ -17,14 +17,14 @@ class MockAccountService {
 }
 
 describe('EditAccountNameComponent', () => {
-    let component: EditAccountNameComponent;
+    let component: AccountCoreDetailsComponent;
     let service: any;
     let accountService: any;
 
     beforeEach(() => {
         service = new MockAuthService();
         accountService = new MockAccountService();
-        component = new EditAccountNameComponent(service, accountService);
+        component = new AccountCoreDetailsComponent(service, accountService);
     });
 
     afterAll(() => {

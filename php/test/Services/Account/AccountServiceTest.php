@@ -191,6 +191,20 @@ class AccountServiceTest extends TestBase {
     }
 
 
+    public function testCanUpdateAccountLogoUrl() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+        $accountId = $this->accountService->createAccount("Bonzo");
+
+        $this->accountService->updateLogo("https://images.test.com/mylogo", $accountId);
+
+        $reAccount = Account::fetch($accountId);
+        $this->assertEquals("https://images.test.com/mylogo", $reAccount->getLogo());
+
+
+    }
+
+
     public function testCanSuspendAndReactivateAccounts() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");

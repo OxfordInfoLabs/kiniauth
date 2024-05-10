@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsulation} from '@angular/core';
 
 @Component({
-    selector: 'ka-edit-account-name',
-    templateUrl: './edit-account-name.component.html',
-    styleUrls: ['./edit-account-name.component.sass'],
+    selector: 'ka-account-core-details',
+    templateUrl: './account-core-details.component.html',
+    styleUrls: ['./account-core-details.component.sass'],
     encapsulation: ViewEncapsulation.None
 })
-export class EditAccountNameComponent implements OnInit, OnDestroy {
+export class AccountCoreDetailsComponent implements OnInit, OnDestroy {
 
     @Input() authService;
     @Input() accountService;
@@ -34,9 +34,12 @@ export class EditAccountNameComponent implements OnInit, OnDestroy {
     public saveNewName() {
         this.saveError = '';
         this.accountService.changeAccountName(this.newName, this.currentPassword)
-            .then(user => {
-                this.user = user;
-                this.saved.emit(user);
+            .then(success => {
+                if (!success){
+                    this.saveError = 'Invalid password supplied.';
+                } else {
+                    this.saved.emit(this.user);
+                }
             })
             .catch(err => {
                 this.saveError = 'There was a problem changing the account name, please check and try again.';
