@@ -196,8 +196,7 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
             return true;
 
         // If we are attempting to read a sharable object and we have whitelistings, ensure these are encoded
-        if (in_array(Sharable::class, class_uses($object)) && ($accessMode == SecurityService::ACCESS_READ)
-            && sizeof($this->whitelistedReadAccounts)) {
+        if (($accessMode == SecurityService::ACCESS_READ) && sizeof($this->whitelistedReadAccounts)) {
             foreach ($this->whitelistedReadAccounts as $accountId) {
                 if ($this->securityService->checkObjectScopeAccess($object, Role::SCOPE_ACCOUNT, $accountId, SecurityService::ACCESS_GRANT))
                     return true;
