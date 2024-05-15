@@ -9,6 +9,7 @@ use Kiniauth\Services\Application\SessionData;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\ValueObjects\Security\NewPasswordDescriptor;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Logging\Logger;
 
 
 trait Auth {
@@ -136,5 +137,15 @@ trait Auth {
         return Container::instance()->get(SessionData::class);
     }
 
+
+    /**
+     * @http POST /sso/$provider
+     *
+     * @param string $provider
+     * @param mixed $data
+     */
+    public function authenticateSSO($provider, $data) {
+        $this->authenticationService->authenticateBySSO($provider, $data);
+    }
 
 }

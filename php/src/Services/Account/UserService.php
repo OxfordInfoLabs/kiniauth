@@ -377,6 +377,19 @@ class UserService {
 
     }
 
+    /**
+     * @param string $email
+     * @return User
+     */
+    public function getUserByEmail($emailAddress) {
+
+        $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
+        $users = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $parentAccountId);
+
+        return $users ? $users[0] : null;
+
+    }
+
 
     /**
      * Search for account users - limit and offset as supplied - optionally restricted to an account.

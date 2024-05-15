@@ -59,7 +59,9 @@ class ScheduledTask extends ScheduledTaskSummary {
                 $scheduledTaskSummary->getLastEndTime() ? date_create_from_format("Y-m-d H:i:s", $scheduledTaskSummary->getLastEndTime()) : null,
                 $scheduledTaskSummary->getTimeoutTime() ? date_create_from_format("Y-m-d H:i:s", $scheduledTaskSummary->getTimeoutTime()) : null,
                 $scheduledTaskSummary->getTimeoutSeconds(),
-                $scheduledTaskSummary->getId());
+                $scheduledTaskSummary->getId(),
+                $scheduledTaskSummary->getTaskGroup()
+            );
         }
         $this->projectKey = $projectKey;
         $this->accountId = $accountId;
@@ -134,7 +136,7 @@ class ScheduledTask extends ScheduledTaskSummary {
             $this->lastStartTime ? $this->lastStartTime->format("Y-m-d H:i:s") : null,
             $this->lastEndTime ? $this->lastEndTime->format("Y-m-d H:i:s") : null,
             $this->timeoutTime ? $this->timeoutTime->format("Y-m-d H:i:s") : null,
-            $this->timeoutSeconds, $this->id);
+            $this->timeoutSeconds, $this->id, $this->taskGroup);
     }
 
     /**

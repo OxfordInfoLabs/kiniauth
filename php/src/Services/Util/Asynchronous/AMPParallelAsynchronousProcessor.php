@@ -16,8 +16,11 @@ use Kinikit\Core\Asynchronous\Processor\AsynchronousProcessor;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
+use function Amp\async;
+use function Amp\delay;
 use function Amp\Future\await;
 use function Amp\Future\awaitAll;
+use function Amp\Future\awaitFirst;
 use function Amp\Parallel\Worker\submit;
 use function Amp\Parallel\Worker\workerPool;
 
@@ -57,6 +60,16 @@ class AMPParallelAsynchronousProcessor implements AsynchronousProcessor {
         $nFailed = count(array_filter($asynchronousInstances, fn($instance) => $instance->getStatus() == Asynchronous::STATUS_FAILED));
         $nInstances = count($asynchronousInstances);
         Logger::log("Parallel Processor Errors: " . $nFailed . " || Parallel Processor AsyncInstances " . $nInstances);
+
+        awaitFirst([
+            async(fn() => $workerPool->shutdown()),
+            async(fn() => delay(10, false))
+        ]);
+        if ($workerPool->isRunning()){
+            $workerPool->kill();
+            $workerPool->shutdown();
+        }
+        unset($workerPool);
 
         return $asynchronousInstances;
 

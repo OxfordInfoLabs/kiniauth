@@ -22,6 +22,7 @@ use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Validation\ValidationException;
@@ -63,6 +64,10 @@ class UserServiceTest extends TestBase {
         $this->session = Container::instance()->get(Session::class);
         $this->pendingActionService = Container::instance()->get(PendingActionService::class);
         $this->objectBinder = Container::instance()->get(ObjectBinder::class);
+
+        $fileResolver = Container::instance()->get(FileResolver::class);
+        $fileResolver->addSearchPath(__DIR__ . "/../../../src");
+
     }
 
     /**
@@ -866,6 +871,21 @@ class UserServiceTest extends TestBase {
 
         AuthenticationHelper::login("examplechange@hello.world", "updated");
         $this->assertTrue(true);
+
+
+    }
+
+    public function testCanGetUserByEmail() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $user = $this->userService->getUserByEmail("james@wrong.com");
+        $this->assertNull($user);
+
+        $userId = $this->userService->createUser("sam@test.com");
+        $user = $this->userService->getUserByEmail("sam@test.com");
+
+        $this->assertEquals($this->userService->getUser($userId), $user);
 
 
     }

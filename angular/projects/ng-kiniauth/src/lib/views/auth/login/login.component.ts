@@ -19,6 +19,8 @@ export class LoginComponent extends BaseComponent implements OnInit {
     @Input() preventRedirect = false;
     @Input() hideForgottenPassword = false;
     @Input() forgottenPasswordURL: string;
+    @Input() facebookSSOURL: string;
+    @Input() googleSSOURL: string;
 
     @Output() loggedIn = new EventEmitter();
 

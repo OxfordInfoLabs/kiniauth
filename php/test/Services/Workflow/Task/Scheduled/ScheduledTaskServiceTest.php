@@ -91,7 +91,6 @@ class ScheduledTaskServiceTest extends TestBase {
     }
 
 
-
     public function testNewlyCreatedTasksAreNotExecutedUntilFirstDuePoint() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
@@ -278,6 +277,37 @@ class ScheduledTaskServiceTest extends TestBase {
 
     }
 
+    public function testPassTaskGroupToProcessSubsetOfDueTasks() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+        ScheduledTaskInterceptor::$disabled = true;
+
+        $nextStartTime = (new \DateTime())->format("Y-m-d H:i:s");
+
+        $myScheduledTask = new ScheduledTask(
+            new ScheduledTaskSummary(
+                "myFirstTask", "a task", null, [], nextStartTime: $nextStartTime, taskGroup: "myTasks"
+            )
+        );
+
+        $yourScheduledTask = new ScheduledTask(
+            new ScheduledTaskSummary(
+                "yourFirstTask", "another task", null, [], nextStartTime: $nextStartTime, taskGroup: "yourTasks"
+            )
+        );
+
+        $myScheduledTask->save();
+        $yourScheduledTask->save();
+
+        $myId = $myScheduledTask->getId();
+        $yourId = $yourScheduledTask->getId();
+
+        $this->scheduledTaskService->processDueTasks("myTasks");
+
+        $this->assertTrue($this->scheduledTaskProcessor->methodWasCalled("processScheduledTasks", [[ScheduledTask::fetch($myId)]]));
+        $this->assertFalse($this->scheduledTaskProcessor->methodWasCalled("processScheduledTasks", [[ScheduledTask::fetch($yourId)]]));
+
+    }
 
 
 }
