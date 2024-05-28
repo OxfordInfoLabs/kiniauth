@@ -41,6 +41,9 @@ class ActivityLoggerTest extends TestBase {
         $this->assertNull($logs[0]->getAssociatedObjectDescription());
         $this->assertEquals(["IPAddress" => "186.44.55.34"], $logs[0]->getData());
         $this->assertNotNull($logs[0]->getTimestamp());
+        $this->assertNull($logs[0]->getLoggedInSecurableType());
+        $this->assertNull($logs[0]->getLoggedInSecurableId());
+
 
     }
 
@@ -59,6 +62,9 @@ class ActivityLoggerTest extends TestBase {
         $this->assertNull($logs[0]->getAssociatedObjectDescription());
         $this->assertEquals([], $logs[0]->getData());
         $this->assertNotNull($logs[0]->getTimestamp());
+        $this->assertEquals("USER", $logs[0]->getLoggedInSecurableType());
+        $this->assertEquals(2, $logs[0]->getLoggedInSecurableId());
+
 
 
     }
@@ -78,6 +84,8 @@ class ActivityLoggerTest extends TestBase {
         $this->assertEquals("My Test Site", $logs[0]->getAssociatedObjectDescription());
         $this->assertEquals(["siteKey" => "BINGO"], $logs[0]->getData());
         $this->assertNotNull($logs[0]->getTimestamp());
+        $this->assertEquals("USER", $logs[0]->getLoggedInSecurableType());
+        $this->assertEquals(2, $logs[0]->getLoggedInSecurableId());
 
 
     }
@@ -87,8 +95,8 @@ class ActivityLoggerTest extends TestBase {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
-        ActivityLogger::log("User Activity", 25, "My Test Site", ["siteKey" => "BINGO"], 5, null);
-        ActivityLogger::log("Other Activity", 25, "My Test Site", ["siteKey" => "BINGO"], null, 7);
+        ActivityLogger::log("User Activity", 25, "My Test Site", ["siteKey" => "BINGO"], 5, null, "TRANSACTION1");
+        ActivityLogger::log("Other Activity", 25, "My Test Site", ["siteKey" => "BINGO"], null, 7, "TRANSACTION2");
 
 
         $logs = Activity::filter("ORDER BY id DESC");
@@ -102,6 +110,10 @@ class ActivityLoggerTest extends TestBase {
         $this->assertEquals("My Test Site", $logs[0]->getAssociatedObjectDescription());
         $this->assertEquals(["siteKey" => "BINGO"], $logs[0]->getData());
         $this->assertNotNull($logs[0]->getTimestamp());
+        $this->assertEquals("USER", $logs[0]->getLoggedInSecurableType());
+        $this->assertEquals(1, $logs[0]->getLoggedInSecurableId());
+        $this->assertEquals("TRANSACTION2", $logs[0]->getTransactionId());
+
 
         $this->assertEquals("User Activity", $logs[1]->getEvent());
         $this->assertEquals(5, $logs[1]->getUserId());
@@ -110,6 +122,9 @@ class ActivityLoggerTest extends TestBase {
         $this->assertEquals("My Test Site", $logs[1]->getAssociatedObjectDescription());
         $this->assertEquals(["siteKey" => "BINGO"], $logs[1]->getData());
         $this->assertNotNull($logs[1]->getTimestamp());
+        $this->assertEquals("USER", $logs[1]->getLoggedInSecurableType());
+        $this->assertEquals(1, $logs[1]->getLoggedInSecurableId());
+        $this->assertEquals("TRANSACTION1", $logs[1]->getTransactionId());
 
     }
 

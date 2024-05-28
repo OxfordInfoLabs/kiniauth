@@ -245,7 +245,7 @@ class ObjectInterceptor extends ContainerInterceptor {
      *
      * @return callable
      */
-    public function methodCallable($callable, $methodName, $params, $methodInspector) {
+    public function methodCallable($callable, $objectInstance, $methodName, $params, $methodInspector) {
 
         // Check for objectInterceptorDisabled
         if ($methodInspector->getMethodAnnotations()["objectInterceptorDisabled"] ?? []) {
