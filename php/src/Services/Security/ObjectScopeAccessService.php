@@ -12,6 +12,7 @@ use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Traits\Security\Sharable;
 use Kiniauth\ValueObjects\Security\ScopeAccessGroup;
+use Kiniauth\ValueObjects\Security\SharableItem;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspector;
@@ -163,6 +164,25 @@ class ObjectScopeAccessService {
             }
         }
 
+
+    }
+
+
+    /**
+     * Get a sharable object for a supplied invitation code
+     *
+     * @param $invitationCode
+     * @return SharableItem
+     *
+     * @objectInterceptorDisabled
+     */
+    public function getSharableItemForInvitationCode($invitationCode) {
+
+        // Pending action
+        $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("OBJECT_SHARING_INVITE", $invitationCode);
+
+        $sharable =  $this->orm->fetch($pendingAction->getObjectType(), $pendingAction->getObjectId());
+        return new SharableItem($sharable->getSharableTypeLabel(), $sharable->getSharableTitle());
 
     }
 

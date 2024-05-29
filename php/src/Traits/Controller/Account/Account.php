@@ -50,6 +50,20 @@ trait Account {
 
 
     /**
+     * Update the logo for the logged in user
+     *
+     * @http POST /changeLogo
+     *
+     * @param $logo
+     * @return bool
+     *
+     */
+    public function changeAccountLogo($logo){
+        return $this->accountService->updateLogo($logo);
+    }
+
+
+    /**
      * Get account settings
      *
      * @http GET /settings

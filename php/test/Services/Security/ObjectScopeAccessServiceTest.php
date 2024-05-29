@@ -20,6 +20,7 @@ use Kiniauth\Test\TestBase;
 use Kiniauth\Test\Traits\Security\TestSharable;
 use Kiniauth\ValueObjects\Security\ScopeAccessGroup;
 use Kiniauth\ValueObjects\Security\ScopeAccessItem;
+use Kiniauth\ValueObjects\Security\SharableItem;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
@@ -484,6 +485,42 @@ class ObjectScopeAccessServiceTest extends TestBase {
     /**
      * @doesNotPerformAssertions
      */
+    public function testExceptionRaisedIfAttemptToGetSharableInfoForInvalidInvitationCode() {
+        $this->pendingActionService->throwException("getPendingActionByIdentifier", new ItemNotFoundException("Bad invitation"), [
+            "OBJECT_SHARING_INVITE", "1234456"
+        ]);
+
+        try {
+            $this->service->getSharableItemForInvitationCode("1234456");
+            $this->fail("Should have thrown here");
+        } catch (ItemNotFoundException $e) {
+        }
+    }
+
+
+    public function testSharableItemReturnedCorrectlyIfValidInvitationCodeSuppliedForObjectSharingInvite() {
+
+        $testSharable = new TestSharable(5, "Hello");
+
+        // Programme return value for fetch
+        $this->orm->returnValue("fetch", $testSharable, [TestSharable::class, 5]);
+
+
+        $this->pendingActionService->returnValue("getPendingActionByIdentifier",
+            new PendingAction("OBJECT_SHARING_INVITE", 5, null, "P7D", null, TestSharable::class)
+            , [
+                "OBJECT_SHARING_INVITE", "1234456"
+            ]);
+
+
+        $this->assertEquals(new SharableItem("Test Sharable", "Hello"),
+            $this->service->getSharableItemForInvitationCode("1234456"));
+    }
+
+
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testExceptionRaisedIfInvalidInvitationCodeSupplied() {
 
         $this->pendingActionService->throwException("getPendingActionByIdentifier", new ItemNotFoundException("Bad invitation"), [
@@ -607,9 +644,9 @@ class ObjectScopeAccessServiceTest extends TestBase {
             $accessGroup1->getGroupName(), $accessGroup2->getGroupName()
         ]);
 
-        $this->assertTrue($this->pendingActionService->methodWasCalled("removePendingAction",["OBJECT_SHARING_INVITE", $pendingAction1->getIdentifier()]));
-        $this->assertTrue($this->pendingActionService->methodWasCalled("removePendingAction",["OBJECT_SHARING_INVITE", $pendingAction2->getIdentifier()]));
-        $this->assertFalse($this->pendingActionService->methodWasCalled("removePendingAction",["OBJECT_SHARING_INVITE", $pendingAction3->getIdentifier()]));
+        $this->assertTrue($this->pendingActionService->methodWasCalled("removePendingAction", ["OBJECT_SHARING_INVITE", $pendingAction1->getIdentifier()]));
+        $this->assertTrue($this->pendingActionService->methodWasCalled("removePendingAction", ["OBJECT_SHARING_INVITE", $pendingAction2->getIdentifier()]));
+        $this->assertFalse($this->pendingActionService->methodWasCalled("removePendingAction", ["OBJECT_SHARING_INVITE", $pendingAction3->getIdentifier()]));
 
         $this->pendingActionService->resetMethodCallHistory("removePendingAction");
 
@@ -617,9 +654,9 @@ class ObjectScopeAccessServiceTest extends TestBase {
             $accessGroup3->getGroupName()
         ]);
 
-        $this->assertFalse($this->pendingActionService->methodWasCalled("removePendingAction",["OBJECT_SHARING_INVITE", $pendingAction1->getIdentifier()]));
-        $this->assertFalse($this->pendingActionService->methodWasCalled("removePendingAction",["OBJECT_SHARING_INVITE", $pendingAction2->getIdentifier()]));
-        $this->assertTrue($this->pendingActionService->methodWasCalled("removePendingAction",["OBJECT_SHARING_INVITE", $pendingAction3->getIdentifier()]));
+        $this->assertFalse($this->pendingActionService->methodWasCalled("removePendingAction", ["OBJECT_SHARING_INVITE", $pendingAction1->getIdentifier()]));
+        $this->assertFalse($this->pendingActionService->methodWasCalled("removePendingAction", ["OBJECT_SHARING_INVITE", $pendingAction2->getIdentifier()]));
+        $this->assertTrue($this->pendingActionService->methodWasCalled("removePendingAction", ["OBJECT_SHARING_INVITE", $pendingAction3->getIdentifier()]));
 
 
     }
