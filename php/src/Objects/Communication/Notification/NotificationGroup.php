@@ -26,7 +26,7 @@ class NotificationGroup extends NotificationGroupSummary {
      * @param integer $accountId
      *
      */
-    public function __construct($notificationGroupSummary, $projectKey, $accountId) {
+    public function __construct($notificationGroupSummary, $projectKey, $accountId, $accountSummary = null) {
 
         if ($notificationGroupSummary)
             parent::__construct($notificationGroupSummary->getName(), $notificationGroupSummary->getMembers(),
@@ -34,6 +34,7 @@ class NotificationGroup extends NotificationGroupSummary {
 
         $this->projectKey = $projectKey;
         $this->accountId = $accountId;
+        $this->accountSummary = $accountSummary;
     }
 
     public function returnSummary() {

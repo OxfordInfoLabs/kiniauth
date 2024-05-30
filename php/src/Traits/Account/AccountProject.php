@@ -70,5 +70,12 @@ trait AccountProject {
         return $this->accountSummary;
     }
 
+    /**
+     * @param PublicAccountSummary $accountSummary
+     */
+    public function setAccountSummary(PublicAccountSummary $accountSummary): void {
+        $this->accountSummary = $accountSummary;
+    }
+
 
 }

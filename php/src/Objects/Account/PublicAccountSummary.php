@@ -2,11 +2,13 @@
 
 namespace Kiniauth\Objects\Account;
 
+use Kinikit\Persistence\ORM\ActiveRecord;
+
 /**
  * @table ka_account
  * @readOnly
  */
-class PublicAccountSummary {
+class PublicAccountSummary extends ActiveRecord {
 
     /**
      * @var int
