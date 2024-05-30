@@ -181,8 +181,8 @@ class ObjectScopeAccessService {
         // Pending action
         $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("OBJECT_SHARING_INVITE", $invitationCode);
 
-        $sharable =  $this->orm->fetch($pendingAction->getObjectType(), $pendingAction->getObjectId());
-        return new SharableItem($sharable->getSharableTypeLabel(), $sharable->getSharableTitle());
+        $sharable = $this->orm->fetch($pendingAction->getObjectType(), $pendingAction->getObjectId());
+        return new SharableItem($sharable);
 
     }
 
@@ -208,7 +208,21 @@ class ObjectScopeAccessService {
             $objectScopeAccess->save();
         }
 
+        // Remove pending action once completed
+        $this->pendingActionService->removePendingAction("OBJECT_SHARING_INVITE", $invitationCode);
+    }
 
+
+    /**
+     * Reject an account invitation to share an object
+     *
+     * @param $invitationCode
+     * @return void
+     *
+     * @objectInterceptorDisabled
+     */
+    public function rejectAccountInvitationToShareObject($invitationCode) {
+        $this->pendingActionService->removePendingAction("OBJECT_SHARING_INVITE", $invitationCode);
     }
 
 

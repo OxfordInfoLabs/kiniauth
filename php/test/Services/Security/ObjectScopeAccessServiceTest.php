@@ -513,7 +513,7 @@ class ObjectScopeAccessServiceTest extends TestBase {
             ]);
 
 
-        $this->assertEquals(new SharableItem("Test Sharable", "Hello"),
+        $this->assertEquals(new SharableItem($testSharable),
             $this->service->getSharableItemForInvitationCode("1234456"));
     }
 
@@ -521,7 +521,7 @@ class ObjectScopeAccessServiceTest extends TestBase {
     /**
      * @doesNotPerformAssertions
      */
-    public function testExceptionRaisedIfInvalidInvitationCodeSupplied() {
+    public function testExceptionRaisedIfInvalidInvitationCodeSuppliedToAcceptMethod() {
 
         $this->pendingActionService->throwException("getPendingActionByIdentifier", new ItemNotFoundException("Bad invitation"), [
             "OBJECT_SHARING_INVITE", "1234456"
@@ -559,6 +559,43 @@ class ObjectScopeAccessServiceTest extends TestBase {
         $this->assertEquals(1, sizeof($matchingItems));
         $test = hash("md5", "ACCOUNT:2");
         $this->assertEquals(new ObjectScopeAccess(Role::SCOPE_ACCOUNT, 2, $test, false, false, null, TestSharable::class, 12), $matchingItems[0]);
+
+        // Check pending action was removed
+        $this->assertTrue($this->pendingActionService->methodWasCalled("removePendingAction",[
+            "OBJECT_SHARING_INVITE", "1234456"
+        ]));
+
+
+    }
+
+
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testExceptionRaisedIfInvalidInvitationCodeSuppliedToRejectMethod() {
+
+        $this->pendingActionService->throwException("removePendingAction", new ItemNotFoundException("Bad invitation"), [
+            "OBJECT_SHARING_INVITE", "1234456"
+        ]);
+
+        try {
+            $this->service->rejectAccountInvitationToShareObject("1234456");
+            $this->fail("Should have thrown here");
+        } catch (ItemNotFoundException $e) {
+        }
+
+    }
+
+
+    public function testCanRejectValidAccountInvitationForSharingAndScopeAccessGroupsAssigned() {
+
+        $this->service->rejectAccountInvitationToShareObject("1234456");
+
+        // Check pending action was removed
+        $this->assertTrue($this->pendingActionService->methodWasCalled("removePendingAction",[
+            "OBJECT_SHARING_INVITE", "1234456"
+        ]));
 
 
     }
