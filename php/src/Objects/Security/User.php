@@ -8,7 +8,6 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Application\Session;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ValidationException;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Util\StringUtils;
@@ -256,7 +255,6 @@ class User extends UserSummary {
 
         $rolesByAccountId = ObjectArrayUtils::indexArrayOfObjectsByMember("accountId", $this->getRoles());
 
-        Logger::log($rolesByAccountId);
         foreach ($rolesByAccountId as $role) {
 
             if ($role->getAccountStatus() == Account::STATUS_ACTIVE) {
