@@ -22,6 +22,7 @@ use Kiniauth\Services\Application\Session;
 use Kiniauth\Traits\Security\Sharable;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\FileResolver;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Util\StringUtils;

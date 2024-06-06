@@ -6,6 +6,7 @@ namespace Kiniauth\Traits\Controller\Guest;
 
 use Kiniauth\Services\Application\SessionData;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Logging\Logger;
 
 
 trait Session {
