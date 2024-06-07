@@ -177,7 +177,7 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
             $result = $callable();
             $this->whitelistedReadAccounts = $previousWhiteListed;
             return $result;
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             $this->whitelistedReadAccounts = $previousWhiteListed;
             throw($e);
         }

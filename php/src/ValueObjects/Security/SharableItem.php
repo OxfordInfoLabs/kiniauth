@@ -33,13 +33,20 @@ class SharableItem {
 
 
     public function __construct(mixed $sharable) {
+
+        /**
+         * @TODO This may not work with subclasses
+         */
         if (!in_array(Sharable::class, class_uses(get_class($sharable)))) {
             throw new WrongParameterTypeException("Sharable Items must be constructed with sharable objects");
         }
         $this->itemTypeLabel = $sharable->getSharableTypeLabel();
         $this->itemLabel = $sharable->getSharableTitle();
 
-        // If account project extension, also pull out the name and logo
+
+        /**
+         * @TODO This may not work with subclasses
+         */
         if (in_array(AccountProject::class, class_uses(get_class($sharable)))) {
             $this->sharerName = $sharable->getAccountSummary()?->getName();
             $this->sharerLogo = $sharable->getAccountSummary()?->getLogo();
