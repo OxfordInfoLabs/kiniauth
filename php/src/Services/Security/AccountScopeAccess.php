@@ -8,6 +8,8 @@ use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\UserRole;
+use Kiniauth\Services\Application\Session;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Util\ObjectArrayUtils;
 
 /**
@@ -24,6 +26,13 @@ class AccountScopeAccess extends ScopeAccess {
      */
     public function __construct() {
         parent::__construct(Role::SCOPE_ACCOUNT, "Account", "accountId");
+    }
+
+    /**
+     * @return string
+     */
+    public function getActiveScopeValue() {
+        return Container::instance()->get(Session::class)->__getLoggedInAccount()?->getAccountId();
     }
 
 

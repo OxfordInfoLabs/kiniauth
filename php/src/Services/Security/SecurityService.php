@@ -4,6 +4,7 @@
 namespace Kiniauth\Services\Security;
 
 
+use Kiniauth\Attributes\Security\AccessNonActiveScopes;
 use Kiniauth\Exception\Security\AccountSuspendedException;
 use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Exception\Security\MissingScopeObjectIdForPrivilegeException;
@@ -11,14 +12,17 @@ use Kiniauth\Exception\Security\NonExistentPrivilegeException;
 use Kiniauth\Exception\Security\UserSuspendedException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\APIKey;
+use Kiniauth\Objects\Security\ObjectScopeAccess;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Application\Session;
+use Kiniauth\Traits\Security\Sharable;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\FileResolver;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Util\StringUtils;
@@ -74,6 +78,7 @@ class SecurityService {
     // Access mode constants for permission checking
     const ACCESS_READ = "READ";
     const ACCESS_WRITE = "WRITE";
+    const ACCESS_GRANT = "GRANT";
 
 
     /**
@@ -383,30 +388,93 @@ class SecurityService {
 
             $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
 
-            $access = true;
+            $accessGroupGranted = [];
             foreach ($this->scopeManager->getScopeAccesses() as $scopeAccess) {
-                $objectMember = $scopeAccess->getObjectMember();
-                if ($objectMember && $classInspector->hasAccessor($objectMember)) {
-                    $scopeId = $classInspector->getPropertyData($object, $objectMember);
 
-                    // Handle special null / -1 scope id case separately.  Here we assume that any missing or -1 account_id
-                    // objects become read only, other objects are fine as they are downstream and controlled separately
-                    if ($scopeId === null || $scopeId === -1) {
-                        if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT)
-                            $access = $access && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
-                    } else {
+                $objectScopeAccesses = $this->scopeManager->generateObjectScopeAccesses($object, $scopeAccess->getScope());
 
-                        $access = $access && $this->getLoggedInScopePrivileges($scopeAccess->getScope(),
-                                $scopeId);
+                // Only continue if at least one object scope access detected
+                if (sizeof($objectScopeAccesses)) {
+
+                    // Now loop through the detected object scope accesses and calculate
+                    foreach ($objectScopeAccesses as $objectScopeAccess) {
+                        $scopeId = $objectScopeAccess->getRecipientPrimaryKey();
+                        $accessGroup = $objectScopeAccess->getAccessGroup();
+
+                        // Ensure access group granted defined
+                        if (!isset($accessGroupGranted[$accessGroup])) {
+                            $accessGroupGranted[$accessGroup] = true;
+                        }
+
+                        if ($scopeId === null || $scopeId == -1) {
+                            if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT)
+                                $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
+                        } else {
+
+                            // Calculate an initial check as to whether this object has been granted the right level of access
+                            $accessModeMatches = ($accessMode == self::ACCESS_READ) || (($accessMode == self::ACCESS_WRITE) && $objectScopeAccess->getWriteAccess())
+                                || (($accessMode == self::ACCESS_GRANT) && $objectScopeAccess->getGrantAccess());
+
+                            // Compare with logged in privileges if we are accessing non active scopes
+                            // or the scope id matches
+                            if ($accessModeMatches && ($classInspector->hasClassAttribute(AccessNonActiveScopes::class)
+                                    || (!$scopeAccess->getActiveScopeValue() ||
+                                        ($scopeId == $scopeAccess->getActiveScopeValue())))) {
+                                $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && $this->getLoggedInScopePrivileges($scopeAccess->getScope(),
+                                        $scopeId);
+                            } // Otherwise assume false for this
+                            else {
+                                $accessGroupGranted[$accessGroup] = false;
+                            }
+                        }
+
                     }
+
                 }
-                if (!$access)
-                    break;
+
+
             }
 
         }
 
-        return $access;
+        // Return at least one true
+        return sizeof($accessGroupGranted) == 0 || in_array(true, $accessGroupGranted);
+
+    }
+
+
+    /**
+     * Lightweight check as to whether or not a passed object is accessible by a supplied scope object e.g. an account.
+     * Used when we are whitelisting accounts for access
+     *
+     * @param mixed $object
+     * @param string $scope
+     * @param mixed $scopeId
+     * @param string $accessMode
+     *
+     * @return boolean
+     */
+    public function checkObjectScopeAccess($object, $scope, $scopeId, $accessMode = self::ACCESS_READ) {
+
+        // Grab scope accesses for object
+        $objectScopeAccesses = ObjectArrayUtils::groupArrayOfObjectsByMember("recipientPrimaryKey", $this->scopeManager->generateObjectScopeAccesses($object, $scope));
+
+        // If no object scope accesses defined always return true.
+        if (sizeof($objectScopeAccesses) == 0) {
+            return true;
+        }
+
+        // If at least one scope
+        if (isset($objectScopeAccesses[$scopeId])) {
+            foreach ($objectScopeAccesses[$scopeId] as $scopeAccess) {
+                if (($accessMode == self::ACCESS_READ) || (($accessMode == self::ACCESS_WRITE) && $scopeAccess->getWriteAccess()) ||
+                    (($accessMode == self::ACCESS_GRANT) && $scopeAccess->getGrantAccess())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
 
     }
 

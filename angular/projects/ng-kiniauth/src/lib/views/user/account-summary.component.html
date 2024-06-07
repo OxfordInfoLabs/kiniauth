@@ -156,7 +156,7 @@
 
 <ka-inline-modal *ngIf="editAccountName" (closed)="editAccountName = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit Account Name</div>
-    <ka-edit-account-name [accountService]="accountService" [authService]="authService" (saved)="loadAccount()"></ka-edit-account-name>
+    <ka-account-core-details [accountService]="accountService" [authService]="authService" (saved)="loadAccount()"></ka-account-core-details>
 </ka-inline-modal>
 
 <ka-inline-modal *ngIf="editEmail" (closed)="editEmail = false">

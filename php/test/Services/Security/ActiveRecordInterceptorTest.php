@@ -12,6 +12,7 @@ use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\ObjectWorkflowService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\Services\Security\ExamplePropertyChangeObject;
+use Kiniauth\Test\Services\Security\SharableContact;
 use Kiniauth\Test\Services\Security\TestNonAccountObject;
 use Kiniauth\Test\Services\Security\TestTimestampObject;
 use Kiniauth\Test\TestBase;
@@ -294,6 +295,76 @@ class ActiveRecordInterceptorTest extends TestBase {
         }
 
         $this->assertFalse($this->objectInterceptor->postMap($contact));
+
+
+    }
+
+
+    public function testCanExecuteABlockWithWhitelistedAccountReadAccessForGrantAccessEnabledSharableObject() {
+
+        $contact = new SharableContact("Mark", "Hello World", "1 This Lane", "This town", "London",
+            "London", "LH1 4YY", "GB", null, null, 2);
+
+        // Start logged out.
+        $this->authenticationService->logout();
+
+        // Check default state
+        // And re-enabled afterwards.
+        try {
+            $this->objectInterceptor->preSave($contact);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+        try {
+            $this->objectInterceptor->preDelete($contact);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+        $this->assertFalse($this->objectInterceptor->postMap($contact));
+
+
+        // Check that the interceptor allows read access for other account.
+        $this->objectInterceptor->executeWithWhitelistedAccountReadAccess(function () use ($contact) {
+
+            try {
+                $this->objectInterceptor->preSave($contact);
+                $this->fail("Should have thrown here");
+            } catch (AccessDeniedException $e) {
+                // Success
+            }
+
+            try {
+                $this->objectInterceptor->preDelete($contact);
+                $this->fail("Should have thrown here");
+            } catch (AccessDeniedException $e) {
+                // Success
+            }
+            $this->assertTrue($this->objectInterceptor->postMap($contact));
+        }, 2);
+
+
+
+        // Check default state restored after function
+        try {
+            $this->objectInterceptor->preSave($contact);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+        try {
+            $this->objectInterceptor->preDelete($contact);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+        $this->assertFalse($this->objectInterceptor->postMap($contact));
+
 
 
     }

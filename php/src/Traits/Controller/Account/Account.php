@@ -5,6 +5,7 @@ namespace Kiniauth\Traits\Controller\Account;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Security\RoleService;
+use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
 
 trait Account {
 
@@ -49,6 +50,20 @@ trait Account {
 
 
     /**
+     * Update the logo for the logged in user
+     *
+     * @http POST /changeLogo
+     *
+     * @param $logo
+     * @return bool
+     *
+     */
+    public function changeAccountLogo($logo){
+        return $this->accountService->updateLogo($logo);
+    }
+
+
+    /**
      * Get account settings
      *
      * @http GET /settings
@@ -56,6 +71,7 @@ trait Account {
     public function getAccountSettings() {
         return $this->accountService->getAccountSettings();
     }
+
 
     /**
      * Update account settings with a new full set
@@ -66,6 +82,85 @@ trait Account {
      */
     public function updateAccountSettings($settings) {
         $this->accountService->updateAccountSettings($settings);
+    }
+
+
+    /**
+     * Get account discovery settings
+     *
+     * @http GET /discovery
+     *
+     * @return AccountDiscoveryItem
+     */
+    public function getAccountDiscoverySettings() {
+        return $this->accountService->getAccountDiscoverySettings();
+    }
+
+
+    /**
+     * Set discoverability for an account
+     *
+     * @http PUT /discoverable
+     *
+     * @param mixed $discoverable
+     */
+    public function setAccountDiscoverable($discoverable = false) {
+        $this->accountService->setAccountDiscoverable($discoverable);
+    }
+
+
+    /**
+     * Search for discoverable accounts
+     *
+     * @http GET /discoverable
+     *
+     * @param $searchTerm
+     * @param $offset
+     * @param $limit
+     *
+     * @return AccountDiscoveryItem[]
+     */
+    public function searchForDiscoverableAccounts($searchTerm, $offset = 0, $limit = 25) {
+        return $this->accountService->searchForDiscoverableAccounts($searchTerm, $offset, $limit);
+    }
+
+
+    /**
+     * Lookup discoverable account by external identifier
+     *
+     * @http GET /discoverable/$externalIdentifier
+     *
+     * @param $externalIdentifier
+     *
+     * @return AccountDiscoveryItem
+     * @throws \Kinikit\Core\Exception\ItemNotFoundException
+     */
+    public function lookupDiscoverableAccountByExternalIdentifier($externalIdentifier) {
+        return $this->accountService->lookupDiscoverableAccountByExternalIdentifier($externalIdentifier);
+    }
+
+
+    /**
+     * Generate account external identifier
+     *
+     * @http PUT /externalIdentifier
+     *
+     * @return string
+     */
+    public function generateAccountExternalIdentifier() {
+        return $this->accountService->generateAccountExternalIdentifier();
+    }
+
+
+    /**
+     * Unset account external identifier
+     *
+     * @http DELETE /externalIdentifier
+     *
+     * @return string
+     */
+    public function unsetAccountExternalIdentifier() {
+        $this->accountService->unsetAccountExternalIdentifier();
     }
 
 
@@ -116,4 +211,10 @@ trait Account {
     public function inviteUserToAccount($initialAssignedRoles, $emailAddress, $accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
         $this->accountService->inviteUserToAccount($accountId, $emailAddress, $initialAssignedRoles);
     }
+
+
+
+
+
+
 }

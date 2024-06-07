@@ -63,11 +63,21 @@ class Activity extends ActiveRecord {
 
 
     /**
-     * Logged in user id
+     * @var string
+     */
+    private $loggedInSecurableType;
+
+    /**
+     * Logged in securable id
      *
      * @var integer
      */
-    private $loggedInUserId;
+    private $loggedInSecurableId;
+
+    /**
+     * @var string
+     */
+    private $transactionId;
 
 
     /**
@@ -79,8 +89,11 @@ class Activity extends ActiveRecord {
      * @param int $associatedObjectId
      * @param string $associatedObjectDescription
      * @param mixed[] $data
+     * @param $loggedInSecurableType
+     * @param int $loggedInSecurableId
+     * @param string $transactionId
      */
-    public function __construct($userId, $accountId, $event, $associatedObjectId, $associatedObjectDescription, $data, $loggedInUserId) {
+    public function __construct($userId, $accountId, $event, $associatedObjectId, $associatedObjectDescription, $data, $loggedInSecurableType, $loggedInSecurableId, $transactionId = null) {
         $this->userId = $userId;
         $this->accountId = $accountId;
         $this->event = $event;
@@ -88,7 +101,9 @@ class Activity extends ActiveRecord {
         $this->associatedObjectDescription = $associatedObjectDescription;
         $this->data = $data;
         $this->timestamp = date("Y-m-d H:i:s");
-        $this->loggedInUserId = $loggedInUserId;
+        $this->loggedInSecurableType = $loggedInSecurableType;
+        $this->loggedInSecurableId = $loggedInSecurableId;
+        $this->transactionId = $transactionId;
     }
 
     /**
@@ -145,6 +160,28 @@ class Activity extends ActiveRecord {
      */
     public function getData() {
         return $this->data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLoggedInSecurableType() {
+        return $this->loggedInSecurableType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLoggedInSecurableId() {
+        return $this->loggedInSecurableId;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getTransactionId() {
+        return $this->transactionId;
     }
 
 

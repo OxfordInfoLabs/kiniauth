@@ -20,6 +20,10 @@
     "value": "http://localhost:5013/register/invite-user/"
   },
   {
+    "key": "accountSharingInvitationURL",
+    "value": "http://localhost:5013/register/invite-account-sharing"
+  },
+  {
     "key": "replyToEmailAddress",
     "value": "noreply@kiniauth.example"
   },

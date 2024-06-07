@@ -5,21 +5,26 @@
     "subAccountsEnabled": true,
     "apiKey": "TESTAPIKEY",
     "apiSecret": "TESTAPISECRET",
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "discoverable": 1,
+    "externalIdentifier": "SHAREWITHME1"
   },
   {
     "accountId": 2,
     "name": "Peter Jones Car Washing",
     "status": "ACTIVE",
     "apiKey": "TESTAPIKEY2",
-    "apiSecret": "TESTAPISECRET2"
+    "apiSecret": "TESTAPISECRET2",
+    "externalIdentifier": "SHAREWITHME2"
   },
   {
     "accountId": 3,
     "name": "Smart Coasting",
     "status": "ACTIVE",
     "apiKey": "TESTAPIKEY3",
-    "apiSecret": "TESTAPISECRET3"
+    "apiSecret": "TESTAPISECRET3",
+    "discoverable": 1,
+    "externalIdentifier": "SHAREWITHME3"
   },
   {
     "accountId": 4,
@@ -41,6 +46,8 @@
       "PROJECT": [
         "access"
       ]
-    }
+    },
+    "discoverable": 1,
+    "externalIdentifier": "SHAREWITHME5"
   }
 ]

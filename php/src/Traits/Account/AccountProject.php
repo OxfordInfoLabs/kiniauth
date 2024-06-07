@@ -3,6 +3,9 @@
 
 namespace Kiniauth\Traits\Account;
 
+use Kiniauth\Objects\Account\AccountSummary;
+use Kiniauth\Objects\Account\PublicAccountSummary;
+
 /**
  * Standard account project trait for objects which need the standard accountId / projectNumber pattern
  *
@@ -21,6 +24,15 @@ trait AccountProject {
      * @var string
      */
     protected $projectKey;
+
+
+    /**
+     * @var PublicAccountSummary
+     * @manyToOne
+     * @parentJoinColumns account_id
+     * @readOnly
+     */
+    protected $accountSummary;
 
 
     /**
@@ -49,6 +61,20 @@ trait AccountProject {
      */
     public function setProjectKey($projectKey) {
         $this->projectKey = $projectKey;
+    }
+
+    /**
+     * @return AccountSummary
+     */
+    public function getAccountSummary() {
+        return $this->accountSummary;
+    }
+
+    /**
+     * @param PublicAccountSummary $accountSummary
+     */
+    public function setAccountSummary(PublicAccountSummary $accountSummary): void {
+        $this->accountSummary = $accountSummary;
     }
 
 

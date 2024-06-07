@@ -4,12 +4,15 @@
 namespace Kiniauth\Objects\Security;
 
 
+use Kiniauth\Attributes\Security\AccessNonActiveScopes;
+
 /**
  * Encodes a role for a user on an account.
  *
  * @table ka_user_role
  * @generate
  */
+#[AccessNonActiveScopes]
 class UserRole extends SecurableRole {
 
     /**

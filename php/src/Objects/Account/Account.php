@@ -3,6 +3,7 @@
 namespace Kiniauth\Objects\Account;
 
 
+use Kiniauth\Attributes\Security\AccessNonActiveScopes;
 use Kiniauth\Objects\Application\Session;
 use Kiniauth\Objects\Security\AccountRole;
 use Kiniauth\Objects\Security\Privilege;
@@ -16,6 +17,7 @@ use Kiniauth\Objects\Security\Privilege;
  * @generate
  *
  */
+#[AccessNonActiveScopes]
 class Account extends AccountSummary {
 
 
@@ -51,6 +53,20 @@ class Account extends AccountSummary {
     protected $privileges = array();
 
 
+    /**
+     * @var boolean
+     */
+    protected $discoverable;
+
+
+    /**
+     * String identifier for identifying this account for e.g. sharing etc.
+     *
+     * @var string
+     */
+    protected $externalIdentifier;
+
+
     // Logged in account constant for default value usage.
     const LOGGED_IN_ACCOUNT = "LOGGED_IN_ACCOUNT";
 
@@ -80,6 +96,15 @@ class Account extends AccountSummary {
      */
     public function setName($name) {
         $this->name = $name;
+    }
+
+
+    /**
+     * @param string $logo
+     * @return void
+     */
+    public function setLogo($logo){
+        $this->logo = $logo;
     }
 
     /**
@@ -148,6 +173,34 @@ class Account extends AccountSummary {
      */
     public function setPrivileges($privileges) {
         $this->privileges = $privileges;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExternalIdentifier() {
+        return $this->externalIdentifier;
+    }
+
+    /**
+     * @param string $externalIdentifier
+     */
+    public function setExternalIdentifier($externalIdentifier) {
+        $this->externalIdentifier = $externalIdentifier;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDiscoverable() {
+        return $this->discoverable;
+    }
+
+    /**
+     * @param bool $discoverable
+     */
+    public function setDiscoverable($discoverable) {
+        $this->discoverable = $discoverable;
     }
 
 

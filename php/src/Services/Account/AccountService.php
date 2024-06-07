@@ -17,13 +17,16 @@ use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
+use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
 use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
+use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
+use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
 class AccountService {
 
@@ -192,6 +195,21 @@ class AccountService {
             $this->securityService->reloadLoggedInObjects();
 
         return true;
+
+    }
+
+
+    /**
+     * Update a logo for a supplied account (defaulting to logged in account)
+     *
+     * @param $url
+     * @param $accountId
+     * @return bool
+     */
+    public function updateLogo($url, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        $account->setLogo($url);
+        $account->save();
 
     }
 
@@ -395,6 +413,116 @@ class AccountService {
         $account = Account::fetch($accountId);
         $account->setSettings($settings);
         $account->save();
+    }
+
+
+    /**
+     * Get account discovery settings for an account
+     *
+     * @param $accountId
+     * @return AccountDiscoveryItem
+     */
+    public function getAccountDiscoverySettings($accountId = Account::LOGGED_IN_ACCOUNT): AccountDiscoveryItem {
+        $account = $this->getAccount($accountId);
+        return new AccountDiscoveryItem($account->getName(), $account->isDiscoverable(), $account->getExternalIdentifier());
+    }
+
+
+    /**
+     * Generate an external identifier for the account
+     *
+     * @param $accountId
+     * @return string
+     */
+    public function generateAccountExternalIdentifier($accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        $identifier = StringUtils::generateRandomString(16);
+        $account->setExternalIdentifier($identifier);
+        $account->save();
+        return $identifier;
+    }
+
+
+    /**
+     * Unset the external identifier for an account
+     *
+     * @param $accountId
+     */
+    public function unsetAccountExternalIdentifier($accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        $account->setExternalIdentifier(null);
+        $account->save();
+    }
+
+
+    /**
+     * @param bool $discoverable
+     * @param integer $accountId
+     *
+     * @return void
+     */
+    public function setAccountDiscoverable($discoverable, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        $account->setDiscoverable($discoverable);
+        $account->save();
+
+        // If discoverable and no external identifier, generate one.
+        if ($discoverable && !$account->getExternalIdentifier())
+            $this->generateAccountExternalIdentifier($accountId);
+    }
+
+
+    /**
+     * Search for discoverable accounts - optionally filtered by a search term
+     *
+     * @param string $searchTerm
+     * @param int $offset
+     * @param int $limit
+     *
+     * @return AccountDiscoveryItem[]
+     * @objectInterceptorDisabled
+     */
+    public function searchForDiscoverableAccounts($searchTerm, $offset = 0, $limit = 25, $omitAccount = Account::LOGGED_IN_ACCOUNT) {
+        $matches = Account::filter("WHERE discoverable = ? AND name LIKE ? AND account_id <> ? ORDER BY name LIMIT ? OFFSET ?",
+            1, "%" . $searchTerm . "%", $omitAccount ?: PHP_INT_MAX, $limit, $offset);
+
+        return array_map(function ($match) {
+            return new AccountDiscoveryItem($match->getName(), true, $match->getExternalIdentifier());
+        }, $matches);
+    }
+
+
+    /**
+     * Lookup a discovery item for an external identifier.
+     *
+     * @param string $externalIdentifier
+     *
+     * @return AccountDiscoveryItem
+     * @objectInterceptorDisabled
+     */
+    public function lookupDiscoverableAccountByExternalIdentifier($externalIdentifier) {
+        $matches = Account::filter("WHERE external_identifier = ?", $externalIdentifier);
+        if (sizeof($matches)) {
+            return new AccountDiscoveryItem($matches[0]->getName(), $matches[0]->isDiscoverable(), $externalIdentifier);
+        } else {
+            throw new ItemNotFoundException("No such account matches the external identifier: " . $externalIdentifier);
+        }
+    }
+
+
+    /**
+     * Get an account summary by external identifier.
+     *
+     * @param $externalIdentifier
+     * @return AccountSummary
+     */
+    public function getAccountByExternalIdentifier($externalIdentifier) {
+        $matches = Account::filter("WHERE external_identifier = ?", $externalIdentifier);
+        if (sizeof($matches)) {
+            return $matches[0];
+        } else {
+            throw new ObjectNotFoundException(Account::class, $externalIdentifier);
+        }
     }
 
 

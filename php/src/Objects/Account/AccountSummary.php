@@ -3,6 +3,7 @@
 
 namespace Kiniauth\Objects\Account;
 
+use Kiniauth\Attributes\Security\AccessNonActiveScopes;
 use Kinikit\Persistence\ORM\ActiveRecord;
 
 
@@ -11,6 +12,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  *
  * @table ka_account
  */
+#[AccessNonActiveScopes]
 class AccountSummary extends ActiveRecord {
 
     /**
@@ -20,6 +22,13 @@ class AccountSummary extends ActiveRecord {
      * @maxLength 100
      */
     protected $name;
+
+
+    /**
+     * @var string
+     * @maxLength 4000
+     */
+    protected $logo;
 
 
     /**
@@ -59,11 +68,13 @@ class AccountSummary extends ActiveRecord {
      * @param integer $accountId
      * @param string $name
      * @param integer $parentAccountId
+     * @param string $logo
      */
-    public function __construct($accountId = null, $name = null, $parentAccountId = 0) {
+    public function __construct($accountId = null, $name = null, $parentAccountId = 0, $logo = null) {
         $this->accountId = $accountId;
         $this->name = $name;
         $this->parentAccountId = $parentAccountId;
+        $this->logo = $logo;
     }
 
 
@@ -73,6 +84,15 @@ class AccountSummary extends ActiveRecord {
     public function getName() {
         return $this->name;
     }
+
+    /**
+     * @return string
+     */
+    public function getLogo() {
+        return $this->logo;
+    }
+
+
 
     /**
      * @return int

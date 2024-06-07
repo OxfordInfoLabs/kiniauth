@@ -1,0 +1,70 @@
+<div class="p-6 bg-white border-b border-gray-200">
+    <div class="md:flex md:items-center md:justify-between md:space-x-5">
+        <div class="flex items-start flex-1">
+            <div class="pt-1.5">
+                <h1 class="text-2xl font-bold text-gray-900">Discoverability Settings</h1>
+                <p class="text-sm font-medium text-gray-500">
+                    Update your account discoverability settings. This allows you to make your account discoverable to
+                    other
+                    users for data sharing or to generate an
+                    external sharing identifier for private data sharing.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="space-y-8 divide-y divide-gray-200 p-6">
+    <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+        <div>
+
+            <div class="mb-8">
+
+            </div>
+            <div class="space-y-6 sm:space-y-5">
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
+                    <div>
+                        <label class="block font-medium text-gray-700 sm:mt-px sm:pt-2">
+                            Allow my account to be discoverable by other users</label>
+                        <div class="text-xs">This will allow other people to discover your account to share data with you directly.
+                        </div>
+                    </div>
+
+                    <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <mat-checkbox class=" sm:mt-px sm:pt-2"
+                                      (change)="updateDiscoverability($event.checked)"
+                                      [(ngModel)]="discoverabilitySettings.discoverable"></mat-checkbox>
+
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-6 sm:space-y-5">
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                            Sharing Identifier</label>
+                        <div class="text-xs">Provide this key to other users to facilitate private sharing of data with
+                            your account.
+                        </div>
+                    </div>
+                    <div class="m:mt-px sm:pt-2">
+                        {{discoverabilitySettings.externalIdentifier || 'Not Set'}}
+                        <button
+                            class="inline-flex items-center justify-center ml-3 px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none"
+                            (click)="generateExternalIdentifier()">Regenerate
+                        </button>
+                        <button *ngIf="discoverabilitySettings.externalIdentifier && !discoverabilitySettings.discoverable"
+                                class="inline-flex items-center justify-center ml-3 px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-secondary focus:outline-none"
+                                (click)="unsetExternalIdentifier()">Unset
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+

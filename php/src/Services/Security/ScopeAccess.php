@@ -40,14 +40,21 @@ abstract class ScopeAccess {
 
 
     /**
+     * @var string
+     */
+    private $activeScopeValue;
+
+
+    /**
      * Construct with a scope string
      *
      * @param $scope
      */
-    public function __construct($scope, $scopeDescription, $objectMember = null) {
+    public function __construct($scope, $scopeDescription, $objectMember = null, $activeScopeValue = null) {
         $this->scope = $scope;
         $this->scopeDescription = $scopeDescription;
         $this->objectMember = $objectMember;
+        $this->activeScopeValue = $activeScopeValue;
     }
 
     /**
@@ -70,6 +77,13 @@ abstract class ScopeAccess {
      */
     public function getObjectMember() {
         return $this->objectMember;
+    }
+
+    /**
+     * @return string
+     */
+    public function getActiveScopeValue() {
+        return $this->activeScopeValue;
     }
 
 

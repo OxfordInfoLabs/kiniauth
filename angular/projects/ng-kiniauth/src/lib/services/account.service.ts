@@ -92,4 +92,36 @@ export class AccountService {
             assignedRoles).toPromise();
     }
 
+
+    public async getAccountDiscoverabilitySettings() {
+        const settings = await this.http.get(this.config.accessHttpURL + '/account/discovery')
+            .toPromise();
+        return (!settings || Array.isArray(settings)) ? {} : settings;
+    }
+
+
+    public async setAccountDiscoverable(discoverable) {
+        return this.http.put(this.config.accessHttpURL + '/account/discoverable',
+            discoverable ? 1 : 0).toPromise();
+    }
+
+
+    public async searchForDiscoverableAccounts(searchTerm, offset = 0, limit = 25) {
+        return this.http.get(this.config.accessHttpURL + '/account/discoverable?searchTerm=' + searchTerm + '&limit=' + limit + '&offset=' + offset).toPromise();
+    }
+    
+
+    public async lookupDiscoverableAccountByExternalIdentifier(externalIdentifier) {
+        return await this.http.get(this.config.accessHttpURL + '/account/discoverable/' + externalIdentifier).toPromise();
+    }
+
+    public async generateAccountExternalIdentifier() {
+        return this.http.put(this.config.accessHttpURL + '/account/externalIdentifier',
+            null).toPromise();
+    }
+
+    public async unsetAccountExternalIdentifier() {
+        return this.http.delete(this.config.accessHttpURL + '/account/externalIdentifier').toPromise();
+    }
+
 }
