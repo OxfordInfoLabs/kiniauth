@@ -84,28 +84,35 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
 
     public function preSave($object = null, $upfInstance = null) {
 
-        if (in_array(Timestamped::class, class_uses($object)) || in_array(PropertyChangeWorkflow::class, class_implements($object))) {
+        $pk = $this->getPrimaryKeyValues($object);
 
-            $pk = $this->getPrimaryKeyValues($object);
-
+        // If we have a primary key defined for this object, check if an original version exists
+        // and if so, ensure that we have write access on the saved version before proceeding
+        // with the save of the modified version.  This prevents object capture.
+        if (sizeof($pk)) {
 
             try {
-                $this->originalObject = $this->orm->fetch(get_class($object), array_values($pk));
-            } catch (ObjectNotFoundException|WrongPrimaryKeyLengthException $e) {
-                $this->originalObject = null;
+                $this->originalObject = $this->executeInsecure(function () use ($object, $pk) {
+                    return $this->orm->fetch(get_class($object), array_values($pk));
+                });
+                if (!$this->disabled && !$this->securityService->checkLoggedInObjectAccess($this->originalObject, SecurityService::ACCESS_WRITE)) {
+                    throw new AccessDeniedException();
+                }
+            } catch (ObjectNotFoundException|WrongPrimaryKeyLengthException $e){
             }
 
+        }
 
-            if (in_array(Timestamped::class, class_uses($object))) {
 
-                // Fetch object by pk
-                $hasCreatedDate = $this->originalObject?->getCreatedDate();
+        if (in_array(Timestamped::class, class_uses($object))) {
 
-                $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
+            // Fetch object by pk
+            $hasCreatedDate = $this->originalObject?->getCreatedDate();
 
-                $classInspector->setPropertyData($object, $hasCreatedDate ?: new \DateTime(), "createdDate", false);
-                $classInspector->setPropertyData($object, new \DateTime(), "lastModifiedDate", false);
-            }
+            $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
+
+            $classInspector->setPropertyData($object, $hasCreatedDate ?: new \DateTime(), "createdDate", false);
+            $classInspector->setPropertyData($object, new \DateTime(), "lastModifiedDate", false);
         }
 
         return $this->disabled || $this->resolveAccessForObject($object, true, SecurityService::ACCESS_WRITE);

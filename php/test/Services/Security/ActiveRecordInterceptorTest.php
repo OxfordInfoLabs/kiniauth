@@ -22,6 +22,7 @@ use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
 use Kinikit\Persistence\Database\Connection\DatabaseConnection;
+use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 use Kinikit\Persistence\ORM\ORM;
 
 include_once __DIR__ . "/../../autoloader.php";
@@ -65,9 +66,6 @@ class ActiveRecordInterceptorTest extends TestBase {
 
 
     public function testObjectsImplementingTheTimestampTraitAreAutomaticallyTimestampedWithCreateAndLastModifiedDatesOnPreSave() {
-
-
-        $this->orm->returnValue("fetch", null, [TestTimestampObject::class, [null]]);
 
 
         // try new one
@@ -131,8 +129,12 @@ class ActiveRecordInterceptorTest extends TestBase {
     public function testObjectsWithAccountIdAreCheckedForAccountOwnershipOfLoggedInUser() {
 
 
+
         $contact = new Contact("Mark", "Hello World", "1 This Lane", "This town", "London",
             "London", "LH1 4YY", "GB", null, null, 1);
+        $contact->setId(22);
+
+        $this->orm->throwException("fetch", new ObjectNotFoundException(Contact::class, 22), [Contact::class, [22]]);
 
         // Start logged out and confirm that interceptors fail.
         $this->authenticationService->logout();
@@ -232,6 +234,53 @@ class ActiveRecordInterceptorTest extends TestBase {
         // Should be able to read this one
         $this->assertTrue($this->objectInterceptor->postMap($contact));
 
+
+    }
+
+
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testExistingObjectsCannotBeCapturedByOtherAccountsWithoutWriteAccessOnOriginal() {
+
+
+        // Start with null account contact
+        $contact = new Contact("Mark", "Hello World", "1 This Lane", "This town", "London",
+            "London", "LH1 4YY", "GB", null, null, null);
+        $contact->setId(55);
+
+        $this->orm->returnValue("fetch", $contact, [Contact::class, [55]]);
+
+        // Try and capture wth my account
+        $updatedContact = new Contact("Mark", "Hello World", "1 This Lane", "This town", "London",
+            "London", "LH1 4YY", "GB", null, null, 1);
+        $updatedContact->setId(55);
+
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        try {
+            $this->objectInterceptor->preSave($updatedContact);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
+
+
+        // Now try and capture object owned by other account.
+        $contact = new Contact("Mark", "Hello World", "1 This Lane", "This town", "London",
+            "London", "LH1 4YY", "GB", null, null, 3);
+        $contact->setId(55);
+
+        $this->orm->returnValue("fetch", $contact, [Contact::class, [55]]);
+
+
+        try {
+            $this->objectInterceptor->preSave($updatedContact);
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e) {
+            // Success
+        }
 
     }
 
@@ -347,7 +396,6 @@ class ActiveRecordInterceptorTest extends TestBase {
         }, 2);
 
 
-
         // Check default state restored after function
         try {
             $this->objectInterceptor->preSave($contact);
@@ -364,7 +412,6 @@ class ActiveRecordInterceptorTest extends TestBase {
         }
 
         $this->assertFalse($this->objectInterceptor->postMap($contact));
-
 
 
     }
