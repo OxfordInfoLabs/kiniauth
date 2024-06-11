@@ -88,7 +88,7 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
 
         // If we have a primary key defined for this object, check if an original version exists
         // and if so, ensure that we have write access on the saved version before proceeding
-        // with the save of the modified version.
+        // with the save of the modified version.  This prevents object capture.
         if (sizeof($pk)) {
 
             try {
