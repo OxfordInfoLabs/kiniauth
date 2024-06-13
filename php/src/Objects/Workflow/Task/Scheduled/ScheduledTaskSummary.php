@@ -78,12 +78,7 @@ class ScheduledTaskSummary extends ActiveRecord {
      */
     protected $nextStartTime;
 
-
-    /**
-     * @var integer
-     */
-    protected $timeoutSeconds;
-
+    protected int $timeoutSeconds;
 
     /**
      * @var string
@@ -264,10 +259,7 @@ class ScheduledTaskSummary extends ActiveRecord {
         $this->nextStartTime = $nextStartTime;
     }
 
-    /**
-     * @return int
-     */
-    public function getTimeoutSeconds() {
+    public function getTimeoutSeconds() : int {
         return $this->timeoutSeconds;
     }
 
