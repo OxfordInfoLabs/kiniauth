@@ -115,7 +115,7 @@ class ScheduledTaskSummary extends ActiveRecord {
      * @param string $taskGroup
      */
     public function __construct($taskIdentifier, $description, $configuration, $timePeriods, $status = self::STATUS_PENDING,
-                                $nextStartTime = null, $lastStartTime = null, $lastEndTime = null, $timeoutTime = null, $timeoutSeconds = 86000,
+                                $nextStartTime = null, $lastStartTime = null, $lastEndTime = null, $timeoutTime = null, $timeoutSeconds = 86400,
                                 $id = null, $taskGroup = null) {
         $this->taskIdentifier = $taskIdentifier;
         $this->description = $description;
