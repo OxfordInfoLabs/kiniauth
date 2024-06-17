@@ -33,7 +33,10 @@ class AMPParallelTask implements Task {
     ) {
     }
 
+    public static bool $inParallel = false;
+
     public function run(Channel $channel, Cancellation $cancellation): mixed {
+        self::$inParallel = true;
         // This looks a bit more complicated than necessary.
         // The reason for this is that I tried to use the builtin cancellation methods for timeout,
         // but this led to, upon a long function being interrupted in a try catch block:
