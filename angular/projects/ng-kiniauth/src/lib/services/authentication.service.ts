@@ -78,8 +78,8 @@ export class AuthenticationService {
     public sendPasswordReset(emailAddress, recaptcha?) {
         const headers = new HttpHeaders({'X-CAPTCHA-TOKEN': recaptcha || ''});
 
-        return this.http.get(this.config.guestHttpURL + '/auth/passwordReset', {
-            params: {emailAddress},
+        return this.http.post(this.config.guestHttpURL + '/auth/passwordResetRequest',
+            JSON.stringify(emailAddress), {
             headers
         }).toPromise();
     }
