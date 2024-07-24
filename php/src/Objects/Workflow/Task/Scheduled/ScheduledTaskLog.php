@@ -18,39 +18,39 @@ class ScheduledTaskLog extends ActiveRecord {
     /**
      * @var integer
      */
-    private $id;
+    protected $id;
 
     /**
      * Parent task id for which this log entry exists
      *
      * @var integer
      */
-    private $scheduledTaskId;
+    protected $scheduledTaskId;
 
 
     /**
      * @var \DateTime
      */
-    private $startTime;
+    protected $startTime;
 
 
     /**
      * @var \DateTime
      */
-    private $endTime;
+    protected $endTime;
 
 
     /**
      * @var string
      */
-    private $status;
+    protected $status;
 
 
     /**
      * @var mixed
      * @json
      */
-    private $logOutput;
+    protected $logOutput;
 
     /**
      * ScheduledTaskLog constructor.

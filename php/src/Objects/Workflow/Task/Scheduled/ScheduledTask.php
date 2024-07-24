@@ -41,6 +41,14 @@ class ScheduledTask extends ScheduledTaskSummary {
 
 
     /**
+     * @var LatestScheduledTaskLog
+     * @oneToOne
+     * @childJoinColumns scheduled_task_id
+     */
+    private $latestLog;
+
+
+    /**
      * ScheduledTask constructor.
      * @param ScheduledTaskSummary $scheduledTaskSummary
      * @param string $projectKey
@@ -121,6 +129,13 @@ class ScheduledTask extends ScheduledTaskSummary {
      */
     public function setTimeoutTime($timeoutTime) {
         $this->timeoutTime = $timeoutTime;
+    }
+
+    /**
+     * @return LatestScheduledTaskLog
+     */
+    public function getLatestLog() {
+        return $this->latestLog;
     }
 
 
