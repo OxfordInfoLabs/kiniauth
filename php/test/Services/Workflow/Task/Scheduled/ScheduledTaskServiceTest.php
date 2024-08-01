@@ -91,8 +91,6 @@ class ScheduledTaskServiceTest extends TestBase {
     }
 
 
-
-
     public function testNewlyCreatedTasksAreNotExecutedUntilFirstDuePoint() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
