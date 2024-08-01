@@ -4,9 +4,12 @@
 namespace Kiniauth\Test\Objects\Workflow\Task\Scheduled;
 
 
+use Kiniauth\Objects\Workflow\Task\Scheduled\LatestScheduledTaskLog;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTask;
+use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskLog;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskSummary;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskTimePeriod;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 
 include_once "autoloader.php";
@@ -118,6 +121,33 @@ class ScheduledTaskTest extends TestBase {
         $scheduledTask->recalculateNextStartTime();
 
         $this->assertEquals($expectedDate->format("d/m/Y H:i:s"), $scheduledTask->getNextStartTime()->format("d/m/Y H:i:s"));
+
+    }
+
+
+    public function testLastLogIsCorrectlyAttachedAndReturnedOnGettingScheduledTask() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("test", "Test Task",
+            [], [
+                new ScheduledTaskTimePeriod(null, null, null, null)]), null, 1);
+
+        $scheduledTask->save();
+
+        $log = new ScheduledTaskLog($scheduledTask->getId(), new \DateTime(), new \DateTime(), "COMPLETED", "");
+        $log->save();
+
+        $log2 = new ScheduledTaskLog($scheduledTask->getId(), new \DateTime(), new \DateTime(), "FAILED", "Bad Task Run");
+        $log2->save();
+
+        $scheduledTask = ScheduledTask::fetch($scheduledTask->getId());
+        $this->assertEquals("Test Task", $scheduledTask->getDescription());
+
+        $latestLog = $scheduledTask->getLatestLog();
+        $this->assertInstanceOf(LatestScheduledTaskLog::class, $latestLog);
+        $this->assertEquals("FAILED", $latestLog->getStatus());
+        $this->assertEquals("Bad Task Run", $latestLog->getLogOutput());
 
     }
 
