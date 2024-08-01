@@ -40,13 +40,7 @@ class ScheduledTask extends ScheduledTaskSummary {
     protected $timeoutTime;
 
 
-    /**
-     * @var LatestScheduledTaskLog
-     * @oneToOne
-     * @childJoinColumns scheduled_task_id
-     */
-    private $latestLog;
-
+    private $latestLog = null;
 
     /**
      * ScheduledTask constructor.
