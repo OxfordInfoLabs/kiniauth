@@ -5,6 +5,7 @@ namespace Kiniauth\Test\Objects\Application;
 use Kiniauth\Bootstrap;
 use Kiniauth\Exception\Security\AccountSuspendedException;
 use Kiniauth\Exception\Security\InvalidAPICredentialsException;
+use Kiniauth\Exception\Security\InvalidIPAddressAPIKeyException;
 use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Exception\Security\InvalidReferrerException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
@@ -25,6 +26,7 @@ use Kiniauth\Services\Application\SettingsService;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\AuthenticationService;
+use Kiniauth\Services\Security\Captcha\GoogleRecaptchaProvider;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Security\UserSessionService;
@@ -37,7 +39,9 @@ use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
+use Kinikit\MVC\Request\Request;
 use Kinikit\MVC\Request\URL;
+use Kinikit\MVC\Request\Headers;
 
 include_once __DIR__ . "/../../autoloader.php";
 
@@ -84,6 +88,11 @@ class AuthenticationServiceTest extends TestBase {
 
         // Assume two factor is not required
         $this->twoFactorProvider->returnValue("generateTwoFactorIfRequired", false);
+    }
+
+    public function tearDown(): void {
+        // Ensure this is reset even if tests fail
+        GoogleRecaptchaProvider::$testMode = null;
     }
 
     public function testCanCheckWhetherEmailExistsOrNot() {
@@ -543,10 +552,15 @@ class AuthenticationServiceTest extends TestBase {
 
         $securityService = $mockObjectProvider->getMockInstance(SecurityService::class);
 
-        $authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class), $this->session, $securityService, null,
+        $authenticationService = new AuthenticationService(
+            Container::instance()->get(SettingsService::class),
+            $this->session,
+            $securityService,
+            null,
             Container::instance()->get(HashProvider::class),
             Container::instance()->get(EmailService::class), Container::instance()->get(PendingActionService::class),
-            Container::instance()->get(UserSessionService::class));
+            Container::instance()->get(UserSessionService::class)
+        );
 
         $this->session->__setLoggedInUserAccessTokenHash(AuthenticationHelper::hashNewPassword("TESTTOKEN"));
 
@@ -593,6 +607,100 @@ class AuthenticationServiceTest extends TestBase {
         });
     }
 
+    public function testCanValidateReferrersForAPIKeys() {
+
+        Container::instance()->get(ActiveRecordInterceptor::class)->executeInsecure(function () {
+
+           $request = MockObjectProvider::instance()->getMockInstance(Request::class);
+           $request->returnValue("getReferringURL", new URL("https://mydomain.com/path"));
+
+           $this->authenticationService->apiAuthenticate("REFERRERAPIKEY", "REFERRERAPISECRET", $request);
+
+           $this->assertEquals(APIKey::fetch(7), $this->session->__getLoggedInSecurable());
+           $this->assertEquals(Account::fetch(2), $this->session->__getLoggedInAccount());
+
+           try {
+               $request->returnValue("getReferringURL", new URL("https://notmydomain.com"));
+               $this->authenticationService->apiAuthenticate("REFERRERAPIKEY", "REFERRERAPISECRET", $request);
+               $this->fail("Should have thrown here");
+           } catch (InvalidReferrerException $e) {
+               // Success
+           }
+
+        });
+
+    }
+
+    public function testCanAuthenticateUsingAPIKeyWithWhitelistedIPs() {
+
+        Container::instance()->get(ActiveRecordInterceptor::class)->executeInsecure(function () {
+
+            $request = MockObjectProvider::instance()->getMockInstance(Request::class);
+            $request->returnValue("getRemoteIPAddress", "192.168.1.35");
+
+            // Valid IPv4 address
+            $this->authenticationService->apiAuthenticate("IPV4RANGETESTKEY", "IPV4RANGETESTSECRET", $request);
+
+            $this->assertEquals(APIKey::fetch(3), $this->session->__getLoggedInSecurable());
+            $this->assertEquals(Account::fetch(2), $this->session->__getLoggedInAccount());
+
+            // Invalid IPv4 address
+            try {
+                $request->returnValue("getRemoteIPAddress", "1.2.3.4");
+                $this->authenticationService->apiAuthenticate("IPV4RANGETESTKEY", "IPV4RANGETESTSECRET", $request);
+                $this->fail("Should have thrown here");
+            } catch (InvalidIPAddressAPIKeyException $e) {
+                // Success
+            }
+
+            // Valid IPv6 address
+            $request->returnValue("getRemoteIPAddress", "2001:db8:1:aaaa:ffff:ffff:ffff:4");
+            $this->authenticationService->apiAuthenticate("IPV6RANGETESTKEY", "IPV6RANGETESTSECRET", $request);
+
+            $this->assertEquals(APIKey::fetch(4), $this->session->__getLoggedInSecurable());
+            $this->assertEquals(Account::fetch(2), $this->session->__getLoggedInAccount());
+
+            // Invalid IPv6 address
+            try {
+                $request->returnValue("getRemoteIPAddress", "1:2:3:4:5:6:7:8");
+                $this->authenticationService->apiAuthenticate("IPV6RANGETESTKEY", "IPV6RANGETESTSECRET", $request);
+                $this->fail("Should have thrown here");
+            } catch (InvalidIPAddressAPIKeyException $e) {
+                // Success
+            }
+        });
+
+    }
+
+    public function testCanAuthenticateUsingAPIKeyWithCaptcha() {
+
+        Container::instance()->get(ActiveRecordInterceptor::class)->executeInsecure(function () {
+
+            $request = MockObjectProvider::instance()->getMockInstance(Request::class);
+            $mockHeaders = MockObjectProvider::instance()->getMockInstance(Headers::class);
+
+            $request->returnValue("getHeaders", $mockHeaders);
+            $mockHeaders->returnValue("getCustomHeader", "key", ["X-Captcha-Token"]);
+
+            GoogleRecaptchaProvider::$testMode = true;
+            // Valid captcha key
+            $this->authenticationService->apiAuthenticate("CAPTCHATESTAPIKEY", "CAPTCHATESTAPISECRET", $request);
+
+            $this->assertEquals(APIKey::fetch(5), $this->session->__getLoggedInSecurable());
+            $this->assertEquals(Account::fetch(2), $this->session->__getLoggedInAccount());
+
+            // Invalid captcha key
+            try {
+                GoogleRecaptchaProvider::$testMode = false;
+                $this->authenticationService->apiAuthenticate("BADCAPTCHATESTAPIKEY", "BADCAPTCHATESTAPISECRET", $request);
+                $this->fail("Should have thrown here");
+            } catch (\Exception $e) {
+                $this->assertEquals("Bad Captcha", $e->getMessage());
+            }
+
+        });
+
+    }
 
     public function testCanLogOut() {
         AuthenticationHelper::login("james@smartcoasting.org", "password");
@@ -669,13 +777,16 @@ class AuthenticationServiceTest extends TestBase {
             $mockUserSessionService->returnValue("listAuthenticatedSessions", [
                 new UserSession(2, "ABCDEFG", new UserSessionProfile("1.1.1.1", "html/1.1", 2))], [2]);
 
-            $authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class),
+            $authenticationService = new AuthenticationService(
+                Container::instance()->get(SettingsService::class),
                 $this->session,
                 Container::instance()->get(SecurityService::class),
                 $this->twoFactorProvider,
                 Container::instance()->get(HashProvider::class),
                 Container::instance()->get(UserService::class),
-                $mockUserSessionService, Container::instance()->get(PendingActionService::class));
+                $mockUserSessionService,
+                Container::instance()->get(PendingActionService::class)
+            );
 
             $authenticationService->updateActiveParentAccount(new URL("http://kinicart.example/mark"));
 
@@ -872,10 +983,16 @@ class AuthenticationServiceTest extends TestBase {
 
         $mockSession = MockObjectProvider::instance()->getMockInstance(Session::class);
 
-        $authService = new AuthenticationService(Container::instance()->get(SettingsService::class),
-            $mockSession, Container::instance()->get(SecurityService::class), $this->twoFactorProvider,
-            Container::instance()->get(HashProvider::class), Container::instance()->get(UserService::class),
-            Container::instance()->get(UserSessionService::class), Container::instance()->get(PendingActionService::class));
+        $authService = new AuthenticationService(
+            Container::instance()->get(SettingsService::class),
+            $mockSession,
+            Container::instance()->get(SecurityService::class),
+            $this->twoFactorProvider,
+            Container::instance()->get(HashProvider::class),
+            Container::instance()->get(UserService::class),
+            Container::instance()->get(UserSessionService::class),
+            Container::instance()->get(PendingActionService::class)
+        );
 
 
         $mockSession->returnValue("__getLoggedInSecurable", new User("test@test", "WHOOO", "Test", 0, 2));
@@ -894,10 +1011,16 @@ class AuthenticationServiceTest extends TestBase {
 
         $mockSession = MockObjectProvider::instance()->getMockInstance(Session::class);
 
-        $authService = new AuthenticationService(Container::instance()->get(SettingsService::class),
-            $mockSession, Container::instance()->get(SecurityService::class), $this->twoFactorProvider,
-            Container::instance()->get(HashProvider::class), Container::instance()->get(UserService::class),
-            Container::instance()->get(UserSessionService::class), Container::instance()->get(PendingActionService::class));
+        $authService = new AuthenticationService(
+            Container::instance()->get(SettingsService::class),
+            $mockSession,
+            Container::instance()->get(SecurityService::class),
+            $this->twoFactorProvider,
+            Container::instance()->get(HashProvider::class),
+            Container::instance()->get(UserService::class),
+            Container::instance()->get(UserSessionService::class),
+            Container::instance()->get(PendingActionService::class)
+        );
 
 
         $mockSession->returnValue("__getLoggedInSecurable", new User("test@test", "WHOOO", "Test", 0, 2));
