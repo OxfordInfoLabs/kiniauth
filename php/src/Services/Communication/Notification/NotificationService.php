@@ -37,7 +37,10 @@ class NotificationService {
             $params[] = $projectKey;
         }
 
-        $query .= " ORDER BY name LIMIT $limit OFFSET $offset";
+        $params[] = $limit;
+        $params[] = $offset;
+
+        $query .= " ORDER BY name LIMIT ? OFFSET ?";
 
         // Return a summary array
         return array_map(function ($instance) {
@@ -88,7 +91,6 @@ class NotificationService {
         $group = NotificationGroup::fetch($notificationGroupId);
         $group->remove();
     }
-
 
 
     /**
@@ -166,8 +168,11 @@ class NotificationService {
             $params[] = $projectKey;
         }
 
+        $params[] = $limit;
+        $params[] = $offset;
+
         $query .= " ORDER BY CASE WHEN notification.initial_state = 'FLAGGED' AND NOT read THEN 0 ELSE 1 END,
-        notificationId DESC LIMIT $limit OFFSET $offset";
+        notificationId DESC LIMIT ? OFFSET ?";
 
         // Return a summary array
         return array_map(function ($instance) {
@@ -223,7 +228,6 @@ class NotificationService {
         }
 
     }
-
 
 
 }

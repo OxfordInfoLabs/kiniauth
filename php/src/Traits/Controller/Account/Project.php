@@ -37,6 +37,11 @@ trait Project {
 
     /**
      * @http GET /
+     *
+     * @param string $filterString
+     * @param int $limit
+     * @param int $offset
+     *
      * @return ProjectSummary[]
      */
     public function filterProjects($filterString = "", $limit = 10, $offset = 0) {
