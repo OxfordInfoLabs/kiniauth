@@ -18,6 +18,7 @@ use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
+use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Traits\Security\Sharable;
 use Kinikit\Core\Binding\ObjectBinder;
@@ -366,7 +367,7 @@ class SecurityService {
 
 
         // Handle user as a special case
-        if ($object instanceof User) {
+        if ($object instanceof UserSummary) {
 
             if ($loggedInSecurable) {
                 if ($loggedInSecurable->getId() == $object->getId())
