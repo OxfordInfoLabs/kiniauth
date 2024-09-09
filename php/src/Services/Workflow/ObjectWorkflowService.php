@@ -21,24 +21,9 @@ use Kinikit\Persistence\ORM\ORM;
  */
 class ObjectWorkflowService {
 
-    /**
-     * @var ORM
-     */
-    private $orm;
-
-
-    /**
-     * @var ClassInspectorProvider
-     */
-    private $classInspectorProvider;
-
-    /**
-     * @param ORM $orm
-     * @param ClassInspectorProvider $classInspectorProvider
-     */
-    public function __construct($orm, $classInspectorProvider) {
-        $this->orm = $orm;
-        $this->classInspectorProvider = $classInspectorProvider;
+    public function __construct(
+        private ORM $orm,
+        private ClassInspectorProvider $classInspectorProvider) {
     }
 
 

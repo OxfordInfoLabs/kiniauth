@@ -31,34 +31,6 @@ use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 class AccountService {
 
     /**
-     * @var SecurityService $securityService
-     */
-    private $securityService;
-
-    /**
-     * @var PendingActionService $pendingActionService
-     */
-    private $pendingActionService;
-
-
-    /**
-     * @var EmailService $emailService
-     */
-    private $emailService;
-
-
-    /**
-     * @var RoleService
-     */
-    private $roleService;
-
-
-    /**
-     * @var UserService
-     */
-    private $userService;
-
-    /**
      * Construct with required deps.
      *
      * @param SecurityService $securityService
@@ -67,12 +39,13 @@ class AccountService {
      * @param RoleService $roleService
      * @param UserService $userService
      */
-    public function __construct($securityService, $pendingActionService, $emailService, $roleService, $userService) {
-        $this->securityService = $securityService;
-        $this->pendingActionService = $pendingActionService;
-        $this->emailService = $emailService;
-        $this->roleService = $roleService;
-        $this->userService = $userService;
+    public function __construct(
+        private SecurityService $securityService,
+        private PendingActionService $pendingActionService,
+        private EmailService $emailService,
+        private RoleService $roleService,
+        private UserService $userService
+    ) {
     }
 
 

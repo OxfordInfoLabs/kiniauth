@@ -15,6 +15,8 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\ActivityLogger;
+use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Application\SettingsService;
 use Kiniauth\Services\Security\SSOProvider\AppleSSOAuthenticator;
 use Kiniauth\Services\Security\SSOProvider\FacebookSSOAuthenticator;
 use Kiniauth\Services\Security\SSOProvider\GoogleSSOAuthenticator;
@@ -38,54 +40,29 @@ use Kinikit\MVC\Request\URL;
  * @package Kiniauth\Workers\Application
  */
 class AuthenticationService {
-
-    private $settingsService;
-    private $session;
-    private $securityService;
-    private $twoFactorProvider;
-    private $userService;
-
-
-    /**
-     * @var HashProvider
-     */
-    private $hashProvider;
-
-
-    /**
-     * @var UserSessionService
-     */
-    private $userSessionService;
-
-    /**
-     * @var PendingActionService
-     */
-    private $pendingActionService;
-
     const STATUS_LOGGED_IN = "LOGGED_IN";
     const STATUS_REQUIRES_2FA = "REQUIRES_2FA";
     const STATUS_ACTIVE_SESSION = "ACTIVE_SESSION";
 
     /**
-     * @param \Kiniauth\Services\Application\SettingsService $settingsService
-     * @param \Kiniauth\Services\Application\Session $session
-     * @param \Kiniauth\Services\Security\SecurityService $securityService
+     * @param SettingsService $settingsService
+     * @param Session $session
+     * @param SecurityService $securityService
      * @param TwoFactorProvider $twoFactorProvider
      * @param HashProvider $hashProvider
      * @param UserService $userService
      * @param UserSessionService $userSessionService
      * @param PendingActionService $pendingActionService
      */
-    public function __construct($settingsService, $session, $securityService, $twoFactorProvider, $hashProvider, $userService, $userSessionService,
-                                $pendingActionService) {
-        $this->settingsService = $settingsService;
-        $this->session = $session;
-        $this->securityService = $securityService;
-        $this->twoFactorProvider = $twoFactorProvider;
-        $this->hashProvider = $hashProvider;
-        $this->userService = $userService;
-        $this->userSessionService = $userSessionService;
-        $this->pendingActionService = $pendingActionService;
+    public function __construct(
+        private SettingsService $settingsService,
+        private Session $session,
+        private SecurityService $securityService,
+        private TwoFactorProvider $twoFactorProvider,
+        private HashProvider $hashProvider,
+        private UserService $userService,
+        private UserSessionService $userSessionService,
+        private PendingActionService $pendingActionService) {
     }
 
     /**

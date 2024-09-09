@@ -14,18 +14,8 @@ use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
  */
 class TagInterceptor extends DefaultORMInterceptor {
 
-    /**
-     * @var DatabaseConnection
-     */
-    private $databaseConnection;
-
-    /**
-     * ContactInterceptor constructor.
-     *
-     * @param DatabaseConnection $databaseConnection
-     */
-    public function __construct($databaseConnection) {
-        $this->databaseConnection = $databaseConnection;
+    public function __construct(
+        private DatabaseConnection $databaseConnection) {
     }
 
 

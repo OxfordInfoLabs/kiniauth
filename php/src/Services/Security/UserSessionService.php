@@ -20,26 +20,10 @@ use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
  */
 class UserSessionService {
 
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @var EmailService
-     */
-    private $emailService;
-
-
-    /**
-     * UserSessionService constructor.
-     *
-     * @param Session $session
-     * @param EmailService $emailService
-     */
-    public function __construct($session, $emailService) {
-        $this->session = $session;
-        $this->emailService = $emailService;
+    public function __construct(
+        private Session $session,
+        private EmailService $emailService
+    ) {
     }
 
 

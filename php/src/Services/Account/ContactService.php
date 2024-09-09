@@ -10,18 +10,7 @@ use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 
 class ContactService {
 
-    /**
-     * @var DatabaseConnection
-     */
-    private $databaseConnection;
-
-    /**
-     * ContactInterceptor constructor.
-     *
-     * @param DatabaseConnection $databaseConnection
-     */
-    public function __construct($databaseConnection) {
-        $this->databaseConnection = $databaseConnection;
+    public function __construct(private DatabaseConnection $databaseConnection) {
     }
 
     /**

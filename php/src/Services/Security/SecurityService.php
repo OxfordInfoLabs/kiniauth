@@ -30,50 +30,12 @@ use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 
 class SecurityService {
 
-    private $session;
-
-
-    /**
-     * @var ClassInspectorProvider
-     */
-    private $classInspectorProvider;
-
-
     /**
      * Indexed array of all privileges indexed by key.
      *
      * @var Privilege[string]
      */
     private $privileges;
-
-
-    /**
-     * @var FileResolver
-     */
-    private $fileResolver;
-
-
-    /**
-     * @var ObjectBinder
-     */
-    private $objectBinder;
-
-
-    /**
-     * @var ScopeManager
-     */
-    private $scopeManager;
-
-    /**
-     * @var DatabaseConnection
-     */
-    private $databaseConnection;
-
-    /**
-     * @var UserSessionService
-     */
-    private $userSessionService;
-
 
     // Access mode constants for permission checking
     const ACCESS_READ = "READ";
@@ -90,14 +52,15 @@ class SecurityService {
      * @param DatabaseConnection $databaseConnection
      * @param UserSessionService $userSessionService
      */
-    public function __construct($session, $scopeManager, $classInspectorProvider, $fileResolver, $objectBinder, $databaseConnection, $userSessionService) {
-        $this->session = $session;
-        $this->classInspectorProvider = $classInspectorProvider;
-        $this->fileResolver = $fileResolver;
-        $this->objectBinder = $objectBinder;
-        $this->databaseConnection = $databaseConnection;
-        $this->scopeManager = $scopeManager;
-        $this->userSessionService = $userSessionService;
+    public function __construct(
+        private Session $session,
+        private ScopeManager $scopeManager,
+        private ClassInspectorProvider $classInspectorProvider,
+        private FileResolver $fileResolver,
+        private ObjectBinder $objectBinder,
+        private DatabaseConnection $databaseConnection,
+        private UserSessionService $userSessionService
+    ) {
     }
 
 

@@ -21,20 +21,9 @@ use Kinikit\Core\Util\ObjectArrayUtils;
  */
 class RoleService {
 
-
-    /**
-     * @var ScopeManager
-     */
-    private $scopeManager;
-
-
-    /**
-     * RoleService constructor.
-     *
-     * @param ScopeManager $scopeManager
-     */
-    public function __construct($scopeManager) {
-        $this->scopeManager = $scopeManager;
+    public function __construct(
+        private ScopeManager $scopeManager
+    ) {
     }
 
 

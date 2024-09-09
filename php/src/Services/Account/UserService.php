@@ -38,56 +38,14 @@ use Kinikit\Core\Validation\ValidationException;
 
 class UserService {
 
-
-    /**
-     * @var TwoFactorProvider
-     */
-    private $twoFactorProvider;
-
-    /**
-     * @var Session
-     */
-    protected $session;
-
-    /**
-     * @var PendingActionService
-     */
-    protected $pendingActionService;
-
-
-    /**
-     * @var EmailService
-     */
-    protected $emailService;
-
-    /**
-     * @var HashProvider
-     */
-    private $hashProvider;
-
-    /**
-     * @var ObjectBinder
-     */
-    protected $objectBinder;
-
-
-    /**
-     * UserService constructor.
-     *
-     * @param TwoFactorProvider $twoFactorProvider
-     * @param Session $session
-     * @param PendingActionService $pendingActionService
-     * @param EmailService $emailService
-     * @param HashProvider $hashProvider
-     * @param ObjectBinder $objectBinder
-     */
-    public function __construct($twoFactorProvider, $session, $pendingActionService, $emailService, $hashProvider, $objectBinder) {
-        $this->twoFactorProvider = $twoFactorProvider;
-        $this->session = $session;
-        $this->pendingActionService = $pendingActionService;
-        $this->emailService = $emailService;
-        $this->hashProvider = $hashProvider;
-        $this->objectBinder = $objectBinder;
+    public function __construct(
+        private TwoFactorProvider $twoFactorProvider,
+        private Session $session,
+        private PendingActionService $pendingActionService,
+        private EmailService $emailService,
+        private HashProvider $hashProvider,
+        private ObjectBinder $objectBinder
+    ) {
     }
 
 

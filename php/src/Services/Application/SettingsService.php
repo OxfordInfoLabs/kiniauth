@@ -14,19 +14,8 @@ use Kiniauth\Services\Security\SecurityService;
  */
 class SettingsService {
 
-    /**
-     * @var
-     */
-    private $securityService;
-
-
-    /**
-     * SettingsService constructor.
-     *
-     * @param SecurityService $securityService
-     */
-    public function __construct($securityService) {
-        $this->securityService = $securityService;
+    public function __construct(
+        private SecurityService $securityService) {
     }
 
 

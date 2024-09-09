@@ -13,18 +13,8 @@ use Kiniauth\Services\Workflow\Task\Scheduled\Processor\ScheduledTaskProcessor;
 
 class ScheduledTaskService {
 
-    /**
-     * @var ScheduledTaskProcessor
-     */
-    private $scheduledTaskProcessor;
-
-    /**
-     * ScheduledTaskService constructor.
-     *
-     * @param ScheduledTaskProcessor $scheduledTaskProcessor
-     */
-    public function __construct($scheduledTaskProcessor) {
-        $this->scheduledTaskProcessor = $scheduledTaskProcessor;
+    public function __construct(
+        private ScheduledTaskProcessor $scheduledTaskProcessor) {
     }
 
 
