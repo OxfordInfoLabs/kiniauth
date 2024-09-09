@@ -536,17 +536,20 @@ class AuthenticationServiceTest extends TestBase {
 
     public function testAuthenticateByUserTokenIsOptimisedIfAlreadyLoggedInWithSameToken() {
 
-        /**
-         * @var $mockObjectProvider MockObjectProvider
-         */
         $mockObjectProvider = Container::instance()->get(MockObjectProvider::class);
 
         $securityService = $mockObjectProvider->getMockInstance(SecurityService::class);
 
-        $authenticationService = new AuthenticationService(Container::instance()->get(SettingsService::class), $this->session, $securityService, null,
+        $authenticationService = new AuthenticationService(
+            Container::instance()->get(SettingsService::class),
+            $this->session,
+            $securityService,
+            MockObjectProvider::mock(TwoFactorProvider::class),
             Container::instance()->get(HashProvider::class),
-            Container::instance()->get(EmailService::class), Container::instance()->get(PendingActionService::class),
-            Container::instance()->get(UserSessionService::class));
+            Container::instance()->get(UserService::class),
+            Container::instance()->get(UserSessionService::class),
+            Container::instance()->get(PendingActionService::class)
+        );
 
         $this->session->__setLoggedInUserAccessTokenHash(AuthenticationHelper::hashNewPassword("TESTTOKEN"));
 
