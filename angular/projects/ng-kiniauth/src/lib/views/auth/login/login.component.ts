@@ -39,6 +39,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     public activeSession = false;
     public forgottenPassword = false;
     public passwordResetSent = false;
+    public trustBrowser = false;
 
     constructor(private router: Router,
                 kcAuthService: AuthenticationService) {
@@ -154,7 +155,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
             return this.authService.authenticateTwoFactor(this.twoFACode)
                 .then(clientTwoFactorData => {
                     this.loading = false;
-                    if (clientTwoFactorData) {
+                    if (clientTwoFactorData && this.trustBrowser) {
                         localStorage.setItem('clientTwoFactorData', String(clientTwoFactorData));
                     }
                     this.loggedIn.emit(clientTwoFactorData);
