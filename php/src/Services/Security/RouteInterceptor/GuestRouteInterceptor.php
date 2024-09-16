@@ -19,7 +19,10 @@ class GuestRouteInterceptor extends WebRouteInterceptor {
 
     const WHITELISTED_ENDPOINTS = [
         "guest/session",
-        "guest/auth/logout"
+        "guest/auth/logout",
+        "guest/auth/sso/facebook",
+        "guest/auth/sso/google",
+        "guest/auth/sso/apple"
     ];
 
     /**

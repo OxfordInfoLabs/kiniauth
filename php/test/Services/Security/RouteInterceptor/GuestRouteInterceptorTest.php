@@ -83,6 +83,9 @@ class GuestRouteInterceptorTest extends TestBase {
 
         $_SERVER["REQUEST_URI"] = "/guest/auth/logout";
         $this->guestRouteInterceptor->beforeRoute(new Request(new Headers()));
+
+        $_SERVER["REQUEST_URI"] = "/guest/auth/sso/facebook";
+        $this->guestRouteInterceptor->beforeRoute(new Request(new Headers()));
     }
 
 }
