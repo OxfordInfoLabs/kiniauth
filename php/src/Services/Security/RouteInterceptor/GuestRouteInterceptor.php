@@ -17,6 +17,11 @@ use Kiniauth\Services\Security\SecurityService;
  */
 class GuestRouteInterceptor extends WebRouteInterceptor {
 
+    const WHITELISTED_ENDPOINTS = [
+        "guest/session",
+        "guest/auth/logout"
+    ];
+
     /**
      * @param SecurityService $securityService
      * @param AuthenticationService $authenticationService
@@ -24,7 +29,16 @@ class GuestRouteInterceptor extends WebRouteInterceptor {
      */
     public function __construct($securityService, $authenticationService) {
         parent::__construct($securityService, $authenticationService);
-        $this->csrf = false;
+    }
+
+    public function beforeRoute($request) {
+
+        // Enforce CSRF unless in whitelisted endpoints array
+        $routePath = $request->getUrl()->getPath();
+        $this->csrf = !in_array($routePath, self::WHITELISTED_ENDPOINTS);
+
+
+        return parent::beforeRoute($request);
     }
 
 

@@ -192,8 +192,6 @@ class SecurityService {
 
         $this->session->__setLoggedInPrivileges($privileges);
 
-        $this->session->__setCSRFToken(StringUtils::generateRandomString(32, true, true));
-
     }
 
 
@@ -293,7 +291,7 @@ class SecurityService {
         $this->session->__setLoggedInAccount(null);
         $this->session->__setLoggedInPrivileges(null);
         $this->session->__setLoggedInUserAccessTokenHash(null);
-        $this->session->__setCSRFToken(null);
+        $this->session->__clearCSRFToken();
 
         // Regenerate the session to avoid session fixation
         $this->session->regenerate();
