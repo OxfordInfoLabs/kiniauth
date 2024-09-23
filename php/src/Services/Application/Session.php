@@ -261,17 +261,23 @@ class Session implements \Kinikit\MVC\Session\Session {
      * @return mixed
      */
     public function __getCSRFToken() {
+
+        // Ensure we have a CSRF Token
+        if (!$this->getValue("CSRFToken")) {
+            $this->setValue("CSRFToken", StringUtils::generateRandomString(32, true, true));
+        }
+
         return $this->getValue("CSRFToken");
     }
 
 
     /**
-     * Set CSRF Token
+     * Clear the CSRF Token
      *
      * @param $csrfToken
      */
-    public function __setCSRFToken($csrfToken) {
-        $this->setValue("CSRFToken", $csrfToken);
+    public function __clearCSRFToken() {
+        $this->setValue("CSRFToken", null);
     }
 
     public function __getSessionSalt() {
