@@ -18,6 +18,12 @@ class AMPAsyncAsynchronousProcessor implements AsynchronousProcessor {
     ) {
     }
 
+    /**
+     * @template T of Asynchronous
+     * @param T[] $asynchronousInstances
+     * @param $timeout
+     * @return T[]
+     */
     public function executeAndWait($asynchronousInstances, $timeout = 120) {
 
         $toFuture = fn(Asynchronous $instance) => async(function () use ($instance){
