@@ -78,12 +78,7 @@ class ScheduledTaskSummary extends ActiveRecord {
      */
     protected $nextStartTime;
 
-
-    /**
-     * @var integer
-     */
-    protected $timeoutSeconds;
-
+    protected int $timeoutSeconds;
 
     /**
      * @var string
@@ -120,7 +115,7 @@ class ScheduledTaskSummary extends ActiveRecord {
      * @param string $taskGroup
      */
     public function __construct($taskIdentifier, $description, $configuration, $timePeriods, $status = self::STATUS_PENDING,
-                                $nextStartTime = null, $lastStartTime = null, $lastEndTime = null, $timeoutTime = null, $timeoutSeconds = 86000,
+                                $nextStartTime = null, $lastStartTime = null, $lastEndTime = null, $timeoutTime = null, $timeoutSeconds = 86400,
                                 $id = null, $taskGroup = null) {
         $this->taskIdentifier = $taskIdentifier;
         $this->description = $description;
@@ -264,10 +259,7 @@ class ScheduledTaskSummary extends ActiveRecord {
         $this->nextStartTime = $nextStartTime;
     }
 
-    /**
-     * @return int
-     */
-    public function getTimeoutSeconds() {
+    public function getTimeoutSeconds() : int {
         return $this->timeoutSeconds;
     }
 

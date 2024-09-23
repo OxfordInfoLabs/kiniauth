@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsula
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../../services/authentication.service';
 import { BaseComponent } from '../../base-component';
+import {MatDialogRef} from '@angular/material/dialog';
 
 
 @Component({
@@ -21,6 +22,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     @Input() forgottenPasswordURL: string;
     @Input() facebookSSOURL: string;
     @Input() googleSSOURL: string;
+    @Input() dialogRef: MatDialogRef<any>;
 
     @Output() loggedIn = new EventEmitter();
 
@@ -37,6 +39,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     public activeSession = false;
     public forgottenPassword = false;
     public passwordResetSent = false;
+    public trustBrowser = false;
 
     constructor(private router: Router,
                 kcAuthService: AuthenticationService) {
@@ -65,6 +68,22 @@ export class LoginComponent extends BaseComponent implements OnInit {
         } else {
             this.forgottenPassword = true;
         }
+    }
+
+    public openSSO(link: string) {
+        const popup = window.open(link, 'popup', 'popup=true,height=700,width=600');
+        const timer = setInterval(async () => {
+            if (popup.closed) {
+                clearInterval(timer);
+                const user = await this.authService.getLoggedInUser(true);
+                if (user && !this.preventRedirect) {
+                    return this.router.navigate(['/']);
+                }
+                if (this.preventRedirect && this.dialogRef) {
+                    this.dialogRef.close();
+                }
+            }
+        }, 250);
     }
 
     public login() {
@@ -136,7 +155,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
             return this.authService.authenticateTwoFactor(this.twoFACode)
                 .then(clientTwoFactorData => {
                     this.loading = false;
-                    if (clientTwoFactorData) {
+                    if (clientTwoFactorData && this.trustBrowser) {
                         localStorage.setItem('clientTwoFactorData', String(clientTwoFactorData));
                     }
                     this.loggedIn.emit(clientTwoFactorData);

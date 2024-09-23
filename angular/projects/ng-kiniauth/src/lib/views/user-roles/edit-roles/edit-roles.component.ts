@@ -107,7 +107,7 @@ export class EditRolesComponent implements OnInit {
 
             const allAssignableRoles = _.values(assignableRole.roles);
             const existing = _.find(this.roles, { scopeId: assignableRole.scopeId });
-            if (existing && (existing.roles[0] === 0 && existing.roles.length === 1)) {
+            if (existing && (existing.roles[0] === null && existing.roles.length === 1)) {
                 this.checked[assignableRole.scopeId]['owner'] = true;
                 this.disabled[assignableRole.scopeId] = true;
             }

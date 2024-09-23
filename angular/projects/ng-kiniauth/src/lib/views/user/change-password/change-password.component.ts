@@ -1,13 +1,15 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import * as lodash from 'lodash';
 const _ = lodash.default;
+
+declare var hibpCheck: any;
 
 @Component({
     selector: 'ka-change-password',
     templateUrl: './change-password.component.html',
     styleUrls: ['./change-password.component.sass']
 })
-export class ChangePasswordComponent implements OnInit {
+export class ChangePasswordComponent implements OnInit, AfterViewInit {
 
     @Input() email: string;
     @Input() authService: any;
@@ -25,11 +27,18 @@ export class ChangePasswordComponent implements OnInit {
     public isDigitOk = false;
     public isSpecialOk = false;
     public isPasswordOk = false;
+    public hibp = false;
 
     constructor() {
     }
 
     ngOnInit() {
+    }
+
+    ngAfterViewInit() {
+        document.addEventListener('hibpCheck', (e: any) => {
+            this.hibp = !!e.detail;
+        });
     }
 
     public passwordChange() {
@@ -40,13 +49,19 @@ export class ChangePasswordComponent implements OnInit {
         const upper = new RegExp('(?=.*[A-Z])');
         const digit = new RegExp('(?=.*[0-9])');
         const special = new RegExp('(?=.*[^A-Za-z0-9])');
-        const length = new RegExp('(?=.{8,})');
+        const length = new RegExp('(?=.{10,})');
 
         this.isLengthOk = length.test(this.password);
         this.isLowerCaseOk = lower.test(this.password);
         this.isUpperCaseOk = upper.test(this.password);
         this.isDigitOk = digit.test(this.password);
         this.isSpecialOk = special.test(this.password);
+
+        this.hibp = false;
+    }
+
+    public passwordCheck() {
+        hibpCheck(this.password);
     }
 
     public saveNewPassword() {

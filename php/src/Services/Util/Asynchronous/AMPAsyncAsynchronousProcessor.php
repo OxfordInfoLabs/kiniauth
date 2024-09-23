@@ -18,7 +18,13 @@ class AMPAsyncAsynchronousProcessor implements AsynchronousProcessor {
     ) {
     }
 
-    public function executeAndWait($asynchronousInstances) {
+    /**
+     * @template T of Asynchronous
+     * @param T[] $asynchronousInstances
+     * @param $timeout
+     * @return T[]
+     */
+    public function executeAndWait($asynchronousInstances, $timeout = 120) {
 
         $toFuture = fn(Asynchronous $instance) => async(function () use ($instance){
             try {
@@ -42,9 +48,9 @@ class AMPAsyncAsynchronousProcessor implements AsynchronousProcessor {
             return $instance;
         });
 
-
-
-        $responses = await(array_map($toFuture, $asynchronousInstances), new TimeoutCancellation(120));
+        $responses = await(
+            array_map($toFuture, $asynchronousInstances),
+            new TimeoutCancellation($timeout));
         ksort($responses);
         return $responses;
     }
