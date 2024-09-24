@@ -67,19 +67,6 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
         // Handle options requests to allow headers
         if (strtolower($request->getRequestMethod() ?? "") == "options") {
             $response = new SimpleResponse("");
-
-            // Allow content type
-            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "content-type");
-
-            // Add the capcha token as permitted in all cases
-            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "x-captcha-token");
-
-            // Add the CSRF token as permitted for this route
-            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "x-csrf-token");
-
-            // Allow methods
-            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,DELETE,PUT,PATCH,OPTIONS");
-
             return $response;
         }
 
@@ -115,9 +102,26 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
 
         // Check we have an active referrer - if so we can assume that the request referrer is valid.
         if ($this->authenticationService->hasActiveReferrer() && $referrer) {
+
+            // Allow the origin via a header
             $accessControlOrigin = strtolower($referrer->getProtocol()) . "://" . $referrer->getHost() . ($referrer->getPort() != "80" && $referrer->getPort() != "443" ? ":" . $referrer->getPort() : "");
-            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
             $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, $accessControlOrigin);
+
+            // Allow credentials via a header
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+
+            // Allow content type
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "content-type");
+
+            // Add the capcha token as permitted in all cases
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "x-captcha-token");
+
+            // Add the CSRF token as permitted for this route
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "x-csrf-token");
+
+            // Allow methods
+            $response->setHeader(Headers::HEADER_ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,DELETE,PUT,PATCH,OPTIONS");
+
         }
 
         // Call the custom logic
