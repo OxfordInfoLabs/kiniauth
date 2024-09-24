@@ -13,6 +13,8 @@ use Kiniauth\Objects\Security\ObjectScopeAccess;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserRole;
+use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
@@ -79,6 +81,59 @@ class SecurityServiceTest extends TestBase {
         $this->assertEquals(array("*"), $this->securityService->getLoggedInScopePrivileges(Role::SCOPE_ACCOUNT, 2));
 
     }
+
+
+    public function testCanCheckObjectAccessForUserObjects() {
+
+        $user = new User("bob@test.com", "rtertwerwet", "Bob Test", 0, 2);
+        $user->setRoles([new UserRole(Role::SCOPE_ACCOUNT, 1, 0, 1, 2)]);
+
+        // Logged out
+        $this->authenticationService->logout();
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($user));
+
+        // Super user.
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($user));
+
+        // Logged in as target user
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($user));
+
+        // Logged in as user with same account access
+        AuthenticationHelper::login("bob@twofactor.com", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($user));
+
+        // Logged in as user without same account access
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($user));
+
+
+        $userSummary = new UserSummary("Bob Brown", UserSummary::STATUS_ACTIVE, "bob@test.com", 0, [], 2);
+        $userSummary->setRoles([new UserRole(Role::SCOPE_ACCOUNT, 1, 0, 1, 2)]);
+
+        // Logged out
+        $this->authenticationService->logout();
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($userSummary));
+
+        // Super user.
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($userSummary));
+
+        // Logged in as target user
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($userSummary));
+
+        // Logged in as user with same account access
+        AuthenticationHelper::login("bob@twofactor.com", "password");
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($userSummary));
+
+        // Logged in as user without same account access
+        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
+        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($userSummary));
+
+    }
+
 
     public function testCanCheckObjectAccessWithAccountId() {
 

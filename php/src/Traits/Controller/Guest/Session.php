@@ -11,14 +11,17 @@ use Kinikit\Core\Logging\Logger;
 
 trait Session {
 
-    private $sessionService;
+    /**
+     * @var \Kiniauth\Services\Application\Session
+     */
+    private $session;
 
 
     /**
-     * @param \Kiniauth\Services\Application\SessionService $sessionService
+     * @param \Kiniauth\Services\Application\Session $session
      */
-    public function __construct($sessionService) {
-        $this->sessionService = $sessionService;
+    public function __construct($session) {
+        $this->session = $session;
     }
 
     /**
@@ -29,6 +32,7 @@ trait Session {
      * @return mixed
      */
     public function getSessionData() {
+        $this->session->__clearCSRFToken();
         return Container::instance()->get(SessionData::class);
     }
 
