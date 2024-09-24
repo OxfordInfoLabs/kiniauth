@@ -92,7 +92,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
             this.loading = true;
             const clientTwoFactorData = localStorage.getItem('clientTwoFactorData');
             return this.authService.login(this.email, this.password, clientTwoFactorData || null, (this.showRecaptcha ? this.recaptchaResponse : null))
-                .then((res: any) => {
+                .then(async (res: any) => {
                     this.loading = false;
                     if (res === 'REQUIRES_2FA') {
                         this.twoFA = true;
@@ -101,6 +101,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
                         this.activeSession = true;
                     } else {
                         this.loggedIn.emit(res);
+                        await this.authService.getLoggedInUser();
                         if (!this.preventRedirect) {
                             return this.router.navigate([this.loginRoute || '/']);
                         }
@@ -153,12 +154,13 @@ export class LoginComponent extends BaseComponent implements OnInit {
         this.loading = true;
         if (this.twoFACode) {
             return this.authService.authenticateTwoFactor(this.twoFACode)
-                .then(clientTwoFactorData => {
+                .then(async clientTwoFactorData => {
                     this.loading = false;
                     if (clientTwoFactorData && this.trustBrowser) {
                         localStorage.setItem('clientTwoFactorData', String(clientTwoFactorData));
                     }
                     this.loggedIn.emit(clientTwoFactorData);
+                    await this.authService.getLoggedInUser();
                     if (!this.preventRedirect) {
                         return this.router.navigate([this.loginRoute || '/']);
                     }
