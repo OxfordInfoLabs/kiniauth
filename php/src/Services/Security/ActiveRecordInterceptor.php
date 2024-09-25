@@ -3,13 +3,11 @@
 
 namespace Kiniauth\Services\Security;
 
-use Kiniauth\Objects\Security\ObjectScopeAccess;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Workflow\PropertyChangeWorkflow;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Workflow\ObjectWorkflowService;
 use Kiniauth\Traits\Application\Timestamped;
-use Kiniauth\Traits\Security\Sharable;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Object\SerialisableObject;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
@@ -18,7 +16,6 @@ use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
 use Kinikit\Persistence\ORM\Mapping\ORMMapping;
 use Kinikit\Persistence\ORM\ORM;
 use Kinikit\Persistence\TableMapper\Exception\WrongPrimaryKeyLengthException;
-use phpDocumentor\Reflection\Types\Callable_;
 
 
 /**

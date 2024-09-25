@@ -2,13 +2,7 @@
 
 namespace Kiniauth\Services\Util\Asynchronous;
 
-use Amp\Cancellation;
-use Amp\DeferredFuture;
-use Amp\Future;
 use Amp\Parallel\Worker\ContextWorkerPool;
-use Amp\Parallel\Worker\Task;
-use Amp\Sync\Channel;
-use Amp\TimeoutCancellation;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\Session;
 use Kinikit\Core\Asynchronous\Asynchronous;
@@ -19,10 +13,7 @@ use Kinikit\Core\Reflection\ClassInspectorProvider;
 use function Amp\async;
 use function Amp\delay;
 use function Amp\Future\await;
-use function Amp\Future\awaitAll;
 use function Amp\Future\awaitFirst;
-use function Amp\Parallel\Worker\submit;
-use function Amp\Parallel\Worker\workerPool;
 
 class AMPParallelAsynchronousProcessor implements AsynchronousProcessor {
 

@@ -12,7 +12,6 @@ use Kiniauth\Exception\Security\NonExistentPrivilegeException;
 use Kiniauth\Exception\Security\UserSuspendedException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\APIKey;
-use Kiniauth\Objects\Security\ObjectScopeAccess;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\Securable;
@@ -20,13 +19,10 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Application\Session;
-use Kiniauth\Traits\Security\Sharable;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\FileResolver;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
-use Kinikit\Core\Util\StringUtils;
 use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 
 class SecurityService {

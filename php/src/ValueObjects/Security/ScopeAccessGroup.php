@@ -2,7 +2,6 @@
 
 namespace Kiniauth\ValueObjects\Security;
 
-use Kinikit\Core\Util\ArrayUtils;
 use Kinikit\Core\Util\ObjectArrayUtils;
 
 /**

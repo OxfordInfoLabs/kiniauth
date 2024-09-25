@@ -14,7 +14,6 @@ use Kinikit\Core\Communication\Email\Email;
 use Kinikit\Core\Communication\Email\Provider\EmailProvider;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Stream\String\ReadOnlyStringStream;
-use Kinikit\Core\Util\ArrayUtils;
 use Kinikit\Persistence\ORM\Query\Filter\LikeFilter;
 use Kinikit\Persistence\ORM\Query\Query;
 

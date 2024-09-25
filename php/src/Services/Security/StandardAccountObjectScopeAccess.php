@@ -5,7 +5,6 @@ namespace Kiniauth\Services\Security;
 
 
 use Kiniauth\Objects\Account\Account;
-use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\UserRole;
 

@@ -9,7 +9,6 @@ use Kiniauth\Objects\Workflow\ObjectWorkflowStep;
 use Kiniauth\Services\Workflow\Task\Task;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\DependencyInjection\MissingInterfaceImplementationException;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\StringUtils;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
@@ -18,6 +17,8 @@ use Kinikit\Persistence\ORM\ORM;
 
 /**
  * Process object workflows according to the steps defined for a given object class.
+ *
+ * @noProxy
  */
 class ObjectWorkflowService {
 

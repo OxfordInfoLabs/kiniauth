@@ -5,7 +5,6 @@ namespace Kiniauth\Services\Security\SSOProvider;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
 use Kinikit\Core\HTTP\Request\Request;
-use Kinikit\Core\Logging\Logger;
 
 class FacebookSSOAuthenticator extends SSOAuthenticator {
 

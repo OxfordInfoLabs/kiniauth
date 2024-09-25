@@ -14,7 +14,6 @@ use Kiniauth\Traits\Security\Sharable;
 use Kiniauth\ValueObjects\Security\ScopeAccessGroup;
 use Kiniauth\ValueObjects\Security\SharableItem;
 use Kinikit\Core\Binding\ObjectBinder;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Reflection\ClassInspector;
 use Kinikit\Core\Util\ArrayUtils;
 use Kinikit\Core\Util\ObjectArrayUtils;

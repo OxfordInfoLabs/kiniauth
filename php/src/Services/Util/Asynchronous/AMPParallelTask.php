@@ -2,20 +2,17 @@
 
 namespace Kiniauth\Services\Util\Asynchronous;
 
-use Amp\Cache\LocalCache;
 use Amp\Cancellation;
 use Amp\Parallel\Worker\Task;
 use Amp\Sync\Channel;
-use Amp\TimeoutCancellation;
 use Amp\TimeoutException;
 use Kiniauth\Services\Security\SecurityService;
-use Kinikit\Core\Asynchronous\Asynchronous;
 use Kiniauth\Test\Services\Util\Asynchronous\AsynchronousProcessor;
+use Kinikit\Core\Asynchronous\Asynchronous;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Bootstrapper;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Logging\Logger;
-use Kinikit\Core\Template\ValueFunction\ValueFunctionEvaluator;
 use function Amp\async;
 use function Amp\delay;
 use function Amp\Future\awaitFirst;

@@ -9,7 +9,6 @@ use Kiniauth\Services\Application\SessionData;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\ValueObjects\Security\NewPasswordDescriptor;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Logging\Logger;
 
 
 trait Auth {

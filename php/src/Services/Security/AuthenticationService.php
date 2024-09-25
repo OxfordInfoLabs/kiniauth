@@ -24,7 +24,6 @@ use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\MVC\Request\Request;
@@ -36,6 +35,7 @@ use Kinikit\MVC\Request\URL;
  *
  * Class AuthenticationService
  * @package Kiniauth\Workers\Application
+ *
  */
 class AuthenticationService {
 

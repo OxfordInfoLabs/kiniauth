@@ -6,7 +6,6 @@ namespace Kiniauth\Objects\Communication\Email;
 use Kiniauth\Services\Application\SettingsService;
 use Kinikit\Core\Communication\Email\TemplatedEmail;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Logging\Logger;
 
 /**
  * Base branded templated email which adds parent account settings to the model.
