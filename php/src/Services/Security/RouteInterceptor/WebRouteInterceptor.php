@@ -58,18 +58,16 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
      */
     public function beforeRoute($request) {
 
-        list($user, $account) = $this->securityService->getLoggedInSecurableAndAccount();
-
-        // Authenticate using referrer / origin to ensure we are allowed in.
-        $this->authenticationService->updateActiveParentAccount($this->getReferrer($request));
-
-
         // Handle options requests to allow headers
         if (strtolower($request->getRequestMethod() ?? "") == "options") {
             $response = new SimpleResponse("");
             return $response;
         }
 
+        list($user, $account) = $this->securityService->getLoggedInSecurableAndAccount();
+
+        // Authenticate using referrer / origin to ensure we are allowed in.
+        $this->authenticationService->updateActiveParentAccount($this->getReferrer($request));
 
 
         // If enforcing csrf do the main job
@@ -101,7 +99,7 @@ abstract class WebRouteInterceptor extends RouteInterceptor {
         $referrer = $this->getReferrer($request);
 
         // Check we have an active referrer - if so we can assume that the request referrer is valid.
-        if ($this->authenticationService->hasActiveReferrer() && $referrer) {
+        if ((strtolower($request->getRequestMethod() ?? "") == "options") || ($this->authenticationService->hasActiveReferrer() && $referrer)) {
 
             // Allow the origin via a header
             $accessControlOrigin = strtolower($referrer->getProtocol()) . "://" . $referrer->getHost() . ($referrer->getPort() != "80" && $referrer->getPort() != "443" ? ":" . $referrer->getPort() : "");
