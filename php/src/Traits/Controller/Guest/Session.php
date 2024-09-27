@@ -31,7 +31,7 @@ trait Session {
      * @return mixed
      */
     public function getSessionData() {
-        $this->session->__clearCSRFToken();
+       // $this->session->__clearCSRFToken();
         return Container::instance()->get(SessionData::class);
     }
 
