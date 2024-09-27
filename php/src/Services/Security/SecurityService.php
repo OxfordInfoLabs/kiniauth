@@ -21,6 +21,7 @@ use Kiniauth\Objects\Security\UserSummary;
 use Kiniauth\Services\Application\Session;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\FileResolver;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Persistence\Database\Connection\DatabaseConnection;
@@ -84,15 +85,13 @@ class SecurityService {
      * @param ClassInspectorProvider $classInspectorProvider
      * @param FileResolver $fileResolver
      * @param ObjectBinder $objectBinder
-     * @param DatabaseConnection $databaseConnection
      * @param UserSessionService $userSessionService
      */
-    public function __construct($session, $scopeManager, $classInspectorProvider, $fileResolver, $objectBinder, $databaseConnection, $userSessionService) {
+    public function __construct($session, $scopeManager, $classInspectorProvider, $fileResolver, $objectBinder, $userSessionService) {
         $this->session = $session;
         $this->classInspectorProvider = $classInspectorProvider;
         $this->fileResolver = $fileResolver;
         $this->objectBinder = $objectBinder;
-        $this->databaseConnection = $databaseConnection;
         $this->scopeManager = $scopeManager;
         $this->userSessionService = $userSessionService;
     }
@@ -552,14 +551,15 @@ class SecurityService {
      */
     public function getParentAccountId($accountId = null, $userId = null) {
         $loggedInUserAndAccount = $this->getLoggedInSecurableAndAccount();
+        $databaseConnection = Container::instance()->get(DatabaseConnection::class);
         if ($accountId) {
             if (!isset($loggedInUserAndAccount[1]) || $loggedInUserAndAccount[1]->getAccountId() != $accountId) {
-                return $this->databaseConnection->query("SELECT parent_account_id FROM ka_account WHERE account_id = ?", $accountId)->fetchAll()[0]["parent_account_id"] ?? 0;
+                return $databaseConnection->query("SELECT parent_account_id FROM ka_account WHERE account_id = ?", $accountId)->fetchAll()[0]["parent_account_id"] ?? 0;
             }
         }
         if ($userId) {
             if (!isset($loggedInUserAndAccount[0]) || $loggedInUserAndAccount[0]->getId() != $userId) {
-                return $this->databaseConnection->query("SELECT parent_account_id FROM ka_user WHERE id = ?", $userId)->fetchAll()[0]["parent_account_id"] ?? 0;
+                return $databaseConnection->query("SELECT parent_account_id FROM ka_user WHERE id = ?", $userId)->fetchAll()[0]["parent_account_id"] ?? 0;
             }
         }
         return $this->session->__getActiveParentAccountId();
