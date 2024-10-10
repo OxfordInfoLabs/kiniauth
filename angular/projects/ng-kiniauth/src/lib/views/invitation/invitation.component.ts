@@ -24,8 +24,10 @@ export class InvitationComponent extends BaseComponent implements OnInit {
         super(kcAuthService);
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         super.ngOnInit();
+
+        await this.authService.getSessionData();
 
         this.invitationCode = this.route.snapshot.queryParams.invitationCode;
 
