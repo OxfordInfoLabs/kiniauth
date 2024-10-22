@@ -1,6 +1,6 @@
 {
   "name": "application",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "scripts": {
     "watch": "ng build ng-kiniauth --watch",
     "build": "npm version patch && ng build ng-kiniauth",

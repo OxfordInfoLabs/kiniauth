@@ -37,6 +37,8 @@ export class PasswordResetComponent extends BaseComponent implements OnInit {
     async ngOnInit() {
         super.ngOnInit();
 
+        await this.authService.getSessionData();
+
         this.resetCode = this.route.snapshot.queryParams.code;
 
         this.authService.getEmailForPasswordReset(this.resetCode).then(resetEmail => {
