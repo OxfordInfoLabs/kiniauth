@@ -689,14 +689,19 @@ class UserService {
 
         $authenticationService = Container::instance()->get(AuthenticationService::class);
 
-        // Attempt login
-        $status = $authenticationService->login($emailAddress, $password);
 
-        // If 2fa, check twofa code as well
-        if ($status == AuthenticationService::STATUS_REQUIRES_2FA) {
-            if (!$authenticationService->authenticateTwoFactor($twoFaCode))
+        if ($twoFaCode){
+            $authenticationService->authenticateTwoFactor($twoFaCode);
+        } else {
+            // Attempt login
+            $status = $authenticationService->login($emailAddress, $password);
+
+            // If 2fa required, throw to force check of 2fa
+            if ($status == AuthenticationService::STATUS_REQUIRES_2FA) {
                 throw new TwoFactorAuthenticationRequiredException();
+            }
         }
+
 
         $loggedIn = $this->session->__getLoggedInSecurable();
 
