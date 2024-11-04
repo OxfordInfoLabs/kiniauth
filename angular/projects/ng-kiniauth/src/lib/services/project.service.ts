@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {AuthenticationService} from './authentication.service';
 import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
 
@@ -130,4 +130,58 @@ export class ProjectService {
 
         return values;
     }
+
+    /**
+     * Get exportable project resources
+     */
+    public getExportableProjectResources() {
+        const projectKey = this.activeProject.getValue().projectKey;
+        return this.http.get(this.config.accessHttpURL + '/project/export/resources/' + projectKey).toPromise();
+    }
+
+    /**
+     * Export a project based on export config
+     *
+     * @param exportConfig
+     */
+    public async exportProject(exportConfig: any) {
+        const projectKey = this.activeProject.getValue().projectKey;
+        const data = await this.http.post(this.config.accessHttpURL + '/project/export/' + projectKey, exportConfig,
+            {headers: new HttpHeaders({'Content-Type': 'external'}), responseType: 'arraybuffer'}).toPromise();
+
+        const a = document.createElement('a');
+        const blob = new Blob([data], {type: 'application/octet-stream'});
+        a.href = URL.createObjectURL(blob);
+        a.download = projectKey + '-' + Date.now() + '.json';
+        a.click();
+
+    }
+
+
+    /**
+     * Analyse a project import for imported file data
+     *
+     * @param importFileData
+     */
+    public async analyseImport(importFileData) {
+        const projectKey = this.activeProject.getValue().projectKey;
+        const HttpUploadOptions = {
+            headers: new HttpHeaders({'Content-Type': 'file'})
+        };
+        return this.http.post(this.config.accessHttpURL + '/project/import/analyse/' + projectKey,
+            importFileData, HttpUploadOptions).toPromise();
+    }
+
+
+    public async import(importFileData){
+
+        const projectKey = this.activeProject.getValue().projectKey;
+        const HttpUploadOptions = {
+            headers: new HttpHeaders({'Content-Type': 'file'})
+        };
+        return this.http.post(this.config.accessHttpURL + '/project/import/' + projectKey,
+            importFileData, HttpUploadOptions).toPromise();
+
+    }
+
 }

@@ -39,6 +39,8 @@ import { PasswordResetComponent } from './lib/views/password-reset/password-rese
 import { ChangePasswordComponent } from './lib/views/user/change-password/change-password.component';
 import { ApiKeysComponent } from './lib/views/api-keys/api-keys.component';
 import { AccountDiscoverabilityComponent } from './lib/views/account/account-discoverability/account-discoverability.component';
+import { ExportProjectComponent } from './lib/views/export-project/export-project.component';
+import { ImportProjectComponent } from './lib/views/import-project/import-project.component';
 
 @NgModule({
     declarations: [
@@ -68,7 +70,9 @@ import { AccountDiscoverabilityComponent } from './lib/views/account/account-dis
         PasswordResetComponent,
         ChangePasswordComponent,
         ApiKeysComponent,
-        AccountDiscoverabilityComponent
+        AccountDiscoverabilityComponent,
+        ExportProjectComponent,
+        ImportProjectComponent
     ],
     imports: [
         RouterModule,
@@ -104,7 +108,9 @@ import { AccountDiscoverabilityComponent } from './lib/views/account/account-dis
         InvitationComponent,
         PasswordResetComponent,
         ApiKeysComponent,
-        AccountDiscoverabilityComponent
+        AccountDiscoverabilityComponent,
+        ExportProjectComponent,
+        ImportProjectComponent
     ]
 })
 export class NgKiniAuthModule {
