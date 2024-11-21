@@ -152,11 +152,12 @@ trait Project {
      * @http POST /export/$projectKey
      *
      * @param string $projectKey
-     * @param ProjectExportConfig $projectExportConfig
+     * @param mixed $projectExportConfig
      *
      * @return null
      */
-    public function exportProject(string $projectKey, ProjectExportConfig $projectExportConfig) {
+    public function exportProject(string $projectKey, mixed $projectExportConfig) {
+
         $projectExport = $this->importExportService->exportProject($projectKey, $projectExportConfig);
         return new Download(new StringContentSource($this->objectToJSONConverter->convert($projectExport)),
             $projectKey . "-export-" . date("U") . ".json");
@@ -175,7 +176,7 @@ trait Project {
      */
     public function analyseProjectImport(string $projectKey, $importedFiles) {
         if (sizeof($importedFiles) > 0) {
-            $projectExport = $this->jsonToObjectConverter->convert(file_get_contents(array_values($importedFiles)[0]->getTemporaryFilePath()), ProjectExport::class);
+            $projectExport = json_decode(file_get_contents(array_values($importedFiles)[0]->getTemporaryFilePath()),true);
             return $this->importExportService->analyseImport($projectKey, $projectExport);
         }
     }
@@ -191,7 +192,7 @@ trait Project {
      */
     public function importProject(string $projectKey, $importedFiles) {
         if (sizeof($importedFiles) > 0) {
-            $projectExport = $this->jsonToObjectConverter->convert(file_get_contents(array_values($importedFiles)[0]->getTemporaryFilePath()), ProjectExport::class);
+            $projectExport = json_decode(file_get_contents(array_values($importedFiles)[0]->getTemporaryFilePath()),true);
             $this->importExportService->importProject($projectKey, $projectExport);
         }
     }

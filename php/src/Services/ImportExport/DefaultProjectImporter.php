@@ -12,6 +12,14 @@ use Kinikit\Core\Util\ObjectArrayUtils;
 
 class DefaultProjectImporter implements ProjectImporter {
 
+    /**
+     * @var array
+     */
+    private array $importItemIdMap = [];
+
+    // Item types
+    const ITEM_TYPE_NOTIFICATION_GROUP = "notificationGroup";
+
 
     /**
      * Construct with notification service
@@ -45,7 +53,7 @@ class DefaultProjectImporter implements ProjectImporter {
                     ProjectImportResourceStatus::Create);
         }
 
-        return new ProjectImportAnalysis($projectExport->getExportDateTime(),[
+        return new ProjectImportAnalysis($projectExport->getExportDateTime(), [
             "Notification Groups" => $importResources]);
 
     }
@@ -69,12 +77,43 @@ class DefaultProjectImporter implements ProjectImporter {
         // Loop through export notification groups, create new ones
         foreach ($projectExport->getNotificationGroups() as $notificationGroup) {
             if (!isset($allExistingNotificationGroups[$notificationGroup->getName()])) {
+                $prevId = $notificationGroup->getId();
                 $notificationGroup->setId(null);
-                $this->notificationService->saveNotificationGroup($notificationGroup, $projectKey, $accountId);
+                $newId = $this->notificationService->saveNotificationGroup($notificationGroup, $projectKey, $accountId);
+                $this->setImportItemIdMapping(self::ITEM_TYPE_NOTIFICATION_GROUP, $prevId, $newId);
             }
         }
 
 
+    }
+
+
+    /**
+     * Set a mapping from an imported item id to a new one
+     *
+     * @param string $itemType
+     * @param mixed $importId
+     * @param mixed $newId
+     *
+     * @return void
+     */
+    protected function setImportItemIdMapping($itemType, $importId, $newId) {
+        if (!isset($this->importItemIdMap[$itemType])) {
+            $this->importItemIdMap[$itemType] = [];
+        }
+        $this->importItemIdMap[$itemType][$importId] = $newId;
+    }
+
+    /**
+     * If a stored mapping for an item use it, otherwise use the passed value
+     *
+     * @param $itemType
+     * @param $importId
+     *
+     * @return mixed
+     */
+    protected function remapImportedItemId($itemType, $importId) {
+        return $this->importItemIdMap[$itemType][$importId] ?? $importId;
     }
 
 

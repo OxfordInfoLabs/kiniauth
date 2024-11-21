@@ -12,6 +12,10 @@ use Kiniauth\ValueObjects\ImportExport\ProjectExportConfig;
  */
 interface ProjectExporter {
 
+    // Defined the export class for exporting
+    public const EXPORT_CLASS = ProjectExport::class;
+    public const EXPORT_CONFIG_CLASS = ProjectExportConfig::class;
+
     /**
      * Get exportable resources
      *

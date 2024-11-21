@@ -69,9 +69,9 @@ class DefaultProjectExporterTest extends TestBase {
         $exporterConfig = new ProjectExportConfig([3, 5]);
         $projectExport = $this->exporter->exportProject(5, "testProject", $exporterConfig);
 
-        $this->assertEquals(new ProjectExport($exporterConfig, [
-            new NotificationGroup(new NotificationGroupSummary("Notification Group 1", [], NotificationGroupSummary::COMMUNICATION_METHOD_EMAIL, 1), null, null),
-            new NotificationGroup(new NotificationGroupSummary("Notification Group 2", [], NotificationGroupSummary::COMMUNICATION_METHOD_EMAIL, 2), null, null),
+        $this->assertEquals(new ProjectExport([
+            new NotificationGroup(new NotificationGroupSummary("Notification Group 1", [], NotificationGroupSummary::COMMUNICATION_METHOD_EMAIL, -1), null, null),
+            new NotificationGroup(new NotificationGroupSummary("Notification Group 2", [], NotificationGroupSummary::COMMUNICATION_METHOD_EMAIL, -2), null, null),
 
         ]),
             $projectExport);

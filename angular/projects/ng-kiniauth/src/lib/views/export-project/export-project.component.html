@@ -19,7 +19,7 @@
             <div class="flex items-center h-5">
                 <input type="checkbox"
                        [name]="notificationGroup.identifier"
-                        [(ngModel)]="exportingResources['includedNotificationGroupIds:' + notificationGroup.identifier]"
+                        [(ngModel)]="notificationGroups[notificationGroup.identifier]"
                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
             </div>
             <div class="ml-3 text-sm">

@@ -37,13 +37,6 @@ class NotificationGroup extends NotificationGroupSummary {
         $this->accountSummary = $accountSummary;
     }
 
-    /**
-     * @param $id
-     * @return void
-     */
-    public function setId($id) {
-        $this->id = $id;
-    }
 
 
     public function returnSummary() {

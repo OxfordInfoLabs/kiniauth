@@ -12,6 +12,7 @@ use Kiniauth\ValueObjects\ImportExport\ProjectExportResource;
 
 class DefaultProjectExporter implements ProjectExporter {
 
+
     private $pkMappings = [
         "notificationGroups" => []
     ];
@@ -76,7 +77,7 @@ class DefaultProjectExporter implements ProjectExporter {
             ), null, null);
         }, $includedNotificationGroupSummaries);
 
-        return new ProjectExport($exportProjectConfig, $includedNotificationGroups);
+        return new ProjectExport($includedNotificationGroups);
 
     }
 
@@ -91,10 +92,21 @@ class DefaultProjectExporter implements ProjectExporter {
             $this->pkMappings[$itemType] = [];
         }
 
-        $nextItemPk = sizeof($this->pkMappings[$itemType]) + 1;
+        $nextItemPk = -sizeof($this->pkMappings[$itemType]) - 1;
         $this->pkMappings[$itemType]["PK" . $existingPK] = $nextItemPk;
 
         return $nextItemPk;
     }
 
+
+    /**
+     * Remap an object pk if one has already been mapped, otherwise return intact
+     *
+     * @param $itemType
+     * @param $existingPK
+     * @return void
+     */
+    protected function remapObjectPK($itemType, $existingPK) {
+        return $this->pkMappings[$itemType]["PK" . $existingPK] ?? $existingPK;
+    }
 }

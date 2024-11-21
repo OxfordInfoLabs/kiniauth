@@ -13,7 +13,9 @@ class ProjectImportResource {
 
 
     public function __construct(private mixed                       $identifier, private string $title,
-                                private ProjectImportResourceStatus $importStatus) {
+                                private ProjectImportResourceStatus $importStatus,
+                                private mixed                       $existingProjectIdentifier = null,
+                                private ?string                     $message = null) {
 
     }
 
@@ -36,6 +38,20 @@ class ProjectImportResource {
      */
     public function getImportStatus(): ProjectImportResourceStatus {
         return $this->importStatus;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExistingProjectIdentifier(): mixed {
+        return $this->existingProjectIdentifier;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMessage(): ?string {
+        return $this->message;
     }
 
 

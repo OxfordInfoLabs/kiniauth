@@ -38,7 +38,7 @@ class DefaultProjectImporterTest extends TestBase {
 
     public function testCanAnalyseImportFromProjectExportWhereNoNotificationGroupsExist() {
 
-        $projectExport = new ProjectExport(new ProjectExportConfig([]), [
+        $projectExport = new ProjectExport( [
             new NotificationGroup(new NotificationGroupSummary("Group 1", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 1), null, null),
             new NotificationGroup(new NotificationGroupSummary("Group 2", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 2), null, null)
         ]);
@@ -64,7 +64,7 @@ class DefaultProjectImporterTest extends TestBase {
 
     public function testCanAnalyseImportFromProjectExportWhereExistingNotificationGroupExist() {
 
-        $projectExport = new ProjectExport(new ProjectExportConfig([]), [
+        $projectExport = new ProjectExport([
             new NotificationGroup(new NotificationGroupSummary("Group 1", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 1), null, null),
             new NotificationGroup(new NotificationGroupSummary("Group 2", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 2), null, null)
         ]);
@@ -92,7 +92,7 @@ class DefaultProjectImporterTest extends TestBase {
 
     public function testCanImportNotificationGroupsFromProjectExportWhereNoneExists() {
 
-        $projectExport = new ProjectExport(new ProjectExportConfig([]), [
+        $projectExport = new ProjectExport( [
             new NotificationGroup(new NotificationGroupSummary("Group 1", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 1), null, null),
             new NotificationGroup(new NotificationGroupSummary("Group 2", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 2), null, null)
         ]);
@@ -124,7 +124,7 @@ class DefaultProjectImporterTest extends TestBase {
 
     public function testExistingNotificationGroupsWithSameTitleAreLeftIntactFromProjectExport() {
 
-        $projectExport = new ProjectExport(new ProjectExportConfig([]), [
+        $projectExport = new ProjectExport( [
             new NotificationGroup(new NotificationGroupSummary("Group 1", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 1), null, null),
             new NotificationGroup(new NotificationGroupSummary("Group 2", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 2), null, null)
         ]);

@@ -26,28 +26,33 @@
 
         <div class="mb-5">Importing from export: {{analysis.exportDateTime}}</div>
 
+        <table>
+        <tbody *ngFor="let category of keys(analysis.resourcesByType)">
 
-        <div *ngFor="let category of keys(analysis.resourcesByType)">
+            <tr>
+                <th colspan="2" align="left" class="pt-4">
+                    {{category}}
+                </th>
+            </tr>
 
-            <h3>{{category}}</h3>
-
-            <div class="flex items-start"
-                 *ngFor="let item of analysis.resourcesByType[category]">
-                <div class="ml-3 text-sm">
+            <tr *ngFor="let item of analysis.resourcesByType[category]">
+                <td>
                     <label class="font-medium text-gray-700">
                         {{item.title}}
                     </label>
+                </td>
 
-                </div>
+                <td>
+                    <div *ngIf="item.importStatus == 'Ignore'" class="ml-3 text-sm text-gray-300">Already Exists</div>
+                    <div *ngIf="item.importStatus == 'Update'" class="ml-3 text-sm text-orange-600">Requires Update</div>
+                    <div *ngIf="item.importStatus == 'Create'" class="ml-3 text-sm text-green-600">Will be created</div>
+                    <div *ngIf="item.importStatus == 'Delete'" class="ml-3 text-sm text-red-600">Will be deleted</div>
+                </td>
 
-                <div *ngIf="item.importStatus == 'Ignore'" class="ml-3 text-sm text-gray-300">Already Exists</div>
-                <div *ngIf="item.importStatus == 'Update'" class="ml-3 text-sm text-orange-600">Requires Update</div>
-                <div *ngIf="item.importStatus == 'Create'" class="ml-3 text-sm text-green-600">Will be created</div>
-                <div *ngIf="item.importStatus == 'Delete'" class="ml-3 text-sm text-red-600">Will be deleted</div>
+            </tr>
 
-            </div>
-
-        </div>
+        </tbody>
+        </table>
 
     </div>
 

@@ -17,10 +17,9 @@ class ProjectExport {
     /**
      * Notification groups
      *
-     * @param ProjectExportConfig $exportConfig
      * @param NotificationGroup[] $notificationGroups
      */
-    public function __construct(private ProjectExportConfig $exportConfig, private array $notificationGroups) {
+    public function __construct(private array $notificationGroups) {
         if (!$this->exportDateTime)
             $this->exportDateTime = date("Y-m-d H:i:s");
     }
@@ -33,12 +32,6 @@ class ProjectExport {
     }
 
 
-    /**
-     * @return ProjectExportConfig
-     */
-    public function getExportConfig(): ProjectExportConfig {
-        return $this->exportConfig;
-    }
 
     /**
      * @return NotificationGroup[]

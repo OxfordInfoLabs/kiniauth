@@ -12,7 +12,7 @@ export class ExportProjectComponent implements OnInit {
 
     public projectSub = new Subject();
     public exportableResources: any;
-    public exportingResources: any = {};
+    public notificationGroups: any = {};
 
     constructor(private projectService: ProjectService) {
     }
@@ -27,16 +27,11 @@ export class ExportProjectComponent implements OnInit {
         });
     }
 
-    export() {
-        const exportConfig: any = {};
-        Object.keys(this.exportingResources).forEach(key => {
-            if (this.exportingResources[key]) {
-                const exploded = key.split(':');
-                if (!Object.keys(exportConfig).includes(exploded[0])) {
-                    exportConfig[exploded[0]] = [];
-                }
-                exportConfig[exploded[0]].push(exploded[1]);
-            }
+    export(exportConfig: any = {}) {
+        exportConfig.includedNotificationGroupIds = [];
+        Object.keys(this.notificationGroups).forEach(key => {
+            if (this.notificationGroups[key])
+                exportConfig.includedNotificationGroupIds.push(key);
         });
         this.projectService.exportProject(exportConfig);
 

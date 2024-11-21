@@ -6,6 +6,8 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\ValueObjects\ImportExport\ExportableProjectResources;
 use Kiniauth\ValueObjects\ImportExport\ProjectExport;
 use Kiniauth\ValueObjects\ImportExport\ProjectExportConfig;
+use Kinikit\Core\Binding\ObjectBinder;
+use Kinikit\Core\Logging\Logger;
 
 class ImportExportService {
 
@@ -14,8 +16,10 @@ class ImportExportService {
      *
      * @param ProjectExporter $exporter
      * @param ProjectImporter $importer
+     * @param ObjectBinder $objectBinder
+     *
      */
-    public function __construct(private ProjectExporter $exporter, private ProjectImporter $importer) {
+    public function __construct(private ProjectExporter $exporter, private ProjectImporter $importer, private ObjectBinder $objectBinder) {
     }
 
     /**
@@ -34,13 +38,14 @@ class ImportExportService {
      * Export a project for an account and project key
      *
      * @param string $projectKey
-     * @param ProjectExportConfig $exportProjectConfig
+     * @param mixed $exportProjectConfig
      * @param int $accountId
      *
      * @return ProjectExport
      */
-    public function exportProject(string $projectKey, ProjectExportConfig $exportProjectConfig, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        return $this->exporter->exportProject($accountId, $projectKey, $exportProjectConfig);
+    public function exportProject(string $projectKey, mixed $exportProjectConfig, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $mappedConfig = $this->objectBinder->bindFromArray($exportProjectConfig, $this->exporter::EXPORT_CONFIG_CLASS);
+        return $this->exporter->exportProject($accountId, $projectKey, $mappedConfig);
     }
 
 
@@ -48,12 +53,13 @@ class ImportExportService {
      * Analyse import
      *
      * @param string $projectKey
-     * @param ProjectExport $projectExport
+     * @param mixed $projectExport
      * @param $accountId
      * @return mixed
      */
-    public function analyseImport(string $projectKey, ProjectExport $projectExport, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        return $this->importer->analyseImport($accountId, $projectKey, $projectExport);
+    public function analyseImport(string $projectKey, mixed $projectExport, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $mappedExport = $this->objectBinder->bindFromArray($projectExport, $this->exporter::EXPORT_CLASS);
+        return $this->importer->analyseImport($accountId, $projectKey, $mappedExport);
     }
 
     /**
@@ -61,11 +67,12 @@ class ImportExportService {
      *
      * @param int $accountId
      * @param string $projectKey
-     * @param ProjectExport $projectExport
+     * @param mixed $projectExport
      *
      */
-    public function importProject(string $projectKey, ProjectExport $projectExport, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        $this->importer->importProject($accountId, $projectKey, $projectExport);
+    public function importProject(string $projectKey, mixed $projectExport, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $mappedExport = $this->objectBinder->bindFromArray($projectExport, $this->exporter::EXPORT_CLASS);
+        $this->importer->importProject($accountId, $projectKey, $mappedExport);
     }
 
 }
