@@ -277,6 +277,38 @@ class ScheduledTaskServiceTest extends TestBase {
 
     }
 
+    public function testIfTaskAlreadyRunningTriggerWillResetTheNextStartTimeButNotStatus() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $date = new \DateTime();
+        $weekDay = $date->add(new \DateInterval("P1D"))->format("N");
+         $date = 1 + ($date->add(new \DateInterval("P1D"))->format("d") % 28);
+
+        $newTaskSummary = new ScheduledTaskSummary("test", "Test Scheduled Task",
+            ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
+                new ScheduledTaskTimePeriod($date, null, 15, 30),
+                new ScheduledTaskTimePeriod(null, $weekDay, 12, 20)
+            ], ScheduledTaskSummary::STATUS_RUNNING);
+
+
+        $taskId = $this->scheduledTaskService->saveScheduledTask($newTaskSummary, null, 1);
+        $this->assertNotNull($taskId);
+
+        $this->scheduledTaskService->triggerScheduledTask($taskId);
+
+        $task = $this->scheduledTaskService->getScheduledTask($taskId);
+
+        // Check that the next start time is reset and the status is not reset
+        $this->assertTrue(
+            $task->getNextStartTime() == date("Y-m-d H:i:s") ||
+            $task->getNextStartTime() == date("Y-m-d H:i:s", strtotime("-1 second"))            // In case we roll over a second during execution
+        );
+        $this->assertEquals(ScheduledTask::STATUS_RUNNING, $task->getStatus());
+
+    }
+
+
     public function testPassTaskGroupToProcessSubsetOfDueTasks() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");

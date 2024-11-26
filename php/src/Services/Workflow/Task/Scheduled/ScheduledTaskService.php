@@ -54,7 +54,11 @@ class ScheduledTaskService {
         // Grab the scheduled task and reset the time and status
         $task = ScheduledTask::fetch($taskId);
         $task->setNextStartTime(new \DateTime());
-        $task->setStatus(ScheduledTask::STATUS_PENDING);
+
+        // If we are not in a running state, reset to pending so
+        // the task gets picked up
+        if ($task->getStatus() !== ScheduledTask::STATUS_RUNNING)
+            $task->setStatus(ScheduledTask::STATUS_PENDING);
 
         // Suppress interceptor on save to avoid the time being immediately reset
         $preDisabled = ScheduledTaskInterceptor::$disabled;
