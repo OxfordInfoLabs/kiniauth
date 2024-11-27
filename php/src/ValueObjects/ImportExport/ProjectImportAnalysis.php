@@ -5,6 +5,7 @@ namespace Kiniauth\ValueObjects\ImportExport;
 class ProjectImportAnalysis {
 
     /**
+     * @param string $exportDateTime
      * @param ProjectImportResource[][string] $resourcesByType
      */
     public function __construct(private string $exportDateTime, private array $resourcesByType) {
@@ -19,7 +20,7 @@ class ProjectImportAnalysis {
 
 
     /**
-     * @return  ProjectExportResource[][string]
+     * @return  ProjectImportResource[][string]
      */
     public function getResourcesByType(): array {
         return $this->resourcesByType;

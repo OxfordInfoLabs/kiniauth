@@ -14,12 +14,11 @@ class ImportExportService {
     /**
      * Import export service
      *
-     * @param ProjectExporter $exporter
-     * @param ProjectImporter $importer
+     * @param ProjectImporterExporter $projectImporterExporter
      * @param ObjectBinder $objectBinder
      *
      */
-    public function __construct(private ProjectExporter $exporter, private ProjectImporter $importer, private ObjectBinder $objectBinder) {
+    public function __construct(private ProjectImporterExporter $projectImporterExporter, private ObjectBinder $objectBinder) {
     }
 
     /**
@@ -31,7 +30,7 @@ class ImportExportService {
      * @return ExportableProjectResources
      */
     public function getExportableProjectResources(string $projectKey, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        return $this->exporter->getExportableProjectResources($accountId, $projectKey);
+        return $this->projectImporterExporter->getExportableProjectResources($accountId, $projectKey);
     }
 
     /**
@@ -44,8 +43,7 @@ class ImportExportService {
      * @return ProjectExport
      */
     public function exportProject(string $projectKey, mixed $exportProjectConfig, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        $mappedConfig = $this->objectBinder->bindFromArray($exportProjectConfig, $this->exporter::EXPORT_CONFIG_CLASS);
-        return $this->exporter->exportProject($accountId, $projectKey, $mappedConfig);
+        return $this->projectImporterExporter->exportProject($accountId, $projectKey, $exportProjectConfig);
     }
 
 
@@ -58,8 +56,7 @@ class ImportExportService {
      * @return mixed
      */
     public function analyseImport(string $projectKey, mixed $projectExport, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        $mappedExport = $this->objectBinder->bindFromArray($projectExport, $this->exporter::EXPORT_CLASS);
-        return $this->importer->analyseImport($accountId, $projectKey, $mappedExport);
+        return $this->projectImporterExporter->analyseImport($accountId, $projectKey, $projectExport);
     }
 
     /**
@@ -71,8 +68,7 @@ class ImportExportService {
      *
      */
     public function importProject(string $projectKey, mixed $projectExport, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        $mappedExport = $this->objectBinder->bindFromArray($projectExport, $this->exporter::EXPORT_CLASS);
-        $this->importer->importProject($accountId, $projectKey, $mappedExport);
+        $this->projectImporterExporter->importProject($accountId, $projectKey, $projectExport);
     }
 
 }

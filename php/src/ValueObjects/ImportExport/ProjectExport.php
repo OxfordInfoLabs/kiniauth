@@ -15,11 +15,12 @@ class ProjectExport {
     private $exportDateTime;
 
     /**
-     * Notification groups
+     * Export data and export project config
      *
-     * @param NotificationGroup[] $notificationGroups
+     * @param mixed $exportData
+     * @param mixed $exportProjectConfig
      */
-    public function __construct(private array $notificationGroups) {
+    public function __construct(private mixed $exportData, private mixed $exportProjectConfig) {
         if (!$this->exportDateTime)
             $this->exportDateTime = date("Y-m-d H:i:s");
     }
@@ -31,13 +32,18 @@ class ProjectExport {
         return $this->exportDateTime;
     }
 
-
+    /**
+     * @return mixed
+     */
+    public function getExportData(): mixed {
+        return $this->exportData;
+    }
 
     /**
-     * @return NotificationGroup[]
+     * @return mixed
      */
-    public function getNotificationGroups(): array {
-        return $this->notificationGroups;
+    public function getExportProjectConfig(): mixed {
+        return $this->exportProjectConfig;
     }
 
 

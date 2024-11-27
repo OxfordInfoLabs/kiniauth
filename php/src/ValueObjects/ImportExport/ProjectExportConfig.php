@@ -8,7 +8,7 @@ namespace Kiniauth\ValueObjects\ImportExport;
 class ProjectExportConfig {
 
     /**
-     * @param int[] $includedNotificationGroupIds
+     * @param mixed] $includedNotificationGroupIds
      */
     public function __construct(private array $includedNotificationGroupIds = []) {
     }

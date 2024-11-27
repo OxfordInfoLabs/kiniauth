@@ -1,14 +1,16 @@
 <?php
 
-namespace Kiniauth\Test\Services\ImportExport;
+namespace Kiniauth\Test\Services\ImportExport\ImportExporters;
 
 use Kiniauth\Objects\Communication\Notification\NotificationGroup;
+use Kiniauth\Objects\Communication\Notification\NotificationGroupMember;
 use Kiniauth\Objects\Communication\Notification\NotificationGroupSummary;
+use Kiniauth\Objects\Security\UserCommunicationData;
 use Kiniauth\Services\Communication\Notification\NotificationService;
-use Kiniauth\Services\ImportExport\DefaultProjectImporter;
+use Kiniauth\Services\ImportExport\ImportExporters\NotificationGroupImportExporter;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\ImportExport\ProjectExport;
-use Kiniauth\ValueObjects\ImportExport\ProjectExportConfig;
+use Kiniauth\ValueObjects\ImportExport\ProjectExportResource;
 use Kiniauth\ValueObjects\ImportExport\ProjectImportAnalysis;
 use Kiniauth\ValueObjects\ImportExport\ProjectImportResource;
 use Kiniauth\ValueObjects\ImportExport\ProjectImportResourceStatus;
@@ -17,12 +19,13 @@ use Kinikit\Core\Testing\MockObjectProvider;
 
 include_once "autoloader.php";
 
-class DefaultProjectImporterTest extends TestBase {
+class NotificationGroupImportExporterTest extends TestBase {
+
 
     /**
-     * @var DefaultProjectImporter
+     * @var NotificationGroupImportExporter
      */
-    private $importer;
+    private $importerExporter;
 
     /**
      * @var MockObject|NotificationService
@@ -32,31 +35,70 @@ class DefaultProjectImporterTest extends TestBase {
 
     public function setUp(): void {
         $this->notificationService = MockObjectProvider::mock(NotificationService::class);
-        $this->importer = new DefaultProjectImporter($this->notificationService);
+        $this->importerExporter = new NotificationGroupImportExporter($this->notificationService);
+    }
+
+
+    public function testExporterReturnsNotificationGroupsCorrectlyForExportableProjectResources() {
+        $this->notificationService->returnValue("listNotificationGroups", [
+            new NotificationGroupSummary("Example Group 1", [], [], 3),
+            new NotificationGroupSummary("Example Group 2", [], [], 5),
+            new NotificationGroupSummary("Example Group 3", [], [], 7)
+        ], [
+            PHP_INT_MAX, 0, "myProject", 7
+        ]);
+
+        $exportableResources = $this->importerExporter->getExportableProjectResources(7, "myProject");
+
+        $this->assertEquals([
+            new ProjectExportResource(3, "Example Group 1"),
+            new ProjectExportResource(5, "Example Group 2"),
+            new ProjectExportResource(7, "Example Group 3")
+        ], $exportableResources);
+
+    }
+
+    public function testExporterReturnsProjectExportForConfiguration() {
+
+        $this->notificationService->returnValue("listNotificationGroups", [
+            new NotificationGroupSummary("Notification Group 1", [new NotificationGroupMember(new UserCommunicationData(null, "Mark Robertshaw", "mark@test.com"))], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 3),
+            new NotificationGroupSummary("Notification Group 2", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 5),
+            new NotificationGroupSummary("Notification Group 3", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 7)
+        ], [
+            PHP_INT_MAX, 0, "testProject", 5
+        ]);
+        $exporterConfig = ["includedNotificationGroupIds" => [3, 5]];
+        $exportObjects = $this->importerExporter->createExportObjects(5, "testProject", $exporterConfig);
+
+        $this->assertEquals([
+            new NotificationGroup(new NotificationGroupSummary("Notification Group 1", [], NotificationGroupSummary::COMMUNICATION_METHOD_EMAIL, -1), null, null),
+            new NotificationGroup(new NotificationGroupSummary("Notification Group 2", [], NotificationGroupSummary::COMMUNICATION_METHOD_EMAIL, -2), null, null)
+        ], $exportObjects);
+
+
     }
 
 
     public function testCanAnalyseImportFromProjectExportWhereNoNotificationGroupsExist() {
 
-        $projectExport = new ProjectExport( [
+        $exportObjects = [
             new NotificationGroup(new NotificationGroupSummary("Group 1", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 1), null, null),
             new NotificationGroup(new NotificationGroupSummary("Group 2", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 2), null, null)
-        ]);
+        ];
+
+        $exportConfig = "";
 
         // Assume no existent groups
         $this->notificationService->returnValue("listNotificationGroups", [], [
             PHP_INT_MAX, 0, "testProject", 5
         ]);
 
-        $analysis = $this->importer->analyseImport(5, "testProject", $projectExport);
-        $this->assertEquals(new ProjectImportAnalysis(
-            date("Y-m-d H:i:s"),
-            [
-            "Notification Groups" => [
+        $analysis = $this->importerExporter->analyseImportObjects(5, "testProject", $exportObjects, $exportConfig);
+        $this->assertEquals([
                 new ProjectImportResource(1, "Group 1", ProjectImportResourceStatus::Create),
                 new ProjectImportResource(2, "Group 2", ProjectImportResourceStatus::Create),
             ]
-        ]), $analysis);
+            , $analysis);
 
 
     }
@@ -64,10 +106,12 @@ class DefaultProjectImporterTest extends TestBase {
 
     public function testCanAnalyseImportFromProjectExportWhereExistingNotificationGroupExist() {
 
-        $projectExport = new ProjectExport([
+        $exportObjects = [
             new NotificationGroup(new NotificationGroupSummary("Group 1", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 1), null, null),
             new NotificationGroup(new NotificationGroupSummary("Group 2", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 2), null, null)
-        ]);
+        ];
+
+        $exportConfig = "";
 
         // Assume existent group
         $this->notificationService->returnValue("listNotificationGroups", [
@@ -76,15 +120,11 @@ class DefaultProjectImporterTest extends TestBase {
             PHP_INT_MAX, 0, "testProject", 5
         ]);
 
-        $analysis = $this->importer->analyseImport(5, "testProject", $projectExport);
-        $this->assertEquals(new ProjectImportAnalysis(
-            date("Y-m-d H:i:s"),
-            [
-            "Notification Groups" => [
-                new ProjectImportResource(1, "Group 1", ProjectImportResourceStatus::Ignore),
-                new ProjectImportResource(2, "Group 2", ProjectImportResourceStatus::Create),
-            ]
-        ]), $analysis);
+        $analysis = $this->importerExporter->analyseImportObjects(5, "testProject", $exportObjects, $exportConfig);
+        $this->assertEquals([
+            new ProjectImportResource(1, "Group 1", ProjectImportResourceStatus::Ignore),
+            new ProjectImportResource(2, "Group 2", ProjectImportResourceStatus::Create),
+        ], $analysis);
 
 
     }
@@ -92,17 +132,19 @@ class DefaultProjectImporterTest extends TestBase {
 
     public function testCanImportNotificationGroupsFromProjectExportWhereNoneExists() {
 
-        $projectExport = new ProjectExport( [
+        $exportObjects = [
             new NotificationGroup(new NotificationGroupSummary("Group 1", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 1), null, null),
             new NotificationGroup(new NotificationGroupSummary("Group 2", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 2), null, null)
-        ]);
+        ];
+
+        $exportConfig = [];
 
         // Assume no existent groups
         $this->notificationService->returnValue("listNotificationGroups", [], [
             PHP_INT_MAX, 0, "testProject", 5
         ]);
 
-        $this->importer->importProject(5, "testProject", $projectExport);
+        $this->importerExporter->importObjects(5, "testProject", $exportObjects, $exportConfig);
 
 
         $summary1 = new NotificationGroup(new NotificationGroupSummary("Group 1", [], NotificationGroupSummary::COMMUNICATION_METHOD_EMAIL), null, null);
@@ -124,19 +166,23 @@ class DefaultProjectImporterTest extends TestBase {
 
     public function testExistingNotificationGroupsWithSameTitleAreLeftIntactFromProjectExport() {
 
-        $projectExport = new ProjectExport( [
+
+        $exportObjects = [
             new NotificationGroup(new NotificationGroupSummary("Group 1", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 1), null, null),
             new NotificationGroup(new NotificationGroupSummary("Group 2", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 2), null, null)
-        ]);
+        ];
 
-        // Assume no existent groups
+        $exportConfig = [];
+
+
+        // Assume an existent group
         $this->notificationService->returnValue("listNotificationGroups", [
             new NotificationGroupSummary("Group 1", [], NotificationGroup::COMMUNICATION_METHOD_EMAIL, 5)
         ], [
             PHP_INT_MAX, 0, "testProject", 5
         ]);
 
-        $this->importer->importProject(5, "testProject", $projectExport);
+        $this->importerExporter->importObjects(5, "testProject", $exportObjects, $exportConfig);
 
 
         $summary1 = new NotificationGroup(new NotificationGroupSummary("Group 1", [], NotificationGroupSummary::COMMUNICATION_METHOD_EMAIL), null, null);
@@ -154,4 +200,5 @@ class DefaultProjectImporterTest extends TestBase {
 
 
     }
+
 }
