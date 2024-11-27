@@ -2,7 +2,7 @@
 
     <div class="login-container" *ngIf="!twoFA && !activeSession && !forgottenPassword">
 
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+        <h2 class="my-6 text-center text-3xl font-heading font-extrabold text-gray-900">Login to your account</h2>
 
         <label>Enter your username or email address</label>
         <input type="text" placeholder="Username" name="email" [(ngModel)]="email" required
@@ -61,7 +61,7 @@
 
     <div class="login-container" *ngIf="forgottenPassword">
 
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h2 class="mt-6 text-center text-3xl font-heading font-extrabold text-gray-900">
             Forgotten Password
         </h2>
 
@@ -121,7 +121,7 @@
     </div>
 
     <div class="two-fa-container" *ngIf="twoFA">
-        <h2 class="mt-6 mb-1 text-center text-3xl font-extrabold text-gray-900">Two Factor Authentication</h2>
+        <h2 class="mt-6 mb-1 text-center text-3xl font-heading font-extrabold text-gray-900">Two Factor Authentication</h2>
 
         <p class="text-gray-500 mb-4 text-center">We have sent an email to <b>{{email}}</b> with your two factor authentication code.</p>
 

@@ -4,6 +4,7 @@
 namespace Kiniauth\Test\Services\Workflow\Task\Scheduled\Processor;
 
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTask;
+use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskInterceptor;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskLog;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskSummary;
 use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskTimePeriod;
@@ -73,6 +74,42 @@ class ScheduledTaskProcessorTest extends TestBase {
         $this->assertEquals([
             "result" => "Hello"
         ], $logEntry->getLogOutput());
+
+
+    }
+
+
+    public function testIfScheduledTaskHasStartTimeUpdatedWhilstRunningNoChangeIsMadeToTheScheduledTaskStartTimeAtTheEnd() {
+
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        Container::instance()->addInterfaceImplementation(Task::class, "dateupdate", DateUpdatingProcessorTask::class);
+
+        $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("dateupdate", "Successful task", [], [new ScheduledTaskTimePeriod(null, null, 0, 0)], ScheduledTaskSummary::STATUS_PENDING,
+            null, null, null, null, 3600), null, 1);
+
+        ScheduledTaskInterceptor::$disabled = true;
+        $scheduledTask->save();
+        $scheduledTask->setConfiguration(["date" => "2025-01-01 10:00:00", "id" => $scheduledTask->getId()]);
+        $scheduledTask->save();
+        ScheduledTaskInterceptor::$disabled = false;
+
+        // Process the scheduled task
+        $scheduledTask = $this->processor->processScheduledTask($scheduledTask);
+
+        // Check the scheduled task updated as expected and saved and that a log entry was created
+        $this->assertNotNull($scheduledTask->getId());
+        $this->assertEquals(ScheduledTaskSummary::STATUS_COMPLETED, $scheduledTask->getStatus());
+        $this->assertNotNull($scheduledTask->getLastStartTime());
+        $this->assertNotNull($scheduledTask->getLastEndTime());
+
+        // Check explicit date set
+        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2025-01-01 10:00:00"), $scheduledTask->getNextStartTime());
+
+        // Check timeout still intact
+        $expectedTimeout = (new \DateTime())->add(new \DateInterval("PT3600S"));
+        $this->assertEquals($expectedTimeout->format("Y-m-d H:i:s"), $scheduledTask->getTimeoutTime()->format("Y-m-d H:i:s"));
 
 
     }
