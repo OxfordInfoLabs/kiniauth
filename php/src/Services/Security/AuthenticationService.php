@@ -15,6 +15,11 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\ActivityLogger;
+use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Application\SettingsService;
+use Kiniauth\Services\Security\APIAuthentication\CaptchaApiAuthenticator;
+use Kiniauth\Services\Security\APIAuthentication\WhitelistedApiAuthenticator;
+use Kiniauth\Services\Security\Captcha\GoogleRecaptchaProvider;
 use Kiniauth\Services\Security\SSOProvider\AppleSSOAuthenticator;
 use Kiniauth\Services\Security\SSOProvider\FacebookSSOAuthenticator;
 use Kiniauth\Services\Security\SSOProvider\GoogleSSOAuthenticator;
@@ -67,9 +72,9 @@ class AuthenticationService {
     const STATUS_ACTIVE_SESSION = "ACTIVE_SESSION";
 
     /**
-     * @param \Kiniauth\Services\Application\SettingsService $settingsService
-     * @param \Kiniauth\Services\Application\Session $session
-     * @param \Kiniauth\Services\Security\SecurityService $securityService
+     * @param SettingsService $settingsService
+     * @param Session $session
+     * @param SecurityService $securityService
      * @param TwoFactorProvider $twoFactorProvider
      * @param HashProvider $hashProvider
      * @param UserService $userService
@@ -297,23 +302,54 @@ class AuthenticationService {
     /**
      * Authenticate an account by key and secret
      *
-     * @param $apiKey
-     * @param $apiSecret
+     * @param string $apiKey
+     * @param string $apiSecret
+     * @param Request $request
      *
      * @objectInterceptorDisabled
      */
-    public function apiAuthenticate($apiKey, $apiSecret) {
+    public function apiAuthenticate($apiKey, $apiSecret, $request = null) {
 
+        /** @var APIKey[] $matchingKeys */
         $matchingKeys = APIKey::filter("WHERE apiKey = ? AND apiSecret = ?", $apiKey, $apiSecret);
 
-        // If there is a matching api key, return it now.
-        if (sizeof($matchingKeys) > 0) {
-            $this->securityService->login($matchingKeys[0], null);
-            ActivityLogger::log("API Login");
-        } else {
+        if (!$matchingKeys)
             throw new InvalidAPICredentialsException();
+
+        // Check the referrers, if they are set for the api key
+        if ($allowedReferrers = $matchingKeys[0]->getConfig()["referrers"] ?? null) {
+            $matched = false;
+            $requestReferrer = $request->getReferringURL()->getHost();
+
+            foreach ($allowedReferrers as $allowedReferrer) {
+                if ($requestReferrer == $allowedReferrer) {
+                    $matched = true;
+                    break;
+                }
+            }
+
+            if (!$matched) {
+                throw new InvalidReferrerException();
+            }
         }
 
+        switch ($matchingKeys[0]->getType()) {
+
+            case APIKey::TYPE_WHITELISTED:
+                $authenticator = new WhitelistedApiAuthenticator($this->securityService);
+                $authenticator->authenticate($matchingKeys[0], $request);
+                break;
+
+            case APIKey::TYPE_CAPTCHA:
+                $authenticator = new CaptchaApiAuthenticator($this->securityService);
+                $authenticator->authenticate($matchingKeys[0], $request);
+                break;
+
+            default:
+                $this->securityService->login($matchingKeys[0], null);
+                break;
+
+        }
 
     }
 
@@ -435,7 +471,7 @@ class AuthenticationService {
      * @param $provider
      * @param $data
      * @return void
-     * 
+     *
      * @objectInterceptorDisabled
      */
     public function authenticateBySSO($provider, $data) {

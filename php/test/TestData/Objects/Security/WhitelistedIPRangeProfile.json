@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "ipv4AddressRange": "192.168.1.0/24"
+  },
+  {
+    "id": 2,
+    "ipv6AddressRange": "2001:db8::/32"
+  }
+]

@@ -27,5 +27,78 @@
         "scope": "PROJECT"
       }
     ]
+  },
+  {
+    "apiKey": "IPV4RANGETESTKEY",
+    "apiSecret": "IPV4RANGETESTSECRET",
+    "roles": [
+      {
+        "scopeId": 2,
+        "accountId": 2,
+        "roleId": 0
+      }
+    ],
+    "type": "whitelisted",
+    "whitelistedIpRangeProfileId": 1
+  },
+  {
+    "apiKey": "IPV6RANGETESTKEY",
+    "apiSecret": "IPV6RANGETESTSECRET",
+    "roles": [
+      {
+        "scopeId": 2,
+        "accountId": 2,
+        "roleId": 0
+      }
+    ],
+    "type": "whitelisted",
+    "whitelistedIpRangeProfileId": 2
+  },
+  {
+    "apiKey": "CAPTCHATESTAPIKEY",
+    "apiSecret": "CAPTCHATESTAPISECRET",
+    "roles": [
+      {
+        "scopeId": 2,
+        "accountId": 2,
+        "roleId": 0
+      }
+    ],
+    "type": "captcha",
+    "config": {
+      "recaptchaSecret": "mySecret"
+    }
+  },
+  {
+    "apiKey": "BADCAPTCHATESTAPIKEY",
+    "apiSecret": "BADCAPTCHATESTAPISECRET",
+    "roles": [
+      {
+        "scopeId": 2,
+        "accountId": 2,
+        "roleId": 0
+      }
+    ],
+    "type": "captcha",
+    "config": {
+      "recaptchaSecret": "mySecret"
+    }
+  },
+  {
+    "apiKey": "REFERRERAPIKEY",
+    "apiSecret": "REFERRERAPISECRET",
+    "roles": [
+      {
+        "scopeId": 2,
+        "accountId": 2,
+        "roleId": 0
+      }
+    ],
+    "type": "public",
+    "config": {
+      "referrers": [
+        "mydomain.com"
+      ]
+    }
   }
 ]

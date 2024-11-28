@@ -64,7 +64,7 @@ class APIRouteInterceptor extends RouteInterceptor {
             throw new MissingAPICredentialsException();
         }
 
-        $this->authenticationService->apiAuthenticate($apiKey, $apiSecret);
+        $this->authenticationService->apiAuthenticate($apiKey, $apiSecret, $request);
     }
 
 
