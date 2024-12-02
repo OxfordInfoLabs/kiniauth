@@ -6,6 +6,7 @@ use Kiniauth\Objects\Communication\Notification\NotificationGroup;
 use Kiniauth\Objects\Communication\Notification\NotificationGroupSummary;
 use Kiniauth\Services\Communication\Notification\NotificationService;
 use Kiniauth\Services\ImportExport\ImportExporter;
+use Kiniauth\ValueObjects\ImportExport\ExportConfig\ObjectInclusionExportConfig;
 use Kiniauth\ValueObjects\ImportExport\ProjectExport;
 use Kiniauth\ValueObjects\ImportExport\ProjectExportResource;
 use Kiniauth\ValueObjects\ImportExport\ProjectImportResource;
@@ -34,6 +35,10 @@ class NotificationGroupImportExporter extends ImportExporter {
         return NotificationGroup::class;
     }
 
+    public function getObjectTypeExportConfigClassName() {
+        return ObjectInclusionExportConfig::class;
+    }
+
     /**
      * Get array of project export resources for the supplied type
      *
@@ -44,7 +49,7 @@ class NotificationGroupImportExporter extends ImportExporter {
      */
     public function getExportableProjectResources(int $accountId, string $projectKey) {
         return array_map(function ($group) {
-            return new ProjectExportResource($group->getId(), $group->getName());
+            return new ProjectExportResource($group->getId(), $group->getName(), new ObjectInclusionExportConfig(true));
         }, $this->notificationService->listNotificationGroups(PHP_INT_MAX, 0, $projectKey, $accountId));
     }
 
@@ -59,15 +64,11 @@ class NotificationGroupImportExporter extends ImportExporter {
      */
     public function createExportObjects(int $accountId, string $projectKey, mixed $exportProjectConfig) {
 
-        // Ids
-        $notificationGroupIds = $exportProjectConfig["includedNotificationGroupIds"];
 
         // Grab all notification groups
         $includedNotificationGroupSummaries = array_filter($this->notificationService->listNotificationGroups(PHP_INT_MAX, 0, $projectKey, $accountId),
-            function ($item) use ($notificationGroupIds) {
-                if (in_array($item->getId(), $notificationGroupIds)) {
-                    return true;
-                }
+            function ($item) use ($exportProjectConfig) {
+                return (($exportProjectConfig[$item->getId()] ?? null)?->isIncluded());
             });
 
         // Included groups
@@ -130,6 +131,8 @@ class NotificationGroupImportExporter extends ImportExporter {
                 $notificationGroup->setId(null);
                 $newId = $this->notificationService->saveNotificationGroup($notificationGroup, $projectKey, $accountId);
                 self::setImportItemIdMapping("notificationGroups", $prevId, $newId);
+            } else {
+                self::setImportItemIdMapping("notificationGroups", $notificationGroup->getId(), $allExistingNotificationGroups[$notificationGroup->getName()]->getId());
             }
         }
 

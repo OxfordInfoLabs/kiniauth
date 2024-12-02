@@ -36,6 +36,14 @@ abstract class ImportExporter {
      */
     public abstract function getObjectTypeImportClassName();
 
+
+    /**
+     * Get the class name used to map the export config for items of this type
+     *
+     * @return mixed
+     */
+    public abstract function getObjectTypeExportConfigClassName();
+
     /**
      * Get exportable project resources for the type of object being exported.
      *
@@ -90,7 +98,7 @@ abstract class ImportExporter {
      * @param $itemType
      * @return int
      */
-    protected static function getNewExportPK($itemType, $existingPK) {
+    public static function getNewExportPK($itemType, $existingPK) {
         if (!isset(self::$exportPKMappings[$itemType])) {
             self::$exportPKMappings[$itemType] = [];
         }
@@ -109,8 +117,8 @@ abstract class ImportExporter {
      * @param $existingPK
      * @return int
      */
-    protected static function remapExportObjectPK($itemType, $existingPK) {
-        return $self::exportPKMappings[$itemType]["PK" . $existingPK] ?? $existingPK;
+    public static function remapExportObjectPK($itemType, $existingPK) {
+        return self::$exportPKMappings[$itemType]["PK" . $existingPK] ?? $existingPK;
     }
 
 
@@ -130,6 +138,7 @@ abstract class ImportExporter {
         self::$importItemIdMap[$itemType][$importId] = $newId;
     }
 
+
     /**
      * If a stored mapping for an item use it, otherwise use the passed value
      *
@@ -140,6 +149,11 @@ abstract class ImportExporter {
      */
     protected function remapImportedItemId($itemType, $importId) {
         return self::$importItemIdMap[$itemType][$importId] ?? $importId;
+    }
+
+    public static function resetData() {
+        self::$importItemIdMap = [];
+        self::$exportPKMappings = [];
     }
 
 

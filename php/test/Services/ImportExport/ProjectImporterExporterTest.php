@@ -8,6 +8,7 @@ use Kiniauth\Services\ImportExport\ImportExporters\NotificationGroupImportExport
 use Kiniauth\Services\ImportExport\ProjectImporterExporter;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\ImportExport\ExportableProjectResources;
+use Kiniauth\ValueObjects\ImportExport\ExportConfig\ObjectInclusionExportConfig;
 use Kiniauth\ValueObjects\ImportExport\ProjectExport;
 use Kiniauth\ValueObjects\ImportExport\ProjectExportResource;
 use Kiniauth\ValueObjects\ImportExport\ProjectImportAnalysis;
@@ -32,7 +33,7 @@ class ProjectImporterExporterTest extends TestBase {
         $this->importExporter->returnValue("getObjectTypeCollectionIdentifier", "notificationGroups");
         $this->importExporter->returnValue("getObjectTypeCollectionTitle", "Notification Groups");
         $this->importExporter->returnValue("getObjectTypeImportClassName", NotificationGroup::class);
-
+        $this->importExporter->returnValue("getObjectTypeExportConfigClassName", ObjectInclusionExportConfig::class);
 
         $this->projectImportedExporter = new ProjectImporterExporter($this->importExporter, Container::instance()->get(ObjectBinder::class));
     }
@@ -41,8 +42,8 @@ class ProjectImporterExporterTest extends TestBase {
     public function testGetExportableProjectResourcesCallsImportExportersCorrectly() {
 
         $expectedResources = [
-            new ProjectExportResource(1, "Test 1"),
-            new ProjectExportResource(2, "Test 2")
+            new ProjectExportResource(1, "Test 1", new ObjectInclusionExportConfig(true)),
+            new ProjectExportResource(2, "Test 2", new ObjectInclusionExportConfig(true))
         ];
 
         $this->importExporter->returnValue("getExportableProjectResources", $expectedResources, [5, "hello"]);
@@ -61,11 +62,17 @@ class ProjectImporterExporterTest extends TestBase {
             "Bongo"
         ];
 
-        $this->importExporter->returnValue("createExportObjects", $expectedObjects, [5, "hello", "TEST CONFIG"]);
+        $this->importExporter->returnValue("createExportObjects", $expectedObjects, [5, "hello", [
+            1 => new ObjectInclusionExportConfig(true)
+        ]]);
 
-        $export = $this->projectImportedExporter->exportProject(5, "hello", "TEST CONFIG");
+        $export = $this->projectImportedExporter->exportProject(5, "hello", ["notificationGroups" => [
+            1 => ["included" => true]
+        ]]);
 
-        $this->assertEquals(new ProjectExport(["notificationGroups" => $expectedObjects], "TEST CONFIG"), $export);
+        $this->assertEquals(new ProjectExport(["notificationGroups" => $expectedObjects], ["notificationGroups" => [
+            1 => new ObjectInclusionExportConfig(true)
+        ]]), $export);
 
 
     }
@@ -84,14 +91,18 @@ class ProjectImporterExporterTest extends TestBase {
                     ["id" => -2, "name" => "My Notification Group 2"]
                 ]];
 
-        $exportConfig = "TEST CONFIG";
+        $exportConfig = ["notificationGroups" => [
+            1 => ["included" => true]
+        ]];
+
+
 
         $this->importExporter->returnValue("analyseImportObjects", $expectedResources, [
                 5, "hello", [
                     new NotificationGroup(new NotificationGroupSummary("My Notification Group", [], NotificationGroup::COMMUNICATION_METHOD_INTERNAL_ONLY, -1), null, null),
                     new NotificationGroup(new NotificationGroupSummary("My Notification Group 2", [], NotificationGroup::COMMUNICATION_METHOD_INTERNAL_ONLY, -2), null, null)
                 ],
-                $exportConfig]
+                [1 => new ObjectInclusionExportConfig(true)]]
         );
 
 
@@ -115,7 +126,10 @@ class ProjectImporterExporterTest extends TestBase {
                     ["id" => -2, "name" => "My Notification Group 2"]
                 ]];
 
-        $exportConfig = "TEST CONFIG";
+        $exportConfig = ["notificationGroups" => [
+            1 => ["included" => true]
+        ]];
+
 
 
         $this->projectImportedExporter->importProject(5, "hello", new ProjectExport($exportData, $exportConfig));
@@ -126,7 +140,7 @@ class ProjectImporterExporterTest extends TestBase {
                     new NotificationGroup(new NotificationGroupSummary("My Notification Group", [], NotificationGroup::COMMUNICATION_METHOD_INTERNAL_ONLY, -1), null, null),
                     new NotificationGroup(new NotificationGroupSummary("My Notification Group 2", [], NotificationGroup::COMMUNICATION_METHOD_INTERNAL_ONLY, -2), null, null)
                 ],
-                $exportConfig]
+                [1 => new ObjectInclusionExportConfig(true)]]
         ));
 
 

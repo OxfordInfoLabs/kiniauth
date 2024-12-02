@@ -56,7 +56,8 @@ class ImportExportService {
      * @return mixed
      */
     public function analyseImport(string $projectKey, mixed $projectExport, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        return $this->projectImporterExporter->analyseImport($accountId, $projectKey, $projectExport);
+        $mappedExport = $this->objectBinder->bindFromArray($projectExport, ProjectExport::class);
+        return $this->projectImporterExporter->analyseImport($accountId, $projectKey, $mappedExport);
     }
 
     /**
@@ -68,7 +69,8 @@ class ImportExportService {
      *
      */
     public function importProject(string $projectKey, mixed $projectExport, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        $this->projectImporterExporter->importProject($accountId, $projectKey, $projectExport);
+        $mappedExport = $this->objectBinder->bindFromArray($projectExport, ProjectExport::class);
+        $this->projectImporterExporter->importProject($accountId, $projectKey, $mappedExport);
     }
 
 }

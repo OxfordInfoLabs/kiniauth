@@ -9,6 +9,7 @@ use Kiniauth\Objects\Security\UserCommunicationData;
 use Kiniauth\Services\Communication\Notification\NotificationService;
 use Kiniauth\Services\ImportExport\ImportExporters\NotificationGroupImportExporter;
 use Kiniauth\Test\TestBase;
+use Kiniauth\ValueObjects\ImportExport\ExportConfig\ObjectInclusionExportConfig;
 use Kiniauth\ValueObjects\ImportExport\ProjectExport;
 use Kiniauth\ValueObjects\ImportExport\ProjectExportResource;
 use Kiniauth\ValueObjects\ImportExport\ProjectImportAnalysis;
@@ -51,9 +52,9 @@ class NotificationGroupImportExporterTest extends TestBase {
         $exportableResources = $this->importerExporter->getExportableProjectResources(7, "myProject");
 
         $this->assertEquals([
-            new ProjectExportResource(3, "Example Group 1"),
-            new ProjectExportResource(5, "Example Group 2"),
-            new ProjectExportResource(7, "Example Group 3")
+            new ProjectExportResource(3, "Example Group 1", new ObjectInclusionExportConfig(true)),
+            new ProjectExportResource(5, "Example Group 2", new ObjectInclusionExportConfig(true)),
+            new ProjectExportResource(7, "Example Group 3", new ObjectInclusionExportConfig(true))
         ], $exportableResources);
 
     }
@@ -67,7 +68,7 @@ class NotificationGroupImportExporterTest extends TestBase {
         ], [
             PHP_INT_MAX, 0, "testProject", 5
         ]);
-        $exporterConfig = ["includedNotificationGroupIds" => [3, 5]];
+        $exporterConfig = [3 => new ObjectInclusionExportConfig(true), 5 => new ObjectInclusionExportConfig(true)];
         $exportObjects = $this->importerExporter->createExportObjects(5, "testProject", $exporterConfig);
 
         $this->assertEquals([

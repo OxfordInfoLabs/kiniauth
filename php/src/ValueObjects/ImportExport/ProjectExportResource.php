@@ -4,7 +4,7 @@ namespace Kiniauth\ValueObjects\ImportExport;
 
 class ProjectExportResource {
 
-    public function __construct(private mixed $identifier, private string $title) {
+    public function __construct(private mixed $identifier, private string $title, private mixed $defaultConfig) {
     }
 
     /**
@@ -20,6 +20,16 @@ class ProjectExportResource {
     public function getTitle(): string {
         return $this->title;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultConfig(): mixed {
+        return $this->defaultConfig;
+    }
+
+
+
 
 
 }

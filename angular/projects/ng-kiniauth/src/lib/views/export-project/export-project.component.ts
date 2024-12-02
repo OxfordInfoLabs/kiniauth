@@ -10,30 +10,39 @@ import {debounceTime, switchMap} from "rxjs/operators";
 })
 export class ExportProjectComponent implements OnInit {
 
-    public projectSub = new Subject();
     public exportableResources: any;
-    public notificationGroups: any = {};
+    public exportConfig: any = {};
 
     constructor(private projectService: ProjectService) {
     }
 
     ngOnInit(): void {
-        if (this.projectService) {
-            this.projectSub = this.projectService.activeProject;
-        }
+        this.projectService.getExportableProjectResources().then((resources: any) => {
+            this.exportableResources = resources.resourcesByType;
 
-        this.projectService.getExportableProjectResources().then((resources) => {
-            this.exportableResources = resources;
+            const localStoredVersionRaw = localStorage.getItem(this.getLocalStorageKey());
+            const localStoredVersion = localStoredVersionRaw ? JSON.parse(localStoredVersionRaw) : {};
+
+            Object.keys(this.exportableResources).forEach((category) => {
+                this.exportConfig[category] = {};
+                const storedConfig = localStoredVersion[category] || {};
+                this.exportableResources[category].forEach(resource => {
+                    this.exportConfig[category][resource.identifier] = storedConfig[resource.identifier] || resource.defaultConfig;
+                });
+            });
+
+
         });
     }
 
     export(exportConfig: any = {}) {
-        exportConfig.includedNotificationGroupIds = [];
-        Object.keys(this.notificationGroups).forEach(key => {
-            if (this.notificationGroups[key])
-                exportConfig.includedNotificationGroupIds.push(key);
-        });
-        this.projectService.exportProject(exportConfig);
+        this.projectService.exportProject(this.exportConfig);
+        localStorage.setItem(this.getLocalStorageKey(), JSON.stringify(this.exportConfig));
+    }
 
+    // Get the local storage key.
+    private getLocalStorageKey() {
+        const account: any = JSON.parse(sessionStorage.getItem('sessionData'));
+        return 'export-' + account.account.accountId + '-' + this.projectService.activeProject.getValue().projectKey;
     }
 }

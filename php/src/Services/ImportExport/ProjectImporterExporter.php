@@ -7,6 +7,7 @@ use Kiniauth\ValueObjects\ImportExport\ExportableProjectResources;
 use Kiniauth\ValueObjects\ImportExport\ProjectExport;
 use Kiniauth\ValueObjects\ImportExport\ProjectImportAnalysis;
 use Kinikit\Core\Binding\ObjectBinder;
+use Kinikit\Core\Logging\Logger;
 
 class ProjectImporterExporter {
 
@@ -65,14 +66,27 @@ class ProjectImporterExporter {
      */
     public function exportProject(int $accountId, string $projectKey, mixed $exportProjectConfig) {
 
+        $mappedProjectConfig = $this->mapExportConfigObjects($exportProjectConfig);
 
         // Loop through all installed import exporters and generate project resources
         $projectResources = [];
+        $remappedProjectConfig = [];
         foreach ($this->importExporters as $importExporter) {
-            $projectResources[$importExporter->getObjectTypeCollectionIdentifier()] = $importExporter->createExportObjects($accountId, $projectKey, $exportProjectConfig);
+
+            $importExporterIdentifier = $importExporter->getObjectTypeCollectionIdentifier();
+
+            $projectResources[$importExporter->getObjectTypeCollectionIdentifier()] = $importExporter->createExportObjects($accountId, $projectKey,
+                $mappedProjectConfig[$importExporterIdentifier]);
+
+            // Remap project config with new keys
+            $remappedProjectConfig[$importExporterIdentifier] = [];
+            foreach ($mappedProjectConfig[$importExporterIdentifier] as $identifier => $config) {
+                $remappedProjectConfig[$importExporterIdentifier][ImportExporter::remapExportObjectPK($importExporterIdentifier, $identifier)] = $config;
+            }
+
         }
 
-        return new ProjectExport($projectResources, $exportProjectConfig);
+        return new ProjectExport($projectResources, $remappedProjectConfig);
 
     }
 
@@ -88,6 +102,9 @@ class ProjectImporterExporter {
      */
     public function analyseImport(int $accountId, string $projectKey, ProjectExport $projectExport) {
 
+        $mappedProjectConfig = $this->mapExportConfigObjects($projectExport->getExportProjectConfig());
+
+
         // Loop through all installed import exporters and generate project resources
         $importResources = [];
         foreach ($this->importExporters as $importExporter) {
@@ -98,8 +115,8 @@ class ProjectImporterExporter {
                 $projectExport->getExportData()[$importExporter->getObjectTypeCollectionIdentifier()] ?? []);
 
 
-
-            $importResources[$importExporter->getObjectTypeCollectionTitle()] = $importExporter->analyseImportObjects($accountId, $projectKey, $exportObjects, $projectExport->getExportProjectConfig());
+            $importResources[$importExporter->getObjectTypeCollectionTitle()] = $importExporter->analyseImportObjects($accountId, $projectKey, $exportObjects,
+                $mappedProjectConfig[$importExporter->getObjectTypeCollectionIdentifier()]);
         }
 
 
@@ -119,6 +136,9 @@ class ProjectImporterExporter {
      */
     public function importProject(int $accountId, string $projectKey, ProjectExport $projectExport) {
 
+        $mappedProjectConfig = $this->mapExportConfigObjects($projectExport->getExportProjectConfig());
+
+
         // Loop through all installed import exporters and generate project resources
         foreach ($this->importExporters as $importExporter) {
 
@@ -128,11 +148,29 @@ class ProjectImporterExporter {
                 $projectExport->getExportData()[$importExporter->getObjectTypeCollectionIdentifier()] ?? []);
 
 
-            $importExporter->importObjects($accountId, $projectKey, $exportObjects, $projectExport->getExportProjectConfig());
+            $importExporter->importObjects($accountId, $projectKey, $exportObjects, $mappedProjectConfig[$importExporter->getObjectTypeCollectionIdentifier()]);
         }
 
 
+    }
 
+    /**
+     * @param ImportExporter $importExporter
+     * @param mixed $exportProjectConfig
+     * @return mixed
+     */
+    private function mapExportConfigObjects($exportProjectConfig) {
+        $mappedConfig = [];
+        foreach ($this->importExporters as $importExporter) {
+            $mappedConfigClass = $importExporter->getObjectTypeExportConfigClassName();
+            $typeIdentifier = $importExporter->getObjectTypeCollectionIdentifier();
+            $mappedConfig[$typeIdentifier] = [];
+            foreach ($exportProjectConfig[$importExporter->getObjectTypeCollectionIdentifier()] as $identifier => $rawConfig) {
+                $mappedConfig[$typeIdentifier][$identifier] = $this->objectBinder->bindFromArray($rawConfig, $mappedConfigClass);
+            }
+        }
+
+        return $mappedConfig;
     }
 
 

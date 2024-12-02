@@ -15,11 +15,11 @@
     <div class="mt-6" *ngIf="exportableResources">
         <h3>Included Notification Groups</h3>
 
-        <div class="flex items-start"  *ngFor="let notificationGroup of exportableResources.resourcesByType.notificationGroups">
+        <div class="flex items-start"  *ngFor="let notificationGroup of exportableResources.notificationGroups">
             <div class="flex items-center h-5">
                 <input type="checkbox"
-                       [name]="notificationGroup.identifier"
-                        [(ngModel)]="notificationGroups[notificationGroup.identifier]"
+                       [name]="'notification-' + notificationGroup.identifier"
+                        [(ngModel)]="exportConfig[notificationGroup.identifier].included"
                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
             </div>
             <div class="ml-3 text-sm">
