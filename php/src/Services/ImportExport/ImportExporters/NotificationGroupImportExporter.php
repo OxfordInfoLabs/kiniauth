@@ -59,16 +59,17 @@ class NotificationGroupImportExporter extends ImportExporter {
      *
      * @param int $accountId
      * @param string $projectKey
-     * @param mixed $exportProjectConfig
+     * @param mixed $objectExportConfig
+     * @param mixed $allProjectExportConfig
      * @return mixed[]
      */
-    public function createExportObjects(int $accountId, string $projectKey, mixed $exportProjectConfig) {
+    public function createExportObjects(int $accountId, string $projectKey, mixed $objectExportConfig, mixed $allProjectExportConfig) {
 
 
         // Grab all notification groups
         $includedNotificationGroupSummaries = array_filter($this->notificationService->listNotificationGroups(PHP_INT_MAX, 0, $projectKey, $accountId),
-            function ($item) use ($exportProjectConfig) {
-                return (($exportProjectConfig[$item->getId()] ?? null)?->isIncluded());
+            function ($item) use ($objectExportConfig) {
+                return (($objectExportConfig[$item->getId()] ?? null)?->isIncluded());
             });
 
         // Included groups
@@ -88,7 +89,7 @@ class NotificationGroupImportExporter extends ImportExporter {
      *
      * @return ProjectImportResource[]
      */
-    public function analyseImportObjects(int $accountId, string $projectKey, array $exportObjects, mixed $exportProjectConfig) {
+    public function analyseImportObjects(int $accountId, string $projectKey, array $exportObjects, mixed $objectExportConfig) {
 
 
         // Get existing notification groups by title
@@ -113,11 +114,11 @@ class NotificationGroupImportExporter extends ImportExporter {
      * @param int $accountId
      * @param string $projectKey
      * @param array $exportObjects
-     * @param mixed $exportProjectConfig
+     * @param mixed $objectExportConfig
      *
      * @return void
      */
-    public function importObjects(int $accountId, string $projectKey, array $exportObjects, mixed $exportProjectConfig) {
+    public function importObjects(int $accountId, string $projectKey, array $exportObjects, mixed $objectExportConfig) {
 
         // Get existing notification groups by title
         $allExistingNotificationGroups = ObjectArrayUtils::indexArrayOfObjectsByMember("name", $this->notificationService->listNotificationGroups(PHP_INT_MAX, 0,

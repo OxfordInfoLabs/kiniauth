@@ -9,6 +9,7 @@ class ProjectImportResource {
     public function __construct(private mixed                       $identifier, private string $title,
                                 private ProjectImportResourceStatus $importStatus,
                                 private mixed                       $existingProjectIdentifier = null,
+                                private ?string                     $groupingTitle = null,
                                 private ?string                     $message = null) {
 
     }
@@ -42,7 +43,14 @@ class ProjectImportResource {
     }
 
     /**
-     * @return string|null
+     * @return string
+     */
+    public function getGroupingTitle(): ?string {
+        return $this->groupingTitle;
+    }
+
+    /**
+     * @return string
      */
     public function getMessage(): ?string {
         return $this->message;

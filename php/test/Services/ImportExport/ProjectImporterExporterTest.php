@@ -64,7 +64,9 @@ class ProjectImporterExporterTest extends TestBase {
 
         $this->importExporter->returnValue("createExportObjects", $expectedObjects, [5, "hello", [
             1 => new ObjectInclusionExportConfig(true)
-        ]]);
+        ], ["notificationGroups" => [
+            1 => new ObjectInclusionExportConfig(true)
+        ]]]);
 
         $export = $this->projectImportedExporter->exportProject(5, "hello", ["notificationGroups" => [
             1 => ["included" => true]

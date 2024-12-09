@@ -69,7 +69,7 @@ class NotificationGroupImportExporterTest extends TestBase {
             PHP_INT_MAX, 0, "testProject", 5
         ]);
         $exporterConfig = [3 => new ObjectInclusionExportConfig(true), 5 => new ObjectInclusionExportConfig(true)];
-        $exportObjects = $this->importerExporter->createExportObjects(5, "testProject", $exporterConfig);
+        $exportObjects = $this->importerExporter->createExportObjects(5, "testProject", $exporterConfig, ["notificationGroups" => $exporterConfig]);
 
         $this->assertEquals([
             new NotificationGroup(new NotificationGroupSummary("Notification Group 1", [], NotificationGroupSummary::COMMUNICATION_METHOD_EMAIL, -1), null, null),

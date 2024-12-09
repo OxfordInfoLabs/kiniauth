@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ProjectService} from "../../services/project.service";
-import {merge, Subject} from "rxjs";
-import {debounceTime, switchMap} from "rxjs/operators";
+import * as lodash from 'lodash';
+const _ = lodash.default;
 
 @Component({
     selector: 'ka-export-project',
@@ -12,6 +12,7 @@ export class ExportProjectComponent implements OnInit {
 
     public exportableResources: any;
     public exportConfig: any = {};
+    public _ = _;
 
     constructor(private projectService: ProjectService) {
     }

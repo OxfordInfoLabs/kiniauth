@@ -76,7 +76,7 @@ class ProjectImporterExporter {
             $importExporterIdentifier = $importExporter->getObjectTypeCollectionIdentifier();
 
             $projectResources[$importExporter->getObjectTypeCollectionIdentifier()] = $importExporter->createExportObjects($accountId, $projectKey,
-                $mappedProjectConfig[$importExporterIdentifier]);
+                $mappedProjectConfig[$importExporterIdentifier], $mappedProjectConfig);
 
             // Remap project config with new keys
             $remappedProjectConfig[$importExporterIdentifier] = [];
@@ -115,8 +115,17 @@ class ProjectImporterExporter {
                 $projectExport->getExportData()[$importExporter->getObjectTypeCollectionIdentifier()] ?? []);
 
 
-            $importResources[$importExporter->getObjectTypeCollectionTitle()] = $importExporter->analyseImportObjects($accountId, $projectKey, $exportObjects,
+            $resources = $importExporter->analyseImportObjects($accountId, $projectKey, $exportObjects,
                 $mappedProjectConfig[$importExporter->getObjectTypeCollectionIdentifier()]);
+
+            foreach ($resources as $resource) {
+                $category = $resource->getGroupingTitle() ?? $importExporter->getObjectTypeCollectionTitle();
+                if (!isset($importResources[$category])) {
+                    $importResources[$category] = [];
+                }
+                $importResources[$category][] = $resource;
+            }
+
         }
 
 

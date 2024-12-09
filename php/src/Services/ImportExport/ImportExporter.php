@@ -59,11 +59,12 @@ abstract class ImportExporter {
      *
      * @param int $accountId
      * @param string $projectKey
-     * @param mixed $exportProjectConfig
+     * @param mixed $objectExportConfig
+     * @param mixed $allProjectExportConfig
      *
      * @return mixed[]
      */
-    public abstract function createExportObjects(int $accountId, string $projectKey, mixed $exportProjectConfig);
+    public abstract function createExportObjects(int $accountId, string $projectKey, mixed $objectExportConfig, mixed $allProjectExportConfig);
 
 
     /**
@@ -76,7 +77,7 @@ abstract class ImportExporter {
      *
      * @return ProjectImportResource[]
      */
-    public abstract function analyseImportObjects(int $accountId, string $projectKey, array $exportObjects, mixed $exportProjectConfig);
+    public abstract function analyseImportObjects(int $accountId, string $projectKey, array $exportObjects, mixed $objectExportConfig);
 
 
     /**
@@ -85,11 +86,11 @@ abstract class ImportExporter {
      * @param int $accountId
      * @param string $projectKey
      * @param array $exportObjects
-     * @param mixed $exportProjectConfig
+     * @param mixed $objectExportConfig
      *
      * @return void
      */
-    public abstract function importObjects(int $accountId, string $projectKey, array $exportObjects, mixed $exportProjectConfig);
+    public abstract function importObjects(int $accountId, string $projectKey, array $exportObjects, mixed $objectExportConfig);
 
 
     /**
@@ -102,6 +103,10 @@ abstract class ImportExporter {
         if (!isset(self::$exportPKMappings[$itemType])) {
             self::$exportPKMappings[$itemType] = [];
         }
+
+        // If a mapping has already been created return it to avoid duplication !
+        if (isset(self::$exportPKMappings[$itemType]["PK".$existingPK]))
+            return self::$exportPKMappings[$itemType]["PK".$existingPK];
 
         $nextItemPk = -sizeof(self::$exportPKMappings[$itemType]) - 1;
         self::$exportPKMappings[$itemType]["PK" . $existingPK] = $nextItemPk;
