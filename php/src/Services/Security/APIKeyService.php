@@ -98,10 +98,6 @@ class APIKeyService {
     }
 
 
-    public function updateAPIKeyScopeRoles() {
-
-    }
-
     /**
      * Regenerate an existing API key
      *

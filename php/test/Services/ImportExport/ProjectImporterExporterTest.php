@@ -4,6 +4,7 @@ namespace Kiniauth\Test\Services\ImportExport;
 
 use Kiniauth\Objects\Communication\Notification\NotificationGroup;
 use Kiniauth\Objects\Communication\Notification\NotificationGroupSummary;
+use Kiniauth\Services\ImportExport\ImportExporters\APIKeyImportExporter;
 use Kiniauth\Services\ImportExport\ImportExporters\NotificationGroupImportExporter;
 use Kiniauth\Services\ImportExport\ProjectImporterExporter;
 use Kiniauth\Test\TestBase;
@@ -35,7 +36,9 @@ class ProjectImporterExporterTest extends TestBase {
         $this->importExporter->returnValue("getObjectTypeImportClassName", NotificationGroup::class);
         $this->importExporter->returnValue("getObjectTypeExportConfigClassName", ObjectInclusionExportConfig::class);
 
-        $this->projectImportedExporter = new ProjectImporterExporter($this->importExporter, Container::instance()->get(ObjectBinder::class));
+        $this->projectImportedExporter = new ProjectImporterExporter($this->importExporter,
+            Container::instance()->get(APIKeyImportExporter::class),
+            Container::instance()->get(ObjectBinder::class));
     }
 
 
@@ -51,7 +54,8 @@ class ProjectImporterExporterTest extends TestBase {
         $resources = $this->projectImportedExporter->getExportableProjectResources(5, "hello");
 
         $this->assertEquals(new ExportableProjectResources([
-            "notificationGroups" => $expectedResources
+            "notificationGroups" => $expectedResources,
+            "apiKeys" => []
         ]), $resources);
     }
 
@@ -98,7 +102,6 @@ class ProjectImporterExporterTest extends TestBase {
         ]];
 
 
-
         $this->importExporter->returnValue("analyseImportObjects", $expectedResources, [
                 5, "hello", [
                     new NotificationGroup(new NotificationGroupSummary("My Notification Group", [], NotificationGroup::COMMUNICATION_METHOD_INTERNAL_ONLY, -1), null, null),
@@ -131,7 +134,6 @@ class ProjectImporterExporterTest extends TestBase {
         $exportConfig = ["notificationGroups" => [
             1 => ["included" => true]
         ]];
-
 
 
         $this->projectImportedExporter->importProject(5, "hello", new ProjectExport($exportData, $exportConfig));

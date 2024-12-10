@@ -2,6 +2,7 @@
 
 namespace Kiniauth\Services\ImportExport;
 
+use Kiniauth\Services\ImportExport\ImportExporters\APIKeyImportExporter;
 use Kiniauth\Services\ImportExport\ImportExporters\NotificationGroupImportExporter;
 use Kiniauth\ValueObjects\ImportExport\ExportableProjectResources;
 use Kiniauth\ValueObjects\ImportExport\ProjectExport;
@@ -21,7 +22,10 @@ class ProjectImporterExporter {
      *
      * @param NotificationGroupImportExporter $notificationGroupImportExporter
      */
-    public function __construct(NotificationGroupImportExporter $notificationGroupImportExporter, private ObjectBinder $objectBinder) {
+    public function __construct(NotificationGroupImportExporter $notificationGroupImportExporter,
+                                APIKeyImportExporter            $apiKeyImportExporter,
+                                private ObjectBinder            $objectBinder) {
+        $this->importExporters[] = $apiKeyImportExporter;
         $this->importExporters[] = $notificationGroupImportExporter;
 
     }
