@@ -106,4 +106,13 @@ class NotificationGroupSummary extends ActiveRecord {
     public function getName() {
         return $this->name;
     }
+
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function setId($id) {
+        $this->id = $id;
+    }
 }

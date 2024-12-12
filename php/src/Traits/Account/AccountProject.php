@@ -71,9 +71,9 @@ trait AccountProject {
     }
 
     /**
-     * @param PublicAccountSummary $accountSummary
+     * @param ?PublicAccountSummary $accountSummary
      */
-    public function setAccountSummary(PublicAccountSummary $accountSummary): void {
+    public function setAccountSummary(?PublicAccountSummary $accountSummary): void {
         $this->accountSummary = $accountSummary;
     }
 

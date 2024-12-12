@@ -130,8 +130,11 @@ class APIKeyServiceTest extends TestBase {
 
         $this->apiKeyService->updateAPIKeyDescription($apiKeyId, "Updated one");
 
-        $apiKey = APIKey::fetch($apiKeyId);
-        $this->assertEquals("Updated one", $apiKey->getDescription());
+        $reAPIKey = APIKey::fetch($apiKeyId);
+        $this->assertEquals("Updated one", $reAPIKey->getDescription());
+        $this->assertEquals($apiKey->getApiKey(), $reAPIKey->getApiKey());
+        $this->assertEquals($apiKey->getApiSecret(), $reAPIKey->getApiSecret());
+
 
     }
 

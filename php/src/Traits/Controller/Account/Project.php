@@ -6,7 +6,18 @@ namespace Kiniauth\Traits\Controller\Account;
 
 use Kiniauth\Objects\Account\ProjectSummary;
 use Kiniauth\Services\Account\ProjectService;
+use Kiniauth\Services\ImportExport\ImportExportService;
 use Kiniauth\ValueObjects\Account\ProjectUpdateDescriptor;
+use Kiniauth\ValueObjects\ImportExport\ExportableProjectResources;
+use Kiniauth\ValueObjects\ImportExport\ProjectExport;
+use Kiniauth\ValueObjects\ImportExport\ProjectExportConfig;
+use Kiniauth\ValueObjects\ImportExport\ProjectImportAnalysis;
+use Kinikit\Core\Logging\Logger;
+use Kinikit\Core\Serialisation\JSON\JSONToObjectConverter;
+use Kinikit\Core\Serialisation\JSON\ObjectToJSONConverter;
+use Kinikit\MVC\ContentSource\StringContentSource;
+use Kinikit\MVC\Response\Download;
+use Kinikit\MVC\Request\FileUpload;
 
 trait Project {
 
@@ -16,11 +27,34 @@ trait Project {
     private $projectService;
 
     /**
+     * @var ImportExportService
+     */
+    private $importExportService;
+
+    /**
+     * @var ObjectToJSONConverter
+     */
+    private $objectToJSONConverter;
+
+
+    /**
+     * @var JSONToObjectConverter
+     */
+    private $jsonToObjectConverter;
+
+
+    /**
      * Project constructor.
      * @param ProjectService $projectService
+     * @param ImportExportService $importExportService
+     * @param ObjectToJSONConverter $objectToJSONConverter
+     * @param JSONToObjectConverter $jsonToObjectConverter
      */
-    public function __construct($projectService) {
+    public function __construct($projectService, $importExportService, $objectToJSONConverter, $jsonToObjectConverter) {
         $this->projectService = $projectService;
+        $this->importExportService = $importExportService;
+        $this->objectToJSONConverter = $objectToJSONConverter;
+        $this->jsonToObjectConverter = $jsonToObjectConverter;
     }
 
 
@@ -98,4 +132,70 @@ trait Project {
         $project->setSettings($settings);
         $this->projectService->saveProject($project);
     }
+
+
+    /**
+     * Get exportable project resources for a project key.
+     *
+     * @http GET /export/resources/$projectKey
+     *
+     * @param string $projectKey
+     * @return ExportableProjectResources
+     */
+    public function getExportableProjectResources(string $projectKey) {
+        return $this->importExportService->getExportableProjectResources($projectKey);
+    }
+
+    /**
+     * Export a project using the passed key and config
+     *
+     * @http POST /export/$projectKey
+     *
+     * @param string $projectKey
+     * @param mixed $projectExportConfig
+     *
+     * @return null
+     */
+    public function exportProject(string $projectKey, mixed $projectExportConfig) {
+
+        $projectExport = $this->importExportService->exportProject($projectKey, $projectExportConfig);
+        return new Download(new StringContentSource($this->objectToJSONConverter->convert($projectExport)),
+            $projectKey . "-export-" . date("U") . ".json");
+    }
+
+
+    /**
+     * Analyse an import for a project
+     *
+     * @http POST /import/analyse/$projectKey
+     *
+     * @param string $projectKey
+     * @param FileUpload[] $importedFiles
+     *
+     * @return ProjectImportAnalysis
+     */
+    public function analyseProjectImport(string $projectKey, $importedFiles) {
+        if (sizeof($importedFiles) > 0) {
+            $projectExport = json_decode(file_get_contents(array_values($importedFiles)[0]->getTemporaryFilePath()),true);
+            return $this->importExportService->analyseImport($projectKey, $projectExport);
+        }
+    }
+
+
+    /**
+     * Import a project
+     *
+     * @http POST /import/$projectKey
+     *
+     * @param string $projectKey
+     * @param FileUpload[] $importedFiles
+     */
+    public function importProject(string $projectKey, $importedFiles) {
+        if (sizeof($importedFiles) > 0) {
+            $projectExport = json_decode(file_get_contents(array_values($importedFiles)[0]->getTemporaryFilePath()),true);
+            $this->importExportService->importProject($projectKey, $projectExport);
+        }
+    }
+
+
 }
