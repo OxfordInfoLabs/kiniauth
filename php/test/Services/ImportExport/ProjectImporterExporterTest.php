@@ -70,15 +70,15 @@ class ProjectImporterExporterTest extends TestBase {
             1 => new ObjectInclusionExportConfig(true)
         ], ["notificationGroups" => [
             1 => new ObjectInclusionExportConfig(true)
-        ]]]);
+        ], "apiKeys" => []]]);
 
         $export = $this->projectImportedExporter->exportProject(5, "hello", ["notificationGroups" => [
             1 => ["included" => true]
         ]]);
 
-        $this->assertEquals(new ProjectExport(["notificationGroups" => $expectedObjects], ["notificationGroups" => [
+        $this->assertEquals(new ProjectExport(["notificationGroups" => $expectedObjects, "apiKeys" => []], ["notificationGroups" => [
             1 => new ObjectInclusionExportConfig(true)
-        ]]), $export);
+        ], "apiKeys" => []]), $export);
 
 
     }

@@ -178,7 +178,7 @@ class ProjectImporterExporter {
             $mappedConfigClass = $importExporter->getObjectTypeExportConfigClassName();
             $typeIdentifier = $importExporter->getObjectTypeCollectionIdentifier();
             $mappedConfig[$typeIdentifier] = [];
-            foreach ($exportProjectConfig[$importExporter->getObjectTypeCollectionIdentifier()] as $identifier => $rawConfig) {
+            foreach ($exportProjectConfig[$importExporter->getObjectTypeCollectionIdentifier()] ?? [] as $identifier => $rawConfig) {
                 $mappedConfig[$typeIdentifier][$identifier] = $this->objectBinder->bindFromArray($rawConfig, $mappedConfigClass);
             }
         }
