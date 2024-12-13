@@ -15,7 +15,6 @@
     "oxil/kinikit-mvc": "dev-master",
     "oxil/kinikit-persistence": "dev-master",
     "dolondro/google-authenticator": "*",
-    "cache/filesystem-adapter": "dev-master",
     "google/recaptcha": "^1.2"
   },
   "minimum-stability": "dev",
