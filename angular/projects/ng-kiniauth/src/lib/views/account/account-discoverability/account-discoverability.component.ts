@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {AccountService} from '../../../services/account.service';
 
 @Component({
@@ -7,6 +7,8 @@ import {AccountService} from '../../../services/account.service';
     styleUrls: ['./account-discoverability.component.sass']
 })
 export class AccountDiscoverabilityComponent implements OnInit {
+
+    @Input() showHeader = true;
 
     public discoverabilitySettings: any;
 

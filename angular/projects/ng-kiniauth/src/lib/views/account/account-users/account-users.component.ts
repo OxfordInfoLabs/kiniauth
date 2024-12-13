@@ -16,6 +16,7 @@ import {AuthenticationService} from '../../../services/authentication.service';
 export class AccountUsersComponent implements OnInit {
 
     @Input() userRoleRoute: string;
+    @Input() inviteUserRoute: string;
     @Input() disableInvite: boolean;
     @Input() createAdminUser: boolean;
 

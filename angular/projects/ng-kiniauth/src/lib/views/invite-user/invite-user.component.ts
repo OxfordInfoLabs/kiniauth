@@ -29,6 +29,7 @@ export class InviteUserComponent implements OnInit {
     ngOnInit() {
         this.roleService.getScopeAccesses().then(scopeAccesses => {
             delete scopeAccesses['ACCOUNT'];
+            delete scopeAccesses['SITE'];
             this.scopeAccesses = _.values(scopeAccesses);
             _.forEach(scopeAccesses, scopeAccess => {
                 this.scopeRoles[scopeAccess.scope] = {};
