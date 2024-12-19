@@ -28,7 +28,7 @@ export class ApiKeysComponent implements OnInit {
     private projectSub: Subscription;
 
     constructor(private authService: AuthenticationService,
-                private apiKeysService: ApiKeysService,
+                public apiKeysService: ApiKeysService,
                 private projectService: ProjectService) {
     }
 
@@ -108,7 +108,7 @@ export class ApiKeysComponent implements OnInit {
         }
     }
 
-    private async setupRoles() {
+    public async setupRoles() {
         const assignableRoles = await this.apiKeysService.assignableRoles();
         this.assignableRoles = _.filter(assignableRoles, {scopeId: this.activeProject.projectKey});
         this.assignableRoles.forEach(role => {
@@ -116,7 +116,7 @@ export class ApiKeysComponent implements OnInit {
         });
     }
 
-    private async loadApiKeys() {
+    public async loadApiKeys() {
         this.apiKeys = await this.apiKeysService.list();
         for (const apiKey of this.apiKeys) {
             const roles: any = await this.apiKeysService.getApiKeyRoles(apiKey.id);
