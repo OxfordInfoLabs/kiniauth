@@ -20,20 +20,23 @@
                [(ngModel)]="emailAddress">
     </div>
 
-    <div class="text-base font-medium text-gray-900 mb-4">Permissions</div>
+    <div *ngIf="!defaultToOwner" class="text-base font-medium text-gray-900 mb-4">Permissions</div>
 
-    <div class="mb2 mb-4">
+    <div class="mb2 mb-4" [ngClass]="{'invisible h-0 overflow-hidden': defaultToOwner}">
         <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'" [userService]="userService"
-                       [updatedScopes]="scopeRoles['ACCOUNT']" [hideApply]="true"></ka-edit-roles>
+                       [updatedScopes]="scopeRoles['ACCOUNT']" [hideApply]="true" [defaultToOwner]="defaultToOwner"></ka-edit-roles>
         <p style="color: red" *ngIf="accountError">{{accountError}}</p>
     </div>
 
-    <mat-tab-group animationDuration="0">
-        <mat-tab *ngFor="let scopeAccess of scopeAccesses" [label]="scopeAccess.scopeDescription">
-            <ka-edit-roles class="block mt-4" [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope"
-                           [updatedScopes]="scopeRoles[scopeAccess.scope]" [hideApply]="true" [userService]="userService"></ka-edit-roles>
-        </mat-tab>
-    </mat-tab-group>
+    <ng-template [ngIf]="!!_.find(scopeRoles.ACCOUNT, {roleIds: [1]})">
+        <mat-tab-group animationDuration="0">
+            <mat-tab *ngFor="let scopeAccess of scopeAccesses" [label]="scopeAccess.scopeDescription">
+                <ka-edit-roles class="block mt-4" [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope"
+                               [updatedScopes]="scopeRoles[scopeAccess.scope]" [hideApply]="true"
+                               [userService]="userService"></ka-edit-roles>
+            </mat-tab>
+        </mat-tab-group>
+    </ng-template>
 
     <div class="flex align-center justify-between mt2 mt-6">
         <div></div>

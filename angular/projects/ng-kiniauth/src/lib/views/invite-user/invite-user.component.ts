@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import { RoleService } from '../../services/role.service';
 import * as lodash from 'lodash';
 const _ = lodash.default;
@@ -14,11 +14,15 @@ import {UserService} from '../../services/user.service';
 })
 export class InviteUserComponent implements OnInit {
 
+    @Input() defaultToOwner = false;
+
     public scopeAccesses: any[];
     public scopeRoles: any = { ACCOUNT: {} };
     public emailAddress: string;
     public accountError: string;
     public inviteComplete = false;
+
+    public readonly _ = _;
 
     constructor(private roleService: RoleService,
                 private accountService: AccountService,

@@ -16,6 +16,7 @@ export class EditRolesComponent implements OnInit {
     @Input() updatedScopes: any;
     @Input() hideApply: boolean;
     @Input() userService;
+    @Input() defaultToOwner: boolean;
 
     @Output() closed: EventEmitter<any> = new EventEmitter<any>();
     @Output() saved: EventEmitter<any> = new EventEmitter<any>();
@@ -47,6 +48,13 @@ export class EditRolesComponent implements OnInit {
             Promise.all(promises).then(res => {
                 this.assignableRoles = res[0];
                 this.setInitialRoleState();
+
+                if (this.defaultToOwner) {
+                    this.updateRole({
+                        target: {checked: true, value: 'OWNER'}
+                    }, this.assignableRoles[0].scopeId);
+                    this.checked[this.assignableRoles[0].scopeId].owner = {1: false};
+                }
                 this.loading = false;
             });
         }
