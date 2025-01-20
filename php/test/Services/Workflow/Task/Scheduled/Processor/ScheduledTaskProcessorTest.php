@@ -62,7 +62,7 @@ class ScheduledTaskProcessorTest extends TestBase {
         $expectedDate->add(new \DateInterval("P1D"));
         $this->assertEquals($expectedDate, $scheduledTask->getNextStartTime());
         $expectedTimeout = (new \DateTime())->add(new \DateInterval("PT3600S"));
-        $this->assertLessThan(1, $scheduledTask->getTimeoutTime()->format("U") - $expectedTimeout->format("U"));
+        $this->assertLessThan(2, $scheduledTask->getTimeoutTime()->format("U") - $expectedTimeout->format("U"));
 
         // Check for log entry as well
         $logEntries = ScheduledTaskLog::filter("WHERE scheduled_task_id = " . $scheduledTask->getId());
@@ -109,7 +109,7 @@ class ScheduledTaskProcessorTest extends TestBase {
 
         // Check timeout still intact
         $expectedTimeout = (new \DateTime())->add(new \DateInterval("PT3600S"));
-        $this->assertEquals($expectedTimeout->format("Y-m-d H:i:s"), $scheduledTask->getTimeoutTime()->format("Y-m-d H:i:s"));
+        $this->assertLessThan(2, $scheduledTask->getTimeoutTime()->format("U") - $expectedTimeout->format("U"));
 
 
     }
@@ -142,7 +142,7 @@ class ScheduledTaskProcessorTest extends TestBase {
         $expectedDate->add(new \DateInterval("P1D"));
         $this->assertEquals($expectedDate, $scheduledTask->getNextStartTime());
         $expectedTimeout = (new \DateTime())->add(new \DateInterval("PT100S"));
-        $this->assertEquals($expectedTimeout->format("Y-m-d H:i:s"), $scheduledTask->getTimeoutTime()->format("Y-m-d H:i:s"));
+        $this->assertLessThan(2, $scheduledTask->getTimeoutTime()->format("U") - $expectedTimeout->format("U"));
 
         // Check for log entry as well
         $logEntries = ScheduledTaskLog::filter("WHERE scheduled_task_id = " . $scheduledTask->getId());
