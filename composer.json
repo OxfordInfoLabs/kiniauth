@@ -14,7 +14,8 @@
     "oxil/kinikit-core": "dev-master",
     "oxil/kinikit-mvc": "dev-master",
     "oxil/kinikit-persistence": "dev-master",
-    "google/recaptcha": "^1.2"
+    "google/recaptcha": "^1.2",
+    "spomky-labs/otphp": "*"
   },
   "minimum-stability": "dev",
   "scripts": {

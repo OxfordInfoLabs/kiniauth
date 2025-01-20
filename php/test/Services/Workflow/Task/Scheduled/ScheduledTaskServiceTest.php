@@ -175,6 +175,8 @@ class ScheduledTaskServiceTest extends TestBase {
         $this->scheduledTaskService->processDueTasks();
 
 
+
+
         $this->assertTrue($this->scheduledTaskProcessor->methodWasCalled("processScheduledTasks", [
             [
                 ScheduledTask::fetch($task1Id),

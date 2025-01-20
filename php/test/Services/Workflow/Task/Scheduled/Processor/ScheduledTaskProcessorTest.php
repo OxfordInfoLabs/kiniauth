@@ -91,7 +91,7 @@ class ScheduledTaskProcessorTest extends TestBase {
 
         ScheduledTaskInterceptor::$disabled = true;
         $scheduledTask->save();
-        $scheduledTask->setConfiguration(["date" => "2025-01-01 10:00:00", "id" => $scheduledTask->getId()]);
+        $scheduledTask->setConfiguration(["date" => "2035-01-01 10:00:00", "id" => $scheduledTask->getId()]);
         $scheduledTask->save();
         ScheduledTaskInterceptor::$disabled = false;
 
@@ -105,7 +105,7 @@ class ScheduledTaskProcessorTest extends TestBase {
         $this->assertNotNull($scheduledTask->getLastEndTime());
 
         // Check explicit date set
-        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2025-01-01 10:00:00"), $scheduledTask->getNextStartTime());
+        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2035-01-01 10:00:00"), $scheduledTask->getNextStartTime());
 
         // Check timeout still intact
         $expectedTimeout = (new \DateTime())->add(new \DateInterval("PT3600S"));

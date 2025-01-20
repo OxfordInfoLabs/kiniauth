@@ -46,13 +46,13 @@ class PendingActionServiceTest extends TestBase {
         $this->assertEquals($identifier, $action->getIdentifier());
 
 
-        $identifier = $this->pendingActionService->createPendingAction("EXAMPLE", 1, "Wonderful World", null, date_create_from_format("d/m/Y H:i:s", "01/01/2025 10:10:10"), "product");
+        $identifier = $this->pendingActionService->createPendingAction("EXAMPLE", 1, "Wonderful World", null, date_create_from_format("d/m/Y H:i:s", "01/01/2035 10:10:10"), "product");
 
         $action = PendingAction::filter("WHERE identifier = ?", $identifier)[0];
         $this->assertEquals("EXAMPLE", $action->getType());
         $this->assertEquals(1, $action->getObjectId());
         $this->assertEquals("Wonderful World", $action->getData());
-        $this->assertEquals(date_create_from_format("d/m/Y H:i:s", "01/01/2025 10:10:10"), $action->getExpiryDateTime());
+        $this->assertEquals(date_create_from_format("d/m/Y H:i:s", "01/01/2035 10:10:10"), $action->getExpiryDateTime());
         $this->assertEquals($identifier, $action->getIdentifier());
         $this->assertEquals("product", $action->getObjectType());
 
