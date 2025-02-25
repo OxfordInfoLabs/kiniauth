@@ -23,6 +23,7 @@ use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
@@ -104,8 +105,9 @@ class AccountService {
      * @param string $searchString
      * @param int $offset
      * @param int $limit
+     * @param int $parentAccountId
      */
-    public function searchForAccounts($searchString = "", $offset = 0, $limit = 10) {
+    public function searchForAccounts($searchString = "", $offset = 0, $limit = 10, $parentAccountId = 0) {
 
         $whereClauses = [];
         $params = [];
@@ -113,6 +115,8 @@ class AccountService {
             $whereClauses[] = "name LIKE ?";
             $params[] = "%$searchString%";
         }
+        $whereClauses[] = "parentAccountId = ?";
+        $params[] = $parentAccountId;
 
         $query = (sizeof($whereClauses) ? "WHERE " : "") . join(" AND ", $whereClauses) . " ORDER BY name";
 

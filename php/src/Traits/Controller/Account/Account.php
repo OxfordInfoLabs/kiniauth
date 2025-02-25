@@ -4,8 +4,11 @@ namespace Kiniauth\Traits\Controller\Account;
 
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\RoleService;
 use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
+use Kiniauth\ValueObjects\Registration\NewUserAccountDescriptor;
+use Kinikit\Core\Logging\Logger;
 
 trait Account {
 
@@ -14,14 +17,18 @@ trait Account {
 
     private $roleService;
 
+    private $session;
+
     /**
      * Account constructor.
      * @param \Kiniauth\Services\Account\AccountService $accountService
      * @param RoleService $roleService
+     * @param Session $session
      */
-    public function __construct($accountService, $roleService) {
+    public function __construct($accountService, $roleService, $session) {
         $this->accountService = $accountService;
         $this->roleService = $roleService;
+        $this->session = $session;
     }
 
     /**
@@ -34,6 +41,31 @@ trait Account {
      */
     public function getAccount($accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
         return AccountSummary::fetch($accountId);
+    }
+
+    /**
+     * Search for accounts limiting to search string optionally
+     *
+     * @http GET /subAccounts
+     *
+     * @param string $searchString
+     * @param int $offset
+     * @param int $limit
+     */
+    public function searchForSubAccounts($searchString = "", $offset = 0, $limit = 10) {
+        return $this->accountService->searchForAccounts($searchString, $offset, $limit, $this->session->__getLoggedInAccount()->getAccountId());
+    }
+
+    /**
+     * Create a new account
+     *
+     * @http POST /subAccount
+     *
+     * @param NewUserAccountDescriptor $newUserAccountDescriptor
+     */
+    public function createSubAccount($newUserAccountDescriptor) {
+        return $this->accountService->createAccount($newUserAccountDescriptor->getAccountName(), $newUserAccountDescriptor->getEmailAddress(),
+            $newUserAccountDescriptor->getPassword(), $newUserAccountDescriptor->getName(), $this->session->__getLoggedInAccount()->getAccountId());
     }
 
     /**

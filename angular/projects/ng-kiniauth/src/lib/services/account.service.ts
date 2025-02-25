@@ -30,13 +30,30 @@ export class AccountService {
         });
     }
 
-    public createAccount(accountName, emailAddress = null, rawPassword = null, name = null) {
+    public searchForSubAccounts(searchString?, limit?, offset?) {
+        return this.http.get(this.config.accessHttpURL + '/account/subAccounts', {
+            params: _.pickBy({searchString, limit, offset}, _.identity)
+        });
+    }
+
+    public createAccount(accountName: string, emailAddress: string = null, rawPassword: string = null, name: string = null) {
         let password = rawPassword;
         if (rawPassword) {
             password = this.authService.getHashedPassword(rawPassword, emailAddress, true);
         }
 
         return this.http.post(this.config.accessHttpURL + '/account',
+            _.omitBy({accountName, emailAddress, password, name}, _.isNil)
+        ).toPromise();
+    }
+
+    public createSubAccount(accountName: string, emailAddress: string = null, rawPassword: string = null, name: string = null) {
+        let password = rawPassword;
+        if (rawPassword) {
+            password = this.authService.getHashedPassword(rawPassword, emailAddress, true);
+        }
+
+        return this.http.post(this.config.accessHttpURL + '/account/subAccount',
             _.omitBy({accountName, emailAddress, password, name}, _.isNil)
         ).toPromise();
     }
@@ -87,8 +104,12 @@ export class AccountService {
         });
     }
 
-    public inviteUserToAccount(emailAddress, assignedRoles) {
-        return this.http.post(this.config.accessHttpURL + '/account/invite?emailAddress=' + encodeURIComponent(emailAddress),
+    public inviteUserToAccount(emailAddress, assignedRoles, accountId = null) {
+        let url = this.config.accessHttpURL + '/account/invite?emailAddress=' + encodeURIComponent(emailAddress);
+        if (accountId) {
+            url = `${url}&accountId=${accountId}`;
+        }
+        return this.http.post(url,
             assignedRoles).toPromise();
     }
 
