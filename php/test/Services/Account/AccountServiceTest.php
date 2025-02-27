@@ -112,6 +112,7 @@ class AccountServiceTest extends TestBase {
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
         $matches = $this->accountService->searchForAccounts();
+
         $this->assertEquals(5, sizeof($matches));
         $this->assertEquals(AccountSummary::fetch(2), $matches[0]);
         $this->assertEquals(AccountSummary::fetch(1), $matches[1]);
@@ -175,6 +176,21 @@ class AccountServiceTest extends TestBase {
             UserRole::fetch([$adminUser->getId(), Role::SCOPE_PROJECT, "*", 0])
         ], $adminUser->getRoles());
         $this->assertEquals(User::STATUS_ACTIVE, $adminUser->getStatus());
+
+    }
+
+    public function testCanCreateSubAccountAsParentAccountAdmin() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $accountId = $this->accountService->createAccount("Badger", null, null, null, 1);
+
+        $this->assertNotNull($accountId);
+
+        $account = Account::fetch($accountId);
+
+        $this->assertEquals("Badger", $account->getName());
+
 
     }
 

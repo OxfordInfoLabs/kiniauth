@@ -121,6 +121,7 @@ class AccountScopeAccess extends ScopeAccess {
 
             $childAccounts = AccountSummary::filter("WHERE parent_account_id IN (" . join(",", $accountIds) . ")");
 
+
             foreach ($childAccounts as $childAccount) {
 
                 if (!isset($scopePrivileges[$childAccount->getAccountId()])) {

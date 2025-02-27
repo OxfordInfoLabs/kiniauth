@@ -24,6 +24,7 @@ use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\MVC\Request\Request;
@@ -372,10 +373,12 @@ class AuthenticationService {
      */
     public function updateActiveParentAccount($referringURL) {
 
+
         if (!$referringURL) {
             $this->session->__setValidReferrer(false);
             $this->session->__setReferringURL(null);
         } else {
+
 
             $referrer = $referringURL->getHost();
 
@@ -384,9 +387,9 @@ class AuthenticationService {
 
                 $this->session->__setReferringURL($referrer);
 
-
                 // Now attempt to look up the setting by key and value
                 $setting = $this->settingsService->getSettingByKeyAndValue("referringDomains", $referrer);
+
                 if ($setting) {
                     $parentAccountId = $setting->getParentAccountId();
                     $this->session->__setValidReferrer(true);

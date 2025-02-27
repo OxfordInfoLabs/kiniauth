@@ -170,22 +170,8 @@ class SecurityService {
             $this->session->__setLoggedInAccount($account);
         }
 
-        /**
-         * Process all scope accesses and build the global privileges array
-         */
-        $privileges = array();
-
-        // Add account scope access
-        $accountPrivileges = null;
-        foreach ($this->scopeManager->getScopeAccesses() as $scopeAccess) {
-
-            $scopePrivileges = $scopeAccess->generateScopePrivileges($securable, $account, $accountPrivileges);
-
-            $privileges[$scopeAccess->getScope()] = $scopePrivileges;
-            if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT) $accountPrivileges = $scopePrivileges;
-        }
-
-        $this->session->__setLoggedInPrivileges($privileges);
+        // Populate session privileges
+        $this->populateSessionPrivileges($securable, $account);
 
     }
 
@@ -349,6 +335,7 @@ class SecurityService {
      */
     public function checkLoggedInObjectAccess($object, $accessMode = self::ACCESS_READ) {
 
+
         // If super user, shortcut the process.
         if ($this->isSuperUserLoggedIn())
             return true;
@@ -401,8 +388,15 @@ class SecurityService {
                         }
 
                         if ($scopeId === null || $scopeId == -1) {
-                            if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT)
-                                $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
+                            if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT) {
+
+                                // Special case for new accounts.
+                                if (($object instanceof Account) && $loggedInAccount) {
+                                    $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && ($loggedInAccount->getSubAccountsEnabled() && ($loggedInAccount->getAccountId() == $object->getParentAccountId()));
+                                } else {
+                                    $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
+                                }
+                            }
                         } else {
 
                             // Calculate an initial check as to whether this object has been granted the right level of access
@@ -539,6 +533,7 @@ class SecurityService {
         if (isset($allPrivileges[$scope][$scopeId]))
             $privileges = array_merge($privileges, $allPrivileges[$scope][$scopeId]);
 
+
         return $privileges;
 
     }
@@ -577,6 +572,8 @@ class SecurityService {
 
     /**
      * Reload logged in user and account.  Useful after any live changes have been made to accounts etc.
+     *
+     * @objectInterceptorDisabled
      */
     public function reloadLoggedInObjects() {
         list($securable, $account) = $this->getLoggedInSecurableAndAccount();
@@ -585,6 +582,8 @@ class SecurityService {
             $this->session->__setLoggedInSecurable($newSecurable);
             if ($newSecurable->getActiveAccountId())
                 $this->session->__setLoggedInAccount(Account::fetch($newSecurable->getActiveAccountId()));
+
+            $this->populateSessionPrivileges($securable, $account);
         } else if ($account) {
             $this->session->__setLoggedInAccount(Account::fetch($account->getAccountId()));
         }

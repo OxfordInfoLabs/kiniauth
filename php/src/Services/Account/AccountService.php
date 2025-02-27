@@ -107,7 +107,7 @@ class AccountService {
      * @param int $limit
      * @param int $parentAccountId
      */
-    public function searchForAccounts($searchString = "", $offset = 0, $limit = 10, $parentAccountId = 0) {
+    public function searchForAccounts($searchString = "", $offset = 0, $limit = 10, $parentAccountId = null) {
 
         $whereClauses = [];
         $params = [];
@@ -115,8 +115,10 @@ class AccountService {
             $whereClauses[] = "name LIKE ?";
             $params[] = "%$searchString%";
         }
-        $whereClauses[] = "parentAccountId = ?";
-        $params[] = $parentAccountId;
+        if ($parentAccountId !== null) {
+            $whereClauses[] = "parentAccountId = ?";
+            $params[] = $parentAccountId;
+        }
 
         $query = (sizeof($whereClauses) ? "WHERE " : "") . join(" AND ", $whereClauses) . " ORDER BY name";
 
@@ -161,6 +163,10 @@ class AccountService {
             ]);
         }
 
+        // If parent account id, reload the logged in user.
+        if ($parentAccountId) {
+            $this->securityService->reloadLoggedInObjects();
+        }
 
         return $account->getAccountId();
     }
