@@ -4,6 +4,7 @@
 namespace Kiniauth\Traits\Controller\Account;
 
 
+use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\ProjectSummary;
 use Kiniauth\Services\Account\ProjectService;
 use Kiniauth\Services\ImportExport\ImportExportService;
@@ -75,21 +76,23 @@ trait Project {
      * @param string $filterString
      * @param int $limit
      * @param int $offset
+     * @param int $accountId
      *
      * @return ProjectSummary[]
      */
-    public function filterProjects($filterString = "", $limit = 10, $offset = 0) {
-        return $this->projectService->filterProjects($filterString, $offset, $limit);
+    public function filterProjects($filterString = "", $limit = 10, $offset = 0, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        return $this->projectService->filterProjects($filterString, $offset, $limit, $accountId);
     }
 
     /**
      * @http POST /
      *
      * @param ProjectUpdateDescriptor $projectUpdateDescriptor
+     * @param int $accountId
      */
-    public function createProject($projectUpdateDescriptor) {
+    public function createProject($projectUpdateDescriptor, $accountId = Account::LOGGED_IN_ACCOUNT) {
         $projectSummary = new ProjectSummary($projectUpdateDescriptor->getName(), $projectUpdateDescriptor->getDescription());
-        $this->projectService->saveProject($projectSummary);
+        $this->projectService->saveProject($projectSummary, $accountId);
     }
 
 

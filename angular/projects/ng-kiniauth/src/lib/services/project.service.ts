@@ -3,6 +3,9 @@ import {BehaviorSubject} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {AuthenticationService} from './authentication.service';
 import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
+import * as lodash from 'lodash';
+
+const _ = lodash.default;
 
 @Injectable({
     providedIn: 'root'
@@ -21,9 +24,9 @@ export class ProjectService {
         }
     }
 
-    public getProjects(filterString = '') {
+    public getProjects(filterString = '', limit?, offset?, accountId?) {
         return this.http.get(this.config.accessHttpURL + '/project', {
-            params: {filterString}
+            params: _.pickBy({filterString, limit, offset, accountId}, _.identity)
         });
     }
 

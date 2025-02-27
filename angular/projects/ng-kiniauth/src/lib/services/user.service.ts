@@ -38,9 +38,9 @@ export class UserService {
         }).toPromise();
     }
 
-    public getAccountUsers(searchString?, limit?, offset?) {
+    public getAccountUsers(searchString?, limit?, offset?, accountId?) {
         return this.http.get(this.config.accessHttpURL + '/user/search', {
-            params: _.pickBy({searchString, limit, offset}, _.identity)
+            params: _.pickBy({searchString, limit, offset, accountId}, _.identity)
         });
     }
 

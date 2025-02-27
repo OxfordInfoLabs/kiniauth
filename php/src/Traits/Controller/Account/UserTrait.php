@@ -170,11 +170,11 @@ trait UserTrait {
      * @param string $searchString
      * @param int $offset
      * @param int $limit
+     * @param int $accountId
      * @return array
      */
-    public function searchForAccountUsers($searchString = "", $offset = 0, $limit = 10) {
-        $account = $this->session->__getLoggedInAccount()->getAccountId();
-        return $this->userService->searchForUsers($searchString, $offset, $limit, $account);
+    public function searchForAccountUsers($searchString = "", $offset = 0, $limit = 10, $accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
+        return $this->userService->searchForUsers($searchString, $offset, $limit, $accountId);
     }
 
 
