@@ -359,29 +359,7 @@ class SecurityServiceTest extends TestBase {
     }
 
 
-    public function testAccountObjectsWithNullAccountIdAreAccessibleToParentAccountIdObjectsInWriteMode(){
 
-        $account = new Account("Mark", 1, Account::STATUS_ACTIVE);
-
-
-        // Logged out
-        $this->authenticationService->logout();
-        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($account, SecurityService::ACCESS_WRITE));
-
-        // Super user
-        AuthenticationHelper::login("admin@kinicart.com", "password");
-        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($account, SecurityService::ACCESS_WRITE));
-
-        // Non parent user login
-        AuthenticationHelper::login("simon@peterjonescarwash.com", "password");
-        $this->assertFalse($this->securityService->checkLoggedInObjectAccess($account, SecurityService::ACCESS_WRITE));
-
-        // Parent user login
-        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
-        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($account, SecurityService::ACCESS_WRITE));
-
-
-    }
 
 
     public function testCanGetAllPrivileges() {

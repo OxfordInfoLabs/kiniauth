@@ -52,6 +52,7 @@ abstract class SecurableRole extends ActiveRecord {
      * increased security.
      *
      * @var integer
+     *
      */
     protected $accountId;
 

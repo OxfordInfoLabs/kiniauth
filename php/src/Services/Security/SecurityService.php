@@ -389,13 +389,7 @@ class SecurityService {
 
                         if ($scopeId === null || $scopeId == -1) {
                             if ($scopeAccess->getScope() == Role::SCOPE_ACCOUNT) {
-
-                                // Special case for new accounts.
-                                if (($object instanceof Account) && $loggedInAccount) {
-                                    $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && ($loggedInAccount->getSubAccountsEnabled() && ($loggedInAccount->getAccountId() == $object->getParentAccountId()));
-                                } else {
-                                    $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
-                                }
+                                $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && ($accessMode == self::ACCESS_READ && ($loggedInSecurable || $loggedInAccount));
                             }
                         } else {
 
@@ -599,5 +593,8 @@ class SecurityService {
 
         return sizeof($matchingUsers) > 0 && $matchingUsers[0]->passwordMatches($password, $this->session->__getSessionSalt());
     }
+
+
+
 
 }

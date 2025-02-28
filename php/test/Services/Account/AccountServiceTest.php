@@ -96,7 +96,8 @@ class AccountServiceTest extends TestBase {
 
         $this->mockedAccountService = new AccountService(Container::instance()->get(SecurityService::class), $this->mockPendingActionService, $this->mockEmailService,
             Container::instance()->get(RoleService::class),
-            Container::instance()->get(UserService::class));
+            Container::instance()->get(UserService::class),
+            Container::instance()->get(ActiveRecordInterceptor::class));
 
         $this->pendingActionService = Container::instance()->get(PendingActionService::class);
         $this->userService = MockObjectProvider::instance()->getMockInstance(UserService::class);

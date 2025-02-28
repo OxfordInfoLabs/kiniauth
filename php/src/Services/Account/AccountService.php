@@ -14,6 +14,7 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Application\ActivityLogger;
 use Kiniauth\Services\Communication\Email\EmailService;
+use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
@@ -60,6 +61,11 @@ class AccountService {
     private $userService;
 
     /**
+     * @var ActiveRecordInterceptor
+     */
+    private $activeRecordInterceptor;
+
+    /**
      * Construct with required deps.
      *
      * @param SecurityService $securityService
@@ -67,13 +73,15 @@ class AccountService {
      * @param EmailService $emailService
      * @param RoleService $roleService
      * @param UserService $userService
+     * @param ActiveRecordInterceptor $activeRecordInterceptor
      */
-    public function __construct($securityService, $pendingActionService, $emailService, $roleService, $userService) {
+    public function __construct($securityService, $pendingActionService, $emailService, $roleService, $userService, $activeRecordInterceptor) {
         $this->securityService = $securityService;
         $this->pendingActionService = $pendingActionService;
         $this->emailService = $emailService;
         $this->roleService = $roleService;
         $this->userService = $userService;
+        $this->activeRecordInterceptor = $activeRecordInterceptor;
     }
 
 
@@ -154,7 +162,22 @@ class AccountService {
         $account->setName($accountName);
         $account->setParentAccountId($parentAccountId);
         $account->setStatus(Account::STATUS_ACTIVE);
-        $account->save();
+
+
+        // Account closure.
+        $accountClosure = function () use ($account) {
+            $account->save();
+        };
+
+        // Get logged in securable and account
+        list($loggedInSecurable, $loggedInAccount) = $this->securityService->getLoggedInSecurableAndAccount();
+        if ($parentAccountId && $loggedInAccount->getSubAccountsEnabled() && ($loggedInAccount->getAccountId() == $parentAccountId)) {
+            $this->activeRecordInterceptor->executeInsecure($accountClosure);
+            $this->securityService->reloadLoggedInObjects();
+        } else {
+            $accountClosure();
+        }
+
 
         if ($adminEmailAddress) {
             $this->userService->createUser($adminEmailAddress, $adminHashedPassword, $adminName, [
@@ -163,10 +186,6 @@ class AccountService {
             ]);
         }
 
-        // If parent account id, reload the logged in user.
-        if ($parentAccountId) {
-            $this->securityService->reloadLoggedInObjects();
-        }
 
         return $account->getAccountId();
     }
