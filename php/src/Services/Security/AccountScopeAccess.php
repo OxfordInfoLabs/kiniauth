@@ -29,10 +29,31 @@ class AccountScopeAccess extends ScopeAccess {
     }
 
     /**
-     * @return string
+     * Override the is scope id active method to check that the scope Id matches either the
+     * active account id or a sub account thereof.
+     *
+     * @param $scopeId
+     * @param Session $session
+     * @return bool
      */
-    public function getActiveScopeValue() {
-        return Container::instance()->get(Session::class)->__getLoggedInAccount()?->getAccountId();
+    public function isScopeIdActive($scopeId, $session) {
+
+        $securable = $session->__getLoggedInSecurable();
+        $account = $session->__getLoggedInAccount();
+
+        if ($securable) {
+            if ($scopeId == $account->getAccountId())
+                return true;
+
+            $privileges = $session->__getLoggedInPrivileges();
+
+            // Check whether the scope id appears as a child account of the logged in account
+            $childAccounts = $privileges["ACCOUNT"]["childAccounts"][$securable->getActiveAccountId()] ?? [];
+            return in_array($scopeId, $childAccounts);
+
+        }
+
+        return false;
     }
 
 
@@ -121,6 +142,7 @@ class AccountScopeAccess extends ScopeAccess {
 
             $childAccounts = AccountSummary::filter("WHERE parent_account_id IN (" . join(",", $accountIds) . ")");
 
+            $childAccountIds = [];
 
             foreach ($childAccounts as $childAccount) {
 
@@ -128,11 +150,16 @@ class AccountScopeAccess extends ScopeAccess {
                     $targetPrivilege = (in_array("*", $scopePrivileges[$childAccount->getParentAccountId()])) ? "*" : Privilege::PRIVILEGE_ACCESS;
                     $scopePrivileges[$childAccount->getAccountId()] = [$targetPrivilege];
                 }
+
+                if (!isset($childAccountIds[$childAccount->getParentAccountId()])) {
+                    $childAccountIds[$childAccount->getParentAccountId()] = [];
+                }
+                $childAccountIds[$childAccount->getParentAccountId()][] = $childAccount->getAccountId();
             }
 
+            $scopePrivileges["childAccounts"] = $childAccountIds;
 
         }
-
 
         return $scopePrivileges;
 

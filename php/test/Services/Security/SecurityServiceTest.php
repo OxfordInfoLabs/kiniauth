@@ -142,6 +142,9 @@ class SecurityServiceTest extends TestBase {
 
         $account = new Account("Mark Test", 0, Account::STATUS_ACTIVE, 2);
 
+        $subAccountContact = new Contact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
+            "Oxon", "OX4 7YY", "GB", null, "test@test.com", 5, Contact::ADDRESS_TYPE_GENERAL);
+
 
         // Logged out
         $this->authenticationService->logout();
@@ -154,6 +157,9 @@ class SecurityServiceTest extends TestBase {
         // User with different account access fails
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
         $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact));
+
+        // User with access to parent account succeeds.
+        $this->assertTrue($this->securityService->checkLoggedInObjectAccess($subAccountContact));
 
         // User login where active account matches object account id should succeed.
         AuthenticationHelper::login("james@smartcoasting.org", "password");
