@@ -34,10 +34,12 @@ export class ProjectService {
         return this.http.get(this.config.accessHttpURL + '/project/' + key).toPromise();
     }
 
-    public createProject(name, description) {
-        return this.http.post(this.config.accessHttpURL + '/project', {
-            name, description
-        }).toPromise();
+    public createProject(name, description, accountId?) {
+        let url = `${this.config.accessHttpURL}/project`;
+        if (accountId) {
+            url = url + '?accountId=' + accountId;
+        }
+        return this.http.post(url, {name, description}).toPromise();
     }
 
     public removeProject(key) {

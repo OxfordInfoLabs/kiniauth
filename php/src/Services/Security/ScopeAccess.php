@@ -5,7 +5,9 @@ namespace Kiniauth\Services\Security;
 
 
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\SecurableRole;
+use Kiniauth\Services\Application\Session;
 
 /**
  * Scope access objects allow for configuration of both the Object and Method interceptors for a given scope.
@@ -50,11 +52,10 @@ abstract class ScopeAccess {
      *
      * @param $scope
      */
-    public function __construct($scope, $scopeDescription, $objectMember = null, $activeScopeValue = null) {
+    public function __construct($scope, $scopeDescription, $objectMember = null) {
         $this->scope = $scope;
         $this->scopeDescription = $scopeDescription;
         $this->objectMember = $objectMember;
-        $this->activeScopeValue = $activeScopeValue;
     }
 
     /**
@@ -79,13 +80,6 @@ abstract class ScopeAccess {
         return $this->objectMember;
     }
 
-    /**
-     * @return string
-     */
-    public function getActiveScopeValue() {
-        return $this->activeScopeValue;
-    }
-
 
     /**
      * Generate scope privileges from either a user or an account (only one will be passed).
@@ -103,6 +97,21 @@ abstract class ScopeAccess {
      * @return
      */
     public abstract function generateScopePrivileges($securable, $account, $accountPrivileges);
+
+
+    /**
+     * Return a boolean indicating whether the passed scope id is active
+     * based on the logged in securable and account.  This is true for most scopes byt is overrideen particularly
+     * by the Account Scope Access to limit access to objects for the active account only.
+     *
+     * @param mixed $scopeId
+     * @param Session $session
+     *
+     * @return boolean
+     */
+    public function isScopeIdActive($scopeId, $session) {
+        return true;
+    }
 
 
     /**

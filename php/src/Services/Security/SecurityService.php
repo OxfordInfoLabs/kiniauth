@@ -11,6 +11,7 @@ use Kiniauth\Exception\Security\MissingScopeObjectIdForPrivilegeException;
 use Kiniauth\Exception\Security\NonExistentPrivilegeException;
 use Kiniauth\Exception\Security\UserSuspendedException;
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Account\Project;
 use Kiniauth\Objects\Security\APIKey;
 use Kiniauth\Objects\Security\Privilege;
 use Kiniauth\Objects\Security\Role;
@@ -397,13 +398,15 @@ class SecurityService {
                             $accessModeMatches = ($accessMode == self::ACCESS_READ) || (($accessMode == self::ACCESS_WRITE) && $objectScopeAccess->getWriteAccess())
                                 || (($accessMode == self::ACCESS_GRANT) && $objectScopeAccess->getGrantAccess());
 
+
                             // Compare with logged in privileges if we are accessing non active scopes
                             // or the scope id matches
                             if ($accessModeMatches && ($classInspector->hasClassAttribute(AccessNonActiveScopes::class)
-                                    || (!$scopeAccess->getActiveScopeValue() ||
-                                        ($scopeId == $scopeAccess->getActiveScopeValue())))) {
+                                    || $scopeAccess->isScopeIdActive($scopeId, $this->session))) {
+
                                 $accessGroupGranted[$accessGroup] = $accessGroupGranted[$accessGroup] && $this->getLoggedInScopePrivileges($scopeAccess->getScope(),
                                         $scopeId);
+
                             } // Otherwise assume false for this
                             else {
                                 $accessGroupGranted[$accessGroup] = false;
@@ -593,8 +596,6 @@ class SecurityService {
 
         return sizeof($matchingUsers) > 0 && $matchingUsers[0]->passwordMatches($password, $this->session->__getSessionSalt());
     }
-
-
 
 
 }
