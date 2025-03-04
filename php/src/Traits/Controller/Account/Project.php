@@ -117,8 +117,8 @@ trait Project {
      *
      * @param $projectKey
      */
-    public function removeProject($projectKey) {
-        $this->projectService->removeProject($projectKey);
+    public function removeProject($projectKey, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $this->projectService->removeProject($projectKey, $accountId);
     }
 
     /**
