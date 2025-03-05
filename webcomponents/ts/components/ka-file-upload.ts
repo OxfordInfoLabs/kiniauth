@@ -103,7 +103,7 @@ export default class KaFileUpload extends HTMLElement {
 
             // Shortcut if upload has already been done.
             if (this.uploaded || this.values.length == 0) {
-                done();
+                done(1);
                 return;
             }
 
@@ -114,34 +114,34 @@ export default class KaFileUpload extends HTMLElement {
 
                 api.callAPI(uploadUrlProvider,
                     this.values
-                    , "POST",captcha).then((response) => {
+                    , "POST", captcha).then((response) => {
 
-                    if (response.ok) {
+                        if (response.ok) {
 
-                        response.json().then(result => {
+                            response.json().then(result => {
 
-                            result.forEach((item, index) => {
-                                this.values[index].storedName = item.filename;
+                                result.forEach((item, index) => {
+                                    this.values[index].storedName = item.filename;
+                                });
+
+                                this.uploadAllFiles(result, 0).then(() => {
+                                    let event = document.createEvent("Event");
+                                    event.initEvent("input", false, true);
+                                    this.dispatchEvent(event);
+                                    done(1);
+                                }).catch(() => {
+                                    reject("File upload failed");
+                                })
+
+
                             });
 
-                            this.uploadAllFiles(result, 0).then(() => {
-                                let event = document.createEvent("Event");
-                                event.initEvent("input", false, true);
-                                this.dispatchEvent(event);
-                                done();
-                            }).catch(() => {
-                                reject("File upload failed");
-                            })
 
+                        } else {
+                            reject("File upload failed");
+                        }
 
-                        });
-
-
-                    } else {
-                        reject("File upload failed");
-                    }
-
-                });
+                    });
             }
 
         });
@@ -160,20 +160,20 @@ export default class KaFileUpload extends HTMLElement {
                 xhr.open("PUT", currentUpload.uploadUrl);
 
                 let reader = new FileReader();
-                reader.addEventListener("load", function (evt:any) {
+                reader.addEventListener("load", function (evt: any) {
                     xhr.send(evt.target.result);
                 });
 
                 xhr.addEventListener("load", () => {
                     this.uploadAllFiles(remainingUploads, currentIndex + 1).then(() => {
-                        done();
+                        done(1);
                     });
                 });
 
                 reader.readAsBinaryString(this.fileField.files.item(currentIndex));
 
             } else {
-                done();
+                done(1);
             }
         });
 

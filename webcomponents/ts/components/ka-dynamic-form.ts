@@ -53,7 +53,7 @@ export default class KaDynamicForm extends HTMLElement {
         let defaultDataString = this.getAttribute("data-default-data");
         if (defaultDataString) {
             let defaultData: any = JSON.parse(defaultDataString.trim());
-            data = {...defaultData, ...data};
+            data = { ...defaultData, ...data };
         }
 
         let model = {
@@ -67,7 +67,7 @@ export default class KaDynamicForm extends HTMLElement {
             submitted: false
         };
 
-        model = {...extraData, ...model};
+        model = { ...extraData, ...model };
 
         let methods = {
             setDataItem: (key, value) => {
@@ -94,7 +94,7 @@ export default class KaDynamicForm extends HTMLElement {
             }
         };
 
-        model = {...model, ...extraMethods, ...methods};
+        model = { ...model, ...extraMethods, ...methods };
 
 
         // Create the view
@@ -179,13 +179,13 @@ export default class KaDynamicForm extends HTMLElement {
                 let fileUploader = fileUploaders.shift();
                 (<KaFileUpload>fileUploader).upload(captchaResponse).then(() => {
                     this.processFileUploaders(fileUploaders, captchaResponse).then(() => {
-                        success();
+                        success(1);
                     });
                 }).catch(message => {
                     failure(message);
                 });
             } else {
-                success();
+                success(1);
             }
 
         });
@@ -250,7 +250,7 @@ export default class KaDynamicForm extends HTMLElement {
         }
     }
 
-// Continue to next page
+    // Continue to next page
     private processSuccess(identifier = null) {
 
         let successUrl = this.getAttribute("data-success-url");
