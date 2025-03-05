@@ -1,6 +1,6 @@
 {
   "name": "kiniauth",
-  "version": "0.0.59",
+  "version": "0.0.60",
   "description": "Kiniauth Web Components",
   "main": "index.js",
   "files": [
