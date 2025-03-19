@@ -6,6 +6,7 @@ namespace Kiniauth\Services\Account;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\Project;
 use Kiniauth\Objects\Account\ProjectSummary;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
@@ -72,6 +73,7 @@ class ProjectService {
      * @param string $accountId
      */
     public function filterProjects($filterString = "", $offset = 0, $limit = 10, $accountId = Account::LOGGED_IN_ACCOUNT) {
+
         $projects = Project::filter("WHERE account_id = ? AND name LIKE ? ORDER BY name LIMIT ? OFFSET ?", $accountId,
             "%$filterString%", $limit, $offset);
         return array_map(function ($project) {

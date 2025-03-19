@@ -9,6 +9,7 @@ use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Workflow\ObjectWorkflowService;
 use Kiniauth\Traits\Application\Timestamped;
 use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Object\SerialisableObject;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;

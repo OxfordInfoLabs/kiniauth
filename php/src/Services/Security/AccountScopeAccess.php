@@ -10,6 +10,7 @@ use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Application\Session;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Util\ObjectArrayUtils;
 
 /**
@@ -41,9 +42,10 @@ class AccountScopeAccess extends ScopeAccess {
         $securable = $session->__getLoggedInSecurable();
         $account = $session->__getLoggedInAccount();
 
+        if ($account && ($scopeId == $account->getAccountId()))
+            return true;
+
         if ($securable) {
-            if ($scopeId == $account->getAccountId())
-                return true;
 
             $privileges = $session->__getLoggedInPrivileges();
 
@@ -91,6 +93,7 @@ class AccountScopeAccess extends ScopeAccess {
 
                 // Only assess roles of type Account or Parent Account.
                 if ($role->getScope() == Role::SCOPE_ACCOUNT || $role->getScope() == Role::SCOPE_PARENT_ACCOUNT) {
+
 
                     if (!$role->getScopeId()) {
                         $accountId = "*";
