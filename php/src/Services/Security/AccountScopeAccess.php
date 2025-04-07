@@ -94,7 +94,6 @@ class AccountScopeAccess extends ScopeAccess {
                 // Only assess roles of type Account or Parent Account.
                 if ($role->getScope() == Role::SCOPE_ACCOUNT || $role->getScope() == Role::SCOPE_PARENT_ACCOUNT) {
 
-
                     if (!$role->getScopeId()) {
                         $accountId = "*";
                         $superUser = true;

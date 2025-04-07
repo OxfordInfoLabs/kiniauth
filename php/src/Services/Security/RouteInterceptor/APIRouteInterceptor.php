@@ -78,8 +78,8 @@ class APIRouteInterceptor extends RouteInterceptor {
     public function afterRoute($request, $response) {
         $referrer = $this->getReferrer($request);
 
-        // Check we have an active referrer - if so we can assume that the request referrer is valid.
-        if ($this->authenticationService->hasActiveReferrer() && $referrer) {
+        // As it's an API call, we allow all referrers.
+        if ($referrer) {
 
             // Set access control origin header
             $accessControlOrigin = strtolower($referrer->getProtocol()) . "://" . $referrer->getHost() . ($referrer->getPort() != "80" && $referrer->getPort() != "443" ? ":" . $referrer->getPort() : "");

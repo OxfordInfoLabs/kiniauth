@@ -479,7 +479,7 @@ class UserServiceTest extends TestBase {
         $this->assertEquals($password, $user->getHashedPassword());
         $this->assertEquals("Zoom Man", $user->getName());
         $this->assertEquals([
-            new UserRole(Role::SCOPE_ACCOUNT, 0, 0, null, $userId)], $user->getRoles());
+            new UserRole(Role::SCOPE_ACCOUNT, 0, 0, -1, $userId)], $user->getRoles());
 
         // Check for an account exists email
         $this->assertEquals($existingStoredEmails, sizeof(StoredEmail::filter("ORDER BY id DESC")));

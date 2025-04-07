@@ -47,8 +47,8 @@ class APIKeyServiceTest extends TestBase {
             new APIKeyRole(Role::SCOPE_ACCOUNT, 1, 1, 1)]);
         $apiKey2 = APIKey::fetch($apiKey2Id);
 
-        $expectedRole1 = APIKeyRole::fetch([$apiKey1Id, Role::SCOPE_ACCOUNT, 1, 1]);
-        $expectedRole2 = APIKeyRole::fetch([$apiKey2Id, Role::SCOPE_ACCOUNT, 1, 1]);
+        $expectedRole1 = APIKeyRole::fetch([$apiKey1Id, Role::SCOPE_ACCOUNT, 1, 1, 1]);
+        $expectedRole2 = APIKeyRole::fetch([$apiKey2Id, Role::SCOPE_ACCOUNT, 1, 1, 1]);
 
 
         $keys = $this->apiKeyService->listAPIKeys();

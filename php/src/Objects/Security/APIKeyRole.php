@@ -26,7 +26,7 @@ class APIKeyRole extends SecurableRole {
      * @param integer $roleId
      * @param integer $userId
      */
-    public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $accountId = null, $apiKeyId = null) {
+    public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $accountId = -1, $apiKeyId = null) {
         parent::__construct($scope, $scopeId, $roleId, $accountId);
         $this->apiKeyId = $apiKeyId;
     }

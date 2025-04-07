@@ -191,6 +191,10 @@ class RoleService {
      * @param ScopeObjectRolesAssignment[] $scopeObjectRolesAssignments
      */
     public function updateAssignedScopeObjectRoles($appliesTo, $securableId, $scopeObjectRolesAssignments, $accountId = Account::LOGGED_IN_ACCOUNT) {
+
+        // Remap nulls to -1 for account ids.
+        $accountId = ($accountId === null) ? -1 : $accountId;
+
         /**
          * Process each scope object roles assignment object
          */
