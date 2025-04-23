@@ -142,14 +142,14 @@ class AccountScopeAccess extends ScopeAccess {
         // If we have at least one account, check for child accounts and add privileges for these.
         if (!$superUser && sizeof($accountIds) > 0) {
 
-            $childAccounts = AccountSummary::filter("WHERE parent_account_id IN (" . join(",", $accountIds) . ")");
+            $childAccounts = AccountSummary::filter("WHERE parent_account_id IN (?" . str_repeat(",?", sizeof($accountIds) - 1) . ")", $accountIds);
 
             $childAccountIds = [];
 
             foreach ($childAccounts as $childAccount) {
 
                 if (!isset($scopePrivileges[$childAccount->getAccountId()])) {
-                    $targetPrivilege = (in_array("*", $scopePrivileges[$childAccount->getParentAccountId()])) ? "*" : Privilege::PRIVILEGE_ACCESS;
+                    $targetPrivilege = (in_array("*", ($scopePrivileges[$childAccount->getParentAccountId()] ?? []))) ? "*" : Privilege::PRIVILEGE_ACCESS;
                     $scopePrivileges[$childAccount->getAccountId()] = [$targetPrivilege];
                 }
 
