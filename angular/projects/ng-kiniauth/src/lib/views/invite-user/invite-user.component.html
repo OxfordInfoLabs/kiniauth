@@ -14,10 +14,14 @@
 
 <ng-template [ngIf]="!inviteComplete">
 
+
     <div class="mb2 mb-8">
         <div class="text-base font-medium text-gray-900 mb-4">User email address</div>
-        <input type="text" placeholder="Email address" class="flex1 mr050 mt0 full"
+       <input type="text" placeholder="Email address" class="flex1 mr050 mt0 full"
                [(ngModel)]="emailAddress">
+        <div class="small" *ngIf="securityDomains.length > 0" class="mt-1">Must have <span *ngIf="securityDomains.length == 1">the suffix </span><span *ngIf="securityDomains.length > 1">one of the following suffixes: </span> <span style="color: blue">{{securityDomains.join(', ')}}</span></div>
+
+        <p style="color: red" class="mt-1" *ngIf="inviteError">{{inviteError}}</p>
     </div>
 
     <div *ngIf="!defaultToOwner" class="text-base font-medium text-gray-900 mb-4">Permissions</div>

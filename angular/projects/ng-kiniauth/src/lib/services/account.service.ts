@@ -113,6 +113,15 @@ export class AccountService {
             assignedRoles).toPromise();
     }
 
+    public async getActiveAccountInvitations() {
+        return await this.http.get(this.config.accessHttpURL + '/account/invitations').toPromise();
+    }
+
+    public resendActiveAccountInvitationEmail(emailAddress) {
+        const url = this.config.accessHttpURL + '/account/invite';
+        return this.http.put(url, '"' + encodeURIComponent(emailAddress) + '"').toPromise();
+    }
+
 
     public async getAccountDiscoverabilitySettings() {
         const settings = await this.http.get(this.config.accessHttpURL + '/account/discovery')
@@ -124,6 +133,11 @@ export class AccountService {
     public async setAccountDiscoverable(discoverable) {
         return this.http.put(this.config.accessHttpURL + '/account/discoverable',
             discoverable ? 1 : 0).toPromise();
+    }
+
+
+    public async getAccountSecurityDomains() {
+        return await this.http.get(this.config.accessHttpURL + '/account/securityDomains').toPromise();
     }
 
 

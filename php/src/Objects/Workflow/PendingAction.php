@@ -98,7 +98,7 @@ class PendingAction extends ActiveRecord {
         $this->type = $type;
         $this->objectId = $objectId;
 
-        if (!$expiryOffset) $expiryOffset = "P1D";
+        if (!$expiryOffset) $expiryOffset = "P7D";
 
         if ($expiryDateTime) {
             $this->expiryDateTime = $expiryDateTime;
