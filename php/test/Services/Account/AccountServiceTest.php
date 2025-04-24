@@ -3,6 +3,7 @@
 
 namespace Kiniauth\Test\Services\Account;
 
+use Kiniauth\Exception\Security\InvalidUserEmailDomainException;
 use Kiniauth\Exception\Security\UserAlreadyAttachedToAccountException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
@@ -12,6 +13,7 @@ use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
+use Kiniauth\Objects\Workflow\PendingAction;
 use Kiniauth\Services\Account\AccountService;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Communication\Email\EmailService;
@@ -30,6 +32,7 @@ use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Testing\MockObject;
 use Kinikit\Core\Testing\MockObjectProvider;
+use Kinikit\Core\Util\ObjectArrayUtils;
 use Kinikit\Core\Validation\ValidationException;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
@@ -180,6 +183,21 @@ class AccountServiceTest extends TestBase {
 
     }
 
+
+    public function testCanCreateAccountWithSecurityDomains() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $accountId = $this->accountService->createAccount("Smith Consultancy", null, null, null, null, ["example.com", "test.org", "demo.info"]);
+
+        $this->assertNotNull($accountId);
+        $account = Account::fetch($accountId);
+
+        $this->assertEquals(3, sizeof($account->getSecurityDomains()));
+        $this->assertEquals(["example.com", "test.org", "demo.info"], ObjectArrayUtils::getMemberValueArrayForObjects("domainName", $account->getSecurityDomains()));
+
+    }
+
     public function testCanCreateSubAccountAsParentAccountAdmin() {
 
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
@@ -218,6 +236,22 @@ class AccountServiceTest extends TestBase {
         $reAccount = Account::fetch($accountId);
         $this->assertEquals("https://images.test.com/mylogo", $reAccount->getLogo());
 
+
+    }
+
+
+    public function testCanUpdateSecurityDomains() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+        $accountId = $this->accountService->createAccount("Bonzo", null, null, null, null, [
+            "example.com", "demo.co.uk"
+        ]);
+
+        $this->accountService->updateSecurityDomains(["honeybadger.org", "stage.com"], $accountId);
+
+        $reAccount = Account::fetch($accountId);
+        $this->assertEquals(["honeybadger.org", "stage.com"],
+            ObjectArrayUtils::getMemberValueArrayForObjects("domainName", $reAccount->getSecurityDomains()));
 
     }
 
@@ -293,6 +327,28 @@ class AccountServiceTest extends TestBase {
         } catch (UserAlreadyAttachedToAccountException $e) {
             $this->assertTrue(true);
         }
+
+    }
+
+    public function testCannotInviteUsersToJoinAccountIfAccountSecurityDomainsDefinedAndUserEmailDoesNotMatch() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $this->mockedAccountService->updateSecurityDomains(["samdavisdesign.co.uk"], 1);
+
+        try {
+            $this->mockedAccountService->inviteUserToAccount(1, "bobbery@twofactor.com", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
+            $this->fail("Should have thrown here");
+        } catch (InvalidUserEmailDomainException $e) {
+            $this->assertTrue(true);
+        }
+
+        // Check valid one
+        $this->mockedAccountService->inviteUserToAccount(1, "bobbery@samdavisdesign.co.uk", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
+
+
+        $this->mockedAccountService->updateSecurityDomains([], 1);
+
 
     }
 
@@ -372,6 +428,49 @@ class AccountServiceTest extends TestBase {
         $targetEmail = new AccountTemplatedEmail(1, "security/invite-user", ["emailAddress" => "mary@shoppingonline.com",
             "invitationCode" => "XXXYYYZZZ",
             "newUser" => false]);
+
+
+        $this->assertTrue($this->mockEmailService->methodWasCalled("send", [$targetEmail, 1]));
+
+
+    }
+
+
+    public function testCanGetActiveInvitationEmailAddressesForAnAccount() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $this->mockPendingActionService->returnValue("getAllPendingActionsForTypeAndObjectId", [
+            new PendingAction("USER_INVITE", 1, ["emailAddress" => "sam@mydomain.com"]),
+            new PendingAction("USER_INVITE", 1, ["emailAddress" => "mark@mydomain.com"]),
+        ], ["USER_INVITE", 1]);
+
+        $activeEmails = $this->mockedAccountService->getActiveAccountInvitationEmailAddresses(1);
+
+        $this->assertEquals(["sam@mydomain.com", "mark@mydomain.com"], $activeEmails);
+
+    }
+
+
+    public function testCanResendInvitationEmailForActiveInvitation() {
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $resendAction = new PendingAction("USER_INVITE", 1, ["emailAddress" => "sam@mydomain.com", "newUser" => false]);
+
+        $this->mockPendingActionService->returnValue("getAllPendingActionsForTypeAndObjectId", [
+            $resendAction,
+            new PendingAction("USER_INVITE", 1, ["emailAddress" => "mark@mydomain.com"]),
+        ], ["USER_INVITE", 1]);
+
+        $this->mockedAccountService->resendActiveAccountInvitationEmail("sam@mydomain.com", 1);
+
+
+        // Check email was sent
+        $targetEmail = new AccountTemplatedEmail(1, "security/invite-user", ["emailAddress" => "sam@mydomain.com",
+            "invitationCode" => $resendAction->getIdentifier(),
+            "newUser" => false,
+            "resent" => true,
+            "currentTime" => date("d/m/Y H:i:s")]);
 
 
         $this->assertTrue($this->mockEmailService->methodWasCalled("send", [$targetEmail, 1]));

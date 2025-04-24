@@ -41,6 +41,7 @@ import { ApiKeysComponent } from './lib/views/api-keys/api-keys.component';
 import { AccountDiscoverabilityComponent } from './lib/views/account/account-discoverability/account-discoverability.component';
 import { ExportProjectComponent } from './lib/views/export-project/export-project.component';
 import { ImportProjectComponent } from './lib/views/import-project/import-project.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
     declarations: [
@@ -88,7 +89,8 @@ import { ImportProjectComponent } from './lib/views/import-project/import-projec
         RecaptchaModule,
         MatTableModule,
         MatChipsModule,
-        MatCheckboxModule
+        MatCheckboxModule,
+        MatSnackBarModule
     ],
     exports: [
         AccountSummaryComponent,

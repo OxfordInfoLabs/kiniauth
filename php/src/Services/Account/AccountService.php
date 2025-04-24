@@ -4,8 +4,10 @@
 namespace Kiniauth\Services\Account;
 
 
+use Kiniauth\Exception\Security\InvalidUserEmailDomainException;
 use Kiniauth\Exception\Security\UserAlreadyAttachedToAccountException;
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Account\AccountSecurityDomain;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
@@ -154,14 +156,18 @@ class AccountService {
      * @param $adminUserEmailAddress
      * @param $adminUserPassword
      * @param integer $parentAccountId
+     * @param array $securityDomains
      */
-    public function createAccount($accountName, $adminEmailAddress = null, $adminHashedPassword = null, $adminName = null, $parentAccountId = null) {
+    public function createAccount($accountName, $adminEmailAddress = null, $adminHashedPassword = null, $adminName = null, $parentAccountId = null, $securityDomains = []) {
 
         // Create an account to match with any name we can find.
         $account = Container::instance()->new(Account::class, false);
         $account->setName($accountName);
         $account->setParentAccountId($parentAccountId);
         $account->setStatus(Account::STATUS_ACTIVE);
+        $account->setSecurityDomains(array_map(function ($domainName) {
+            return new AccountSecurityDomain($domainName);
+        }, $securityDomains));
 
 
         // Account closure.
@@ -244,6 +250,35 @@ class AccountService {
 
 
     /**
+     * Get security domains as string array
+     *
+     * @param $accountId
+     * @return void
+     */
+    public function getSecurityDomains($accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        return array_map(function ($domain) {
+            return $domain->getDomainName();
+        }, $account->getSecurityDomains());
+    }
+
+    /**
+     * Update the security domains for an account
+     *
+     * @param $securityDomains
+     * @param $accountId
+     * @return void
+     */
+    public function updateSecurityDomains($securityDomains, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        $account = Account::fetch($accountId);
+        $account->setSecurityDomains(array_map(function ($domainName) {
+            return new AccountSecurityDomain($domainName);
+        }, $securityDomains));
+        $account->save();
+    }
+
+
+    /**
      * Suspend an account
      *
      * @param $accountId
@@ -291,7 +326,7 @@ class AccountService {
     public function inviteUserToAccount($accountId, $emailAddress, $initialAssignedRoles) {
 
         // Get the account summary
-        $account = $this->getAccountSummary($accountId);
+        $account = $this->getAccount($accountId);
 
         // Get existing user if exists
         $existingUsers = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $account->getParentAccountId());
@@ -308,6 +343,22 @@ class AccountService {
 
 
             $newUser = false;
+        }
+
+
+        // Check for any account security domains and deal with these if invalid.
+        $securityDomains = $account->getSecurityDomains();
+        if (sizeof($securityDomains)) {
+            $found = false;
+            foreach ($securityDomains as $securityDomain) {
+                if (str_ends_with($emailAddress, $securityDomain->getDomainName())) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                throw new InvalidUserEmailDomainException($emailAddress);
+            }
         }
 
 
@@ -328,6 +379,51 @@ class AccountService {
 
         $this->emailService->send($invitationEmail, $accountId);
 
+    }
+
+
+    /**
+     * Get active account invitation email addresses
+     *
+     * @return string[]
+     */
+    public function getActiveAccountInvitationEmailAddresses($accountId = Account::LOGGED_IN_ACCOUNT) {
+        $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("USER_INVITE", $accountId);
+        return array_map(function ($pendingAction) {
+            return $pendingAction->getData()["emailAddress"] ?? null;
+        }, $pendingActions);
+    }
+
+
+    /**
+     * Resend an active invitation email
+     *
+     * @param $emailAddress
+     * @param $accountId
+     * @return void
+     */
+    public function resendActiveAccountInvitationEmail($emailAddress, $accountId = Account::LOGGED_IN_ACCOUNT) {
+
+        // Get the active account invitation email addresses
+        $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("USER_INVITE", $accountId);
+
+        foreach ($pendingActions as $pendingAction) {
+            if ($pendingAction->getData()["emailAddress"] ?? null == $emailAddress) {
+
+                // Send an invitation email attached to the account
+                $invitationEmail = new AccountTemplatedEmail($accountId, "security/invite-user", [
+                    "emailAddress" => $emailAddress,
+                    "invitationCode" => $pendingAction->getIdentifier(),
+                    "newUser" => $pendingAction->getData()["newUser"] ?? false,
+                    "resent" => true,
+                    "currentTime" => date("d/m/Y H:i:s")
+                ]);
+
+                $this->emailService->send($invitationEmail, $accountId);
+
+                break;
+            }
+        }
     }
 
 

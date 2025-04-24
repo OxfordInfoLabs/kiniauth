@@ -67,6 +67,15 @@ class Account extends AccountSummary {
     protected $externalIdentifier;
 
 
+    /**
+     * @var AccountSecurityDomain[]
+     *
+     * @oneToMany
+     * @childJoinColumns account_id
+     */
+    protected ?array $securityDomains = [];
+
+
     // Logged in account constant for default value usage.
     const LOGGED_IN_ACCOUNT = "LOGGED_IN_ACCOUNT";
 
@@ -76,11 +85,12 @@ class Account extends AccountSummary {
      *
      * Account constructor.
      */
-    public function __construct($name = null, $parentAccountId = 0, $status = self::STATUS_PENDING, $id = null) {
+    public function __construct($name = null, $parentAccountId = 0, $status = self::STATUS_PENDING, $id = null, $securityDomains = []) {
         $this->name = $name;
         $this->parentAccountId = $parentAccountId;
         $this->status = $status;
         $this->accountId = $id;
+        $this->securityDomains = $securityDomains;
     }
 
     /**
@@ -103,7 +113,7 @@ class Account extends AccountSummary {
      * @param string $logo
      * @return void
      */
-    public function setLogo($logo){
+    public function setLogo($logo) {
         $this->logo = $logo;
     }
 
@@ -201,6 +211,20 @@ class Account extends AccountSummary {
      */
     public function setDiscoverable($discoverable) {
         $this->discoverable = $discoverable;
+    }
+
+    /**
+     * @return AccountSecurityDomain[]
+     */
+    public function getSecurityDomains(): ?array {
+        return $this->securityDomains;
+    }
+
+    /**
+     * @param AccountSecurityDomain[] $securityDomains
+     */
+    public function setSecurityDomains(?array $securityDomains): void {
+        $this->securityDomains = $securityDomains;
     }
 
 

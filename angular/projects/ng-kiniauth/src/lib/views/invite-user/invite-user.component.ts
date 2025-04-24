@@ -1,9 +1,10 @@
 import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
-import { RoleService } from '../../services/role.service';
+import {RoleService} from '../../services/role.service';
 import * as lodash from 'lodash';
+
 const _ = lodash.default;
-import { AccountService } from '../../services/account.service';
-import { Location } from '@angular/common';
+import {AccountService} from '../../services/account.service';
+import {Location} from '@angular/common';
 import {UserService} from '../../services/user.service';
 
 @Component({
@@ -17,10 +18,12 @@ export class InviteUserComponent implements OnInit {
     @Input() defaultToOwner = false;
 
     public scopeAccesses: any[];
-    public scopeRoles: any = { ACCOUNT: {} };
+    public scopeRoles: any = {ACCOUNT: {}};
     public emailAddress: string;
     public accountError: string;
     public inviteComplete = false;
+    public inviteError: string = null;
+    public securityDomains: any = [];
 
     public readonly _ = _;
 
@@ -39,6 +42,11 @@ export class InviteUserComponent implements OnInit {
                 this.scopeRoles[scopeAccess.scope] = {};
             });
         });
+
+        this.accountService.getAccountSecurityDomains().then(securityDomains => {
+            this.securityDomains = securityDomains;
+        });
+
     }
 
     public save() {
@@ -57,8 +65,13 @@ export class InviteUserComponent implements OnInit {
                 scopeRoles.push(role);
             });
         });
+
+        this.inviteError = null;
+
         this.accountService.inviteUserToAccount(this.emailAddress, scopeRoles).then(() => {
             this.inviteComplete = true;
+        }).catch((response) => {
+            this.inviteError = response.error.message;
         });
     }
 

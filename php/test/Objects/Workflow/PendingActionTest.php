@@ -16,7 +16,7 @@ class PendingActionTest extends TestBase {
         $this->assertEquals(64, strlen($pendingAction->getIdentifier()));
 
         $now = new \DateTime();
-        $now->add(new \DateInterval("P1D"));
+        $now->add(new \DateInterval("P7D"));
 
         $this->assertEquals($now->format("d/m/Y"), $pendingAction->getExpiryDateTime()->format("d/m/Y"));
     }

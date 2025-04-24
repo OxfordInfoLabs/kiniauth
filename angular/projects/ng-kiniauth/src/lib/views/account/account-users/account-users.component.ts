@@ -2,10 +2,13 @@ import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {debounceTime, distinctUntilChanged, map, switchMap} from 'rxjs/operators';
 import {BehaviorSubject, merge, Subject} from 'rxjs';
 import * as lodash from 'lodash';
+
 const _ = lodash.default;
 import {UserService} from '../../../services/user.service';
 import {Router} from '@angular/router';
 import {AuthenticationService} from '../../../services/authentication.service';
+import {AccountService} from '../../../services/account.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
     selector: 'ka-account-users',
@@ -21,6 +24,7 @@ export class AccountUsersComponent implements OnInit {
     @Input() createAdminUser: boolean;
 
     public users: any[];
+    public invitations: any;
     public searchText = new BehaviorSubject<string>('');
     public limit = new BehaviorSubject<number>(10);
     public offset = new BehaviorSubject<number>(0);
@@ -40,8 +44,10 @@ export class AccountUsersComponent implements OnInit {
     public newAdminAdded = false;
 
     constructor(private userService: UserService,
+                private accountService: AccountService,
                 private router: Router,
-                private authService: AuthenticationService) {
+                private authService: AuthenticationService,
+                private matSnackbar: MatSnackBar) {
     }
 
     ngOnInit() {
@@ -56,6 +62,11 @@ export class AccountUsersComponent implements OnInit {
             .subscribe((users: any) => {
                 this.users = users;
             });
+
+        this.accountService.getActiveAccountInvitations().then(invitations => {
+            this.invitations = invitations;
+        });
+
     }
 
     public saveNewAdminUser() {
@@ -152,6 +163,19 @@ export class AccountUsersComponent implements OnInit {
             }, 3000);
         });
     }
+
+
+    // Resend invitation
+    public resendInvitation(emailAddress) {
+        this.accountService.resendActiveAccountInvitationEmail(emailAddress).then(() => {
+            this.matSnackbar.open('Invitation resent to ' + emailAddress, null, {
+                verticalPosition: 'top',
+                duration: 3000,
+                panelClass: 'bg-gray-100'
+            });
+        });
+    }
+
 
     private getUsers() {
         return this.userService.getAccountUsers(

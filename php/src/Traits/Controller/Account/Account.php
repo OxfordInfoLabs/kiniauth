@@ -90,7 +90,7 @@ trait Account {
      * @return bool
      *
      */
-    public function changeAccountLogo($logo){
+    public function changeAccountLogo($logo) {
         return $this->accountService->updateLogo($logo);
     }
 
@@ -126,6 +126,18 @@ trait Account {
      */
     public function getAccountDiscoverySettings() {
         return $this->accountService->getAccountDiscoverySettings();
+    }
+
+
+    /**
+     * Get account security domains
+     *
+     * @http GET /securityDomains
+     *
+     * @return string[]
+     */
+    public function getAccountSecurityDomains() {
+        return $this->accountService->getSecurityDomains();
     }
 
 
@@ -245,8 +257,26 @@ trait Account {
     }
 
 
+    /**
+     * Get active account invitation email addresses.
+     *
+     * @http GET /invitations
+     *
+     * @return string[]
+     */
+    public function getActiveAccountInvitationEmailAddresses() {
+        return $this->accountService->getActiveAccountInvitationEmailAddresses();
+    }
 
-
+    /**
+     * @http PUT /invite
+     *
+     * @param string $emailAddress
+     * @return null
+     */
+    public function resendActiveAccountInvitationEmail($emailAddress) {
+        $this->accountService->resendActiveAccountInvitationEmail($emailAddress);
+    }
 
 
 }
