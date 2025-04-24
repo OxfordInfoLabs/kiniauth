@@ -8,6 +8,7 @@ import {UserService} from '../../../services/user.service';
 import {Router} from '@angular/router';
 import {AuthenticationService} from '../../../services/authentication.service';
 import {AccountService} from '../../../services/account.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
     selector: 'ka-account-users',
@@ -45,7 +46,8 @@ export class AccountUsersComponent implements OnInit {
     constructor(private userService: UserService,
                 private accountService: AccountService,
                 private router: Router,
-                private authService: AuthenticationService) {
+                private authService: AuthenticationService,
+                private matSnackbar: MatSnackBar) {
     }
 
     ngOnInit() {
@@ -166,7 +168,11 @@ export class AccountUsersComponent implements OnInit {
     // Resend invitation
     public resendInvitation(emailAddress) {
         this.accountService.resendActiveAccountInvitationEmail(emailAddress).then(() => {
-            alert('Invitation resent to ' + emailAddress);
+            this.matSnackbar.open('Invitation resent to ' + emailAddress, null, {
+                verticalPosition: 'top',
+                duration: 3000,
+                panelClass: 'bg-gray-100'
+            });
         });
     }
 
