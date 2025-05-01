@@ -90,12 +90,19 @@ class ScheduledTaskSummary extends ActiveRecord {
      */
     protected $taskGroup;
 
+    /**
+     * @var int
+     */
+    protected $pid;
+
 
     // Status constants
     const STATUS_PENDING = "PENDING";
     const STATUS_RUNNING = "RUNNING";
     const STATUS_COMPLETED = "COMPLETED";
     const STATUS_FAILED = "FAILED";
+    const STATUS_KILLING = "KILLING";
+    const STATUS_KILLED = "KILLED";
     const STATUS_TIMED_OUT = "TIMED_OUT";
 
     /**
@@ -113,10 +120,11 @@ class ScheduledTaskSummary extends ActiveRecord {
      * @param string $timeoutTime
      * @param int $timeoutSeconds
      * @param string $taskGroup
+     * @param int $pid
      */
     public function __construct($taskIdentifier, $description, $configuration, $timePeriods, $status = self::STATUS_PENDING,
                                 $nextStartTime = null, $lastStartTime = null, $lastEndTime = null, $timeoutTime = null, $timeoutSeconds = 86400,
-                                $id = null, $taskGroup = null) {
+                                $id = null, $taskGroup = null, $pid = null) {
         $this->taskIdentifier = $taskIdentifier;
         $this->description = $description;
         $this->configuration = $configuration;
@@ -129,6 +137,7 @@ class ScheduledTaskSummary extends ActiveRecord {
         $this->timeoutTime = $timeoutTime;
         $this->timeoutSeconds = $timeoutSeconds;
         $this->taskGroup = $taskGroup ?? Configuration::readParameter("scheduled.task.default.group");
+        $this->pid = $pid;
     }
 
 
@@ -259,7 +268,7 @@ class ScheduledTaskSummary extends ActiveRecord {
         $this->nextStartTime = $nextStartTime;
     }
 
-    public function getTimeoutSeconds() : int {
+    public function getTimeoutSeconds(): int {
         return $this->timeoutSeconds;
     }
 
@@ -298,5 +307,12 @@ class ScheduledTaskSummary extends ActiveRecord {
         $this->taskGroup = $taskGroup;
     }
 
+    public function getPid() {
+        return $this->pid;
+    }
+
+    public function setPid($pid): void {
+        $this->pid = $pid;
+    }
 
 }

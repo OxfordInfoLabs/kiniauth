@@ -31,7 +31,6 @@ class ScheduledTaskRunner {
      * Run all due tasks
      */
     public function run($taskGroup = null) {
-
         $this->scheduledTaskService->processDueTasks($taskGroup);
     }
 

@@ -67,6 +67,40 @@ class ScheduledTaskService {
         ScheduledTaskInterceptor::$disabled = $preDisabled;
     }
 
+    /**
+     * Set a task to be pending kill
+     *
+     * @param $taskId
+     * @return void
+     */
+    public function killScheduledTask($taskId) {
+
+        // Grab the scheduled task
+        /** @var ScheduledTask $task */
+        $task = ScheduledTask::fetch($taskId);
+
+        // Don't do anything if task is not running (or has no PID)
+        if ($task->getStatus() !== ScheduledTaskSummary::STATUS_RUNNING || is_null($task->getPid())) {
+            return;
+        }
+
+        $task->setStatus(ScheduledTaskSummary::STATUS_KILLING);
+
+        $preDisabled = ScheduledTaskInterceptor::$disabled;
+        ScheduledTaskInterceptor::$disabled = true;
+        $task->save();
+        ScheduledTaskInterceptor::$disabled = $preDisabled;
+
+    }
+
+    /**
+     * List all scheduled tasks
+     *
+     * @return array
+     */
+    public function listScheduledTasks(): array {
+        return ScheduledTask::filter();
+    }
 
     /**
      * Get a scheduled task by id
