@@ -175,8 +175,6 @@ class ScheduledTaskServiceTest extends TestBase {
         $this->scheduledTaskService->processDueTasks();
 
 
-
-
         $this->assertTrue($this->scheduledTaskProcessor->methodWasCalled("processScheduledTasks", [
             [
                 ScheduledTask::fetch($task1Id),
@@ -285,7 +283,7 @@ class ScheduledTaskServiceTest extends TestBase {
 
         $date = new \DateTime();
         $weekDay = $date->add(new \DateInterval("P1D"))->format("N");
-         $date = 1 + ($date->add(new \DateInterval("P1D"))->format("d") % 28);
+        $date = 1 + ($date->add(new \DateInterval("P1D"))->format("d") % 28);
 
         $newTaskSummary = new ScheduledTaskSummary("test", "Test Scheduled Task",
             ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
@@ -310,6 +308,58 @@ class ScheduledTaskServiceTest extends TestBase {
 
     }
 
+    public function testRunningTaskCanBeKilled() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $newTaskSummary = new ScheduledTaskSummary("test", "Test Scheduled Task",
+            ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
+                new ScheduledTaskTimePeriod(null, null, 15, 30),
+            ], ScheduledTaskSummary::STATUS_RUNNING, pid: 12345);
+
+
+        $taskId = $this->scheduledTaskService->saveScheduledTask($newTaskSummary, null, 1);
+
+        $this->scheduledTaskService->killScheduledTask($taskId);
+
+        $task = $this->scheduledTaskService->getScheduledTask($taskId);
+
+        // Assert fields are as expected
+        $this->assertEquals(12345, $task->getPid());
+        $this->assertEquals(ScheduledTaskSummary::STATUS_KILLING, $task->getStatus());
+
+    }
+
+    public function testCanListAllScheduledTasks() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $taskSummary1 = new ScheduledTaskSummary("test1", "Test Scheduled Task 1",
+            ["myParam" => "Hello", "anotherParam" => "Goodbye"], [
+                new ScheduledTaskTimePeriod(null, null, 12, 30),
+                new ScheduledTaskTimePeriod(null, null, 15, 20)
+            ], ScheduledTaskSummary::STATUS_RUNNING);
+
+        $taskSummary2 = new ScheduledTaskSummary("test2", "Test Scheduled Task 2",
+            ["myParam" => "Ping", "anotherParam" => "Pong"], [
+                new ScheduledTaskTimePeriod(null, null, 10, 45),
+                new ScheduledTaskTimePeriod(null, null, 20, 12)
+            ], ScheduledTaskSummary::STATUS_COMPLETED);
+
+        $taskId1 = $this->scheduledTaskService->saveScheduledTask($taskSummary1, null, 1);
+        $taskId2 = $this->scheduledTaskService->saveScheduledTask($taskSummary2, null, 1);
+
+        $task1 = $this->scheduledTaskService->getScheduledTask($taskId1);
+        $task2 = $this->scheduledTaskService->getScheduledTask($taskId2);
+
+        $allTasks = $this->scheduledTaskService->listScheduledTasks();
+
+        // Have to be vague as can exist scheduled tasks created in prior tests
+        $this->assertGreaterThanOrEqual(2, $allTasks);
+        $this->assertIsInt(1, $task1->getId());
+        $this->assertIsInt(2, $task2->getId());
+
+    }
 
     public function testPassTaskGroupToProcessSubsetOfDueTasks() {
 

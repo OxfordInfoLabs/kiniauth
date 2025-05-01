@@ -9,6 +9,7 @@ use Kiniauth\Objects\Workflow\Task\Scheduled\ScheduledTaskLog;
 use Kiniauth\Services\Workflow\Task\Task;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\DebugException;
+use Kinikit\Core\Util\TaskManager;
 
 /**
  * Class ScheduledTaskProcessor
@@ -47,29 +48,19 @@ abstract class ScheduledTaskProcessor {
                 ($scheduledTask->getNextStartTime() > new \DateTime()))
                 return $scheduledTask;
 
-
-            // Grab the task from the container
-            $task = Container::instance()->getInterfaceImplementation(Task::class, $scheduledTask->getTaskIdentifier());
-
-            // Ensure we record the last start time and set status to running
-            $scheduledTask->setLastStartTime(new \DateTime());
-            $scheduledTask->setStatus(ScheduledTask::STATUS_RUNNING);
-
-            $timeoutTime = (new \DateTime())->add(new \DateInterval("PT{$scheduledTask->getTimeoutSeconds()}S"));
-            $scheduledTask->setTimeoutTime($timeoutTime);
-
-            $scheduledTask->save();
-
-            // Run the task
-            $output = $task->run($scheduledTask->getConfiguration());
-
-            // Update status to completed
-            $scheduledTask->setStatus(ScheduledTask::STATUS_COMPLETED);
-
+            // Kill if requested
+            if ($scheduledTask->getStatus() === ScheduledTask::STATUS_KILLING || !is_null($scheduledTask->getPid())) {
+                $this->killScheduledTask($scheduledTask);
+                $output = 'Task Killed.';
+            } // Otherwise run
+            else {
+                $output = $this->runScheduledTask($scheduledTask);
+            }
 
         } catch (\Exception $e) {
             $output = $e instanceof DebugException ? $e->returnDebugMessage() : $e->getMessage();
             $scheduledTask->setStatus(ScheduledTask::STATUS_FAILED);
+            $scheduledTask->setPid(null);
         }
 
         // Save the scheduled task at the end
@@ -83,6 +74,45 @@ abstract class ScheduledTaskProcessor {
         $logEntry->save();
 
         return $scheduledTask;
+
+    }
+
+    private function runScheduledTask($scheduledTask) {
+
+        // Grab the task from the container
+        $task = Container::instance()->getInterfaceImplementation(Task::class, $scheduledTask->getTaskIdentifier());
+
+        // Ensure we record the last start time and set status to running
+        $scheduledTask->setLastStartTime(new \DateTime());
+        $scheduledTask->setStatus(ScheduledTask::STATUS_RUNNING);
+
+        $timeoutTime = (new \DateTime())->add(new \DateInterval("PT{$scheduledTask->getTimeoutSeconds()}S"));
+        $scheduledTask->setTimeoutTime($timeoutTime);
+
+        $scheduledTask->setPid(TaskManager::getProcessId());
+
+        $scheduledTask->save();
+
+        // Run the task
+        $output = $task->run($scheduledTask->getConfiguration());
+
+        // Update status to completed and clear the PID
+        $scheduledTask->setStatus(ScheduledTask::STATUS_COMPLETED);
+        $scheduledTask->setPid(null);
+
+        return $output;
+
+    }
+
+    private function killScheduledTask($scheduledTask): void {
+
+        $pid = $scheduledTask->getPid();
+
+        $taskManager = Container::instance()->get(TaskManager::class);
+        $taskManager->killProcess($pid);
+
+        $scheduledTask->setStatus(ScheduledTask::STATUS_KILLED);
+        $scheduledTask->setPid(null);
 
     }
 

@@ -15,6 +15,7 @@ use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Testing\ConcreteClassGenerator;
 use Kinikit\Core\Testing\MockObjectProvider;
+use Kinikit\Core\Util\TaskManager;
 use Kinikit\Persistence\Database\Connection\DatabaseConnectionProvider;
 
 include_once "autoloader.php";
@@ -27,9 +28,24 @@ class ScheduledTaskProcessorTest extends TestBase {
      */
     private $processor;
 
+    /**
+     * @var TaskManager
+     */
+    private $mockTaskManager;
+
+    private $originalTaskManager;
+
 
     public function setUp(): void {
         $this->processor = ConcreteClassGenerator::instance()->generateInstance(ScheduledTaskProcessor::class);
+
+        $this->originalTaskManager = Container::instance()->get(TaskManager::class);
+        $this->mockTaskManager = MockObjectProvider::mock(TaskManager::class);
+        Container::instance()->set(TaskManager::class, $this->mockTaskManager);
+    }
+
+    public function tearDown(): void {
+        Container::instance()->set(TaskManager::class, $this->originalTaskManager);
     }
 
 
@@ -63,6 +79,7 @@ class ScheduledTaskProcessorTest extends TestBase {
         $this->assertEquals($expectedDate, $scheduledTask->getNextStartTime());
         $expectedTimeout = (new \DateTime())->add(new \DateInterval("PT3600S"));
         $this->assertLessThan(2, $scheduledTask->getTimeoutTime()->format("U") - $expectedTimeout->format("U"));
+        $this->assertNull($scheduledTask->getPid());
 
         // Check for log entry as well
         $logEntries = ScheduledTaskLog::filter("WHERE scheduled_task_id = " . $scheduledTask->getId());
@@ -103,6 +120,7 @@ class ScheduledTaskProcessorTest extends TestBase {
         $this->assertEquals(ScheduledTaskSummary::STATUS_COMPLETED, $scheduledTask->getStatus());
         $this->assertNotNull($scheduledTask->getLastStartTime());
         $this->assertNotNull($scheduledTask->getLastEndTime());
+        $this->assertNull($scheduledTask->getPid());
 
         // Check explicit date set
         $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2035-01-01 10:00:00"), $scheduledTask->getNextStartTime());
@@ -138,6 +156,7 @@ class ScheduledTaskProcessorTest extends TestBase {
         $this->assertEquals(ScheduledTaskSummary::STATUS_FAILED, $scheduledTask->getStatus());
         $this->assertNotNull($scheduledTask->getLastStartTime());
         $this->assertNotNull($scheduledTask->getLastEndTime());
+        $this->assertNull($scheduledTask->getPid());
         $expectedDate = date_create_from_format("d/m/Y H:i:s", date("d/m/Y") . " 00:00:00");
         $expectedDate->add(new \DateInterval("P1D"));
         $this->assertEquals($expectedDate, $scheduledTask->getNextStartTime());
@@ -152,7 +171,6 @@ class ScheduledTaskProcessorTest extends TestBase {
         $this->assertEquals($scheduledTask->getLastEndTime(), $logEntry->getEndTime());
         $this->assertEquals(ScheduledTaskSummary::STATUS_FAILED, $logEntry->getStatus());
         $this->assertEquals("Cannot run", $logEntry->getLogOutput());
-
 
     }
 
@@ -177,6 +195,7 @@ class ScheduledTaskProcessorTest extends TestBase {
         // Now set as running behind our back
         $reTask = ScheduledTask::fetch($scheduledTask->getId());
         $reTask->setStatus(ScheduledTask::STATUS_RUNNING);
+        $reTask->setPid(12345);
         $reTask->save();
 
         // Process the scheduled task
@@ -186,6 +205,7 @@ class ScheduledTaskProcessorTest extends TestBase {
         $this->assertNull($scheduledTask->getLastStartTime());
         $this->assertNull($scheduledTask->getLastEndTime());
         $this->assertEquals(ScheduledTask::STATUS_RUNNING, $scheduledTask->getStatus());
+        $this->assertEquals(12345, $scheduledTask->getPid());
 
     }
 
@@ -231,7 +251,51 @@ class ScheduledTaskProcessorTest extends TestBase {
         $this->assertNull($scheduledTask->getLastStartTime());
         $this->assertNull($scheduledTask->getLastEndTime());
         $this->assertEquals(ScheduledTask::STATUS_PENDING, $scheduledTask->getStatus());
+        $this->assertNull($scheduledTask->getPid());
 
+    }
+
+    public function testDoesKillTasksMarkedAsKilling() {
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $successTask = MockObjectProvider::instance()->getMockInstance(Task::class);
+        $successTask->returnValue("run", [
+            "result" => "Hello"
+        ], [
+            ["game" => "set"]
+        ]);
+
+        Container::instance()->addInterfaceImplementation(Task::class, "success", get_class($successTask));
+        Container::instance()->set(get_class($successTask), $successTask);
+
+        $scheduledTask = new ScheduledTask(new ScheduledTaskSummary("success", "Successful task", ["game" => "set"],
+            [new ScheduledTaskTimePeriod(null, null, 0, 0)],
+            ScheduledTaskSummary::STATUS_KILLING, null, '2000-01-01 00:00:00', null, null, 3600, pid: 123), null, 1);
+
+        // Process the scheduled task
+        $scheduledTask = $this->processor->processScheduledTask($scheduledTask);
+
+        // Check the scheduled task updated as expected and saved
+        $this->assertNotNull($scheduledTask->getId());
+        $this->assertEquals(ScheduledTaskSummary::STATUS_KILLED, $scheduledTask->getStatus());
+        $this->assertNotNull($scheduledTask->getLastEndTime());
+        $expectedDate = date_create_from_format("d/m/Y H:i:s", date("d/m/Y") . " 00:00:00");
+        $expectedDate->add(new \DateInterval("P1D"));
+        $this->assertEquals($expectedDate, $scheduledTask->getNextStartTime());
+        $this->assertNull($scheduledTask->getPid());
+
+        // Check the task manager kill function called
+        $this->assertTrue($this->mockTaskManager->methodWasCalled("killProcess", [123]));
+
+        // Check for log entry as well
+        $logEntries = ScheduledTaskLog::filter("WHERE scheduled_task_id = " . $scheduledTask->getId());
+        $this->assertEquals(1, sizeof($logEntries));
+        $logEntry = $logEntries[0];
+        $this->assertEquals($scheduledTask->getLastStartTime(), $logEntry->getStartTime());
+        $this->assertEquals($scheduledTask->getLastEndTime(), $logEntry->getEndTime());
+        $this->assertEquals(ScheduledTaskSummary::STATUS_KILLED, $logEntry->getStatus());
+        $this->assertEquals('Task Killed.', $logEntry->getLogOutput());
 
     }
 
