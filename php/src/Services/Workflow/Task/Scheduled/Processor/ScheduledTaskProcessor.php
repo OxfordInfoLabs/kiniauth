@@ -49,7 +49,7 @@ abstract class ScheduledTaskProcessor {
                 return $scheduledTask;
 
             // Kill if requested
-            if ($scheduledTask->getStatus() === ScheduledTask::STATUS_KILLING || !is_null($scheduledTask->getPid())) {
+            if ($scheduledTask->getStatus() === ScheduledTask::STATUS_KILLING && !is_null($scheduledTask->getPid())) {
                 $this->killScheduledTask($scheduledTask);
                 $output = 'Task Killed.';
             } // Otherwise run
