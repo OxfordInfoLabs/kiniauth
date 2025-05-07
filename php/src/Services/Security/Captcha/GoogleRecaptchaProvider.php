@@ -22,6 +22,14 @@ class GoogleRecaptchaProvider implements CaptchaProvider {
      */
     private $recaptchaScoreThreshold;
 
+    /**
+     * Set test mode for testing
+     * Null for off, and true/false for forced output
+     *
+     * @var string
+     */
+    public static $testMode = null;
+
 
     /**
      * GoogleRecaptchaProvider constructor.
@@ -56,6 +64,10 @@ class GoogleRecaptchaProvider implements CaptchaProvider {
      * @return boolean
      */
     public function verifyCaptcha($verificationData, $request = null) {
+
+        // Check test mode is off
+        if (!is_null(self::$testMode))
+            return self::$testMode;
 
         $remoteIp = null;
         if ($request) {
