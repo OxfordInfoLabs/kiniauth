@@ -17,8 +17,15 @@
 
     <div class="mb2 mb-8">
         <div class="text-base font-medium text-gray-900 mb-4">User email address</div>
-       <input type="text" placeholder="Email address" class="flex1 mr050 mt0 full"
-               [(ngModel)]="emailAddress">
+
+        <input type="email" #firstEmail="ngModel" [class.border-red-500]="firstEmail.invalid && firstEmail.touched" required
+               pattern="^[a-z0-9._%+\-]+@[a-z0-9.\-]+.[a-z]{2,4}$" placeholder="Email address" class="flex1 mr050 mt0 full" name="primaryEmail"
+               [(ngModel)]="emailAddress" />
+
+        <div *ngIf="firstEmail.errors && (firstEmail.invalid || firstEmail.touched)">
+            <small class="text-danger" *ngIf="firstEmail.errors.required">Email is required</small>
+            <small class="text-danger" *ngIf="firstEmail.errors.pattern">Please provide a valid email address. Must be all lower case</small>
+        </div>
 
         <div *ngIf="securityDomains.length > 0" class="mt-1 ml-1 text-xs">
             Must have <span *ngIf="securityDomains.length == 1">the suffix </span><span *ngIf="securityDomains.length > 1">one of the following suffixes: </span> <span style="color: blue">{{securityDomains.join(', ')}}</span>
@@ -39,9 +46,9 @@
 
     </div>
 
-    <div *ngIf="!defaultToOwner" class="text-base font-medium text-gray-900 mb-4">Permissions</div>
+    <div class="text-base font-medium text-gray-900 mb-4">Permissions</div>
 
-    <div class="mb2 mb-4" [ngClass]="{'invisible h-0 overflow-hidden': defaultToOwner}">
+    <div class="mb2 mb-4">
         <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'" [userService]="userService"
                        [updatedScopes]="scopeRoles['ACCOUNT']" [hideApply]="true" [defaultToOwner]="defaultToOwner"></ka-edit-roles>
 
@@ -73,6 +80,7 @@
 
     <div class="flex align-center justify-between mt2 mt-6">
         <div></div>
-        <button mat-flat-button color="primary" class="but butsm" (click)="save()" [disabled]="!emailAddress">Invite User</button>
+        <button mat-flat-button color="primary" class="but butsm" (click)="save()"
+                [disabled]="firstEmail.errors && (firstEmail.invalid || firstEmail.touched)">Invite User</button>
     </div>
 </ng-template>

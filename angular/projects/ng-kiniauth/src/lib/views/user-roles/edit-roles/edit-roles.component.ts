@@ -51,7 +51,7 @@ export class EditRolesComponent implements OnInit {
 
                 if (this.defaultToOwner) {
                     this.updateRole({
-                        target: {checked: true, value: 'OWNER'}
+                        checked: true, source: {value: 'OWNER'}
                     }, this.assignableRoles[0].scopeId);
                     this.checked[this.assignableRoles[0].scopeId].owner = {1: false};
                 }
@@ -63,13 +63,16 @@ export class EditRolesComponent implements OnInit {
     public updateRole(event, scopeId) {
         // Reset the displayed errors at this point;
         this.errors = {};
-        const checked = event.target.checked;
-        const owner = event.target.value === 'OWNER';
+        const checked = event.checked;
+        const owner = event.source.value === 'OWNER';
         let roleIds: any[] = [];
 
         if (owner) {
             if (checked) {
                 roleIds = [0];
+                Object.keys(this.checked[scopeId]).forEach(key => {
+                    this.checked[scopeId][key] = false;
+                });
             } else {
                 delete this.checked[scopeId].owner;
                 roleIds = this.setRoleIds(scopeId);
