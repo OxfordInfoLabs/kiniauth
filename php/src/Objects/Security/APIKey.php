@@ -12,28 +12,28 @@ use Kinikit\Core\Util\StringUtils;
  * @table ka_api_key
  * @generate
  */
-class APIKey extends Securable {
+class APIKey extends APIKeySummary {
 
     /**
      * @var integer
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $apiKey;
+    protected $apiKey;
 
     /**
      * @var string
      */
-    private $apiSecret;
+    protected $apiSecret;
 
 
     /**
      * @var string
      */
-    private $description;
+    protected $description;
 
     /**
      * An array of explicit role objects
@@ -48,7 +48,7 @@ class APIKey extends Securable {
     /**
      * @var string
      */
-    private $status = User::STATUS_ACTIVE;
+    protected $status = User::STATUS_ACTIVE;
 
 
     /**
@@ -165,5 +165,14 @@ class APIKey extends Securable {
         $this->apiSecret = StringUtils::generateRandomString(16);
     }
 
+    public function generateSummary() {
+        return new APIKeySummary(
+            $this->id,
+            $this->apiKey,
+            $this->apiSecret,
+            $this->description,
+            $this->status
+        );
+    }
 
 }
