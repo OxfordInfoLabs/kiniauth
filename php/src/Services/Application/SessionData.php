@@ -6,8 +6,7 @@ namespace Kiniauth\Services\Application;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\Privilege;
-use Kiniauth\Objects\Security\User;
-use Kiniauth\Objects\Security\UserSummary;
+use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Services\Security\SecurityService;
 
 /**
@@ -20,9 +19,9 @@ use Kiniauth\Services\Security\SecurityService;
 class SessionData {
 
     /**
-     * @var User
+     * @var Securable
      */
-    private $user;
+    private $securable;
 
     /**
      * @var AccountSummary
@@ -48,7 +47,7 @@ class SessionData {
     private $sessionSalt;
 
     /**
-     * Get session data using user and account objects to seed the data.
+     * Get session data using securable and account objects to seed the data.
      *
      * SessionData constructor.
      * @param SecurityService $securityService
@@ -56,19 +55,19 @@ class SessionData {
      */
     public function __construct($securityService, $session) {
         /**
-         * @var $user User
+         * @var $securable Securable
          * @var $account Account
          */
-        list ($user, $account) = $securityService->getLoggedInSecurableAndAccount();
+        list ($securable, $account) = $securityService->getLoggedInSecurableAndAccount();
 
-        if ($user) {
-            $this->user = $user->generateSummary();
+        if ($securable) {
+            $this->securable = $securable->generateSummary();
         }
         if ($account) {
             $this->account = $account->generateSummary();
         }
 
-        if ($user || $account) {
+        if ($securable || $account) {
             $this->privileges = $session->__getLoggedInPrivileges();
         }
 
@@ -80,10 +79,17 @@ class SessionData {
     }
 
     /**
-     * @return UserSummary
+     * @return Securable
+     */
+    public function getSecurable() {
+        return $this->securable;
+    }
+
+    /**
+     * @return Securable
      */
     public function getUser() {
-        return $this->user;
+        return $this->getSecurable();
     }
 
     /**
