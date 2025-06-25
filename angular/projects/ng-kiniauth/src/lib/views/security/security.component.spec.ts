@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ApiKeysComponent } from './api-keys.component';
+import { SecurityComponent } from './security.component';
 
 describe('ApiKeysComponent', () => {
-  let component: ApiKeysComponent;
-  let fixture: ComponentFixture<ApiKeysComponent>;
+  let component: SecurityComponent;
+  let fixture: ComponentFixture<SecurityComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ApiKeysComponent ]
+      declarations: [ SecurityComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ApiKeysComponent);
+    fixture = TestBed.createComponent(SecurityComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

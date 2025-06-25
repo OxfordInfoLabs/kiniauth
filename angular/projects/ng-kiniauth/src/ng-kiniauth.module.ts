@@ -37,7 +37,7 @@ import { InvitationComponent } from './lib/views/invitation/invitation.component
 import {HttpClientModule} from '@angular/common/http';
 import { PasswordResetComponent } from './lib/views/password-reset/password-reset.component';
 import { ChangePasswordComponent } from './lib/views/user/change-password/change-password.component';
-import { ApiKeysComponent } from './lib/views/api-keys/api-keys.component';
+import { SecurityComponent } from './lib/views/security/security.component';
 import { AccountDiscoverabilityComponent } from './lib/views/account/account-discoverability/account-discoverability.component';
 import { ExportProjectComponent } from './lib/views/export-project/export-project.component';
 import { ImportProjectComponent } from './lib/views/import-project/import-project.component';
@@ -70,7 +70,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
         InvitationComponent,
         PasswordResetComponent,
         ChangePasswordComponent,
-        ApiKeysComponent,
+        SecurityComponent,
         AccountDiscoverabilityComponent,
         ExportProjectComponent,
         ImportProjectComponent
@@ -109,7 +109,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
         AccountsComponent,
         InvitationComponent,
         PasswordResetComponent,
-        ApiKeysComponent,
+        SecurityComponent,
         AccountDiscoverabilityComponent,
         ExportProjectComponent,
         ImportProjectComponent

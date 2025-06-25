@@ -5,6 +5,7 @@ namespace Kiniauth\Test\Services\ImportExport;
 use Kiniauth\Objects\Communication\Notification\NotificationGroup;
 use Kiniauth\Objects\Communication\Notification\NotificationGroupSummary;
 use Kiniauth\Services\ImportExport\ImportExporters\APIKeyImportExporter;
+use Kiniauth\Services\ImportExport\ImportExporters\KeyPairImportExporter;
 use Kiniauth\Services\ImportExport\ImportExporters\NotificationGroupImportExporter;
 use Kiniauth\Services\ImportExport\ProjectImporterExporter;
 use Kiniauth\Test\TestBase;
@@ -38,6 +39,7 @@ class ProjectImporterExporterTest extends TestBase {
 
         $this->projectImportedExporter = new ProjectImporterExporter($this->importExporter,
             Container::instance()->get(APIKeyImportExporter::class),
+            Container::instance()->get(KeyPairImportExporter::class),
             Container::instance()->get(ObjectBinder::class));
     }
 
@@ -55,7 +57,8 @@ class ProjectImporterExporterTest extends TestBase {
 
         $this->assertEquals(new ExportableProjectResources([
             "notificationGroups" => $expectedResources,
-            "apiKeys" => []
+            "apiKeys" => [],
+            "keyPairs" => []
         ]), $resources);
     }
 
@@ -70,15 +73,15 @@ class ProjectImporterExporterTest extends TestBase {
             1 => new ObjectInclusionExportConfig(true)
         ], ["notificationGroups" => [
             1 => new ObjectInclusionExportConfig(true)
-        ], "apiKeys" => []]]);
+        ], "apiKeys" => [], "keyPairs" => []]]);
 
         $export = $this->projectImportedExporter->exportProject(5, "hello", ["notificationGroups" => [
             1 => ["included" => true]
         ]]);
 
-        $this->assertEquals(new ProjectExport(["notificationGroups" => $expectedObjects, "apiKeys" => []], ["notificationGroups" => [
+        $this->assertEquals(new ProjectExport(["notificationGroups" => $expectedObjects, "apiKeys" => [], "keyPairs" => []], ["notificationGroups" => [
             1 => new ObjectInclusionExportConfig(true)
-        ], "apiKeys" => []]), $export);
+        ], "apiKeys" => [], "keyPairs" => []]), $export);
 
 
     }

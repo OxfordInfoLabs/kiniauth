@@ -1,23 +1,29 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/internal/Subscription';
 import {AuthenticationService} from '../../services/authentication.service';
 import {ApiKeysService} from '../../services/api-keys.service';
 import {ProjectService} from '../../services/project.service';
 import * as lodash from 'lodash';
+import {KeypairsService} from "../../services/keypairs.service";
+import * as fileSaver from 'file-saver';
 
 const _ = lodash.default;
 
 @Component({
-    selector: 'ka-api-keys',
-    templateUrl: './api-keys.component.html',
-    styleUrls: ['./api-keys.component.sass']
+    selector: 'ka-security',
+    templateUrl: './security.component.html'
 })
-export class ApiKeysComponent implements OnInit {
+export class SecurityComponent implements OnInit {
+
+    @Input() backendURL: string;
 
     public isAdmin = false;
     public apiKeys = [];
+    public keyPairs = [];
     public newDescription: string;
+    public newKeyPairDescription: string;
     public showNew = false;
+    public showNewKeyPair = false;
     public loading = true;
     public assignableRoles: any;
     public roleAssignments: any = {};
@@ -29,6 +35,7 @@ export class ApiKeysComponent implements OnInit {
 
     constructor(private authService: AuthenticationService,
                 public apiKeysService: ApiKeysService,
+                public keyPairsService: KeypairsService,
                 private projectService: ProjectService) {
     }
 
@@ -39,11 +46,13 @@ export class ApiKeysComponent implements OnInit {
         if (this.canAccessAPIKeys) {
             this.projectSub = this.projectService.activeProject.subscribe(change => {
                 this.loadApiKeys();
+                this.loadKeyPairs();
                 this.activeProject = change;
                 this.setupRoles();
             });
 
             this.loadApiKeys();
+            this.loadKeyPairs();
             this.setupRoles();
         }
     }
@@ -125,6 +134,34 @@ export class ApiKeysComponent implements OnInit {
             apiKey.roleStrings = roleStrings.join(', ');
         }
         this.loading = false;
+    }
+
+    public async loadKeyPairs() {
+        this.keyPairs = await this.keyPairsService.list();
+    }
+
+    public async generateKeyPair() {
+        await this.keyPairsService.generate(this.newKeyPairDescription);
+
+        this.showNewKeyPair = false;
+        this.newKeyPairDescription = '';
+
+        this.loadKeyPairs();
+    }
+
+    public async downloadKey(id, keyType) {
+        const keyPair: any = await this.keyPairsService.get(id);
+        const key = keyType === 'private' ? keyPair.privateKey : keyPair.publicKey;
+
+        const blob = new Blob([key], {type: 'text/plain'});
+        fileSaver.saveAs(blob, keyType + '-key-' + Date.now() + '.txt');
+    }
+
+    public async deleteKey(keyPair) {
+        if (window.confirm('Are you sure you wish to delete the key pair with description ' + keyPair.label)) {
+            await this.keyPairsService.delete(keyPair.value);
+            this.loadKeyPairs();
+        }
     }
 
 }
