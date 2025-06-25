@@ -27,7 +27,7 @@ export * from './lib/views/notifications/notification/notification.component';
 export * from './lib/views/accounts/accounts.component';
 export * from './lib/views/invitation/invitation.component';
 export * from './lib/views/password-reset/password-reset.component';
-export * from './lib/views/api-keys/api-keys.component';
+export * from './lib/views/security/security.component';
 export * from './lib/views/account/account-discoverability/account-discoverability.component';
 export * from './lib/views/export-project/export-project.component';
 export * from './lib/views/import-project/import-project.component';

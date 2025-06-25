@@ -3,11 +3,22 @@
     <div class="md:flex md:items-center md:justify-between md:space-x-5">
         <div class="flex items-start flex-1">
             <div class="">
-                <h1 class="text-2xl font-bold text-gray-900 mb-0 font-heading">API Keys</h1>
+                <h1 class="text-2xl font-bold text-gray-900 mb-0 font-heading">Security</h1>
                 <p class="text-sm font-medium text-gray-500 mb-0">
-                    A list of all the API Keys that have been generated.
+                    Configure API Keys and Key Pairs for use in security
                 </p>
             </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="p-6 bg-white">
+
+    <div class="md:flex md:items-center md:justify-between md:space-x-5">
+        <div class="flex items-start flex-1">
+            <h2>API Keys</h2>
         </div>
         <div class="mt-6 flex flex-col-reverse justify-stretch">
             <button type="button" (click)="createNew()" *ngIf="canAccessAPIKeys"
@@ -16,6 +27,7 @@
             </button>
         </div>
     </div>
+
 </div>
 
 <div *ngIf="!canAccessAPIKeys" class="px-4 sm:px-6 lg:px-8 mt-0">
@@ -60,7 +72,7 @@
         </button>
     </div>
 
-
+`
     <div class="px-4 sm:px-6 lg:px-8 mt-0">
         <div class="flex flex-col">
             <div class="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
@@ -83,7 +95,7 @@
                                     class="text-xs text-gray-400 font-normal">Select the level of access this API Key<br>
                                 has to specific projects.</span>
                             </label>
-                            <div class="mt-1 sm:mt-0 sm:col-span-2 mb-4">
+`                            <div class="mt-1 sm:mt-0 sm:col-span-2 mb-4">
                                 <div *ngFor="let assignableRole of assignableRoles">
                                     <div class="mb-2 font-semibold">{{assignableRole.scopeObjectDescription}}</div>
                                     <div *ngFor="let role of _.values(assignableRole.roles)">
@@ -198,5 +210,119 @@
         </div>
     </div>
 </ng-template>
+
+<div class="p-6 pt-9 bg-white">
+
+    <div class="md:flex md:items-center md:justify-between md:space-x-5">
+        <div class="flex items-start flex-1">
+            <h2>Public / Private Key Pairs</h2>
+        </div>
+        <div class="mt-6 flex flex-col-reverse justify-stretch">
+            <button type="button" (click)="showNewKeyPair = true;" *ngIf="canAccessAPIKeys"
+                    class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none">
+                Create Key Pair
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<ng-template [ngIf]="canAccessAPIKeys">
+    <div class="p-4" *ngIf="!keyPairs.length && !showNewKeyPair && !loading">
+        <button type="button" (click)="showNewKeyPair = true"
+                class="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none">
+
+            <div class="relative inline-block">
+                <mat-icon
+                    class="mx-auto text-6xl h-14 w-20 text-gray-300">key
+                </mat-icon>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="right-0 bottom-0 absolute h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" stroke-width="4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                </svg>
+            </div>
+
+            <span class="mt-2 block text-sm font-medium text-gray-900">Create Key Pair</span>
+        </button>
+    </div>
+
+    `
+    <div class="px-4 sm:px-6 lg:px-8 mt-0">
+        <div class="flex flex-col">
+            <div class="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle">
+                    <div class="bg-white px-6 pb-6" *ngIf="showNewKeyPair">
+                        <div
+                            class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-b sm:border-gray-200 sm:pt-5">
+                            <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"> Key Pair
+                                Description </label>
+                            <div class="mt-1 sm:mt-0 sm:col-span-2">
+                            <textarea name="about" rows="3" [(ngModel)]="newKeyPairDescription"
+                                      class="max-w-lg shadow-sm block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
+                                <p class="mt-2 text-sm text-gray-500">Enter short description to help identify the key pair for future reference.</p>
+                            </div>
+                        </div>
+                        <div class="pt-5">
+                            <div class="flex justify-end">
+                                <button type="button" (click)="showNewKeyPair = false;newKeyPairDescription = ''"
+                                        class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                                    Cancel
+                                </button>
+                                <button type="button"
+                                        [disabled]="!newKeyPairDescription"
+                                        (click)="generateKeyPair()"
+                                        class="disabled:opacity-50 ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary focus:outline-none">
+                                    Save Key Pair
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="min-w-full border-separate" style="border-spacing: 0">
+                        <ng-template [ngIf]="keyPairs.length">
+                            <tbody class="bg-white" *ngFor="let keyPair of keyPairs">
+                            <tr class="border-t border-gray-200">
+                                <th colspan="4" scope="colgroup"
+                                    class="sticky top-0 z-10 border-b border-gray-300 bg-gray-100 py-3.5 px-4 text-left text-xs font-semibold text-gray-900">
+                                    <div class="w-full flex items-center justify-between">
+                                        {{keyPair.label}}
+                                    </div>
+                                </th>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td
+                                    class="whitespace-nowrap border-gray-200 py-2 px-4 text-sm text-gray-900">
+                                    <b>Private Key: </b><a (click)="downloadKey(keyPair.value, 'private')">
+                                    <mat-icon>download</mat-icon>
+                                </a><br>
+                                </td>
+                                <td
+                                    class="whitespace-nowrap border-gray-200 py-2 px-4 text-sm text-gray-900">
+                                    <b>Public Key: </b><a (click)="downloadKey(keyPair.value, 'public')">
+                                    <mat-icon>download</mat-icon>
+                                </a><br>
+                                </td>
+
+                                <td
+                                    class="relative whitespace-nowrap border-gray-200 py-2 px-4 text-right text-sm">
+                                    <div class="flex items-center justify-end">
+                                        <button mat-button color="primary" (click)="deleteKey(keyPair)"> Delete
+                                        </button>
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            </tbody>
+                        </ng-template>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+
 
 

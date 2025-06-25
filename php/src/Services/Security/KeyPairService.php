@@ -19,21 +19,7 @@ class KeyPairService {
      */
     public function generateKeyPair($description, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
 
-        $config = [
-            "digest_alg" => Configuration::readParameter("keypair.algorithm") ?? "sha512",
-            "private_key_bits" => Configuration::readParameter("keypair.key.bits") ?? 2048,
-            "private_key_type" => Configuration::readParameter("keypair.key.type") ?? OPENSSL_KEYTYPE_RSA
-        ];
-
-        // Generate keypair
-        $keyPair = openssl_pkey_new($config);
-
-        // Get the private key
-        openssl_pkey_export($keyPair, $privateKey);
-
-        // Get the public key
-        $details = openssl_pkey_get_details($keyPair);
-        $publicKey = $details["key"];
+        list($privateKey, $publicKey) = $this->generateKeyPairKeys();
 
         $keyPairObj = new KeyPair(new KeyPairSummary($description, $privateKey, $publicKey), $projectKey, $accountId);
         $keyPairObj->save();
@@ -42,6 +28,7 @@ class KeyPairService {
         return $keyPairObj->getId();
 
     }
+
 
 
     /**
@@ -100,6 +87,31 @@ class KeyPairService {
         $keyPair = $this->getKeyPair($keyPairId);
         openssl_sign($data, $signature, $keyPair->getPrivateKey());
         return bin2hex($signature);
+    }
+
+    /**
+     * Generate key pair keys
+     *
+     * @return array
+     */
+    private function generateKeyPairKeys(): array {
+        $config = [
+            "digest_alg" => Configuration::readParameter("keypair.algorithm") ?? "sha512",
+            "private_key_bits" => Configuration::readParameter("keypair.key.bits") ?? 2048,
+            "private_key_type" => Configuration::readParameter("keypair.key.type") ?? OPENSSL_KEYTYPE_RSA
+        ];
+
+        // Generate keypair
+        $keyPair = openssl_pkey_new($config);
+
+        // Get the private key
+        openssl_pkey_export($keyPair, $privateKey);
+
+        // Get the public key
+        $details = openssl_pkey_get_details($keyPair);
+        $publicKey = $details["key"];
+
+        return array($privateKey, $publicKey);
     }
 
 
