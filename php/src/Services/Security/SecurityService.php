@@ -19,7 +19,6 @@ use Kiniauth\Objects\Security\Securable;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Objects\Security\UserSummary;
-use Kiniauth\Services\Application\ActivityLogger;
 use Kiniauth\Services\Application\Session;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\Configuration\FileResolver;
@@ -134,13 +133,8 @@ class SecurityService {
                 throw new AccountSuspendedException();
             }
 
-            ActivityLogger::log("Pre session generate");
-
             // Regenerate the session to avoid session fixation
             $this->session->regenerate();
-
-
-            ActivityLogger::log("Post session generate");
 
             $this->session->__setLoggedInSecurable($securable);
 
@@ -152,16 +146,10 @@ class SecurityService {
                 // And update successful logins.
                 $this->userSessionService->registerNewAuthenticatedSession($securable->getId());
 
-                ActivityLogger::log("Registered session");
-
-
                 // Update the user and re-store in session to prevent inconsistencies.
                 $securable->setSuccessfulLogins($securable->getSuccessfulLogins() + 1);
                 $this->session->__setLoggedInSecurable($securable);
                 $securable->save();
-
-                ActivityLogger::log("Saved user after login");
-
 
             }
 
@@ -184,14 +172,8 @@ class SecurityService {
             $this->session->__setLoggedInAccount($account);
         }
 
-        ActivityLogger::log("Pre session privileges");
-
-
         // Populate session privileges
         $this->populateSessionPrivileges($securable, $account);
-
-        ActivityLogger::log("Post session privileges");
-
 
     }
 
