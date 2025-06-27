@@ -115,11 +115,16 @@ class AuthenticationService {
      */
     public function login($emailAddress, $password, $clientTwoFactorData = null, $parentAccountId = null) {
 
+        ActivityLogger::log("Starting Log in");
+
         if ($parentAccountId === null) {
             $parentAccountId = $this->session->__getActiveParentAccountId() ? $this->session->__getActiveParentAccountId() : 0;
         }
 
         $matchingUsers = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $parentAccountId);
+
+        ActivityLogger::log("Matched Users");
+
 
         // If there is a matching user, return it now.
         if (sizeof($matchingUsers) > 0) {
@@ -140,6 +145,9 @@ class AuthenticationService {
                 }
 
                 $sessionTwoFactorData = $this->twoFactorProvider->generateTwoFactorIfRequired($user, $clientTwoFactorData);
+                ActivityLogger::log("Generated 2FA");
+
+
 
                 if ($sessionTwoFactorData !== false) {
                     $this->session->__setPendingLoggedInUser($user);
