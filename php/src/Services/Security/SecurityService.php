@@ -161,7 +161,6 @@ class SecurityService {
                 ActivityLogger::log("Pre set session for logged in user");
                 $this->session->__setLoggedInSecurable($securable);
                 ActivityLogger::log("Post set session for logged in user");
-                Logger::log($securable);
                 $securable->save();
 
                 ActivityLogger::log("Saved user after login");
