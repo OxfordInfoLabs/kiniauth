@@ -157,7 +157,10 @@ class SecurityService {
 
                 // Update the user and re-store in session to prevent inconsistencies.
                 $securable->setSuccessfulLogins($securable->getSuccessfulLogins() + 1);
+
+                ActivityLogger::log("Pre set session for logged in user");
                 $this->session->__setLoggedInSecurable($securable);
+                ActivityLogger::log("Post set session for logged in user");
                 $securable->save();
 
                 ActivityLogger::log("Saved user after login");
