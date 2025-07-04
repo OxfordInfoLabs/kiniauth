@@ -14,19 +14,28 @@ class ManagedProjectTargetAccount extends ActiveRecord {
      * @var int
      * @primaryKey
      */
-    private $managedProjectId;
+    private ?int $managedProjectId;
 
 
     /**
      * @var int
      * @primaryKey
      */
-    private $targetAccountId;
+    private ?int $targetAccountId;
+
+    /**
+     * @param int $managedProjectId
+     * @param int $targetAccountId
+     */
+    public function __construct($managedProjectId = null, $targetAccountId = null) {
+        $this->managedProjectId = $managedProjectId;
+        $this->targetAccountId = $targetAccountId;
+    }
 
     /**
      * @return int
      */
-    public function getManagedProjectId(): int {
+    public function getManagedProjectId() {
         return $this->managedProjectId;
     }
 
@@ -40,7 +49,7 @@ class ManagedProjectTargetAccount extends ActiveRecord {
     /**
      * @return int
      */
-    public function getTargetAccountId(): int {
+    public function getTargetAccountId() {
         return $this->targetAccountId;
     }
 
@@ -50,8 +59,5 @@ class ManagedProjectTargetAccount extends ActiveRecord {
     public function setTargetAccountId(int $targetAccountId): void {
         $this->targetAccountId = $targetAccountId;
     }
-
-
-
 
 }

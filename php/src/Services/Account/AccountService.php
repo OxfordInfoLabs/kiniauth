@@ -21,12 +21,10 @@ use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
-use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\ItemNotFoundException;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
@@ -37,35 +35,35 @@ class AccountService {
     /**
      * @var SecurityService $securityService
      */
-    private $securityService;
+    protected $securityService;
 
     /**
      * @var PendingActionService $pendingActionService
      */
-    private $pendingActionService;
+    protected $pendingActionService;
 
 
     /**
      * @var EmailService $emailService
      */
-    private $emailService;
+    protected $emailService;
 
 
     /**
      * @var RoleService
      */
-    private $roleService;
+    protected $roleService;
 
 
     /**
      * @var UserService
      */
-    private $userService;
+    protected $userService;
 
     /**
      * @var ActiveRecordInterceptor
      */
-    private $activeRecordInterceptor;
+    protected $activeRecordInterceptor;
 
     /**
      * Construct with required deps.
@@ -91,6 +89,7 @@ class AccountService {
      * Get a full account object
      *
      * @param $id
+     * @return
      */
     public function getAccount($id) {
         return Account::fetch($id);
