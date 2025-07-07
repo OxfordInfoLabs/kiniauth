@@ -83,4 +83,17 @@ trait Registration {
     }
 
 
+    /**
+     * Revoke an invitation
+     *
+     * @http POST /invitation/revoke
+     *
+     * @param string $emailAddress
+     * @param int $accountId
+     * @return void
+     */
+    public function revokeInvitation($emailAddress, $accountId) {
+        $this->accountService->revokeActiveAccountInvitationEmail($emailAddress, $accountId);
+    }
+
 }
