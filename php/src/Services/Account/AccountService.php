@@ -426,6 +426,25 @@ class AccountService {
         }
     }
 
+    /**
+     * Revoke an invitation
+     *
+     * @param $emailAddress
+     * @param $accountId
+     * @return void
+     */
+    public function revokeActiveAccountInvitationEmail($emailAddress, $accountId = Account::LOGGED_IN_ACCOUNT) {
+
+        $pendingInvites = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("USER_INVITE", $accountId) ?? [];
+
+        foreach ($pendingInvites as $invite) {
+            if ($invite->getData()["emailAddress"] == $emailAddress) {
+                $this->pendingActionService->removePendingAction("USER_INVITE", $invite->getIdentifier());
+            }
+        }
+
+    }
+
 
     /**
      * Get email address associated with an invitation code, or report an issue.

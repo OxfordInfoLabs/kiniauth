@@ -479,6 +479,26 @@ class AccountServiceTest extends TestBase {
     }
 
 
+    public function testCanRevokeInvitationForAccount() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $inviteAction = new PendingAction("USER_INVITE", 1, ["emailAddress" => "mark@mydomain.com"]);
+        $otherInviteAction = new PendingAction("USER_INVITE", 1, ["emailAddress" => "test@test.com"]);
+
+        $this->mockPendingActionService->returnValue("getAllPendingActionsForTypeAndObjectId", [
+            $inviteAction,
+            $otherInviteAction
+        ], ["USER_INVITE", 1]);
+
+        $this->mockedAccountService->revokeActiveAccountInvitationEmail("mark@mydomain.com", 1);
+
+        $this->assertTrue($this->mockPendingActionService->methodWasCalled("removePendingAction", ["USER_INVITE", $inviteAction->getIdentifier()]));
+        $this->assertFalse($this->mockPendingActionService->methodWasCalled("removePendingAction", ["USER_INVITE", $otherInviteAction->getIdentifier()]));
+
+    }
+
+
     public function testValidationExceptionThrownIfInvalidInvitationCodeSuppliedToAcceptUserInvitation() {
 
         $this->authenticationService->logout();
