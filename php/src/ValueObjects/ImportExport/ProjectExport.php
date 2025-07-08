@@ -10,6 +10,18 @@ use Kiniauth\Objects\Communication\Notification\NotificationGroup;
 class ProjectExport {
 
     /**
+     * @var mixed
+     * @json
+     */
+    private $exportData;
+
+    /**
+     * @var mixed
+     * @json
+     */
+    private $exportProjectConfig;
+
+    /**
      * @var string
      */
     private $exportDateTime;
@@ -20,7 +32,10 @@ class ProjectExport {
      * @param mixed $exportData
      * @param mixed $exportProjectConfig
      */
-    public function __construct(private mixed $exportData, private mixed $exportProjectConfig) {
+    public function __construct(mixed $exportData, mixed $exportProjectConfig) {
+        $this->exportData = $exportData;
+        $this->exportProjectConfig = $exportProjectConfig;
+
         if (!$this->exportDateTime)
             $this->exportDateTime = date("Y-m-d H:i:s");
     }

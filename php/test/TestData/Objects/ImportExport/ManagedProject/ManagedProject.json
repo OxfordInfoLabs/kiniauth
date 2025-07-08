@@ -1,0 +1,23 @@
+[
+  {
+    "name": "A managed project",
+    "sourceAccountId": 2,
+    "sourceProjectKey": "soapSuds",
+    "targetAccounts": [
+      {
+        "targetAccountId": 3
+      },
+      {
+        "targetAccountId": 2
+      }
+    ],
+    "versions": [
+      {
+        "projectExport": {
+          "exportData": null,
+          "exportProjectConfig": null
+        }
+      }
+    ]
+  }
+]
