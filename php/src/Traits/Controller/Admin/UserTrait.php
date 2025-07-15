@@ -68,10 +68,11 @@ trait UserTrait {
      * @param string $searchString
      * @param int $offset
      * @param int $limit
+     * @param int $accountId
      * @return array
      */
-    public function searchForUsers($searchString = "", $offset = 0, $limit = 10) {
-        return $this->userService->searchForUsers($searchString, $offset, $limit);
+    public function searchForUsers($searchString = "", $offset = 0, $limit = 10, $accountId = null) {
+        return $this->userService->searchForUsers($searchString, $offset, $limit, $accountId);
     }
 
     /**
