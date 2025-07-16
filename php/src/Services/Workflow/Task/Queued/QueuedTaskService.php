@@ -62,7 +62,7 @@ class QueuedTaskService {
     public function queueTask($queueName, $taskIdentifier, $description, $configuration = [], $runDateTime = null, $runOffsetSeconds = null) {
 
         $startTime = $runDateTime;
-        if ($runOffsetSeconds) {
+        if ($runOffsetSeconds !== null) {
             $startTime = new \DateTime();
             $startTime->add(new \DateInterval("PT" . $runOffsetSeconds . "S"));
         }
