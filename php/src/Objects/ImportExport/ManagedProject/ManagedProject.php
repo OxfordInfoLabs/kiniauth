@@ -13,51 +13,55 @@ class ManagedProject extends ActiveRecord {
     /**
      * @var int
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @var string
      */
-    private string $name;
-
+    private ?string $name = null;
 
     /**
      * @var int
      */
-    private int $sourceAccountId;
+    private ?int $sourceAccountId = null;
 
     /**
      * @var string
      */
-    private string $sourceProjectKey;
+    private ?string $sourceProjectKey = null;
 
     /**
      * @var mixed
      */
-    private mixed $exportConfig;
+    private mixed $exportConfig = null;
 
     /**
      * @var string
      */
-    private string $exportConfigClass;
-
+    private ?string $exportConfigClass = null;
 
     /**
      * @var ManagedProjectTargetAccount[]
      * @oneToMany
      * @childJoinColumns managed_project_id
      */
-    private array $targetAccounts;
+    private ?array $targetAccounts = [];
 
+    /**
+     * @var ManagedProjectVersion[]
+     * @oneToMany
+     * @childJoinColumns managed_project_id
+     */
+    private ?array $versions = [];
 
     /**
      * Construct a new managed project
      *
      * @param string $name
      * @param int $sourceAccountId
-     * @param int $sourceProjectKey
+     * @param string $sourceProjectKey
      */
-    public function __construct(string $name, int $sourceAccountId, string $sourceProjectKey) {
+    public function __construct($name = null, $sourceAccountId = null, $sourceProjectKey = null) {
         $this->name = $name;
         $this->sourceAccountId = $sourceAccountId;
         $this->sourceProjectKey = $sourceProjectKey;
@@ -66,14 +70,14 @@ class ManagedProject extends ActiveRecord {
     /**
      * @return int
      */
-    public function getId(): int {
+    public function getId() {
         return $this->id;
     }
 
     /**
      * @return string
      */
-    public function getName(): string {
+    public function getName() {
         return $this->name;
     }
 
@@ -87,7 +91,7 @@ class ManagedProject extends ActiveRecord {
     /**
      * @return int
      */
-    public function getSourceAccountId(): int {
+    public function getSourceAccountId() {
         return $this->sourceAccountId;
     }
 
@@ -101,7 +105,7 @@ class ManagedProject extends ActiveRecord {
     /**
      * @return string
      */
-    public function getSourceProjectKey(): string {
+    public function getSourceProjectKey() {
         return $this->sourceProjectKey;
     }
 
@@ -115,7 +119,7 @@ class ManagedProject extends ActiveRecord {
     /**
      * @return mixed
      */
-    public function getExportConfig(): mixed {
+    public function getExportConfig() {
         return $this->exportConfig;
     }
 
@@ -129,7 +133,7 @@ class ManagedProject extends ActiveRecord {
     /**
      * @return string
      */
-    public function getExportConfigClass(): string {
+    public function getExportConfigClass() {
         return $this->exportConfigClass;
     }
 
@@ -140,5 +144,26 @@ class ManagedProject extends ActiveRecord {
         $this->exportConfigClass = $exportConfigClass;
     }
 
+    /**
+     * @return ManagedProjectTargetAccount[]
+     */
+    public function getTargetAccounts() {
+        return $this->targetAccounts;
+    }
+
+    /**
+     * @param ManagedProjectTargetAccount[] $targetAccounts
+     * @return void
+     */
+    public function setTargetAccounts(array $targetAccounts): void {
+        $this->targetAccounts = $targetAccounts;
+    }
+
+    /**
+     * @return ManagedProjectVersion[]
+     */
+    public function getVersions() {
+        return $this->versions;
+    }
 
 }
