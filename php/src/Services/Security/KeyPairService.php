@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Security;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\KeyPair;
 use Kiniauth\Objects\Security\KeyPairSummary;
+use Kiniauth\ValueObjects\Security\KeyPairSigningOutputFormat;
 use Kiniauth\ValueObjects\Util\LabelValue;
 use Kinikit\Core\Configuration\Configuration;
 
@@ -28,7 +29,6 @@ class KeyPairService {
         return $keyPairObj->getId();
 
     }
-
 
 
     /**
@@ -83,10 +83,17 @@ class KeyPairService {
      *
      * @return string
      */
-    public function signData($data, $keyPairId) {
+    public function signData($data, $keyPairId, $outputFormat = KeyPairSigningOutputFormat::Hex) {
         $keyPair = $this->getKeyPair($keyPairId);
         openssl_sign($data, $signature, $keyPair->getPrivateKey());
-        return bin2hex($signature);
+
+        switch ($outputFormat) {
+            case KeyPairSigningOutputFormat::Hex:
+                return bin2hex($signature);
+            case KeyPairSigningOutputFormat::Base64:
+                return base64_encode($signature);
+        }
+
     }
 
     /**

@@ -6,6 +6,7 @@ use Kiniauth\Objects\Security\KeyPair;
 use Kiniauth\Objects\Security\KeyPairSummary;
 use Kiniauth\Services\Security\KeyPairService;
 use Kiniauth\Test\TestBase;
+use Kiniauth\ValueObjects\Security\KeyPairSigningOutputFormat;
 use Kiniauth\ValueObjects\Util\LabelValue;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
@@ -76,7 +77,7 @@ class KeyPairServiceTest extends TestBase {
     }
 
 
-    public function testCanSignDataUsingKeyPair() {
+    public function testCanSignDataUsingKeyPairWithHexFormat() {
 
 
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
@@ -92,8 +93,26 @@ class KeyPairServiceTest extends TestBase {
         // Now use the public key to verify the signature
         $this->assertEquals(1, openssl_verify("THE EMPIRE STRIKES BACK", hex2bin($signature), $keyPair->getPublicKey()));
 
+    }
+
+    public function testCanSignDataUsingKeyPairWithBase64Format() {
+
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $keyPairId = $this->keyPairService->generateKeyPair("Main one", null, 1);
+
+        // Grab key pair for comparison
+        $keyPair = $this->keyPairService->getKeyPair($keyPairId);
+
+        // Sign some data and get the signature
+        $signature = $this->keyPairService->signData("THE EMPIRE STRIKES BACK", $keyPairId, KeyPairSigningOutputFormat::Base64);
+
+        // Now use the public key to verify the signature
+        $this->assertEquals(1, openssl_verify("THE EMPIRE STRIKES BACK", base64_decode($signature), $keyPair->getPublicKey()));
 
     }
+
 
 
 }
