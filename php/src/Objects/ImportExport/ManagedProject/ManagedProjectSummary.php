@@ -20,12 +20,24 @@ class ManagedProjectSummary extends ActiveRecord {
     protected ?string $name = null;
 
     /**
-     * @param int|null $id
-     * @param string|null $name
+     * @var int
      */
-    public function __construct(?int $id, ?string $name) {
+    protected ?int $sourceAccountId = null;
+
+    /**
+     * @var string
+     */
+    protected ?string $sourceProjectKey = null;
+
+    /**
+     * @param int $id
+     * @param string $name
+     */
+    public function __construct(?int $id, ?string $name, ?int $sourceAccountId, ?string $sourceProjectKey) {
         $this->id = $id;
         $this->name = $name;
+        $this->sourceAccountId = $sourceAccountId;
+        $this->sourceProjectKey = $sourceProjectKey;
     }
 
     public function getId() {
@@ -34,6 +46,14 @@ class ManagedProjectSummary extends ActiveRecord {
 
     public function getName() {
         return $this->name;
+    }
+
+    public function getSourceAccountId() {
+        return $this->sourceAccountId;
+    }
+
+    public function getSourceProjectKey() {
+        return $this->sourceProjectKey;
     }
 
 }

@@ -11,16 +11,6 @@ use Kinikit\Persistence\ORM\ActiveRecord;
 class ManagedProject extends ManagedProjectSummary {
 
     /**
-     * @var int
-     */
-    private ?int $sourceAccountId = null;
-
-    /**
-     * @var string
-     */
-    private ?string $sourceProjectKey = null;
-
-    /**
      * @var mixed
      */
     private mixed $exportConfig = null;
