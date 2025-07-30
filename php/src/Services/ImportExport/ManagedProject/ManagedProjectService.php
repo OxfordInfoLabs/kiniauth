@@ -49,7 +49,7 @@ class ManagedProjectService {
      */
     public function getManagedProjectsForAccount(int $accountId): array {
 
-        $targetAccounts = ManagedProjectTargetAccount::filter("WHERE account_id = ?", $accountId);
+        $targetAccounts = ManagedProjectTargetAccount::filter("WHERE target_account_id = ?", $accountId);
 
         $managedProjectIds = array_map(fn ($targetAccount) => $targetAccount->getManagedProjectId(), $targetAccounts);
 
