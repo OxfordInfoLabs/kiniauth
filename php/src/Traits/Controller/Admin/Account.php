@@ -94,4 +94,31 @@ trait Account {
         $this->accountService->reactivateAccount($accountId, $note);
     }
 
+    /**
+     * Invite a user to the logged in account
+     *
+     * @http POST /invite
+     *
+     * @param $emailAddress
+     * @param $initialAssignedRoles
+     * @param string $accountId
+     * @throws \Kiniauth\Exception\Security\UserAlreadyAttachedToAccountException
+     */
+    public function inviteUserToAccount($initialAssignedRoles, $emailAddress, $accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
+        $this->accountService->inviteUserToAccount($accountId, $emailAddress, $initialAssignedRoles);
+    }
+
+    /**
+     * Get active account invitation email addresses.
+     *
+     * @http GET /invitations
+     *
+     * @param $accountId
+     *
+     * @return string[]
+     */
+    public function getAccountInvitationEmailAddresses($accountId) {
+        return $this->accountService->getActiveAccountInvitationEmailAddresses($accountId);
+    }
+
 }
