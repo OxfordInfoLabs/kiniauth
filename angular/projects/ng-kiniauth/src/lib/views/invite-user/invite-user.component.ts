@@ -16,6 +16,7 @@ import {UserService} from '../../services/user.service';
 export class InviteUserComponent implements OnInit {
 
     @Input() defaultToOwner = false;
+    @Input() defaultScopeId: number;
 
     public scopeAccesses: any[];
     public scopeRoles: any = {ACCOUNT: {}};
