@@ -23,6 +23,7 @@ class ManagedProjectVersion extends ActiveRecord {
 
     /**
      * @var ProjectExport
+     * @sqlType LONGTEXT
      * @json
      */
     private ?ProjectExport $projectExport;

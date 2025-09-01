@@ -69,7 +69,11 @@ class ImportExportService {
      *
      */
     public function importProject(string $projectKey, mixed $projectExport, $accountId = Account::LOGGED_IN_ACCOUNT) {
-        $mappedExport = $this->objectBinder->bindFromArray($projectExport, ProjectExport::class);
+        if (is_array($projectExport)) {
+            $mappedExport = $this->objectBinder->bindFromArray($projectExport, ProjectExport::class);
+        } else {
+            $mappedExport = $projectExport;
+        }
         $this->projectImporterExporter->importProject($accountId, $projectKey, $mappedExport);
     }
 
