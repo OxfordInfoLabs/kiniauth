@@ -21,6 +21,7 @@ use Kiniauth\Services\Security\RoleService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
+use Kiniauth\ValueObjects\Account\AccountInvitation;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\Binding\ObjectBinder;
 use Kinikit\Core\DependencyInjection\Container;
@@ -384,12 +385,16 @@ class AccountService {
     /**
      * Get active account invitation email addresses
      *
-     * @return string[]
+     * @return AccountInvitation[]
      */
     public function getActiveAccountInvitationEmailAddresses($accountId = Account::LOGGED_IN_ACCOUNT) {
         $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("USER_INVITE", $accountId);
-        return array_map(function ($pendingAction) {
-            return $pendingAction->getData()["emailAddress"] ?? null;
+        return array_map(function ($pendingAction) use ($accountId) {
+            return new AccountInvitation(
+                $accountId,
+                $pendingAction->getData()["emailAddress"] ?? null,
+                $pendingAction->getExpiryDateTime()
+            );
         }, $pendingActions);
     }
 

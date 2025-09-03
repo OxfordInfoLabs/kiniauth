@@ -25,6 +25,7 @@ use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
+use Kiniauth\ValueObjects\Account\AccountInvitation;
 use Kiniauth\ValueObjects\Security\AssignedRole;
 use Kiniauth\ValueObjects\Security\ScopeObjectRolesAssignment;
 use Kinikit\Core\DependencyInjection\Container;
@@ -447,7 +448,10 @@ class AccountServiceTest extends TestBase {
 
         $activeEmails = $this->mockedAccountService->getActiveAccountInvitationEmailAddresses(1);
 
-        $this->assertEquals(["sam@mydomain.com", "mark@mydomain.com"], $activeEmails);
+        $this->assertEquals([
+            new AccountInvitation(1, "sam@mydomain.com", $activeEmails[0]->getExpiryDate()),
+            new AccountInvitation(1, "mark@mydomain.com", $activeEmails[1]->getExpiryDate())
+        ], $activeEmails);
 
     }
 
