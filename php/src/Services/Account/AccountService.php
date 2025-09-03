@@ -393,7 +393,7 @@ class AccountService {
             return new AccountInvitation(
                 $accountId,
                 $pendingAction->getData()["emailAddress"] ?? null,
-                $pendingAction->getExpiryDateTime()
+                $pendingAction->getExpiryDateTime()->format("Y-m-d H:i:s")
             );
         }, $pendingActions);
     }
