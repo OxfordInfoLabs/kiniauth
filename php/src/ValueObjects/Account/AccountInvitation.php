@@ -8,14 +8,14 @@ class AccountInvitation {
 
     private string $emailAddress;
 
-    private \DateTime $expiryDate;
+    private string $expiryDate;
 
     /**
      * @param int $accountId
      * @param string $emailAddress
-     * @param \DateTime $expiryDate
+     * @param string $expiryDate
      */
-    public function __construct(int $accountId, string $emailAddress, \DateTime $expiryDate) {
+    public function __construct(int $accountId, string $emailAddress, string $expiryDate) {
         $this->accountId = $accountId;
         $this->emailAddress = $emailAddress;
         $this->expiryDate = $expiryDate;
@@ -38,10 +38,10 @@ class AccountInvitation {
     }
 
     public function getExpiryDate(): string {
-        return $this->expiryDate->format("Y-m-d H:i:s");
+        return $this->expiryDate;
     }
 
-    public function setExpiryDate(\DateTime $expiryDate): void {
+    public function setExpiryDate(string $expiryDate): void {
         $this->expiryDate = $expiryDate;
     }
 
