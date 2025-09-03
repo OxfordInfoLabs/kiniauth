@@ -4,6 +4,7 @@ namespace Kiniauth\Services\ImportExport\ManagedProject;
 
 use Kiniauth\Objects\Account\ProjectSummary;
 use Kiniauth\Objects\ImportExport\ManagedProject\ManagedProject;
+use Kiniauth\Objects\ImportExport\ManagedProject\ManagedProjectSummary;
 use Kiniauth\Objects\ImportExport\ManagedProject\ManagedProjectTargetAccount;
 use Kiniauth\Objects\ImportExport\ManagedProject\ManagedProjectVersion;
 use Kiniauth\Services\Account\ProjectService;
@@ -40,6 +41,19 @@ class ManagedProjectService {
      */
     public function getAll(): array {
         return ManagedProject::filter();
+    }
+
+    /**
+     * @param int $accountId
+     * @return ManagedProjectSummary[]
+     */
+    public function getManagedProjectsForAccount(int $accountId): array {
+
+        $targetAccounts = ManagedProjectTargetAccount::filter("WHERE target_account_id = ?", $accountId);
+
+        $managedProjectIds = array_map(fn ($targetAccount) => $targetAccount->getManagedProjectId(), $targetAccounts);
+
+        return ManagedProjectSummary::multiFetch($managedProjectIds);
     }
 
     /**

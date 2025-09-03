@@ -8,27 +8,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  * @table ka_managed_project
  * @generate
  */
-class ManagedProject extends ActiveRecord {
-
-    /**
-     * @var int
-     */
-    private ?int $id = null;
-
-    /**
-     * @var string
-     */
-    private ?string $name = null;
-
-    /**
-     * @var int
-     */
-    private ?int $sourceAccountId = null;
-
-    /**
-     * @var string
-     */
-    private ?string $sourceProjectKey = null;
+class ManagedProject extends ManagedProjectSummary {
 
     /**
      * @var mixed

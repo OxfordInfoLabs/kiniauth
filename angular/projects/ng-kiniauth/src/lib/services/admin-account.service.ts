@@ -112,8 +112,10 @@ export class AdminAccountService {
             assignedRoles).toPromise();
     }
 
-    public async getActiveAccountInvitations() {
-        return await this.http.get(this.config.accessHttpURL + '/account/invitations').toPromise();
+    public async getAccountInvitations(accountId: number) {
+        return await this.http.get(this.config.accessHttpURL + '/account/invitations', {
+            params: {accountId}
+        }).toPromise();
     }
 
     public resendActiveAccountInvitationEmail(emailAddress) {
