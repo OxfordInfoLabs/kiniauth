@@ -49,7 +49,7 @@
     <div class="text-base font-medium text-gray-900 mb-4">Permissions</div>
 
     <div class="mb2 mb-4">
-        <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'" [userService]="userService"
+        <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'" [userService]="userService" [defaultScopeId]="defaultScopeId"
                        [updatedScopes]="scopeRoles['ACCOUNT']" [hideApply]="true" [defaultToOwner]="defaultToOwner"></ka-edit-roles>
 
         <div *ngIf="accountError" class="border-l-4 border-yellow-400 bg-yellow-50 p-4">

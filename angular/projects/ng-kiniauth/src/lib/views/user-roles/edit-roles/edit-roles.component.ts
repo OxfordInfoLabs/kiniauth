@@ -17,6 +17,7 @@ export class EditRolesComponent implements OnInit {
     @Input() hideApply: boolean;
     @Input() userService;
     @Input() defaultToOwner: boolean;
+    @Input() defaultScopeId: number;
 
     @Output() closed: EventEmitter<any> = new EventEmitter<any>();
     @Output() saved: EventEmitter<any> = new EventEmitter<any>();
@@ -55,6 +56,11 @@ export class EditRolesComponent implements OnInit {
                     }, this.assignableRoles[0].scopeId);
                     this.checked[this.assignableRoles[0].scopeId].owner = {1: false};
                 }
+
+                if (this.defaultScopeId) {
+                    this.checked[this.defaultScopeId] = {1: true};
+                    this.updateRole({checked: true}, this.defaultScopeId);
+                }
                 this.loading = false;
             });
         }
@@ -64,7 +70,7 @@ export class EditRolesComponent implements OnInit {
         // Reset the displayed errors at this point;
         this.errors = {};
         const checked = event.checked;
-        const owner = event.source.value === 'OWNER';
+        const owner = event.source?.value === 'OWNER';
         let roleIds: any[] = [];
 
         if (owner) {

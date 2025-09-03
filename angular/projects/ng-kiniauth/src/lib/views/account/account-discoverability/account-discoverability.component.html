@@ -48,16 +48,21 @@
                             your account.
                         </div>
                     </div>
-                    <div class="m:mt-px sm:pt-2">
-                        {{discoverabilitySettings.externalIdentifier || 'Not Set'}}
-                        <button
-                            class="inline-flex items-center justify-center ml-3 px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none"
-                            (click)="generateExternalIdentifier()">Regenerate
-                        </button>
-                        <button *ngIf="discoverabilitySettings.externalIdentifier && !discoverabilitySettings.discoverable"
-                                class="inline-flex items-center justify-center ml-3 px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-secondary focus:outline-none"
-                                (click)="unsetExternalIdentifier()">Unset
-                        </button>
+                    <div class="">
+                        <div class="font-medium mb-2 pt-2">
+                            {{discoverabilitySettings.externalIdentifier || 'Not Set'}}
+                        </div>
+                        <div class="flex items-center">
+                            <button
+                                class="inline-flex items-center justify-center px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none"
+                                (click)="generateExternalIdentifier()">Regenerate
+                            </button>
+                            <button *ngIf="discoverabilitySettings.externalIdentifier && !discoverabilitySettings.discoverable"
+                                    class="inline-flex items-center justify-center ml-3 px-2 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-secondary focus:outline-none"
+                                    (click)="unsetExternalIdentifier()">Unset
+                            </button>
+                        </div>
+
                     </div>
 
                 </div>

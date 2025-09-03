@@ -10,7 +10,7 @@ export class AccountDiscoverabilityComponent implements OnInit {
 
     @Input() showHeader = true;
 
-    public discoverabilitySettings: any;
+    public discoverabilitySettings: any = {};
 
     constructor(private accountService: AccountService) {
     }
