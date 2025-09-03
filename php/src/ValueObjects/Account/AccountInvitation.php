@@ -37,8 +37,8 @@ class AccountInvitation {
         $this->emailAddress = $emailAddress;
     }
 
-    public function getExpiryDate(): \DateTime {
-        return $this->expiryDate;
+    public function getExpiryDate(): string {
+        return $this->expiryDate->format("Y-m-d H:i:s");
     }
 
     public function setExpiryDate(\DateTime $expiryDate): void {
