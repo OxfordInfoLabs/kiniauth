@@ -253,7 +253,7 @@ class AccountService {
      * Get security domains as string array
      *
      * @param $accountId
-     * @return void
+     * @return array
      */
     public function getSecurityDomains($accountId = Account::LOGGED_IN_ACCOUNT) {
         $account = Account::fetch($accountId);

@@ -3,6 +3,7 @@
 namespace Kiniauth\Traits\Controller\Admin;
 
 use Kiniauth\Objects\Account\AccountSummary;
+use Kiniauth\ValueObjects\Account\AccountInvitation;
 use Kiniauth\ValueObjects\Registration\NewUserAccountDescriptor;
 
 trait Account {
@@ -109,16 +110,51 @@ trait Account {
     }
 
     /**
+     * @http PUT /invite
+     *
+     * @param string $emailAddress
+     * @param int $accountId
+     * @return void
+     */
+    public function resendActiveAccountInvitationEmail($emailAddress, $accountId) {
+        $this->accountService->resendActiveAccountInvitationEmail($emailAddress, $accountId);
+    }
+
+    /**
      * Get active account invitation email addresses.
      *
      * @http GET /invitations
      *
-     * @param $accountId
+     * @param int $accountId
      *
-     * @return string[]
+     * @return AccountInvitation[]
      */
     public function getAccountInvitationEmailAddresses($accountId) {
         return $this->accountService->getActiveAccountInvitationEmailAddresses($accountId);
+    }
+
+    /**
+     * Get account security domains
+     *
+     * @http GET /securityDomains
+     *
+     * @param int $accountId
+     *
+     * @return string[]
+     */
+    public function getAccountSecurityDomains($accountId) {
+        return $this->accountService->getSecurityDomains($accountId);
+    }
+
+    /**
+     * @http PUT /securityDomains
+     *
+     * @param $securityDomains
+     * @param $accountId
+     * @return void
+     */
+    public function updateSecurtiyDomains($securityDomains, $accountId) {
+        $this->accountService->updateSecurityDomains($securityDomains, $accountId);
     }
 
 }
