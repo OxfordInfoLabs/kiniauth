@@ -136,9 +136,7 @@ trait Account {
     /**
      * Get account security domains
      *
-     * @http GET /securityDomains
-     *
-     * @param int $accountId
+     * @http GET /$accountId/securityDomains
      *
      * @return string[]
      */
@@ -147,7 +145,7 @@ trait Account {
     }
 
     /**
-     * @http PUT /securityDomains
+     * @http PUT /$accountId/securityDomains
      *
      * @param $securityDomains
      * @param $accountId

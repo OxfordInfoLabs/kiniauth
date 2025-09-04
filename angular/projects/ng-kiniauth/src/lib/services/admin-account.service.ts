@@ -137,8 +137,8 @@ export class AdminAccountService {
     }
 
 
-    public async getAccountSecurityDomains() {
-        return await this.http.get(this.config.accessHttpURL + '/account/securityDomains').toPromise();
+    public async getAccountSecurityDomains(accountId: number) {
+        return await this.http.get(this.config.accessHttpURL + '/account/' + accountId + '/securityDomains').toPromise();
     }
 
     public async updateAccountSecurityDomains(securityDomains, accountId: number) {
