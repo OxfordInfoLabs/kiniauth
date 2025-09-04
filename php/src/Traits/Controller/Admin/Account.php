@@ -153,7 +153,7 @@ trait Account {
      * @param $accountId
      * @return void
      */
-    public function updateSecurtiyDomains($securityDomains, $accountId) {
+    public function updateSecurityDomains($securityDomains, $accountId) {
         $this->accountService->updateSecurityDomains($securityDomains, $accountId);
     }
 
