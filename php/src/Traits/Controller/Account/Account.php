@@ -7,6 +7,7 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\RoleService;
 use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
+use Kiniauth\ValueObjects\Account\AccountInvitation;
 use Kiniauth\ValueObjects\Registration\NewUserAccountDescriptor;
 use Kinikit\Core\Logging\Logger;
 
@@ -262,7 +263,7 @@ trait Account {
      *
      * @http GET /invitations
      *
-     * @return string[]
+     * @return AccountInvitation[]
      */
     public function getActiveAccountInvitationEmailAddresses() {
         return $this->accountService->getActiveAccountInvitationEmailAddresses();

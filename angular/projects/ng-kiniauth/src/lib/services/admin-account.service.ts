@@ -141,6 +141,9 @@ export class AdminAccountService {
         return await this.http.get(this.config.accessHttpURL + '/account/securityDomains').toPromise();
     }
 
+    public async updateAccountSecurityDomains(securityDomains, accountId: number) {
+        return await this.http.put(this.config.accessHttpURL + '/account/' + accountId + '/securityDomains', securityDomains).toPromise();
+    }
 
     public async searchForDiscoverableAccounts(searchTerm, offset = 0, limit = 25) {
         return this.http.get(this.config.accessHttpURL + '/account/discoverable?searchTerm=' + searchTerm + '&limit=' + limit + '&offset=' + offset).toPromise();
