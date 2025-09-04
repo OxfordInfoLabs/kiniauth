@@ -147,12 +147,11 @@ trait Account {
     /**
      * @http PUT /$accountId/securityDomains
      *
-     * @param $accountId
      * @param $securityDomains
-     *
+     * @param $accountId
      * @return void
      */
-    public function updateSecurityDomains($accountId, $securityDomains) {
+    public function updateSecurityDomains($securityDomains, $accountId) {
         $this->accountService->updateSecurityDomains($securityDomains, $accountId);
     }
 
