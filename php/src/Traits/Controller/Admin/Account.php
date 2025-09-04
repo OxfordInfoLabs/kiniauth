@@ -96,6 +96,18 @@ trait Account {
     }
 
     /**
+     * Remove a user from account
+     *
+     * @http GET /removeUser
+     *
+     * @param string $accountId
+     * @param int $userId
+     */
+    public function removeUserFromAccount($accountId, $userId) {
+        $this->accountService->removeUserFromAccount($accountId, $userId);
+    }
+
+    /**
      * Invite a user to the logged in account
      *
      * @http POST /invite
@@ -152,7 +164,7 @@ trait Account {
      *
      * @return void
      */
-    public function updateSecurityDomains($accountId, $securityDomains) {
+    public function updateSecurityDomains($accountId, $securityDomains = []) {
         $this->accountService->updateSecurityDomains($securityDomains, $accountId);
     }
 

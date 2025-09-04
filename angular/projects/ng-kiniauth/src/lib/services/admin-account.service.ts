@@ -103,6 +103,12 @@ export class AdminAccountService {
         });
     }
 
+    public removeUserFromAccount(accountId, userId) {
+        return this.http.get(this.config.accessHttpURL + '/account/removeUser', {
+            params: {accountId, userId}
+        }).toPromise();
+    }
+
     public inviteUserToAccount(emailAddress, assignedRoles, accountId = null) {
         let url = this.config.accessHttpURL + '/account/invite?emailAddress=' + encodeURIComponent(emailAddress);
         if (accountId) {
