@@ -425,6 +425,9 @@ class AccountService {
 
                 $this->emailService->send($invitationEmail, $accountId);
 
+                $pendingAction->resetExpiryTime();
+                $pendingAction->save();
+
                 break;
             }
         }

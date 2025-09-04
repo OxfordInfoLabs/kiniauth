@@ -118,8 +118,8 @@ export class AdminAccountService {
         }).toPromise();
     }
 
-    public resendActiveAccountInvitationEmail(emailAddress) {
-        const url = this.config.accessHttpURL + '/account/invite';
+    public resendActiveAccountInvitationEmail(accountId, emailAddress) {
+        const url = this.config.accessHttpURL + '/account/invite?accountId=' + accountId;
         return this.http.put(url, '"' + encodeURIComponent(emailAddress) + '"').toPromise();
     }
 
