@@ -172,5 +172,21 @@ class PendingAction extends ActiveRecord {
         return $this->objectType;
     }
 
+    /**
+     * @param string $expiryOffset
+     * @param \DateTime $expiryDateTime
+     * @return void
+     */
+    public function resetExpiryTime($expiryOffset = null, $expiryDateTime = null) {
+        if (!$expiryOffset) $expiryOffset = "P7D";
+
+        if ($expiryDateTime) {
+            $this->expiryDateTime = $expiryDateTime;
+        } else {
+            $expiryDate = new \DateTime();
+            $expiryDate->add(new \DateInterval($expiryOffset));
+            $this->expiryDateTime = $expiryDate;
+        }
+    }
 
 }
