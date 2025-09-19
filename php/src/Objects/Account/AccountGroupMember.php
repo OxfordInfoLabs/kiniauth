@@ -2,13 +2,15 @@
 
 namespace Kiniauth\Objects\Account;
 
+use Kinikit\Persistence\ORM\ActiveRecord;
+
 /**
  * Object for mapping accounts into account groups
  *
  * @table ka_account_group_member
  * @generate
  */
-class AccountGroupMember {
+class AccountGroupMember extends ActiveRecord {
 
     /**
      * @var int
