@@ -1,0 +1,22 @@
+Subject: Invitation to join {{settings.brandName}} account group
+---
+{{> header }}
+<p>Hi There</p>
+
+<p>The account {{account.name}} has been invited to join the {{settings.brandName}} account group with name {{accountGroup.name}}</p>
+
+<p>If you are not expecting this request, please ignore this email.</p>
+
+<p>To accept this invitation and join the account, please
+    <a href="{{settings.userInvitationURL}}?invitationCode={{invitationCode}}">click this link</a>.
+</p>
+
+<p>Kind regards</p>
+
+<p>The {{settings.brandName}} team</p>
+
+{{#resent}}
+<p><i>Invitation resent at {{currentTime}}</i></p>
+{{/resent}}
+
+{{> footer }}
