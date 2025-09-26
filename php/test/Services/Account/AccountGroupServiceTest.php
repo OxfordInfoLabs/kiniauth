@@ -145,7 +145,7 @@ class AccountGroupServiceTest extends TestBase {
         ];
         $this->pendingActionService->returnValue("getAllPendingActionsForTypeAndObjectId", $pendingActions, ["ACCOUNT_GROUP_INVITE", 1]);
 
-        $this->accountGroupService->resendAccountGroupInvitationEmail(5, 1);
+        $this->accountGroupService->resendAccountGroupInvitationEmail(1, 5);
 
         $invitationEmail = new AccountTemplatedEmail(5, "security/account-group-invite", [
             "account_group" => AccountGroup::fetch(1),

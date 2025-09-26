@@ -10,6 +10,7 @@ use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Workflow\PendingActionService;
+use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
 use Kiniauth\ValueObjects\Account\AccountGroupInvitation;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Validation\FieldValidationError;
@@ -54,12 +55,15 @@ class AccountGroupService {
     }
 
     /**
-     * @param string $name
-     * @param int $ownerAccountId
+     * @param AccountGroupDescriptor $accountGroupDescriptor
      * @return int
      */
-    public function createAccountGroup(string $name, string $description, $ownerAccountId = Account::LOGGED_IN_ACCOUNT): int {
-        $accountGroup = new AccountGroup($name, $description, $ownerAccountId);
+    public function createAccountGroup(string $accountGroupDescriptor): int {
+        $accountGroup = new AccountGroup(
+            $accountGroupDescriptor->getName(),
+            $accountGroupDescriptor->getDescription(),
+            $accountGroupDescriptor->getOwnerAccountId() ?? Account::LOGGED_IN_ACCOUNT
+        );
         $accountGroup->save();
         return $accountGroup->getId();
     }
@@ -162,11 +166,11 @@ class AccountGroupService {
     /**
      * Resend an account group invitation email
      *
-     * @param int $accountId
      * @param int $accountGroupId
+     * @param int $accountId
      * @return void
      */
-    public function resendAccountGroupInvitationEmail(int $accountId, int $accountGroupId): void {
+    public function resendAccountGroupInvitationEmail(int $accountGroupId, int $accountId): void {
 
         // Get the active account invitation email addresses
         $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("ACCOUNT_GROUP_INVITE", $accountGroupId);
@@ -197,11 +201,11 @@ class AccountGroupService {
     /**
      * Revoke an invitation
      *
-     * @param int $accountId
      * @param int $accountGroupId
+     * @param int $accountId
      * @return void
      */
-    public function revokeAccountGroupInvitationEmail(int $accountId, int $accountGroupId): void {
+    public function revokeAccountGroupInvitation(int $accountGroupId, int $accountId): void {
 
         $pendingInvites = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("ACCOUNT_GROUP_INVITE", $accountGroupId) ?? [];
 
