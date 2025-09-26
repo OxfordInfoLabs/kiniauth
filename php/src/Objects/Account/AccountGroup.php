@@ -17,33 +17,48 @@ class AccountGroup extends ActiveRecord {
      * @primaryKey
      * @autoIncrement
      */
-    private $id;
+    private ?int $accountGroupId = null;
 
     /**
      * @var string
      */
-    private string $name;
+    private ?string $name;
+
+    /**
+     * @var string
+     */
+    private ?string $description;
 
     /**
      * @var int
      * @required
      */
-    private int $ownerAccountId;
+    private ?int $ownerAccountId;
 
     /**
-     * @param int $id
-     * @param string $name
-     * @param int $ownerAccountId
+     * @var AccountGroupMember[]
+     * @oneToMany
+     * @childJoinColumns account_group_id
      */
-    public function __construct(string $name = null, int $ownerAccountId = null) {
+    private array $accountGroupMembers;
+
+    /**
+     * @param string $name
+     * @param string $description
+     * @param int $ownerAccountId
+     * @param AccountGroupMember[] $accountGroupMembers
+     */
+    public function __construct(?string $name = null, ?string $description = null, ?int $ownerAccountId = null, ?array $accountGroupMembers = []) {
         $this->name = $name;
+        $this->description = $description;
         $this->ownerAccountId = $ownerAccountId;
+        $this->accountGroupMembers = $accountGroupMembers;
     }
 
     /**
      * @return int
      */
-    public function getId(): int {
+    public function getId(): ?int {
         return $this->id;
     }
 
@@ -63,6 +78,21 @@ class AccountGroup extends ActiveRecord {
     }
 
     /**
+     * @return string
+     */
+    public function getDescription(): string {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return void
+     */
+    public function setDescription(string $description): void {
+        $this->description = $description;
+    }
+
+    /**
      * @return int
      */
     public function getOwnerAccountId(): int {
@@ -75,6 +105,21 @@ class AccountGroup extends ActiveRecord {
      */
     public function setOwnerAccountId(int $ownerAccountId): void {
         $this->ownerAccountId = $ownerAccountId;
+    }
+
+    /**
+     * @return AccountGroupMember[]
+     */
+    public function getAccountGroupMembers(): array {
+        return $this->accountGroupMembers;
+    }
+
+    /**
+     * @param AccountGroupMember[] $accountGroupMembers
+     * @return void
+     */
+    public function setAccountGroupMembers(array $accountGroupMembers): void {
+        $this->accountGroupMembers = $accountGroupMembers;
     }
 
 }

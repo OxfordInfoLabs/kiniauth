@@ -56,19 +56,22 @@ class AccountGroupService {
     /**
      * @param string $name
      * @param int $ownerAccountId
-     * @return void
+     * @return int
      */
-    public function createAccountGroup(string $name, int $ownerAccountId): void {
-        $accountGroup = new AccountGroup($name, $ownerAccountId);
+    public function createAccountGroup(string $name, string $description, $ownerAccountId = Account::LOGGED_IN_ACCOUNT): int {
+        $accountGroup = new AccountGroup($name, $description, $ownerAccountId);
         $accountGroup->save();
+        return $accountGroup->getId();
     }
 
     /**
      * @param int $accountGroupId
-     * @return array
+     * @return AccountGroupMember[]
      */
     public function getMembersOfAccountGroup(int $accountGroupId): array {
-        return AccountGroupMember::filter("WHERE account_group_id = ?", $accountGroupId);
+        /** @var AccountGroup $accountGroup */
+        $accountGroup = AccountGroup::fetch($accountGroupId);
+        return $accountGroup->getAccountGroupMembers();
     }
 
     /**
@@ -255,8 +258,6 @@ class AccountGroupService {
 
             // Remove the pending action once completed.
             $this->pendingActionService->removePendingAction("ACCOUNT_GROUP_INVITE", $invitationCode);
-
-            // ToDo: Create confirmation email?
 
             $this->emailService->send(new AccountTemplatedEmail($accountId, "security/account-group-welcome", []), $accountId);
 

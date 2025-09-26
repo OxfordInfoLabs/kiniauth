@@ -16,19 +16,19 @@ class AccountGroupMember extends ActiveRecord {
      * @var int
      * @primaryKey
      */
-    private int $accountGroupId;
+    private ?int $accountGroupId = null;
 
     /**
      * @var int
      * @primaryKey
      */
-    private int $accountId;
+    private ?int $accountId;
 
     /**
      * @param int $accountGroupId
      * @param int $accountId
      */
-    public function __construct(int $accountGroupId = null, int $accountId = null) {
+    public function __construct(?int $accountGroupId = null, ?int $accountId = null) {
         $this->accountGroupId = $accountGroupId;
         $this->accountId = $accountId;
     }
@@ -36,7 +36,7 @@ class AccountGroupMember extends ActiveRecord {
     /**
      * @return int
      */
-    public function getAccountGroupId(): int {
+    public function getAccountGroupId(): ?int {
         return $this->accountGroupId;
     }
 

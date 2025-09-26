@@ -1,0 +1,31 @@
+[
+  {
+    "name": "First Account Group",
+    "description": "description",
+    "ownerAccountId": 1,
+    "accountGroupMembers": [
+      {
+        "accountId": 1
+      },
+      {
+        "accountId": 2
+      }
+    ]
+  },
+  {
+    "name": "Second Account Group",
+    "description": "description 2",
+    "ownerAccountId": 2,
+    "accountGroupMembers": [
+      {
+        "accountId": 1
+      },
+      {
+        "accountId": 2
+      },
+      {
+        "accountId": 3
+      }
+    ]
+  }
+]
