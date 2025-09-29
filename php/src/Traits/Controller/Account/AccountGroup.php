@@ -103,22 +103,22 @@ trait AccountGroup {
      *
      * @http PUT /invite
      *
-     * @param int $accountGroupId
-     * @param int $accountId
+     * @param AccountGroupInvitation $invite
      * @return void
      */
-    public function resendActiveAccountInvitationEmail($accountGroupId, $accountId) {
-        $this->accountGroupService->resendAccountGroupInvitationEmail($accountGroupId, $accountId);
+    public function resendActiveAccountInvitationEmail($invite) {
+        $this->accountGroupService->resendAccountGroupInvitationEmail($invite);
     }
 
     /**
      * Revoke an invitation to an account group
      *
-     * @param $accountGroupId
-     * @param $accountId
+     * @http DELETE /invite
+     *
+     * @param AccountGroupInvitation $invite
      * @return void
      */
-    public function revokeAccountGroupInvitation($accountGroupId, $accountId) {
-        $this->accountGroupService->revokeAccountGroupInvitation($accountGroupId, $accountId);
+    public function revokeAccountGroupInvitation($invite) {
+        $this->accountGroupService->revokeAccountGroupInvitation($invite);
     }
 }

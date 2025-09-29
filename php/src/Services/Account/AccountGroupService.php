@@ -12,6 +12,7 @@ use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
 use Kiniauth\ValueObjects\Account\AccountGroupInvitation;
+use Kinikit\Core\Communication\Email\MissingEmailTemplateException;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
@@ -166,11 +167,13 @@ class AccountGroupService {
     /**
      * Resend an account group invitation email
      *
-     * @param int $accountGroupId
-     * @param int $accountId
+     * @param AccountGroupInvitation $invite
      * @return void
      */
-    public function resendAccountGroupInvitationEmail(int $accountGroupId, int $accountId): void {
+    public function resendAccountGroupInvitationEmail(AccountGroupInvitation $invite): void {
+
+        $accountGroupId = $invite->getAccountGroupId();
+        $accountId = $invite->getAccountId();
 
         // Get the active account invitation email addresses
         $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("ACCOUNT_GROUP_INVITE", $accountGroupId);
@@ -201,11 +204,13 @@ class AccountGroupService {
     /**
      * Revoke an invitation
      *
-     * @param int $accountGroupId
-     * @param int $accountId
+     * @param AccountGroupInvitation $invite
      * @return void
      */
-    public function revokeAccountGroupInvitation(int $accountGroupId, int $accountId): void {
+    public function revokeAccountGroupInvitation(AccountGroupInvitation $invite): void {
+
+        $accountGroupId = $invite->getAccountGroupId();
+        $accountId = $invite->getAccountId();
 
         $pendingInvites = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("ACCOUNT_GROUP_INVITE", $accountGroupId) ?? [];
 
