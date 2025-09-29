@@ -5,10 +5,10 @@
     "ownerAccountId": 1,
     "accountGroupMembers": [
       {
-        "accountId": 1
+        "memberAccountId": 1
       },
       {
-        "accountId": 2
+        "memberAccountId": 2
       }
     ]
   },
@@ -18,13 +18,13 @@
     "ownerAccountId": 2,
     "accountGroupMembers": [
       {
-        "accountId": 1
+        "memberAccountId": 1
       },
       {
-        "accountId": 2
+        "memberAccountId": 2
       },
       {
-        "accountId": 3
+        "memberAccountId": 3
       }
     ]
   }

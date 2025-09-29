@@ -22,15 +22,15 @@ class AccountGroupMember extends ActiveRecord {
      * @var int
      * @primaryKey
      */
-    private ?int $accountId;
+    private ?int $memberAccountId;
 
     /**
      * @param int $accountGroupId
-     * @param int $accountId
+     * @param int $memberAccountId
      */
-    public function __construct(?int $accountGroupId = null, ?int $accountId = null) {
+    public function __construct(?int $accountGroupId = null, ?int $memberAccountId = null) {
         $this->accountGroupId = $accountGroupId;
-        $this->accountId = $accountId;
+        $this->memberAccountId = $memberAccountId;
     }
 
     /**
@@ -51,16 +51,16 @@ class AccountGroupMember extends ActiveRecord {
     /**
      * @return int
      */
-    public function getAccountId(): int {
-        return $this->accountId;
+    public function getMemberAccountId(): int {
+        return $this->memberAccountId;
     }
 
     /**
-     * @param int $accountId
+     * @param int $memberAccountId
      * @return void
      */
-    public function setAccountId(int $accountId): void {
-        $this->accountId = $accountId;
+    public function setMemberAccountId(int $memberAccountId): void {
+        $this->memberAccountId = $memberAccountId;
     }
 
 }

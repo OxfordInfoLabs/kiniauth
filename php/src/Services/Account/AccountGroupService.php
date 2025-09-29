@@ -52,14 +52,15 @@ class AccountGroupService {
      * @return AccountGroup[]
      */
     public function getAllAccountGroups(): array {
-        return AccountGroup::filter();
+        $accountGroups = AccountGroup::filter();
+        return $accountGroups;
     }
 
     /**
      * @param AccountGroupDescriptor $accountGroupDescriptor
      * @return int
      */
-    public function createAccountGroup(string $accountGroupDescriptor): int {
+    public function createAccountGroup(AccountGroupDescriptor $accountGroupDescriptor): int {
         $accountGroup = new AccountGroup(
             $accountGroupDescriptor->getName(),
             $accountGroupDescriptor->getDescription(),
@@ -85,8 +86,20 @@ class AccountGroupService {
      * @return void
      */
     public function addMemberToAccountGroup(int $accountGroupId, int $accountId): void {
-        $accountGroupMember = new AccountGroupMember($accountGroupId, $accountId);
-        $accountGroupMember->save();
+        // Check if member exists
+        try {
+            AccountGroupMember::fetch([$accountGroupId, $accountId]);
+            return;
+        } catch (ObjectNotFoundException) {
+            // Great - doesn't already exist
+        }
+
+        /** @var AccountGroup $accountGroup */
+        $accountGroup = AccountGroup::fetch($accountGroupId);
+
+
+        $accountGroup->addMember($accountId);
+        $accountGroup->save();
     }
 
     /**

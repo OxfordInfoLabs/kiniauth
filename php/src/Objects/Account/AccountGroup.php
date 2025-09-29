@@ -59,7 +59,7 @@ class AccountGroup extends ActiveRecord {
      * @return int
      */
     public function getId(): ?int {
-        return $this->id;
+        return $this->accountGroupId;
     }
 
     /**
@@ -120,6 +120,11 @@ class AccountGroup extends ActiveRecord {
      */
     public function setAccountGroupMembers(array $accountGroupMembers): void {
         $this->accountGroupMembers = $accountGroupMembers;
+    }
+
+    public function addMember(int $accountId): void {
+        $newMember = new AccountGroupMember($this->accountGroupId, $accountId);
+        $this->accountGroupMembers[] = $newMember;
     }
 
 }
