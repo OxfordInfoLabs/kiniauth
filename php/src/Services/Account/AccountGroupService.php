@@ -9,6 +9,7 @@ use Kiniauth\Objects\Account\AccountGroup;
 use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Services\Communication\Email\EmailService;
+use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
 use Kiniauth\ValueObjects\Account\AccountGroupInvitation;
@@ -30,13 +31,20 @@ class AccountGroupService {
      */
     private PendingActionService $pendingActionService;
 
+
+    /**
+     * @var ActiveRecordInterceptor
+     */
+    private ActiveRecordInterceptor $activeRecordInterceptor;
+
     /**
      * @param EmailService $emailService
      * @param PendingActionService $pendingActionService
      */
-    public function __construct(EmailService $emailService, PendingActionService $pendingActionService) {
+    public function __construct(EmailService $emailService, PendingActionService $pendingActionService, ActiveRecordInterceptor $activeRecordInterceptor) {
         $this->emailService = $emailService;
         $this->pendingActionService = $pendingActionService;
+        $this->activeRecordInterceptor = $activeRecordInterceptor;
     }
 
 
@@ -150,13 +158,19 @@ class AccountGroupService {
         ]);
 
 
-        // Send an invitation email attached to the account
-        $invitationEmail = new AccountTemplatedEmail($accountGroupId, "security/account-group-invite", [
-            "accountGroup" => $accountGroup,
-            "invitationCode" => $invitationCode
-        ]);
+        // Allow insecure sending of email.
+        $this->activeRecordInterceptor->executeInsecure(function () use ($accountId, $accountGroup, $invitationCode) {
 
-        $this->emailService->send($invitationEmail, $accountId);
+            // Send an invitation email attached to the account
+            $invitationEmail = new AccountTemplatedEmail($accountId, "security/account-group-invite", [
+                "accountGroup" => $accountGroup,
+                "invitationCode" => $invitationCode
+            ]);
+
+            $this->emailService->send($invitationEmail, $accountId);
+
+        });
+
 
     }
 
@@ -192,7 +206,7 @@ class AccountGroupService {
         $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("ACCOUNT_GROUP_INVITE", $accountGroupId);
 
         foreach ($pendingActions as $pendingAction) {
-            if ($pendingAction->getData()["account_id"] ?? null == $accountId) {
+            if ($pendingAction->getData()["accountId"] ?? null == $accountId) {
 
                 $accountGroup = $this->getAccountGroup($pendingAction->getObjectId());
 

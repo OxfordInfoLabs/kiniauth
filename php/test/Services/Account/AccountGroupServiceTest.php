@@ -9,6 +9,7 @@ use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Objects\Workflow\PendingAction;
 use Kiniauth\Services\Account\AccountGroupService;
 use Kiniauth\Services\Communication\Email\EmailService;
+use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\TestBase;
@@ -31,7 +32,8 @@ class AccountGroupServiceTest extends TestBase {
     public function setUp(): void {
         $this->emailService = MockObjectProvider::instance()->getMockInstance(EmailService::class);
         $this->pendingActionService = MockObjectProvider::instance()->getMockInstance(PendingActionService::class);
-        $this->accountGroupService = new AccountGroupService($this->emailService, $this->pendingActionService);
+        $this->accountGroupService = new AccountGroupService($this->emailService, $this->pendingActionService,
+            Container::instance()->get(ActiveRecordInterceptor::class));
         $this->securityService = Container::instance()->get(SecurityService::class);
     }
 
@@ -124,10 +126,14 @@ class AccountGroupServiceTest extends TestBase {
 
         $this->accountGroupService->inviteAccountToAccountGroup(1, 4, 1);
 
+        $this->securityService->becomeAccount(4);
+
         $invitationEmail = new AccountTemplatedEmail(4, "security/account-group-invite", [
             "accountGroup" => AccountGroup::fetch(1),
             "invitationCode" => "mycode123"
         ]);
+
+   
         $this->assertTrue($this->emailService->methodWasCalled("send", [$invitationEmail, 4]));
 
         // Test accepting
@@ -179,7 +185,8 @@ class AccountGroupServiceTest extends TestBase {
             "resent" => true,
             "currentTime" => date("d/m/Y H:i:s")
         ]);
-        $this->assertTrue($this->emailService->methodWasCalled("send", [$invitationEmail]));
+
+        $this->assertTrue($this->emailService->methodWasCalled("send", [$invitationEmail, 5]));
     }
 
     public function testCanGetAccountGroupInvitationDetails() {
