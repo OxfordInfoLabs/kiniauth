@@ -65,6 +65,18 @@ class AccountGroupService {
     }
 
     /**
+     * @param int $accountId
+     * @return AccountGroup[]
+     */
+    public function listAccountGroupsForAccount(int $accountId): array {
+        /** @var AccountGroupMember[] $accountGroupMembers */
+        $accountGroupMembers = AccountGroupMember::filter("WHERE member_account_id = ?", $accountId);
+
+        $accountGroupIds = array_map(fn ($accountGroupMember) => $accountGroupMember->getAccountGroupId(), $accountGroupMembers);
+        return AccountGroup::multiFetch($accountGroupIds);
+    }
+
+    /**
      * @param AccountGroupDescriptor $accountGroupDescriptor
      * @return int
      */
