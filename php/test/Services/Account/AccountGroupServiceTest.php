@@ -133,7 +133,7 @@ class AccountGroupServiceTest extends TestBase {
             "invitationCode" => "mycode123"
         ]);
 
-   
+
         $this->assertTrue($this->emailService->methodWasCalled("send", [$invitationEmail, 4]));
 
         // Test accepting
