@@ -3,11 +3,13 @@
 namespace Kiniauth\Test\Services\Account;
 
 use Kiniauth\Exception\Security\InvalidAccountGroupOwnerException;
+use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountGroup;
 use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Objects\Workflow\PendingAction;
 use Kiniauth\Services\Account\AccountGroupService;
+use Kiniauth\Services\Account\AccountService;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\SecurityService;
@@ -29,11 +31,16 @@ class AccountGroupServiceTest extends TestBase {
 
     private $securityService;
 
+    private $accountService;
+
+
     public function setUp(): void {
         $this->emailService = MockObjectProvider::instance()->getMockInstance(EmailService::class);
         $this->pendingActionService = MockObjectProvider::instance()->getMockInstance(PendingActionService::class);
+        $this->accountService = MockObjectProvider::instance()->getMockInstance(AccountService::class);
+
         $this->accountGroupService = new AccountGroupService($this->emailService, $this->pendingActionService,
-            Container::instance()->get(ActiveRecordInterceptor::class));
+            Container::instance()->get(ActiveRecordInterceptor::class), $this->accountService);
         $this->securityService = Container::instance()->get(SecurityService::class);
     }
 
@@ -115,8 +122,13 @@ class AccountGroupServiceTest extends TestBase {
             ["accountId" => 4]
         ]);
 
+
+        $account = new Account("Test", 0, Account::STATUS_ACTIVE, 4);
+        $this->accountService->returnValue("getAccountByExternalIdentifier", $account, ["APPLEPIE"]);
+
+
         try {
-            $this->accountGroupService->inviteAccountToAccountGroup(1, 4, 4);
+            $this->accountGroupService->inviteAccountToAccountGroup(1, "APPLEPIE", 4);
         } catch (InvalidAccountGroupOwnerException $e) {
             $this->assertEquals("The logged in account doesn't own the account group", $e->getMessage());
         }
@@ -124,7 +136,7 @@ class AccountGroupServiceTest extends TestBase {
         // Become the account
         $this->securityService->becomeAccount(1);
 
-        $this->accountGroupService->inviteAccountToAccountGroup(1, 4, 1);
+        $this->accountGroupService->inviteAccountToAccountGroup(1, "APPLEPIE", 1);
 
         $this->securityService->becomeAccount(4);
 
@@ -168,26 +180,7 @@ class AccountGroupServiceTest extends TestBase {
         ]));
     }
 
-    public function testCanResendAccountGroupInvitation() {
-        $pendingActions = [
-            new PendingAction("ACCOUNT_GROUP_INVITE", 1, ["accountId" => 5]),
-            new PendingAction("ACCOUNT_GROUP_INVITE", 1, ["accountId" => 6])
-        ];
-        $this->pendingActionService->returnValue("getAllPendingActionsForTypeAndObjectId", $pendingActions, ["ACCOUNT_GROUP_INVITE", 1]);
-
-        $this->securityService->becomeAccount(1);
-
-        $this->accountGroupService->resendAccountGroupInvitationEmail(new AccountGroupInvitation(1, 5));
-
-        $invitationEmail = new AccountTemplatedEmail(5, "security/account-group-invite", [
-            "account_group" => AccountGroup::fetch(1),
-            "invitationCode" => $pendingActions[0]->getIdentifier(),
-            "resent" => true,
-            "currentTime" => date("d/m/Y H:i:s")
-        ]);
-
-        $this->assertTrue($this->emailService->methodWasCalled("send", [$invitationEmail, 5]));
-    }
+ 
 
     public function testCanGetAccountGroupInvitationDetails() {
         $pendingAction = new PendingAction("ACCOUNT_GROUP_INVITE", 2, ["account_id" => 3]);

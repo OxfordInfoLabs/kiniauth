@@ -37,14 +37,24 @@ class AccountGroupService {
      */
     private ActiveRecordInterceptor $activeRecordInterceptor;
 
+
+    /**
+     * @var AccountService
+     */
+    private AccountService $accountService;
+
+
     /**
      * @param EmailService $emailService
      * @param PendingActionService $pendingActionService
      */
-    public function __construct(EmailService $emailService, PendingActionService $pendingActionService, ActiveRecordInterceptor $activeRecordInterceptor) {
+    public function __construct(EmailService            $emailService, PendingActionService $pendingActionService,
+                                ActiveRecordInterceptor $activeRecordInterceptor,
+                                AccountService          $accountService) {
         $this->emailService = $emailService;
         $this->pendingActionService = $pendingActionService;
         $this->activeRecordInterceptor = $activeRecordInterceptor;
+        $this->accountService = $accountService;
     }
 
 
@@ -130,11 +140,13 @@ class AccountGroupService {
      * Invite an account to join an account group.
      *
      * @param int $accountGroupId
-     * @param int $accountId
+     * @param string $accountExternalIdentifier
      * @param int $loggedInAccountId
      * @return void
+     *
+     * @objectInterceptorDisabled
      */
-    public function inviteAccountToAccountGroup(int $accountGroupId, int $accountId, $loggedInAccountId = Account::LOGGED_IN_ACCOUNT): void {
+    public function inviteAccountToAccountGroup(int $accountGroupId, string $accountExternalIdentifier, $loggedInAccountId = Account::LOGGED_IN_ACCOUNT): void {
 
         // Get the account group
         $accountGroup = $this->getAccountGroup($accountGroupId);
@@ -143,6 +155,9 @@ class AccountGroupService {
         if ($accountGroup->getOwnerAccountId() !== $loggedInAccountId) {
             throw new InvalidAccountGroupOwnerException();
         }
+
+        // Get the account id for the external identifier
+        $accountId = $this->accountService->getAccountByExternalIdentifier($accountExternalIdentifier)->getAccountId();
 
         // If already a member, return
         try {
@@ -191,42 +206,6 @@ class AccountGroupService {
     }
 
 
-    /**
-     * Resend an account group invitation email
-     *
-     * @param AccountGroupInvitation $invite
-     * @return void
-     */
-    public function resendAccountGroupInvitationEmail(AccountGroupInvitation $invite): void {
-
-        $accountGroupId = $invite->getAccountGroupId();
-        $accountId = $invite->getAccountId();
-
-        // Get the active account invitation email addresses
-        $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("ACCOUNT_GROUP_INVITE", $accountGroupId);
-
-        foreach ($pendingActions as $pendingAction) {
-            if ($pendingAction->getData()["accountId"] ?? null == $accountId) {
-
-                $accountGroup = $this->getAccountGroup($pendingAction->getObjectId());
-
-                // Send an invitation email attached to the account
-                $invitationEmail = new AccountTemplatedEmail($accountId, "security/account-group-invite", [
-                    "account_group" => $accountGroup,
-                    "invitationCode" => $pendingAction->getIdentifier(),
-                    "resent" => true,
-                    "currentTime" => date("d/m/Y H:i:s")
-                ]);
-
-                $this->emailService->send($invitationEmail, $accountId);
-
-                $pendingAction->resetExpiryTime();
-                $pendingAction->save();
-
-                break;
-            }
-        }
-    }
 
     /**
      * Revoke an invitation

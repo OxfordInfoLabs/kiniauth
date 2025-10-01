@@ -78,10 +78,10 @@ trait AccountGroup {
      * @http POST /invite
      *
      * @param int $accountGroupId
-     * @param int $accountId
+     * @param string $accountExternalIdentifier
      */
-    public function inviteAccountToAccountGroup($accountGroupId, $accountId) {
-        $this->accountGroupService->inviteAccountToAccountGroup($accountGroupId, $accountId);
+    public function inviteAccountToAccountGroup($accountGroupId, $accountExternalIdentifier) {
+        $this->accountGroupService->inviteAccountToAccountGroup($accountGroupId, $accountExternalIdentifier);
     }
 
 
@@ -98,17 +98,7 @@ trait AccountGroup {
         return $this->accountGroupService->getActiveAccountGroupInvitationAccounts($accountGroupId);
     }
 
-    /**
-     * Resend an invitation to an account group
-     *
-     * @http PUT /invite
-     *
-     * @param AccountGroupInvitation $invite
-     * @return void
-     */
-    public function resendActiveAccountInvitationEmail($invite) {
-        $this->accountGroupService->resendAccountGroupInvitationEmail($invite);
-    }
+
 
     /**
      * Revoke an invitation to an account group
