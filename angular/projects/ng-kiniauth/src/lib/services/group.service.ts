@@ -17,8 +17,12 @@ export class GroupService {
     }
 
     public async listAccountGroups() {
+        const session = this.authService.sessionData.getValue();
         const accountGroups = await this.http.get(this.config.accessHttpURL + '/accountGroup/list').toPromise();
-        return _.values(accountGroups || {});
+        return _(accountGroups || {}).values().map((group: any) => {
+            group.owner = group.ownerAccountId === session.account.accountId;
+            return group;
+        }).valueOf();
     }
 
     public createAccountGroup(name: string, description: string) {
@@ -28,9 +32,9 @@ export class GroupService {
         }).toPromise();
     }
 
-    public inviteAccountToGroup(accountGroupId: number, accountId: number) {
-        return this.http.post(this.config.accessHttpURL + '/accountGroup/invite', {
-            accountGroupId, accountId
+    public inviteAccountToGroup(accountGroupId: number, accountExternalIdentifier: number) {
+        return this.http.get(this.config.accessHttpURL + '/accountGroup/invite', {
+            params: {accountGroupId, accountExternalIdentifier}
         }).toPromise();
     }
 

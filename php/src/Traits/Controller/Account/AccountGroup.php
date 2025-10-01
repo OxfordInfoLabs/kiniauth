@@ -80,7 +80,7 @@ trait AccountGroup {
     /**
      * Invite an account to an account group
      *
-     * @http POST /invite
+     * @http GET /invite
      *
      * @param int $accountGroupId
      * @param string $accountExternalIdentifier
