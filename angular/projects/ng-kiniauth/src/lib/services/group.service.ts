@@ -21,6 +21,7 @@ export class GroupService {
         const accountGroups = await this.http.get(this.config.accessHttpURL + '/accountGroup/list').toPromise();
         return _(accountGroups || {}).values().map((group: any) => {
             group.owner = group.ownerAccountId === session.account.accountId;
+            group.feeds = [];
             return group;
         }).valueOf();
     }
