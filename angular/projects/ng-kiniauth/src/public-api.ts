@@ -10,6 +10,7 @@ export * from './lib/services/notification.service';
 export * from './lib/services/account.service';
 export * from './lib/services/admin-account.service';
 export * from './lib/services/communication.service';
+export * from './lib/services/group.service';
 
 // Components
 export * from './lib/views/user/account-summary.component';
