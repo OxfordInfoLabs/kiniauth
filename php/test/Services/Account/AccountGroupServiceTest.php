@@ -63,6 +63,17 @@ class AccountGroupServiceTest extends TestBase {
         $this->assertCount(3, $groupTwoMembers);
     }
 
+    public function testCanListAccountGroupsForAccount() {
+        $accountGroups = $this->accountGroupService->listAccountGroupsForAccount(1);
+        $this->assertCount(2, $accountGroups);
+
+        $accountGroups = $this->accountGroupService->listAccountGroupsForAccount(2);
+        $this->assertCount(2, $accountGroups);
+
+        $accountGroups = $this->accountGroupService->listAccountGroupsForAccount(3);
+        $this->assertCount(1, $accountGroups);
+    }
+
     public function testCanCreateNewAccountGroup() {
 
         $accountGroupId = $this->accountGroupService->createAccountGroup(

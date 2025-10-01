@@ -3,14 +3,9 @@
 namespace Kiniauth\Traits\Controller\Account;
 
 use Kiniauth\Objects\Account\AccountGroupMember;
-use Kiniauth\Objects\Account\AccountSummary;
-use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Account\AccountGroupService;
-use Kiniauth\ValueObjects\Account\AccountDiscoveryItem;
 use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
 use Kiniauth\ValueObjects\Account\AccountGroupInvitation;
-use Kiniauth\ValueObjects\Account\AccountInvitation;
-use Kiniauth\ValueObjects\Registration\NewUserAccountDescriptor;
 
 trait AccountGroup {
 
@@ -35,7 +30,17 @@ trait AccountGroup {
      *
      */
     public function getAccountGroup($accountGroupId) {
-        return AccountSummary::fetch($accountGroupId);
+        return $this->accountGroupService->getAccountGroup($accountGroupId);
+    }
+
+    /**
+     * @http GET /list
+     *
+     * @param $accountId
+     * @return AccountGroup[]
+     */
+    public function listAccountGroup($accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
+        return $this->accountGroupService->listAccountGroupsForAccount($accountId);
     }
 
     /**
