@@ -90,6 +90,12 @@ class AccountGroupServiceTest extends TestBase {
         $this->assertEquals("New Account Group", $accountGroup->getName());
         $this->assertEquals("bestest account group", $accountGroup->getDescription());
         $this->assertEquals(1, $accountGroup->getOwnerAccountId());
+
+        // Check we are in the group
+        $this->assertEquals([
+            new AccountGroupMember($accountGroupId, 1)
+        ], $accountGroup->getAccountGroupMembers());
+
     }
 
     public function testCanAddMembersToAccountGroup() {
@@ -191,7 +197,6 @@ class AccountGroupServiceTest extends TestBase {
         ]));
     }
 
- 
 
     public function testCanGetAccountGroupInvitationDetails() {
         $pendingAction = new PendingAction("ACCOUNT_GROUP_INVITE", 2, ["account_id" => 3]);

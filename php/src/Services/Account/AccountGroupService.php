@@ -91,10 +91,16 @@ class AccountGroupService {
      * @return int
      */
     public function createAccountGroup(AccountGroupDescriptor $accountGroupDescriptor): int {
+
+        $accountId = $accountGroupDescriptor->getOwnerAccountId() ?? Account::LOGGED_IN_ACCOUNT;
+
         $accountGroup = new AccountGroup(
             $accountGroupDescriptor->getName(),
             $accountGroupDescriptor->getDescription(),
-            $accountGroupDescriptor->getOwnerAccountId() ?? Account::LOGGED_IN_ACCOUNT
+            $accountId,
+            [
+                new AccountGroupMember(null, $accountId)
+            ]
         );
         $accountGroup->save();
         return $accountGroup->getId();
