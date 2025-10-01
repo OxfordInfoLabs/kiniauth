@@ -24,6 +24,15 @@ class AccountGroupMember extends ActiveRecord {
      */
     private ?int $memberAccountId;
 
+
+    /**
+     * @var AccountLabel
+     * @manyToOne
+     * @parentJoinColumns member_account_id
+     * @readOnly
+     */
+    private ?AccountLabel $memberAccount = null;
+
     /**
      * @param int $accountGroupId
      * @param int $memberAccountId
@@ -61,6 +70,15 @@ class AccountGroupMember extends ActiveRecord {
      */
     public function setMemberAccountId(int $memberAccountId): void {
         $this->memberAccountId = $memberAccountId;
+    }
+
+    /**
+     * Return a label for the account
+     *
+     * @return AccountLabel
+     */
+    public function getMemberAccount(): ?AccountLabel {
+        return $this->memberAccount;
     }
 
 }
