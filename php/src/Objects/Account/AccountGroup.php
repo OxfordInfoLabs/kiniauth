@@ -48,11 +48,13 @@ class AccountGroup extends ActiveRecord {
      * @param int $ownerAccountId
      * @param AccountGroupMember[] $accountGroupMembers
      */
-    public function __construct(?string $name = null, ?string $description = null, ?int $ownerAccountId = null, ?array $accountGroupMembers = []) {
+    public function __construct(?string $name = null, ?string $description = null, ?int $ownerAccountId = null, ?array $accountGroupMembers = [],
+                                ?int    $accountGroupId = null) {
         $this->name = $name;
         $this->description = $description;
         $this->ownerAccountId = $ownerAccountId;
         $this->accountGroupMembers = $accountGroupMembers;
+        $this->accountGroupId = $accountGroupId;
     }
 
     /**

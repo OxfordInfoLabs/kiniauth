@@ -66,6 +66,15 @@ class AccountGroupService {
         return AccountGroup::fetch($accountGroupId);
     }
 
+
+    /**
+     * @param array $accountGroupIds
+     * @return AccountGroup[]
+     */
+    public function getMultipleAccountGroups(array $accountGroupIds): array {
+        return AccountGroup::multiFetch($accountGroupIds);
+    }
+
     /**
      * @return AccountGroup[]
      */
@@ -82,7 +91,7 @@ class AccountGroupService {
         /** @var AccountGroupMember[] $accountGroupMembers */
         $accountGroupMembers = AccountGroupMember::filter("WHERE member_account_id = ?", $accountId);
 
-        $accountGroupIds = array_map(fn ($accountGroupMember) => $accountGroupMember->getAccountGroupId(), $accountGroupMembers);
+        $accountGroupIds = array_map(fn($accountGroupMember) => $accountGroupMember->getAccountGroupId(), $accountGroupMembers);
         return AccountGroup::multiFetch($accountGroupIds);
     }
 
@@ -222,7 +231,6 @@ class AccountGroupService {
             );
         }, $pendingActions);
     }
-
 
 
     /**

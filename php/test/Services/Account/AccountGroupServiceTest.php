@@ -210,4 +210,39 @@ class AccountGroupServiceTest extends TestBase {
         $this->assertEquals(3, $invitationDetails->getAccountId());
     }
 
+
+    public function testCanGetMultipleAccountGroupsById() {
+
+        $accountGroupId1 = $this->accountGroupService->createAccountGroup(
+            new AccountGroupDescriptor(
+                "Account Group 1",
+                "First group",
+                1
+            )
+        );
+
+        $accountGroupId2 = $this->accountGroupService->createAccountGroup(
+            new AccountGroupDescriptor(
+                "Account Group 2",
+                "Second group",
+                1
+            )
+        );
+
+        $accountGroupId3 = $this->accountGroupService->createAccountGroup(
+            new AccountGroupDescriptor(
+                "Account Group 3",
+                "Third group",
+                1
+            )
+        );
+
+        $groups = $this->accountGroupService->getMultipleAccountGroups([$accountGroupId2, $accountGroupId3]);
+        $this->assertEquals([$accountGroupId2 => AccountGroup::fetch($accountGroupId2),
+            $accountGroupId3 => AccountGroup::fetch($accountGroupId3)],
+            $groups);
+
+
+    }
+
 }
