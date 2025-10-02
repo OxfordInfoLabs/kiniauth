@@ -37,9 +37,10 @@ class AccountGroupMember extends ActiveRecord {
      * @param int $accountGroupId
      * @param int $memberAccountId
      */
-    public function __construct(?int $accountGroupId = null, ?int $memberAccountId = null) {
+    public function __construct(?int $accountGroupId = null, ?int $memberAccountId = null, ?AccountLabel $memberAccount = null) {
         $this->accountGroupId = $accountGroupId;
         $this->memberAccountId = $memberAccountId;
+        $this->memberAccount = $memberAccount;
     }
 
     /**

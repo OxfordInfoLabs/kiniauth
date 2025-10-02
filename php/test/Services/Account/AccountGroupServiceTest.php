@@ -6,6 +6,7 @@ use Kiniauth\Exception\Security\InvalidAccountGroupOwnerException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountGroup;
 use Kiniauth\Objects\Account\AccountGroupMember;
+use Kiniauth\Objects\Account\AccountLabel;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Objects\Workflow\PendingAction;
 use Kiniauth\Services\Account\AccountGroupService;
@@ -93,7 +94,7 @@ class AccountGroupServiceTest extends TestBase {
 
         // Check we are in the group
         $this->assertEquals([
-            new AccountGroupMember($accountGroupId, 1)
+            new AccountGroupMember($accountGroupId, 1,new AccountLabel(1, "Sam Davis Design"))
         ], $accountGroup->getAccountGroupMembers());
 
     }
@@ -166,7 +167,7 @@ class AccountGroupServiceTest extends TestBase {
         $this->assertTrue($this->emailService->methodWasCalled("send", [$invitationEmail, 4]));
 
         // Test accepting
-        $pendingAction = new PendingAction("ACCOUNT_GROUP_INVITE", 1, ["account_id" => 4]);
+        $pendingAction = new PendingAction("ACCOUNT_GROUP_INVITE", 1, ["accountId" => 4]);
         $this->pendingActionService->returnValue("getPendingActionByIdentifier", $pendingAction, ["ACCOUNT_GROUP_INVITE", "mycode123"]);
         $this->accountGroupService->acceptAccountGroupInvitation("mycode123");
 
@@ -187,7 +188,7 @@ class AccountGroupServiceTest extends TestBase {
     public function testCanListActiveAccountGroupInvitations() {
 
         $this->pendingActionService->returnValue("getAllPendingActionsForTypeAndObjectId",
-            [new PendingAction("ACCOUNT_GROUP_INVITE", 1, ["account_id" => 1])],
+            [new PendingAction("ACCOUNT_GROUP_INVITE", 1, ["accountId" => 1])],
             ["ACCOUNT_GROUP_INVITE", 1]);
 
         $this->accountGroupService->getActiveAccountGroupInvitationAccounts(1);

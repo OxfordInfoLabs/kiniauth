@@ -7,6 +7,7 @@ use Kiniauth\Exception\Security\InvalidAccountGroupOwnerException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountGroup;
 use Kiniauth\Objects\Account\AccountGroupMember;
+use Kiniauth\Objects\Account\AccountLabel;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
@@ -224,9 +225,13 @@ class AccountGroupService {
     public function getActiveAccountGroupInvitationAccounts(int $accountGroupId): array {
         $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("ACCOUNT_GROUP_INVITE", $accountGroupId);
         return array_map(function ($pendingAction) use ($accountGroupId) {
+
+            $accountId = $pendingAction->getData()["accountId"] ?? null;
+
             return new AccountGroupInvitation(
                 $accountGroupId,
-                $pendingAction->getData()["account_id"] ?? null,
+                 $accountId,
+                $accountId ? AccountLabel::fetch($accountId)?->getName() : null,
                 $pendingAction->getExpiryDateTime()->format("Y-m-d H:i:s")
             );
         }, $pendingActions);
@@ -289,12 +294,12 @@ class AccountGroupService {
         try {
             $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("ACCOUNT_GROUP_INVITE", $invitationCode);
 
-            $accountId = $pendingAction->getData()["account_id"];
+            $accountId = $pendingAction->getData()["accountId"];
             $accountGroupId = $pendingAction->getObjectId();
 
             $pendingData = $pendingAction->getData();
 
-            $accountGroupMember = new AccountGroupMember($accountGroupId, $pendingData["account_id"]);
+            $accountGroupMember = new AccountGroupMember($accountGroupId, $pendingData["accountId"]);
             $accountGroupMember->save();
 
             // Remove the pending action once completed.
