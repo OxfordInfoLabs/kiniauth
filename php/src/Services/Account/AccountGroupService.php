@@ -225,13 +225,15 @@ class AccountGroupService {
      */
     public function getActiveAccountGroupInvitationAccounts(int $accountGroupId): array {
         $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("ACCOUNT_GROUP_INVITE", $accountGroupId);
-        return array_map(function ($pendingAction) use ($accountGroupId) {
+        $accountGroup = $this->getAccountGroup($accountGroupId);
+        return array_map(function ($pendingAction) use ($accountGroup) {
 
             $accountId = $pendingAction->getData()["accountId"] ?? null;
 
             return new AccountGroupInvitation(
-                $accountGroupId,
-                 $accountId,
+                $accountGroup->getId(),
+                $accountGroup->getName(),
+                $accountId,
                 $accountId ? AccountLabel::fetch($accountId)?->getName() : null,
                 $pendingAction->getExpiryDateTime()->format("Y-m-d H:i:s")
             );
@@ -271,10 +273,14 @@ class AccountGroupService {
 
         try {
             $pendingAction = $this->pendingActionService->getPendingActionByIdentifier("ACCOUNT_GROUP_INVITE", $invitationCode);
+            $accountGroup = $this->getAccountGroup($pendingAction->getObjectId());
+            $accountId = $pendingAction->getData()["accountId"];
 
             return new AccountGroupInvitation(
                 $pendingAction->getObjectId(),
-                $pendingAction->getData()["accountId"],
+                $accountGroup->getName(),
+                $accountId,
+                $accountId ? AccountLabel::fetch($accountId)?->getName() : null,
                 $pendingAction->getExpiryDateTime()->format("Y-m-d H:i:s")
             );
         } catch (ItemNotFoundException $e) {

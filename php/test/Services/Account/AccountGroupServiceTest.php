@@ -200,7 +200,7 @@ class AccountGroupServiceTest extends TestBase {
 
 
     public function testCanGetAccountGroupInvitationDetails() {
-        $pendingAction = new PendingAction("ACCOUNT_GROUP_INVITE", 2, ["account_id" => 3]);
+        $pendingAction = new PendingAction("ACCOUNT_GROUP_INVITE", 2, ["accountId" => 3]);
         $code = $pendingAction->getIdentifier();
 
         $this->pendingActionService->returnValue("getPendingActionByIdentifier", $pendingAction, ["ACCOUNT_GROUP_INVITE", $code]);
