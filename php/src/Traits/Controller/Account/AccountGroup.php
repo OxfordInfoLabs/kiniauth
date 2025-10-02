@@ -73,7 +73,7 @@ trait AccountGroup {
      * @param int $accountGroupId
      * @param int $accountId
      */
-    public function removeUserFromAccountGroup(int $accountGroupId, int $accountId) {
+    public function removeAccountFromAccountGroup(int $accountGroupId, int $accountId) {
         $this->accountGroupService->removeMemberFromAccountGroup($accountGroupId, $accountId);
     }
 

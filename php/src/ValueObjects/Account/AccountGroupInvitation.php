@@ -12,6 +12,8 @@ class AccountGroupInvitation {
 
     private string $accountName;
 
+    private string $owningAccountName;
+
     private ?string $expiryDate;
 
     /**
@@ -21,11 +23,12 @@ class AccountGroupInvitation {
      * @param string $accountName
      * @param string $expiryDate
      */
-    public function __construct(int $accountGroupId, string $accountGroupName, int $accountId, string $accountName, ?string $expiryDate = null) {
+    public function __construct(int $accountGroupId, string $accountGroupName, int $accountId, string $accountName, ?string $owningAccountName = null, ?string $expiryDate = null) {
         $this->accountGroupId = $accountGroupId;
         $this->accountGroupName = $accountGroupName;
         $this->accountId = $accountId;
         $this->accountName = $accountName;
+        $this->owningAccountName = $owningAccountName;
         $this->expiryDate = $expiryDate;
     }
 
@@ -60,6 +63,16 @@ class AccountGroupInvitation {
     public function setAccountName(string $accountName): void {
         $this->accountName = $accountName;
     }
+
+    public function getOwningAccountName(): string {
+        return $this->owningAccountName;
+    }
+
+    public function setOwningAccountName(string $owningAccountName): void {
+        $this->owningAccountName = $owningAccountName;
+    }
+
+
 
     public function getExpiryDate(): ?string {
         return $this->expiryDate;
