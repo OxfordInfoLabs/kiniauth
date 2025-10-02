@@ -56,4 +56,14 @@ export class GroupService {
             params: {accountGroupId, accountId}
         }).toPromise();
     }
+
+    public getInvitationDetails(invitationCode: string) {
+        return this.http.get(this.config.accessHttpURL + '/accountGroup/invitation/' + invitationCode)
+            .toPromise();
+    }
+
+    public acceptInvitation(invitationCode: string) {
+        return this.http.post(this.config.accessHttpURL + '/accountGroup/invitation/' + invitationCode, {})
+            .toPromise();
+    }
 }

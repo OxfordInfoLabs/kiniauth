@@ -1,0 +1,52 @@
+<div class="actionpanel sixtyforty mx1 mb2 mx-4 mb-8">
+
+    <div class="actioninfo p2w p1m">
+        <ng-template [ngIf]="!inviteAccepted && !inviteCancelled && !invitationError">
+            <h4 class="mb1 mt0 flex align-center">
+                <b>Group invitation request</b>
+            </h4>
+
+            <div class="mb1">
+                <p class="mb-4"><b>{{details.sharerName}}</b> has invited you to share the dataset <b>{{details.itemLabel}}</b></p>
+
+                <p class="mt-4">To accept this invitation please click on the 'Accept Invitation' button. </p>
+            </div>
+        </ng-template>
+
+        <ng-template [ngIf]="inviteAccepted">
+            <div class="my-8 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-green-500 h-24 w-24 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div class="text-lg">Invitation Accepted. You now have access to the <b>{{details.itemLabel}}</b> dataset.</div>
+            </div>
+        </ng-template>
+
+        <ng-template [ngIf]="inviteCancelled">
+            <div class="my-8 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-red-500 h-24 w-24 mr-2"  fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+
+                <div class="text-lg">Invitation Cancelled. You will need to contact <b>{{details.sharerName}}</b> if you wish to share the <b>{{details.itemLabel}}</b> dataset in the future.</div>
+            </div>
+        </ng-template>
+
+        <ng-template [ngIf]="invitationError">
+            <div class="my-8 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="text-yellow-500 h-24 w-24 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div class="text-lg">There was a problem with the invitation code supplied. It is likely that the
+                    invitation code has expired. Please check with the account holder who has invited you to share this data.</div>
+            </div>
+        </ng-template>
+
+    </div>
+    <div class="actions flex flex-col align-center justify-center p1">
+        <button *ngIf="!inviteAccepted && !inviteCancelled && !invitationError" class="button small-button white-button disabled:opacity-50" (click)="acceptInvitation()">
+            Accept Invitation
+        </button>
+    </div>
+
+</div>

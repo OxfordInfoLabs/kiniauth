@@ -19,6 +19,7 @@ use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
+use Kinikit\Core\Logging\Logger;
 
 class AccountGroupService {
 
@@ -273,7 +274,7 @@ class AccountGroupService {
 
             return new AccountGroupInvitation(
                 $pendingAction->getObjectId(),
-                $pendingAction->getData()["account_id"],
+                $pendingAction->getData()["accountId"],
                 $pendingAction->getExpiryDateTime()->format("Y-m-d H:i:s")
             );
         } catch (ItemNotFoundException $e) {
