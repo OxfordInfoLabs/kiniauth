@@ -166,6 +166,20 @@ class AccountGroupService {
     }
 
     /**
+     * @param int $accountGroupId
+     * @return void
+     */
+    public function deleteAccountGroup(int $accountGroupId): void {
+        try {
+            /** @var AccountGroup $accountGroup */
+            $accountGroup = AccountGroup::fetch($accountGroupId);
+            $accountGroup->remove();
+        } catch (ObjectNotFoundException) {
+            return;
+        }
+    }
+
+    /**
      * Invite an account to join an account group.
      *
      * @param int $accountGroupId
