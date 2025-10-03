@@ -33,6 +33,12 @@ export class GroupService {
         }).toPromise();
     }
 
+    public deleteGroup(accountGroupId: number) {
+        return this.http.delete(this.config.accessHttpURL + '/accountGroup', {
+            params: {accountGroupId}
+        }).toPromise();
+    }
+
     public inviteAccountToGroup(accountGroupId: number, accountExternalIdentifier: number) {
         return this.http.get(this.config.accessHttpURL + '/accountGroup/invite', {
             params: {accountGroupId, accountExternalIdentifier}
