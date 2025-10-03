@@ -43,4 +43,21 @@ class AccountGroupInterceptor extends DefaultORMInterceptor {
 
     }
 
+    /**
+     * @param AccountGroup $object
+     * @return void
+     */
+    public function preDelete($object) {
+        if ($this->securityService->isSuperUserLoggedIn()) {
+            return;
+        } else {
+            /** @var Account $loggedInAccount */
+            $loggedInAccount = $this->securityService->getLoggedInSecurableAndAccount()[1];
+
+            if ($loggedInAccount?->getAccountId() != $object->getOwnerAccountId()) {
+                throw new AccessDeniedException();
+            }
+        }
+    }
+
 }
