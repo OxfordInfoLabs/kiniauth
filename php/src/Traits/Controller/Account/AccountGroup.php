@@ -37,7 +37,7 @@ trait AccountGroup {
      * @http GET /list
      *
      * @param $accountId
-     * @return AccountGroup[]
+     * @return \Kiniauth\Objects\Account\AccountGroup[]
      */
     public function listAccountGroup($accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
         return $this->accountGroupService->listAccountGroupsForAccount($accountId);
@@ -75,6 +75,16 @@ trait AccountGroup {
      */
     public function removeAccountFromAccountGroup(int $accountGroupId, int $accountId) {
         $this->accountGroupService->removeMemberFromAccountGroup($accountGroupId, $accountId);
+    }
+
+    /**
+     * @http DELETE /
+     *
+     * @param int $accountGroupId
+     * @return void
+     */
+    public function deleteAccountGroup(int $accountGroupId) {
+        $this->accountGroupService->deleteAccountGroup($accountGroupId);
     }
 
     /**

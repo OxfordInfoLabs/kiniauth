@@ -9,6 +9,7 @@ use Kinikit\Persistence\ORM\ActiveRecord;
  *
  * @table ka_account_group
  * @generate
+ * @interceptor \Kiniauth\Services\Security\AccountGroupInterceptor
  */
 class AccountGroup extends ActiveRecord {
 

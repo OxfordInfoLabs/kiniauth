@@ -77,6 +77,7 @@ class AccountGroupServiceTest extends TestBase {
 
     public function testCanCreateNewAccountGroup() {
 
+        $this->securityService->becomeAccount(1);
         $accountGroupId = $this->accountGroupService->createAccountGroup(
             new AccountGroupDescriptor(
                 "New Account Group",
@@ -100,6 +101,7 @@ class AccountGroupServiceTest extends TestBase {
     }
 
     public function testCanAddMembersToAccountGroup() {
+        $this->securityService->becomeAccount(1);
         $this->accountGroupService->addMemberToAccountGroup(1, 4);
 
         try {
