@@ -36,7 +36,6 @@ class AccountGroupInterceptor extends DefaultORMInterceptor {
             $members = array_map(fn ($groupMemberObj) => $groupMemberObj->getMemberAccountId(), $object->getAccountGroupMembers());
 
             if (!in_array($loggedInAccount?->getAccountId(), $members)) {
-                print_r($members);
                 throw new AccessDeniedException();
             }
         }

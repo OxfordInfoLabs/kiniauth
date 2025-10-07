@@ -15,6 +15,7 @@ use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
+use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
 use Kiniauth\ValueObjects\Account\AccountGroupInvitation;
@@ -95,7 +96,7 @@ class AccountGroupServiceTest extends TestBase {
 
         // Check we are in the group
         $this->assertEquals([
-            new AccountGroupMember($accountGroupId, 1,new AccountLabel(1, "Sam Davis Design"))
+            new AccountGroupMember($accountGroupId, 1, new AccountLabel(1, "Sam Davis Design"))
         ], $accountGroup->getAccountGroupMembers());
 
     }
@@ -215,6 +216,9 @@ class AccountGroupServiceTest extends TestBase {
 
 
     public function testCanGetMultipleAccountGroupsById() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
 
         $accountGroupId1 = $this->accountGroupService->createAccountGroup(
             new AccountGroupDescriptor(
