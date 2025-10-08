@@ -106,6 +106,11 @@ export class AuthenticationService {
         }).toPromise();
     }
 
+    public unlockUserWithCode(code: string) {
+        return this.http.get(this.config.guestHttpURL + '/auth/unlockUser/' + code)
+            .toPromise();
+    }
+
     public updateApplicationSettings(settings) {
         return this.http.put(this.config.accessHttpURL + '/user/applicationSettings', settings
         ).toPromise();

@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation} from '@angular/core';
-import { Router } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import { AuthenticationService } from '../../../services/authentication.service';
 import { BaseComponent } from '../../base-component';
 import {MatDialogRef} from '@angular/material/dialog';
@@ -40,14 +40,32 @@ export class LoginComponent extends BaseComponent implements OnInit {
     public forgottenPassword = false;
     public passwordResetSent = false;
     public trustBrowser = false;
+    public unlockCode: string;
+    public invalidUnlockCode = false;
+    public unlocking: boolean = true;
 
     constructor(private router: Router,
-                kcAuthService: AuthenticationService) {
+                kcAuthService: AuthenticationService,
+                private route: ActivatedRoute) {
+
         super(kcAuthService);
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         super.ngOnInit();
+
+        const params = this.route.snapshot.queryParams;
+        this.unlockCode = params.unlockCode || null;
+
+        if (this.unlockCode) {
+            try {
+                await this.authService.unlockUserWithCode(this.unlockCode);
+                this.unlocking = false;
+            } catch (e) {
+                this.invalidUnlockCode = true;
+                this.unlocking = false;
+            }
+        }
 
         this.authService.sessionData.subscribe(session => {
             if (session && session.delayedCaptchas && session.delayedCaptchas['guest/auth/login']) {
