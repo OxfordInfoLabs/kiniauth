@@ -39,6 +39,12 @@ export class GroupService {
         }).toPromise();
     }
 
+    public leaveGroup(accountGroupId: number) {
+        return this.http.get(this.config.accessHttpURL + '/accountGroup/leave', {
+            params: {accountGroupId}
+        }).toPromise();
+    }
+
     public inviteAccountToGroup(accountGroupId: number, accountExternalIdentifier: number) {
         return this.http.get(this.config.accessHttpURL + '/accountGroup/invite', {
             params: {accountGroupId, accountExternalIdentifier}
