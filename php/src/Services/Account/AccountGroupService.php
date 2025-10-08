@@ -15,6 +15,7 @@ use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
 use Kiniauth\ValueObjects\Account\AccountGroupInvitation;
 use Kinikit\Core\Communication\Email\MissingEmailTemplateException;
+use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
@@ -152,12 +153,39 @@ class AccountGroupService {
     /**
      * @param int $accountGroupId
      * @param int $accountId
+     * @param int $loggedInAccountId
      * @return void
      */
-    public function removeMemberFromAccountGroup(int $accountGroupId, int $accountId): void {
+    public function removeMemberFromAccountGroup(int $accountGroupId, int $accountId, $loggedInAccountId = Account::LOGGED_IN_ACCOUNT): void {
+
+        // Check the logged in account is the account group owner
+        /** @var AccountGroup $accountGroup */
+        $accountGroup = AccountGroup::fetch($accountGroupId);
+
+        if ($accountGroup->getOwnerAccountId() != $loggedInAccountId) {
+            throw new AccessDeniedException();
+        }
+
         try {
             /** @var AccountGroupMember $accountGroupMember */
             $accountGroupMember = AccountGroupMember::fetch([$accountGroupId, $accountId]);
+            $accountGroupMember->remove();
+        } catch (ObjectNotFoundException $e) {
+            return;
+        }
+
+    }
+
+    /**
+     * @param int $accountGroupId
+     * @param int $loggedInAccountId
+     * @return void
+     */
+    public function leaveAccountGroup(int $accountGroupId, $loggedInAccountId = Account::LOGGED_IN_ACCOUNT) {
+
+        try {
+            /** @var AccountGroupMember $accountGroupMember */
+            $accountGroupMember = AccountGroupMember::fetch([$accountGroupId, $loggedInAccountId]);
             $accountGroupMember->remove();
         } catch (ObjectNotFoundException $e) {
             return;

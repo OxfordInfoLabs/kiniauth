@@ -18,7 +18,6 @@ use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
-use Kiniauth\ValueObjects\Account\AccountGroupInvitation;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Testing\MockObjectProvider;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
@@ -122,16 +121,24 @@ class AccountGroupServiceTest extends TestBase {
 
     public function testCanRemoveMembersFromAccountGroup() {
         // Remove someone
-        $this->accountGroupService->removeMemberFromAccountGroup(2, 3);
+        $this->accountGroupService->removeMemberFromAccountGroup(2, 3,2);
 
         $accountGroupMembers = $this->accountGroupService->getMembersOfAccountGroup(2);
         $this->assertCount(2, $accountGroupMembers);
 
         // Remove someone else
-        $this->accountGroupService->removeMemberFromAccountGroup(2, 1);
+        $this->accountGroupService->removeMemberFromAccountGroup(2, 1, 2);
 
         $accountGroupMembers = $this->accountGroupService->getMembersOfAccountGroup(2);
         $this->assertCount(1, $accountGroupMembers);
+    }
+
+    public function testCanLeaveAccountGroup() {
+
+        $this->accountGroupService->leaveAccountGroup(1, 4);
+
+        $accountGroupMembers = $this->accountGroupService->getMembersOfAccountGroup(1);
+        $this->assertCount(2, $accountGroupMembers);
     }
 
     public function testCanInviteAccountToJoinAccountGroupAndInvitationCanBeAccepted() {

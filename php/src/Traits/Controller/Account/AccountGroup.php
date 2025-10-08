@@ -67,7 +67,7 @@ trait AccountGroup {
         return $this->accountGroupService->getMembersOfAccountGroup($accountGroupId);
     }
 
-     /**
+    /**
      * @http GET /removeMember
      *
      * @param int $accountGroupId
@@ -75,6 +75,16 @@ trait AccountGroup {
      */
     public function removeAccountFromAccountGroup(int $accountGroupId, int $accountId) {
         $this->accountGroupService->removeMemberFromAccountGroup($accountGroupId, $accountId);
+    }
+
+    /**
+     * @http GET /leave
+     *
+     * @param int $accountGroupId
+     * @return void
+     */
+    public function leaveAccountGroup(int $accountGroupId) {
+        $this->accountGroupService->leaveAccountGroup($accountGroupId);
     }
 
     /**
@@ -119,7 +129,7 @@ trait AccountGroup {
      * @http GET /invitation/$invitationCode
      *
      * @param string $invitationCode
-     * 
+     *
      * @return AccountGroupInvitation
      */
     public function getInvitationDetails($invitationCode) {
