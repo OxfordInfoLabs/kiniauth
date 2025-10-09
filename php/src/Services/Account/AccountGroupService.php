@@ -298,7 +298,7 @@ class AccountGroupService {
         $pendingInvites = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId("ACCOUNT_GROUP_INVITE", $accountGroupId) ?? [];
 
         foreach ($pendingInvites as $invite) {
-            if ($invite->getData()["account_id"] == $accountId) {
+            if ($invite->getData()["accountId"] == $accountId) {
                 $this->pendingActionService->removePendingAction("ACCOUNT_GROUP_INVITE", $invite->getIdentifier());
             }
         }

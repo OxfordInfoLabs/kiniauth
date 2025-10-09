@@ -63,9 +63,9 @@ export class GroupService {
         }).toPromise();
     }
 
-    public revokeGroupInvitation(accountGroupId: number, accountId: number) {
-        return this.http.delete(this.config.accessHttpURL + '/accountGroup/invitations', {
-            params: {accountGroupId, accountId}
+    public revokeGroupInvitation(accountGroupInvitation: any) {
+        return this.http.delete(this.config.accessHttpURL + '/accountGroup/invite', {
+            body: accountGroupInvitation
         }).toPromise();
     }
 
