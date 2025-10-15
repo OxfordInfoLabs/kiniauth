@@ -42,6 +42,7 @@ import { AccountDiscoverabilityComponent } from './lib/views/account/account-dis
 import { ExportProjectComponent } from './lib/views/export-project/export-project.component';
 import { ImportProjectComponent } from './lib/views/import-project/import-project.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { GroupInvitationComponent } from './lib/views/group-invitation/group-invitation.component';
 
 @NgModule({
     declarations: [
@@ -73,7 +74,8 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
         SecurityComponent,
         AccountDiscoverabilityComponent,
         ExportProjectComponent,
-        ImportProjectComponent
+        ImportProjectComponent,
+        GroupInvitationComponent
     ],
     imports: [
         RouterModule,
@@ -112,7 +114,8 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
         SecurityComponent,
         AccountDiscoverabilityComponent,
         ExportProjectComponent,
-        ImportProjectComponent
+        ImportProjectComponent,
+        GroupInvitationComponent
     ]
 })
 export class NgKiniAuthModule {

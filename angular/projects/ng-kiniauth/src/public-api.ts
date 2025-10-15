@@ -10,6 +10,7 @@ export * from './lib/services/notification.service';
 export * from './lib/services/account.service';
 export * from './lib/services/admin-account.service';
 export * from './lib/services/communication.service';
+export * from './lib/services/group.service';
 
 // Components
 export * from './lib/views/user/account-summary.component';
@@ -32,5 +33,6 @@ export * from './lib/views/security/security.component';
 export * from './lib/views/account/account-discoverability/account-discoverability.component';
 export * from './lib/views/export-project/export-project.component';
 export * from './lib/views/import-project/import-project.component';
+export * from './lib/views/group-invitation/group-invitation.component';
 
 export * from './ng-kiniauth.module';
