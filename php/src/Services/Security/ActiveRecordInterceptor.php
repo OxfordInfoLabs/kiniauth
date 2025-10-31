@@ -12,6 +12,7 @@ use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Object\SerialisableObject;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
+use Kinikit\Persistence\Database\Connection\DatabaseConnection;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
 use Kinikit\Persistence\ORM\Mapping\ORMMapping;
@@ -57,6 +58,13 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
      * @var array
      */
     private $whitelistedReadAccounts = [];
+
+    /**
+     * Used for getting the correct ORM
+     * Set via a setter
+     * @var DatabaseConnection
+     */
+    private $databaseConnection;
 
 
     /**
@@ -225,11 +233,17 @@ class ActiveRecordInterceptor extends DefaultORMInterceptor {
         $classInspector = $this->classInspectorProvider->getClassInspector(get_class($object));
 
         // Grab orm mapping
-        $ormMapping = ORMMapping::get(get_class($object));
+        $ormMapping = ORMMapping::get(get_class($object), $this->databaseConnection);
 
         $pk = $ormMapping->getReadTableMapping()->getPrimaryKeyValues($classInspector->getPropertyData($object));
         return $pk;
     }
 
+    /**
+     * @param $databaseConnection
+     */
+    public function setDatabaseConnection($databaseConnection) {
+        $this->databaseConnection = $databaseConnection;
+    }
 
 }
