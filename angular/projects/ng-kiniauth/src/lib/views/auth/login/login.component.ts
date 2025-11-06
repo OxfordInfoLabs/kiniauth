@@ -22,6 +22,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     @Input() forgottenPasswordURL: string;
     @Input() facebookSSOURL: string;
     @Input() googleSSOURL: string;
+    @Input() openIdProviders: any;
     @Input() dialogRef: MatDialogRef<any>;
 
     @Output() loggedIn = new EventEmitter();
@@ -135,6 +136,11 @@ export class LoginComponent extends BaseComponent implements OnInit {
                     this.loading = false;
                 });
         }
+    }
+
+    public loginWithOpenId(provider: string) {
+        const ssoLink = this.authService.getSSOUri(provider);
+        this.openSSO(ssoLink);
     }
 
     public sendForgottenPassword() {

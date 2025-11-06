@@ -2,11 +2,11 @@ import {Injectable} from '@angular/core';
 import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
 import {BehaviorSubject} from 'rxjs/internal/BehaviorSubject';
 import * as lodash from 'lodash';
-
-const _ = lodash.default;
-import * as sha512 from 'js-sha512' ;
+import * as sha512 from 'js-sha512';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {map} from 'rxjs/operators';
+
+const _ = lodash.default;
 
 @Injectable({
     providedIn: 'root'
@@ -71,8 +71,8 @@ export class AuthenticationService {
         });
     }
 
-    public loginSSO(state: string, code: string) {
-        return this.http.post(this.config.guestHttpURL + '/auth/sso/' + state, JSON.stringify(code)).toPromise();
+    public getSSOUri(provider: string) {
+        return this.http.get(this.config.guestHttpURL + '/auth/oidc/initialise/' + provider).toPromise();
     }
 
     public sendPasswordReset(emailAddress, recaptcha?) {

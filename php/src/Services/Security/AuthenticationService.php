@@ -15,6 +15,8 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\ActivityLogger;
+use Kiniauth\Services\Security\OpenId\OpenIdAuthenticator;
+use Kiniauth\Services\Security\OpenId\OpenIdAuthenticatorFactory;
 use Kiniauth\Services\Security\SSOProvider\AppleSSOAuthenticator;
 use Kiniauth\Services\Security\SSOProvider\FacebookSSOAuthenticator;
 use Kiniauth\Services\Security\SSOProvider\GoogleSSOAuthenticator;
@@ -24,7 +26,6 @@ use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\MVC\Request\Request;
@@ -431,6 +432,54 @@ class AuthenticationService {
         $this->securityService->logOut();
     }
 
+    /**
+     * Initialise Login with OpenId
+     *
+     * Returns the authentication endpoint for the provider
+     *
+     * @param string $provider
+     * @return string
+     */
+    public function initialiseOpenId($provider) {
+
+        $clientId = Configuration::readParameter("sso.$provider.clientId");
+        $redirectUri = Configuration::readParameter("sso.$provider.redirectUri");
+
+        $state = bin2hex(random_bytes(16));
+        $nonce = bin2hex(random_bytes(16));
+
+        // Store them in session
+        $this->session->setValue("oidc_state", $state);
+        $this->session->setValue("oidc_nonce", $nonce);
+
+        $params = [
+            'client_id' => $clientId,
+            'redirect_uri' => $redirectUri,
+            'response_type' => 'code',
+            'scope' => 'email',
+            'state' => $state,
+            'nonce' => $nonce,
+        ];
+
+        $base = Configuration::readParameter("sso.$provider.authorizationEndpoint");
+        $url = $base . '?' . http_build_query($params);
+
+        return $url;
+    }
+
+    /**
+     * Authenticate with an OpenId provider
+     *
+     * @param string $provider
+     * @param string $code
+     * @param string $state
+     * @return void
+     */
+    public function authenticateByOpenId($provider, $code, $state) {
+        $factory = new OpenIdAuthenticatorFactory();
+        $authenticator = $factory->create($provider);
+        $authenticator->authenticate($code, $state);
+    }
 
     /**
      * Perform single sign-on with the relevant provider

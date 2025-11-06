@@ -136,6 +136,28 @@ trait Auth {
         return Container::instance()->get(SessionData::class);
     }
 
+    /**
+     * @http GET /oidc/initialise/$provider
+     *
+     * @param string $provider
+     * @return string
+     */
+    public function initialiseOpenId($provider) {
+        return $this->authenticationService->initialiseOpenId($provider);
+    }
+
+    /**
+     * @http GET /oidc/callback/$provider
+     *
+     * @param $provider
+     * @param $code
+     * @param $state
+     * @return void
+     */
+    public function authenticateOpenId($provider, $code, $state) {
+        $this->authenticationService->authenticateByOpenId($provider, $code, $state);
+    }
+
 
     /**
      * @http POST /sso/$provider
