@@ -351,8 +351,16 @@ class AccountGroupService {
 
             $pendingData = $pendingAction->getData();
 
-            $accountGroupMember = new AccountGroupMember($accountGroupId, $pendingData["accountId"]);
-            $accountGroupMember->save();
+            // Grab account group
+            $accountGroup = $this->getAccountGroup($accountGroupId);
+
+            // Add account group member to list
+            $accountGroupMembers = $accountGroup->getAccountGroupMembers();
+            $accountGroupMembers[] = new AccountGroupMember($accountGroupId, $pendingData["accountId"]);
+            $accountGroup->setAccountGroupMembers($accountGroupMembers);
+
+            // Save group to ensure consistency
+            $accountGroup->save();
 
             // Remove the pending action once completed.
             $this->pendingActionService->removePendingAction("ACCOUNT_GROUP_INVITE", $invitationCode);
