@@ -23,10 +23,8 @@ export class AdminAccountService {
             });
     }
 
-    public searchForAccounts(searchString?, limit?, offset?) {
-        return this.http.get(this.config.accessHttpURL + '/account', {
-            params: _.pickBy({searchString, limit, offset}, _.identity)
-        });
+    public searchForAccounts(filters?, limit?, offset?) {
+        return this.http.post(this.config.accessHttpURL + '/account/search?limit=' + limit + '&offset=' + offset, filters);
     }
 
     public searchForSubAccounts(searchString?, limit?, offset?) {

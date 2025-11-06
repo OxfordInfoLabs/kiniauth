@@ -279,5 +279,14 @@ trait Account {
         $this->accountService->resendActiveAccountInvitationEmail($emailAddress);
     }
 
+    /**
+     * @http DELETE /invite
+     *
+     * @param string $emailAddress
+     * @return void
+     */
+    public function revokeAccountInvitation($emailAddress) {
+        $this->accountService->revokeActiveAccountInvitationEmail($emailAddress);
+    }
 
 }
