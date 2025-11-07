@@ -12,10 +12,10 @@ class JWTManager {
     private JWTAlg $alg;
 
     /**
-     * @param JWTAlg $alg
+     * @param $alg
      * @param string $secretKey
      */
-    public function __construct(JWTAlg $alg = JWTAlg::HS256, ?string $secretKey = null) {
+    public function __construct($alg = JWTAlg::HS256, ?string $secretKey = null) {
 
         if (in_array($alg, [JWTAlg::HS256, JWTAlg::HS384, JWTAlg::HS512])) {
             if (empty($secretKey)) {
