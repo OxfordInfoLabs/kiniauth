@@ -54,7 +54,6 @@ class OpenIdAuthenticatorTest extends TestCase {
         $idToken = 'valid-id-token';
         $accessToken = 'valid-access-token';
         $tokenResponseBody = json_encode(['access_token' => $accessToken, 'id_token' => $idToken]);
-        $userInfoResponseBody = json_encode(['sub' => '12345', 'email' => $expectedEmail]);
 
         // 1. Mock Session for State validation
         $this->sessionMock->returnValue("getValue", $state, ["oidc_state"]);
@@ -64,8 +63,6 @@ class OpenIdAuthenticatorTest extends TestCase {
         $tokenResponseMock = MockObjectProvider::mock(Response::class);
         $tokenResponseMock->returnValue('getStatusCode', 200);
         $tokenResponseMock->returnValue('getBody', $tokenResponseBody);
-
-        $userInfoResponseMock = $this->getMockedResponse(200, $userInfoResponseBody);
 
         $expectedTokenRequest = new Request(
             'http://token.endpoint',
@@ -79,10 +76,9 @@ class OpenIdAuthenticatorTest extends TestCase {
             ["Content-Type" => "application/x-www-form-urlencoded"]
         );
         $this->requestDispatcherMock->returnValue("dispatch", $tokenResponseMock, $expectedTokenRequest);
-        $this->requestDispatcherMock->returnValue("dispatch", $userInfoResponseMock);
 
         // 3. Mock ID Token Validation (validateIdToken)
-        $this->mockIdTokenValidation($idToken); // Helper function to set up validation expectations
+        $this->mockIdTokenValidation($idToken, $expectedEmail); // Helper function to set up validation expectations
 
         // Execute and Assert
         $result = $this->authenticator->authenticate($code, $state);
@@ -185,51 +181,6 @@ class OpenIdAuthenticatorTest extends TestCase {
 
     }
 
-    // --- Test Case 6: User Info Request Failure (HTTP Status) ---
-    public function testAuthenticate_ThrowsExceptionOnUserInfoRequestFailure() {
-        $code = 'auth-code';
-        $state = 'valid-state';
-        $idToken = 'valid-id-token';
-        $accessToken = 'valid-access-token';
-        $tokenResponseBody = json_encode(['access_token' => $accessToken, 'id_token' => $idToken]);
-
-        // 1. State check passes
-        $this->sessionMock->returnValue('getValue', $state, 'oidc_state');
-
-
-        // 2. Token request succeeds
-        $tokenResponseMock = $this->getMockedResponse(200, $tokenResponseBody);
-
-        // 4. User Info request fails (e.g., 500 status)
-        $failedUserInfoResponse = $this->getMockedResponse(500, 'Internal Server Error');
-
-        $expectedTokenRequest = new Request(
-            'http://token.endpoint',
-            Request::METHOD_POST,
-            [
-                "grant_type" => "authorization_code",
-                "code" => $code,
-                "redirect_uri" => 'http://redirect.uri'
-            ],
-            null,
-            ["Content-Type" => "application/x-www-form-urlencoded"]
-        );
-        $this->requestDispatcherMock->returnValue("dispatch", $tokenResponseMock, $expectedTokenRequest);
-        $this->requestDispatcherMock->returnValue("dispatch", $failedUserInfoResponse);
-
-        // 3. ID Token validation setup
-        $this->mockIdTokenValidation($idToken);
-
-        // 5. Nonce check passes
-        $this->sessionMock->returnValue('getValue', 'expected-nonce', 'oidc_nonce');
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage("User Info request failed");
-
-        $this->authenticator->authenticate($code, $state);
-
-    }
-
     // --- Helper Methods ---
 
     /**
@@ -245,7 +196,7 @@ class OpenIdAuthenticatorTest extends TestCase {
     /**
      * Helper to mock successful ID Token validation expectations.
      */
-    private function mockIdTokenValidation(string $idToken): void {
+    private function mockIdTokenValidation(string $idToken, string $email): void {
         $this->jwtManagerMock->returnValue('validateToken', true, $idToken);
 
         $this->jwtManagerMock->returnValue('decodeToken', [
@@ -253,6 +204,7 @@ class OpenIdAuthenticatorTest extends TestCase {
             "aud" => "test-client-id",
             "exp" => time() + 3600, // Not expired
             "nonce" => "expected-nonce",
+            "email" => $email
         ], $idToken);
     }
 }

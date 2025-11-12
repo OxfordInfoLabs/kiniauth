@@ -55,14 +55,11 @@ class OpenIdAuthenticator {
         // 2. Exchange the Authorization Code for Tokens
         [$idToken, $accessToken] = $this->requestTokens($code);
 
-        // 3. Validate the ID Token
-        $this->validateIdToken($idToken);
+        // 3. Validate the ID Token and get claims
+        $claims = $this->validateIdToken($idToken);
 
-        // 4. Get User Information
-        $userInfo = $this->getUserInfo($accessToken);
+        return $claims["email"];
 
-
-        return $userInfo["email"];
     }
 
     private function requestTokens(string $code): array {
@@ -94,7 +91,7 @@ class OpenIdAuthenticator {
         return [$idToken, $accessToken];
     }
 
-    private function validateIdToken(string $idToken): bool {
+    private function validateIdToken(string $idToken): array {
 
         if (!$this->jwtManager->validateToken($idToken)) {
             throw new AccessDeniedException("Invalid Token");
@@ -135,7 +132,7 @@ class OpenIdAuthenticator {
         if ($nonceClaim != $expectedNonce)
             throw new AccessDeniedException("Nonce mismatch");
 
-        return true;
+        return $claims;
 
     }
 
