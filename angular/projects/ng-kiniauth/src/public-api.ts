@@ -34,5 +34,7 @@ export * from './lib/views/account/account-discoverability/account-discoverabili
 export * from './lib/views/export-project/export-project.component';
 export * from './lib/views/import-project/import-project.component';
 export * from './lib/views/group-invitation/group-invitation.component';
+export * from './lib/views/auth/sso-configuration/sso-configuration.component';
+export * from './lib/views/auth/sso-initialisation/sso-initialisation.component';
 
 export * from './ng-kiniauth.module';

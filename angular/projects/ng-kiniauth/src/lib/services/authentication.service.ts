@@ -71,6 +71,21 @@ export class AuthenticationService {
         });
     }
 
+    /**
+     * Used for Google and Facebook SSO flow.
+     *
+     * @param state string
+     * @param code string
+     */
+    public loginSSO(state: string, code: string) {
+        return this.http.post(this.config.guestHttpURL + '/auth/sso/' + state, JSON.stringify(code)).toPromise();
+    }
+
+    /**
+     * Used for OpenID SSO flow.
+     *
+     * @param provider string
+     */
     public getSSOUri(provider: string) {
         return this.http.get(this.config.guestHttpURL + '/auth/oidc/initialise/' + provider).toPromise();
     }

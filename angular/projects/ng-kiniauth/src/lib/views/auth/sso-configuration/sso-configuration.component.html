@@ -1,0 +1,65 @@
+<div class="grid grid-cols-1 gap-x-8 gap-y-8 pb-6 md:grid-cols-3 border-b">
+    <div>
+        <h2 class="text-base font-semibold text-gray-900">Connection Information</h2>
+        <p class="mt-1 text-sm/6 text-gray-600">
+            Provide the relevant information for your connection settings to OpenID
+        </p>
+    </div>
+
+    <div *ngIf="accountSettings && accountSettings.openId" class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-6 md:col-span-2">
+        <div class="col-span-full">
+            <label class="block text-sm/6 font-medium text-gray-900">Account</label>
+            <div class="mt-2">
+                <input type="text" disabled [value]="accountSettings.openId.account"
+                       class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+            </div>
+        </div>
+
+        <div class="col-span-full">
+            <label class="block text-sm/6 font-medium text-gray-900">Provider</label>
+            <div class="mt-2">
+                <input type="text" disabled [value]="accountSettings.openId.provider"
+                       class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+            </div>
+        </div>
+
+        <div class="col-span-full">
+            <label class="block text-sm/6 font-medium text-gray-900">SSO Login URL</label>
+            <div class="mt-2">
+                <div class="mb-2 font-mono text-gray-500">{{ssoLoginURL}}/{{accountSettings.openId.provider}}</div>
+            </div>
+        </div>
+
+        <div class="col-span-full">
+            <label class="block text-sm/6 font-medium text-gray-900">Client Id</label>
+            <div class="mt-2">
+                <input type="text" [(ngModel)]="accountSettings.openId.clientId"
+                       class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+            </div>
+        </div>
+
+        <div class="col-span-full">
+            <label class="block text-sm/6 font-medium text-gray-900">Authorization Endpoint</label>
+            <div class="mt-2">
+                <input type="text" [(ngModel)]="accountSettings.openId.authorizationEndpoint"
+                       class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+            </div>
+        </div>
+
+        <div class="col-span-full">
+            <label class="block text-sm/6 font-medium text-gray-900">Token Exchange Endpoint</label>
+            <div class="mt-2">
+                <input type="text" [(ngModel)]="accountSettings.openId.tokenExchangeEndpoint"
+                       class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="col-span-full flex items-center justify-between mt-8">
+    <div></div>
+
+    <button mat-flat-button (click)="save()" color="primary" type="button">
+        Save Configuration
+    </button>
+</div>

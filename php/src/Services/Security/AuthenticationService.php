@@ -10,6 +10,7 @@ use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Exception\Security\InvalidReferrerException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Exception\Security\UserSuspendedException;
+use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\APIKey;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
@@ -441,30 +442,40 @@ class AuthenticationService {
      * @return string
      */
     public function initialiseOpenId($provider) {
+        $accountSettings = [];
 
-        $clientId = Configuration::readParameter("sso.$provider.clientId");
-        $redirectUri = Configuration::readParameter("sso.$provider.redirectUri");
+        /**
+         * Lookup the OpenID settings for the account based on supplied provider.
+         * @var Account[] $accounts
+         */
+        $accounts = Account::filter("WHERE settings LIKE ?", "%$provider%");
+        if (sizeof($accounts) > 0) {
+            $accountSettings = $accounts[0]->getSettings();
+        }
 
-        $state = bin2hex(random_bytes(16));
-        $nonce = bin2hex(random_bytes(16));
+        if (isset($accountSettings["openId"])) {
+            $state = bin2hex(random_bytes(16));
+            $nonce = bin2hex(random_bytes(16));
 
-        // Store them in session
-        $this->session->setValue("oidc_state", $state);
-        $this->session->setValue("oidc_nonce", $nonce);
+            // Store them in session
+            $this->session->setValue("oidc_state", $state);
+            $this->session->setValue("oidc_nonce", $nonce);
 
-        $params = [
-            'client_id' => $clientId,
-            'redirect_uri' => $redirectUri,
-            'response_type' => 'code',
-            'scope' => 'email',
-            'state' => $state,
-            'nonce' => $nonce,
-        ];
+            $params = [
+                'client_id' => $accountSettings["openId"]["clientId"],
+                'redirect_uri' => $accountSettings["openId"]["redirectUri"],
+                'response_type' => 'code',
+                'scope' => 'email',
+                'state' => $state,
+                'nonce' => $nonce,
+            ];
 
-        $base = Configuration::readParameter("sso.$provider.authorizationEndpoint");
-        $url = $base . '?' . http_build_query($params);
+            $url = $accountSettings["openId"]["authorizationEndpoint"] . '?' . http_build_query($params);
 
-        return $url;
+            return $url;
+        }
+
+        return null;
     }
 
     /**
