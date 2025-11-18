@@ -15,7 +15,7 @@ export class SsoInitialisationComponent implements OnInit {
 
     async ngOnInit() {
         try {
-            const url = await this.authService.getSSOUri(this.provider);
+            const url: string = await this.authService.getSSOUri(this.provider);
             window.location.href = url;
         } catch (e) {
             console.log('SSO ERROR', e);

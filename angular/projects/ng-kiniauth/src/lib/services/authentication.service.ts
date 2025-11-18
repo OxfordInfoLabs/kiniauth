@@ -86,8 +86,9 @@ export class AuthenticationService {
      *
      * @param provider string
      */
-    public getSSOUri(provider: string) {
-        return this.http.get(this.config.guestHttpURL + '/auth/oidc/initialise/' + provider).toPromise();
+    public getSSOUri(provider: string): Promise<any> {
+        const response: any = this.http.get(this.config.guestHttpURL + '/auth/oidc/initialise/' + provider).toPromise();
+        return response;
     }
 
     public sendPasswordReset(emailAddress, recaptcha?) {
