@@ -16,6 +16,17 @@ export class GroupService {
                 private http: HttpClient) {
     }
 
+    public async getGroup(groupId: number) {
+        const group: any = await this.http.get(this.config.accessHttpURL + '/accountGroup', {
+            params: {accountGroupId: groupId}
+        }).toPromise();
+
+        const session = this.authService.sessionData.getValue();
+        group.owner = group.ownerAccountId === session.account.accountId;
+
+        return group;
+    }
+
     public async listAccountGroups() {
         const session = this.authService.sessionData.getValue();
         const accountGroups = await this.http.get(this.config.accessHttpURL + '/accountGroup/list').toPromise();
