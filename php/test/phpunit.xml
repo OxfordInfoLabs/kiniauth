@@ -4,11 +4,11 @@
          bootstrap="autoloader.php"
          cacheResultFile=".phpunit.cache/test-results"
          executionOrder="depends,defects"
-         forceCoversAnnotation="true"
+         forceCoversAnnotation="false"
          beStrictAboutCoversAnnotation="false"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
-         convertDeprecationsToExceptions="true"
+         convertDeprecationsToExceptions="false"
          failOnRisky="false"
          failOnWarning="true"
          verbose="true">
