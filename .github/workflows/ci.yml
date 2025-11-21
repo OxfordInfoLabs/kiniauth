@@ -1,0 +1,16 @@
+name: CI - PHPUnit
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  phpunit:
+    uses: OxfordInfoLabs/ci-workflows/.github/workflows/phpunit.yml@main
+    with:
+      php-version: "8.2"
+      coverage: false
+      working-directory: "php/test"
+      root-directory: "."
