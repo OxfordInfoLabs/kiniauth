@@ -81,7 +81,7 @@ class OpenIdAuthenticatorTest extends TestCase {
         $this->mockIdTokenValidation($idToken, $expectedEmail); // Helper function to set up validation expectations
 
         // Execute and Assert
-        $result = $this->authenticator->authenticate($code, $state);
+        $result = $this->authenticator->authenticate([$code, $state]);
 
         $this->assertEquals($expectedEmail, $result, "The authenticated email should match the expected email.");
     }
@@ -94,7 +94,7 @@ class OpenIdAuthenticatorTest extends TestCase {
 
         $this->expectException(AccessDeniedException::class);
         $this->expectExceptionMessage("Invalid state");
-        $this->authenticator->authenticate('some-code', 'mismatched-state');
+        $this->authenticator->authenticate(['some-code', 'mismatched-state']);
 
     }
 
@@ -113,7 +113,7 @@ class OpenIdAuthenticatorTest extends TestCase {
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("Token request failed");
-        $this->authenticator->authenticate('auth-code', $state);
+        $this->authenticator->authenticate(['auth-code', $state]);
 
     }
 
@@ -145,7 +145,7 @@ class OpenIdAuthenticatorTest extends TestCase {
 
         $this->expectException(AccessDeniedException::class);
         $this->expectExceptionMessage("Invalid issuer");
-        $this->authenticator->authenticate('auth-code', $state);
+        $this->authenticator->authenticate(['auth-code', $state]);
     }
 
     // --- Test Case 5: ID Token Expiration Failure ---
@@ -177,7 +177,7 @@ class OpenIdAuthenticatorTest extends TestCase {
         $this->expectException(AccessDeniedException::class);
         $this->expectExceptionMessage("Token expired");
 
-        $this->authenticator->authenticate('auth-code', $state);
+        $this->authenticator->authenticate(['auth-code', $state]);
 
     }
 
