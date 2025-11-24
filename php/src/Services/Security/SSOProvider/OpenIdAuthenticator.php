@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiniauth\Services\Security\OpenId;
+namespace Kiniauth\Services\Security\SSOProvider;
 
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\JWT\JWTManager;
@@ -44,7 +44,9 @@ class OpenIdAuthenticator {
         $this->jwtManager = $jwtManager;
     }
 
-    public function authenticate(string $code, string $state) {
+    public function authenticate(mixed $data) {
+
+        [$code, $state] = $data;
 
         // 1. Validate the state
         $expectedState = $this->session->getValue("oidc_state");

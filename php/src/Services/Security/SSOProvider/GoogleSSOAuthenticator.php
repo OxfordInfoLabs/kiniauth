@@ -2,7 +2,7 @@
 
 namespace Kiniauth\Services\Security\SSOProvider;
 
-class GoogleSSOAuthenticator extends SSOAuthenticator {
+class GoogleSSOAuthenticator implements SSOAuthenticator {
 
     public function authenticate($data) {
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiniauth\Services\Security\OpenId;
+namespace Kiniauth\Services\Security\SSOProvider;
 
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\JWT\JWTManager;

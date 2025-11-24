@@ -149,13 +149,14 @@ trait Auth {
     /**
      * @http GET /oidc/callback/$provider
      *
-     * @param $provider
-     * @param $code
-     * @param $state
+     * @param string $provider
+     * @param string $code
+     * @param string $state
      * @return void
      */
     public function authenticateOpenId($provider, $code, $state) {
-        $this->authenticationService->authenticateByOpenId($provider, $code, $state);
+        $data = [$code, $state];
+        $this->authenticationService->authenticateBySSO($provider, $data, true);
     }
 
 

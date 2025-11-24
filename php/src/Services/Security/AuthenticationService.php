@@ -16,15 +16,16 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\ActivityLogger;
-use Kiniauth\Services\Security\OpenId\OpenIdAuthenticator;
-use Kiniauth\Services\Security\OpenId\OpenIdAuthenticatorFactory;
 use Kiniauth\Services\Security\SSOProvider\AppleSSOAuthenticator;
 use Kiniauth\Services\Security\SSOProvider\FacebookSSOAuthenticator;
 use Kiniauth\Services\Security\SSOProvider\GoogleSSOAuthenticator;
+use Kiniauth\Services\Security\SSOProvider\OpenIdAuthenticatorFactory;
+use Kiniauth\Services\Security\SSOProvider\SSOAuthenticator;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\DependencyInjection\MissingInterfaceImplementationException;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Security\Hash\HashProvider;
@@ -479,20 +480,6 @@ class AuthenticationService {
     }
 
     /**
-     * Authenticate with an OpenId provider
-     *
-     * @param string $provider
-     * @param string $code
-     * @param string $state
-     * @return void
-     */
-    public function authenticateByOpenId($provider, $code, $state) {
-        $factory = new OpenIdAuthenticatorFactory();
-        $authenticator = $factory->create($provider);
-        $authenticator->authenticate($code, $state);
-    }
-
-    /**
      * Perform single sign-on with the relevant provider
      *
      * @param $provider
@@ -501,24 +488,19 @@ class AuthenticationService {
      * 
      * @objectInterceptorDisabled
      */
-    public function authenticateBySSO($provider, $data) {
+    public function authenticateBySSO($provider, $data, bool $openId = false) {
 
-        switch ($provider) {
-            case "facebook":
-                $authenticator = Container::instance()->get(FacebookSSOAuthenticator::class);
+        if ($openId) {
+            $factory = new OpenIdAuthenticatorFactory();
+            $authenticator = $factory->create($provider);
+            $authenticator->authenticate($data);
+        } else {
+            try {
+                $authenticator = Container::instance()->getInterfaceImplementation(SSOAuthenticator::class, $provider);
                 $email = $authenticator->authenticate($data);
-                break;
-            case "google":
-                $authenticator = Container::instance()->get(GoogleSSOAuthenticator::class);
-                $email = $authenticator->authenticate($data);
-                break;
-            case "apple":
-                $authenticator = Container::instance()->get(AppleSSOAuthenticator::class);
-                $email = $authenticator->authenticate($data);
-                break;
-            default:
+            } catch (MissingInterfaceImplementationException) {
                 $email = null;
-                break;
+            }
         }
 
         $user = $this->userService->getUserByEmail($email);

@@ -1,10 +1,10 @@
 <?php
 
-namespace Kiniauth\ValueObjects\Security\OpenId;
+namespace Kiniauth\Test\Services\Security\SSO;
 
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\JWT\JWTManager;
-use Kiniauth\Services\Security\OpenId\OpenIdAuthenticator;
+use Kiniauth\Services\Security\SSOProvider\OpenIdAuthenticator;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
