@@ -70,12 +70,12 @@ export class GroupService {
     }
 
     public getInvitationDetails(invitationCode: string) {
-        return this.http.get(this.config.accessHttpURL + '/accountGroup/invitation/' + invitationCode)
+        return this.http.get(this.config.guestHttpURL + '/accountGroup/invitation/' + invitationCode)
             .toPromise();
     }
 
     public acceptInvitation(invitationCode: string) {
-        return this.http.post(this.config.accessHttpURL + '/accountGroup/invitation/' + invitationCode, {})
+        return this.http.post(this.config.guestHttpURL + '/accountGroup/invitation/' + invitationCode, {})
             .toPromise();
     }
 }
