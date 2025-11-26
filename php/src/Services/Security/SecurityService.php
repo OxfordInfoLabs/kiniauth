@@ -199,10 +199,11 @@ class SecurityService {
      *
      * @param string $securableType
      * @param integer $securableId
+     * @param integer $activatedAccountId
      *
      * @objectInterceptorDisabled
      */
-    public function becomeSecurable($securableType, $securableId) {
+    public function becomeSecurable($securableType, $securableId, $activatedAccountId = null) {
 
         if ($securableType == "USER") {
             $securable = User::fetch($securableId);
@@ -211,9 +212,13 @@ class SecurityService {
         }
         $this->session->__setLoggedInSecurable($securable);
 
+
         // If active account id, add to session
         $account = null;
-        if ($securable->getActiveAccountId()) {
+        if ($activatedAccountId) {
+            // Assume that if this is being called, the user is a superUser and therefore has all permissions needed
+            $account = $this->becomeAccount($activatedAccountId);
+        } else if ($securable->getActiveAccountId()) {
             $account = $this->becomeAccount($securable->getActiveAccountId());
         }
 

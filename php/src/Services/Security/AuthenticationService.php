@@ -367,6 +367,52 @@ class AuthenticationService {
 
 
     /**
+     * Create a join account one time token for administrator to join a GSE account
+     *
+     * @param $accountId
+     * @return string
+     */
+    public function createJoinAccountToken($accountId){
+
+        $loggedInUser = $this->session->__getLoggedInSecurable();
+
+        // If not a user logged in thrown
+        if (!$loggedInUser || !($loggedInUser instanceof User)) {
+            throw new AccessDeniedException("Not logged in");
+        }
+
+        $this->pendingActionService->removeAllPendingActionsForTypeAndObjectId("JOIN_ACCOUNT_TOKEN", $loggedInUser->getId(), User::class);
+
+        // Create a pending action
+        $joinAccountToken = $this->pendingActionService->createPendingAction("JOIN_ACCOUNT_TOKEN", $loggedInUser->getId(), $accountId,
+            "PT1M", null, User::class);
+
+
+        // Return the join account token
+        return $joinAccountToken;
+
+    }
+
+
+
+    public function joinAccountUsingToken($token){
+        try {
+            $action = $this->pendingActionService->getPendingActionByIdentifier("JOIN_ACCOUNT_TOKEN", $token);
+        } catch (ItemNotFoundException $e) {
+            throw new AccessDeniedException("Invalid token");
+        }
+
+
+        // Join an account using the token action
+        $this->securityService->becomeSecurable("USER", $action->getObjectId(), $action->getData());
+
+        $this->pendingActionService->removePendingAction("JOIN_ACCOUNT_TOKEN", $token);
+
+    }
+
+
+
+    /**
      * Update the active parent URL according to a referring URL.
      *
      * @param URL $referringURL
