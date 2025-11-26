@@ -18,7 +18,7 @@ export class SsoInitialisationComponent implements OnInit {
             const url: string = await this.authService.getSSOUri(this.provider);
             window.location.href = url;
         } catch (e) {
-            console.log('SSO ERROR', e);
+            console.error('SSO ERROR', e);
         }
     }
 

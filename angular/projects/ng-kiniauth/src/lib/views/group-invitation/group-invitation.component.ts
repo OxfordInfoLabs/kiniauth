@@ -29,7 +29,6 @@ export class GroupInvitationComponent implements OnInit {
 
         try {
             this.details = await this.groupService.getInvitationDetails(this.invitationCode);
-            console.log(this.details);
         } catch (e) {
             this.invitationError = true;
         }

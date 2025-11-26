@@ -22,12 +22,10 @@ export class SsoConfigurationComponent implements OnInit {
     async ngOnInit() {
         this.accountSettings = await this.accountService.getAccountSettings();
         this.account = await this.accountService.getAccount();
-        console.log(this.account);
 
         if (!this.accountSettings.openId) {
             this.accountSettings.openId = {account: this.account.name, provider: _.camelCase(this.account.name)};
         }
-        console.log(this.accountSettings);
     }
 
     public async save() {
