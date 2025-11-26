@@ -969,7 +969,7 @@ class AuthenticationServiceTest extends TestBase {
             $this->authenticationService->joinAccountUsingToken("IMABADBUNNY");
             $this->fail("Should have thrown here");
         } catch (AccessDeniedException $e){
-            // FAB !
+            $this->assertTrue(true);
         }
 
     }

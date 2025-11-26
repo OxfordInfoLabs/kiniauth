@@ -396,6 +396,7 @@ class AuthenticationService {
 
 
     public function joinAccountUsingToken($token){
+
         try {
             $action = $this->pendingActionService->getPendingActionByIdentifier("JOIN_ACCOUNT_TOKEN", $token);
         } catch (ItemNotFoundException $e) {

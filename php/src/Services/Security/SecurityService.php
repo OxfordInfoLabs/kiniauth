@@ -215,11 +215,9 @@ class SecurityService {
 
         // If active account id, add to session
         $account = null;
-        if ($activatedAccountId) {
-            // Assume that if this is being called, the user is a superUser and therefore has all permissions needed
-            $account = $this->becomeAccount($activatedAccountId);
-        } else if ($securable->getActiveAccountId()) {
-            $account = $this->becomeAccount($securable->getActiveAccountId());
+        if ($activatedAccountId || $securable->getActiveAccountId()) {
+            $account = Account::fetch($activatedAccountId ?? $securable->getActiveAccountId());
+            $this->session->__setLoggedInAccount($account);
         }
 
         $this->populateSessionPrivileges($securable, $account);
