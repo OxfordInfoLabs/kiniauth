@@ -921,4 +921,85 @@ class AuthenticationServiceTest extends TestBase {
 
     }
 
+    public function testCanGenerateOneTimeShortLivedJoinAccountToken() {
+
+        //Login as Admin
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        // Token
+        $token = $this->authenticationService->createJoinAccountToken(2);
+
+        // Check token right length
+        $this->assertEquals(64, strlen($token));
+
+        $oneMinutesTime = new \DateTime();
+        $oneMinutesTime->add(new \DateInterval("PT1M"));
+
+        // Check pending action created
+        $matchingPendingActions = PendingAction::filter("WHERE object_type = ? and object_id = 1 and type = 'JOIN_ACCOUNT_TOKEN'", User::class);
+        $this->assertEquals(1, sizeof($matchingPendingActions));
+        $this->assertEquals("JOIN_ACCOUNT_TOKEN", $matchingPendingActions[0]->getType());
+        $this->assertEquals($token, $matchingPendingActions[0]->getIdentifier());
+        $this->assertEquals(2, $matchingPendingActions[0]->getData());
+        $this->assertTrue($matchingPendingActions[0]->getExpiryDateTime() < $oneMinutesTime);
+
+        // If we resubmit a token request for that user, ensure that we get a new one and that only the last one is stored
+        $token2 = $this->authenticationService->createJoinAccountToken(4);
+
+        // Check token right length
+        $this->assertEquals(64, strlen($token2));
+        $this->assertNotEquals($token2, $token);
+
+        $oneMinutesTime = new \DateTime();
+        $oneMinutesTime->add(new \DateInterval("PT1M"));
+
+        // Check pending action created
+        $matchingPendingActions = PendingAction::filter("WHERE object_type = ? and object_id = 1 and type = 'JOIN_ACCOUNT_TOKEN'", User::class);
+        $this->assertEquals(1, sizeof($matchingPendingActions));
+        $this->assertEquals("JOIN_ACCOUNT_TOKEN", $matchingPendingActions[0]->getType());
+        $this->assertEquals($token2, $matchingPendingActions[0]->getIdentifier());
+        $this->assertEquals(4, $matchingPendingActions[0]->getData());
+        $this->assertTrue($matchingPendingActions[0]->getExpiryDateTime() < $oneMinutesTime);
+    }
+
+
+    public function testErrorRaisedIfInvalidJoinTokenPasssedToJoinAccount(){
+
+        try {
+            $this->authenticationService->joinAccountUsingToken("IMABADBUNNY");
+            $this->fail("Should have thrown here");
+        } catch (AccessDeniedException $e){
+            $this->assertTrue(true);
+        }
+
+    }
+
+    public function testCanJoinAccountUsingGeneratedJoinToken() {
+
+        //Login as Admin
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        // Create the join token
+        $token = $this->authenticationService->createJoinAccountToken(5);
+
+        AuthenticationHelper::logout();
+
+        $this->authenticationService->joinAccountUsingToken($token);
+
+        $loggedInUser = $this->session->__getLoggedInSecurable();
+        $this->assertEquals("admin@kinicart.com", $loggedInUser->getEmailAddress());
+
+        $loggedInAccount = $this->session->__getLoggedInAccount();
+        $this->assertEquals(5, $loggedInAccount->getAccountId());
+
+        try {
+            $this->authenticationService->joinAccountUsingToken($token);
+            $this->fail("Should have been removed");
+        } catch (AccessDeniedException $e){
+            // YIPPEEE
+        }
+
+
+    }
+
 }

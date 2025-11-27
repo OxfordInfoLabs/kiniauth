@@ -453,6 +453,25 @@ class SecurityServiceTest extends TestBase {
     }
 
 
+    public function testCanBecomeUserWithActivatedAccount(){
+
+
+        $this->securityService->logout();
+
+        $this->securityService->becomeSecurable("USER", 3,4);
+
+        list($user, $account) = $this->securityService->getLoggedInSecurableAndAccount();
+        $this->assertInstanceOf(User::class, $user);
+
+        $this->assertInstanceOf(Account::class, $account);
+        $this->assertEquals(4, $account->getAccountId());
+
+
+
+    }
+
+
+
     public function testCanBecomeApiKey() {
 
         $this->securityService->logout();
