@@ -6,3 +6,4 @@ db.log
 kiniauth-test.db
 .angular/
 composer.lock
+.phpunit.cache
