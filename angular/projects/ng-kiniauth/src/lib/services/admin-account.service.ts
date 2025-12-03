@@ -150,7 +150,7 @@ export class AdminAccountService {
     }
 
     public async searchForDiscoverableAccounts(searchTerm, offset = 0, limit = 25) {
-        return this.http.get(this.config.accessHttpURL + '/account/discoverable?searchTerm=' + searchTerm + '&limit=' + limit + '&offset=' + offset).toPromise();
+        return await this.http.get(this.config.accessHttpURL + '/account/discoverable?searchTerm=' + searchTerm + '&limit=' + limit + '&offset=' + offset).toPromise();
     }
 
 
@@ -165,6 +165,10 @@ export class AdminAccountService {
 
     public async unsetAccountExternalIdentifier() {
         return this.http.delete(this.config.accessHttpURL + '/account/externalIdentifier').toPromise();
+    }
+
+    public async generateJoinAccountToken(accountId: number){
+        return await this.http.get(this.config.accessHttpURL + '/auth/joinAccountToken/' + accountId).toPromise();
     }
 
 }
