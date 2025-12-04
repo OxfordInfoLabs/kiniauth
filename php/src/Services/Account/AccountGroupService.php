@@ -10,11 +10,13 @@ use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Objects\Account\AccountLabel;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Services\Communication\Email\EmailService;
+use Kiniauth\Services\Security\AccountGroupInterceptor;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
 use Kiniauth\ValueObjects\Account\AccountGroupInvitation;
 use Kinikit\Core\Communication\Email\MissingEmailTemplateException;
+use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
 use Kinikit\Core\Validation\FieldValidationError;
@@ -50,8 +52,11 @@ class AccountGroupService {
     /**
      * @param EmailService $emailService
      * @param PendingActionService $pendingActionService
+     * @param ActiveRecordInterceptor $activeRecordInterceptor
+     * @param AccountService $accountService
      */
-    public function __construct(EmailService            $emailService, PendingActionService $pendingActionService,
+    public function __construct(EmailService            $emailService,
+                                PendingActionService    $pendingActionService,
                                 ActiveRecordInterceptor $activeRecordInterceptor,
                                 AccountService          $accountService) {
         $this->emailService = $emailService;
@@ -360,7 +365,10 @@ class AccountGroupService {
             $accountGroup->setAccountGroupMembers($accountGroupMembers);
 
             // Save group to ensure consistency
-            $accountGroup->save();
+            $accountGroupInterceptor = Container::instance()->get(AccountGroupInterceptor::class);
+            $accountGroupInterceptor->executeInsecure(function () use ($accountGroup) {
+                $accountGroup->save();
+            });
 
             // Remove the pending action once completed.
             $this->pendingActionService->removePendingAction("ACCOUNT_GROUP_INVITE", $invitationCode);
