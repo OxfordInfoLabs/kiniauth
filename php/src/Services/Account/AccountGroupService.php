@@ -52,8 +52,11 @@ class AccountGroupService {
     /**
      * @param EmailService $emailService
      * @param PendingActionService $pendingActionService
+     * @param ActiveRecordInterceptor $activeRecordInterceptor
+     * @param AccountService $accountService
      */
-    public function __construct(EmailService            $emailService, PendingActionService $pendingActionService,
+    public function __construct(EmailService            $emailService,
+                                PendingActionService    $pendingActionService,
                                 ActiveRecordInterceptor $activeRecordInterceptor,
                                 AccountService          $accountService) {
         $this->emailService = $emailService;
