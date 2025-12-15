@@ -12,10 +12,6 @@ include_once "autoloader.php";
 
 class UserTest extends TestBase {
 
-
-    /**
-     * @nontravis
-     */
     public function testCannotUpdatePasswordWithPreviouslyUsedHash() {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");

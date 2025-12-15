@@ -91,6 +91,10 @@ export class AuthenticationService {
         return response;
     }
 
+    public loginWithToken(token: string){
+        return this.http.post(this.config.guestHttpURL + '/auth/joinWithToken', '"' + token + '"' ).toPromise();
+    }
+
     public sendPasswordReset(emailAddress, recaptcha?) {
         const headers = new HttpHeaders({'X-CAPTCHA-TOKEN': recaptcha || ''});
 

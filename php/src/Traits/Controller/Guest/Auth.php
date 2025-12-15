@@ -170,4 +170,16 @@ trait Auth {
         $this->authenticationService->authenticateBySSO($provider, $data);
     }
 
+
+    /**
+     * @http POST /joinWithToken
+     *
+     * @param string $joinToken
+     * @return void
+     * @throws \Kinikit\Core\Exception\AccessDeniedException
+     */
+    public function authenticateByJoinToken($joinToken) {
+        $this->authenticationService->joinAccountUsingToken($joinToken);
+    }
+
 }
