@@ -41,7 +41,6 @@ class OpenIdAuthenticatorTest extends TestCase {
         // Set up common configuration values
         $this->configMock->returnValue('getRedirectUri', 'http://redirect.uri');
         $this->configMock->returnValue('getTokenEndpoint', 'http://token.endpoint');
-        $this->configMock->returnValue('getUserInfoEndpoint', 'http://userinfo.endpoint');
         $this->configMock->returnValue('getIssuer', 'https://issuer.com');
         $this->configMock->returnValue('getClientId', 'test-client-id');
     }

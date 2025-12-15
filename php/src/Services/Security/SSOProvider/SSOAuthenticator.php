@@ -13,4 +13,6 @@ interface SSOAuthenticator {
      */
     public function authenticate(mixed $data);
 
+    public function initialise(string $provider);
+
 }

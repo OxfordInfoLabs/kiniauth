@@ -16,9 +16,6 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\ActivityLogger;
-use Kiniauth\Services\Security\SSOProvider\AppleSSOAuthenticator;
-use Kiniauth\Services\Security\SSOProvider\FacebookSSOAuthenticator;
-use Kiniauth\Services\Security\SSOProvider\GoogleSSOAuthenticator;
 use Kiniauth\Services\Security\SSOProvider\OpenIdAuthenticatorFactory;
 use Kiniauth\Services\Security\SSOProvider\SSOAuthenticator;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
@@ -489,41 +486,21 @@ class AuthenticationService {
      * @param string $provider
      * @return string
      */
-    public function initialiseOpenId($provider) {
-        $accountSettings = [];
+    public function initialiseSSO($provider, bool $openId = false) {
 
-        /**
-         * Lookup the OpenID settings for the account based on supplied provider.
-         * @var Account[] $accounts
-         */
-        $accounts = Account::filter("WHERE settings LIKE ?", "%$provider%");
-        if (sizeof($accounts) > 0) {
-            $accountSettings = $accounts[0]->getSettings();
+        if ($openId) {
+            $factory = new OpenIdAuthenticatorFactory();
+            $authenticator = $factory->create($provider);
+            return $authenticator->initialise();
+        } else {
+            try {
+                $authenticator = Container::instance()->getInterfaceImplementation(SSOAuthenticator::class, $provider);
+                return $authenticator->initialise();
+            } catch (MissingInterfaceImplementationException) {
+                return null;
+            }
         }
 
-        if (isset($accountSettings["openId"])) {
-            $state = bin2hex(random_bytes(16));
-            $nonce = bin2hex(random_bytes(16));
-
-            // Store them in session
-            $this->session->setValue("oidc_state", $state);
-            $this->session->setValue("oidc_nonce", $nonce);
-
-            $params = [
-                'client_id' => $accountSettings["openId"]["clientId"],
-                'redirect_uri' => $accountSettings["openId"]["redirectUri"],
-                'response_type' => 'code',
-                'scope' => 'email',
-                'state' => $state,
-                'nonce' => $nonce,
-            ];
-
-            $url = $accountSettings["openId"]["authorizationEndpoint"] . '?' . http_build_query($params);
-
-            return $url;
-        }
-
-        return null;
     }
 
     /**

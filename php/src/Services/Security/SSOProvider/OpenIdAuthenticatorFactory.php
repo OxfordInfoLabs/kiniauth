@@ -2,6 +2,7 @@
 
 namespace Kiniauth\Services\Security\SSOProvider;
 
+use Kiniauth\Objects\Account\Account;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\JWT\JWTManager;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
@@ -22,7 +23,7 @@ class OpenIdAuthenticatorFactory {
         $requestDispatcher = Container::instance()->get(HttpRequestDispatcher::class);
         $session = Container::instance()->get(Session::class);
 
-        $config = new OpenIdAuthenticatorConfiguration($provider);
+        $config = $this->getConfiguration($provider);
 
         $jwtSecret = Configuration::readParameter("sso.$provider.jwt.secret");
         $jwtAlg = Configuration::readParameter("sso.$provider.jwt.alg");
@@ -37,5 +38,27 @@ class OpenIdAuthenticatorFactory {
         );
 
         return $authenticator;
+    }
+
+    private function getConfiguration($provider) {
+
+        /**
+         * Lookup the OpenID settings for the account based on supplied provider.
+         * @var Account[] $accounts
+         */
+        $accounts = Account::filter("WHERE settings LIKE ?", "%\"provider\":\"$provider\"%");
+        if (sizeof($accounts) > 0) {
+            $accountSettings = $accounts[0]->getSettings();
+            $openIdSettings = $accountSettings["openId"];
+        } else {
+            return null;
+        }
+
+        return new OpenIdAuthenticatorConfiguration(
+            $openIdSettings["clientId"],
+            $openIdSettings["issuer"],
+            $openIdSettings["tokenEndpoint"],
+            $openIdSettings["redirectUri"]
+        );
     }
 }

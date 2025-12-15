@@ -20,6 +20,10 @@ class FacebookSSOAuthenticator implements SSOAuthenticator {
         $this->requestDispatcher = $requestDispatcher;
     }
 
+    public function initialise(string $provider) {
+        return null;
+    }
+
 
     /**
      * Authenticate the tokens with Facebook, and login the user,

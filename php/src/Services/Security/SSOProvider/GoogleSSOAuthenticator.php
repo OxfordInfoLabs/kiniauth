@@ -4,6 +4,10 @@ namespace Kiniauth\Services\Security\SSOProvider;
 
 class GoogleSSOAuthenticator implements SSOAuthenticator {
 
+    public function initialise(string $provider) {
+        return null;
+    }
+
     public function authenticate($data) {
 
         if (!$data)

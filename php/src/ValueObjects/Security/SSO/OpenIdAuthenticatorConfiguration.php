@@ -12,16 +12,13 @@ class OpenIdAuthenticatorConfiguration {
 
     private string $tokenEndpoint;
 
-    private string $userInfoEndpoint;
-
     private string $redirectUri;
 
-    public function __construct(string $provider) {
-        $this->clientId = Configuration::readParameter("sso.$provider.clientId");
-        $this->issuer = Configuration::readParameter("sso.$provider.issuer");
-        $this->tokenEndpoint = Configuration::readParameter("sso.$provider.tokenEndpoint");
-        $this->userInfoEndpoint = Configuration::readParameter("sso.$provider.userInfoEndpoint");
-        $this->redirectUri = Configuration::readParameter("sso.$provider.redirectUri");
+    public function __construct(string $clientId, string $issuer, string $tokenEndpoint, string $redirectUri) {
+        $this->clientId = $clientId;
+        $this->issuer = $issuer;
+        $this->tokenEndpoint = $tokenEndpoint;
+        $this->redirectUri = $redirectUri;
     }
 
     public function getClientId(): string {
@@ -34,10 +31,6 @@ class OpenIdAuthenticatorConfiguration {
 
     public function getTokenEndpoint(): string {
         return $this->tokenEndpoint;
-    }
-
-    public function getUserInfoEndpoint(): string {
-        return $this->userInfoEndpoint;
     }
 
     public function getRedirectUri(): string {

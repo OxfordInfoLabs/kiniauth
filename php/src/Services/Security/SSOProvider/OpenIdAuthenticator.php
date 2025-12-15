@@ -2,6 +2,7 @@
 
 namespace Kiniauth\Services\Security\SSOProvider;
 
+use Kiniauth\Objects\Account\Account;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\JWT\JWTManager;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
@@ -42,6 +43,33 @@ class OpenIdAuthenticator {
         $this->session = $session;
         $this->config = $config;
         $this->jwtManager = $jwtManager;
+    }
+
+    public function initialise() {
+
+        if (isset($accountSettings["openId"])) {
+            $state = bin2hex(random_bytes(16));
+            $nonce = bin2hex(random_bytes(16));
+
+            // Store them in session
+            $this->session->setValue("oidc_state", $state);
+            $this->session->setValue("oidc_nonce", $nonce);
+
+            $params = [
+                'client_id' => $this->config->getClientId(),
+                'redirect_uri' => $this->config->getRedirectUri(),
+                'response_type' => 'code',
+                'scope' => 'email',
+                'state' => $state,
+                'nonce' => $nonce,
+            ];
+
+            $url = $accountSettings["openId"]["authorizationEndpoint"] . '?' . http_build_query($params);
+
+            return $url;
+        }
+
+        return null;
     }
 
     public function authenticate(mixed $data) {
@@ -138,26 +166,4 @@ class OpenIdAuthenticator {
 
     }
 
-    private function getUserInfo(string $accessToken): array {
-
-        $request = new Request(
-            $this->config->getUserInfoEndpoint(),
-            Request::METHOD_GET,
-            [],
-            null,
-            [
-                "Authorization" => "Bearer $accessToken",
-                'Accept' => 'application/json'
-            ]
-        );
-
-        $response = $this->requestDispatcher->dispatch($request);
-
-        if ($response->getStatusCode() !== 200) {
-            throw new \Exception("User Info request failed");
-        }
-
-        return json_decode($response->getBody(), true);
-
-    }
 }
