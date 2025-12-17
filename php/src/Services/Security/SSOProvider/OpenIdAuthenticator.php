@@ -32,6 +32,8 @@ class OpenIdAuthenticator {
      */
     private JWTManager $jwtManager;
 
+    private array $settings;
+
     /**
      * @param HttpRequestDispatcher $requestDispatcher
      * @param Session $session
@@ -47,7 +49,7 @@ class OpenIdAuthenticator {
 
     public function initialise() {
 
-        if (isset($accountSettings["openId"])) {
+        if (!empty($this->config->getAuthorisationEndpoint())) {
             $state = bin2hex(random_bytes(16));
             $nonce = bin2hex(random_bytes(16));
 
@@ -64,7 +66,7 @@ class OpenIdAuthenticator {
                 'nonce' => $nonce,
             ];
 
-            $url = $accountSettings["openId"]["authorizationEndpoint"] . '?' . http_build_query($params);
+            $url = $this->config->getAuthorisationEndpoint() . '?' . http_build_query($params);
 
             return $url;
         }

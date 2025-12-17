@@ -1,5 +1,5 @@
 <mat-tab-group *ngIf="accountSettings">
-    <mat-tab *ngIf="accountSettings.openId" label="OpenID">
+    <mat-tab *ngIf="accountSettings.oidc" label="OpenID">
         <div class="grid grid-cols-1 gap-x-8 gap-y-8 p-6 md:grid-cols-3 border-b">
             <div>
                 <h2 class="text-base font-semibold text-gray-900">Connection Information</h2>
@@ -12,7 +12,7 @@
                 <div class="col-span-full">
                     <label class="block text-sm/6 font-medium text-gray-900">Endpoint</label>
                     <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.openId.provider"
+                        <input type="text" [(ngModel)]="accountSettings.oidc.provider"
                                class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                     </div>
                 </div>
@@ -20,7 +20,7 @@
                 <div class="col-span-full">
                     <label class="block text-sm/6 font-medium text-gray-900">SSO Login URL</label>
                     <div class="mt-2">
-                        <div class="mb-2 font-mono text-gray-500">{{ssoLoginURL}}/openid/{{accountSettings.openId.provider}}</div>
+                        <div class="mb-2 font-mono text-gray-500">{{ssoLoginURL}}/oidc/{{accountSettings.oidc.provider}}</div>
                     </div>
                     <div class="text-xs">This is the url you will use to login via this SSO provider.</div>
                 </div>
@@ -28,7 +28,7 @@
                 <div class="col-span-full">
                     <label class="block text-sm/6 font-medium text-gray-900">Client Id</label>
                     <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.openId.clientId"
+                        <input type="text" [(ngModel)]="accountSettings.oidc.clientId"
                                class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                 <div class="col-span-full">
                     <label class="block text-sm/6 font-medium text-gray-900">Authorization Endpoint</label>
                     <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.openId.authorizationEndpoint"
+                        <input type="text" [(ngModel)]="accountSettings.oidc.authorizationEndpoint"
                                class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                 <div class="col-span-full">
                     <label class="block text-sm/6 font-medium text-gray-900">Token Exchange Endpoint</label>
                     <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.openId.tokenExchangeEndpoint"
+                        <input type="text" [(ngModel)]="accountSettings.oidc.tokenExchangeEndpoint"
                                class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                     </div>
                 </div>

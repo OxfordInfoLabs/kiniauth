@@ -10,13 +10,16 @@ class OpenIdAuthenticatorConfiguration {
 
     private string $issuer;
 
+    private string $authorisationEndpoint;
+
     private string $tokenEndpoint;
 
     private string $redirectUri;
 
-    public function __construct(string $clientId, string $issuer, string $tokenEndpoint, string $redirectUri) {
+    public function __construct(string $clientId, string $issuer, string $authorisationEndpoint, string $tokenEndpoint, string $redirectUri) {
         $this->clientId = $clientId;
         $this->issuer = $issuer;
+        $this->authorisationEndpoint = $authorisationEndpoint;
         $this->tokenEndpoint = $tokenEndpoint;
         $this->redirectUri = $redirectUri;
     }
@@ -27,6 +30,10 @@ class OpenIdAuthenticatorConfiguration {
 
     public function getIssuer(): string {
         return $this->issuer;
+    }
+
+    public function getAuthorisationEndpoint(): string {
+        return $this->authorisationEndpoint;
     }
 
     public function getTokenEndpoint(): string {

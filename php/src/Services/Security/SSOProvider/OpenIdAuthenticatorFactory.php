@@ -10,43 +10,41 @@ use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
 
-class OpenIdAuthenticatorFactory {
+class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
 
     /**
      * Creates and returns a fully configured OpenIdAuthenticator instance.
      *
-     * @param string $provider The identifier for the SSO provider
+     * @param string $providerKey
      * @return OpenIdAuthenticator
      */
-    public function create(string $provider): OpenIdAuthenticator {
+    public function create(string $providerKey): OpenIdAuthenticator {
 
         $requestDispatcher = Container::instance()->get(HttpRequestDispatcher::class);
         $session = Container::instance()->get(Session::class);
 
-        $config = $this->getConfiguration($provider);
+        $config = $this->getConfiguration($providerKey);
 
-        $jwtSecret = Configuration::readParameter("sso.$provider.jwt.secret");
-        $jwtAlg = Configuration::readParameter("sso.$provider.jwt.alg");
+        $jwtSecret = Configuration::readParameter("sso.$providerKey.jwt.secret");
+        $jwtAlg = Configuration::readParameter("sso.$providerKey.jwt.alg");
 
         $jwtManager = new JWTManager($jwtAlg, $jwtSecret);
 
-        $authenticator = new OpenIdAuthenticator(
+        return new OpenIdAuthenticator(
             $requestDispatcher,
             $session,
             $config,
             $jwtManager
         );
-
-        return $authenticator;
     }
 
-    private function getConfiguration($provider) {
+    private function getConfiguration($providerKey) {
 
         /**
          * Lookup the OpenID settings for the account based on supplied provider.
          * @var Account[] $accounts
          */
-        $accounts = Account::filter("WHERE settings LIKE ?", "%\"provider\":\"$provider\"%");
+        $accounts = Account::filter("WHERE settings LIKE ?", "%\"provider\":\"$providerKey\"%");
         if (sizeof($accounts) > 0) {
             $accountSettings = $accounts[0]->getSettings();
             $openIdSettings = $accountSettings["openId"];
@@ -57,6 +55,7 @@ class OpenIdAuthenticatorFactory {
         return new OpenIdAuthenticatorConfiguration(
             $openIdSettings["clientId"],
             $openIdSettings["issuer"],
+            $openIdSettings["authorizationEndpoint"],
             $openIdSettings["tokenEndpoint"],
             $openIdSettings["redirectUri"]
         );
