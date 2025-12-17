@@ -137,26 +137,26 @@ trait Auth {
     }
 
     /**
-     * @http GET /sso/$authenticatorKey/$provider
+     * @http GET /sso/$authenticatorKey/$providerKey
      *
-     * @param string $provider
+     * @param string $providerKey
      * @return string
      */
-    public function initialiseSSO($authenticatorKey, $provider) {
-        return $this->authenticationService->initialiseSSO($authenticatorKey, $provider);
+    public function initialiseSSO($authenticatorKey, $providerKey) {
+        return $this->authenticationService->initialiseSSO($authenticatorKey, $providerKey);
     }
 
     /**
-     * @http GET /oidc/callback/$provider
+     * @http GET /oidc/$providerKey
      *
-     * @param string $provider
+     * @param string $providerKey
      * @param string $code
      * @param string $state
      * @return void
      */
-    public function authenticateOpenId($provider, $code, $state) {
+    public function authenticateOpenId($providerKey, $code, $state) {
         $data = [$code, $state];
-        $this->authenticationService->authenticateBySSO($provider, $data, "openid");
+        $this->authenticationService->authenticateBySSO($providerKey, $data, "openid");
     }
 
     /**
@@ -173,22 +173,22 @@ trait Auth {
     /**
      * @http POST /saml
      *
-     * @param string $provider
+     * @param string $providerKey
      * @param mixed $data
      * @return void
      */
-    public function authenticateSAML($provider, $data) {
-        $this->authenticationService->authenticateBySSO($provider, $data, "saml");
+    public function authenticateSAML($providerKey, $data) {
+        $this->authenticationService->authenticateBySSO($providerKey, $data, "saml");
     }
 
     /**
-     * @http POST /sso/$provider
+     * @http POST /sso/$providerKey
      *
-     * @param string $provider
+     * @param string $providerKey
      * @param mixed $data
      */
-    public function authenticateSSO($provider, $data) {
-        $this->authenticationService->authenticateBySSO($provider, $data);
+    public function authenticateSSO($providerKey, $data) {
+        $this->authenticationService->authenticateBySSO($providerKey, $data);
     }
 
 

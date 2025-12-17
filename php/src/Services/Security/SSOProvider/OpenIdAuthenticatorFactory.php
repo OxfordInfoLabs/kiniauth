@@ -59,9 +59,9 @@ class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
         }
 
         $settingsService = Container::instance()->get(SettingsService::class);
-        $frontendUrl = $settingsService->getSettingValue("frontendURL");
+        $backendUrl = $settingsService->getSettingValue("backendUrl");
 
-        $redirectUri = $frontendUrl . "/guest/auth/sso";
+        $redirectUri = $backendUrl . "/guest/auth/oidc/$providerKey";
 
         $config = new OpenIdAuthenticatorConfiguration(
             $oidcSettings["clientId"],
