@@ -4,6 +4,7 @@ namespace Kiniauth\Services\Security\SSOProvider;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Services\Application\SettingsService;
+use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\ValueObjects\Security\SSO\SAMLAuthenticatorConfiguration;
 use Kiniauth\ValueObjects\Security\SSO\SAMLIdentityProviderConfiguration;
 use Kiniauth\ValueObjects\Security\SSO\SAMLServiceProviderConfiguration;
@@ -20,7 +21,7 @@ class SAMLAuthenticatorFactory implements AuthenticatorFactory {
      * @param string $provider The identifier for the SSO provider
      * @return SAMLAuthenticator
      */
-    public function create(string $providerKey): OpenIdAuthenticator {
+    public function create(string $providerKey): SAMLAuthenticator {
 
         $config = $this->getConfiguration($providerKey);
         $settings = $config->returnSettings();
@@ -54,7 +55,7 @@ class SAMLAuthenticatorFactory implements AuthenticatorFactory {
         $acsUrl = $backendUrl . "/guest/auth/sso/saml";
 
         $x509cert = file_get_contents(Configuration::readParameter("saml.path.x509cert"));
-        $privateKey = file_get_contents(Configuration::readParameter("saml.path.privatekey"));
+        $privateKey = file_get_contents(Configuration::readParameter("saml.path.privateKey"));
         return new SAMLServiceProviderConfiguration($entityId, $acsUrl, $x509cert, $privateKey);
     }
 
@@ -64,7 +65,10 @@ class SAMLAuthenticatorFactory implements AuthenticatorFactory {
          * Lookup the OpenID settings for the account based on supplied provider.
          * @var Account[] $accounts
          */
-        $accounts = Account::filter("WHERE settings LIKE ?", "%\"provider\":\"$providerKey\"%");
+        $accounts = Container::instance()->get(ActiveRecordInterceptor::class)->executeInsecure(function () use ($providerKey) {
+            return Account::filter("WHERE settings LIKE ?", "%\"provider\":\"$providerKey\"%");
+        });
+
         if (sizeof($accounts) > 0) {
             $accountSettings = $accounts[0]->getSettings();
             $samlSettings = $accountSettings["saml"];
@@ -73,8 +77,8 @@ class SAMLAuthenticatorFactory implements AuthenticatorFactory {
         }
 
         return new SAMLIdentityProviderConfiguration(
-            $samlSettings["entity_id"],
-            $samlSettings["target_url"],
+            $samlSettings["entityId"],
+            $samlSettings["ssoUrl"],
             $samlSettings["x509cert"]
         );
 

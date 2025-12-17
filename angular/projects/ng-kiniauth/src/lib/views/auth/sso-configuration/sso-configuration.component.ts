@@ -24,8 +24,8 @@ export class SsoConfigurationComponent implements OnInit {
         this.account = await this.accountService.getAccount();
 
         // Initialise the OpenID settings if none exist
-        if (!this.accountSettings.openId) {
-            this.accountSettings.openId = {account: this.account.name, provider: _.camelCase(this.account.name)};
+        if (!this.accountSettings.oidc) {
+            this.accountSettings.oidc = {account: this.account.name, provider: _.camelCase(this.account.name)};
         }
 
         // Initialise the SAML settings if none exist

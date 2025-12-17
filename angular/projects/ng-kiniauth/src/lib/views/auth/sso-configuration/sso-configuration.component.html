@@ -96,9 +96,25 @@
                 </div>
 
                 <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">Client Id</label>
+                    <label class="block text-sm/6 font-medium text-gray-900">IdP Entity Id</label>
                     <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.saml.clientId"
+                        <input type="text" [(ngModel)]="accountSettings.saml.entityId"
+                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                    </div>
+                </div>
+
+                <div class="col-span-full">
+                    <label class="block text-sm/6 font-medium text-gray-900">Single Sign-on URL</label>
+                    <div class="mt-2">
+                        <input type="text" [(ngModel)]="accountSettings.saml.ssoUrl"
+                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                    </div>
+                </div>
+
+                <div class="col-span-full">
+                    <label class="block text-sm/6 font-medium text-gray-900">Public Cert</label>
+                    <div class="mt-2">
+                        <input type="text" [(ngModel)]="accountSettings.saml.x509cert"
                                class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                     </div>
                 </div>
