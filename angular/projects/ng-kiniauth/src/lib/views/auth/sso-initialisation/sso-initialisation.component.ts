@@ -8,6 +8,7 @@ import {AuthenticationService} from '../../../services/authentication.service';
 })
 export class SsoInitialisationComponent implements OnInit {
 
+    @Input() authKey: string;
     @Input() provider: string;
 
     constructor(private authService: AuthenticationService) {
@@ -15,7 +16,7 @@ export class SsoInitialisationComponent implements OnInit {
 
     async ngOnInit() {
         try {
-            const url: string = await this.authService.getSSOUri(this.provider);
+            const url: string = await this.authService.getSSOUri(this.authKey, this.provider);
             window.location.href = url;
         } catch (e) {
             console.error('SSO ERROR', e);

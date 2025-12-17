@@ -84,11 +84,11 @@ export class AuthenticationService {
     /**
      * Used for OpenID SSO flow.
      *
-     * @param provider string
+     * @param authKey string - which idp is being used (openId, SAML etc.)
+     * @param provider string - the identifier used to fine the idp account settings
      */
-    public getSSOUri(provider: string): Promise<any> {
-        const response: any = this.http.get(this.config.guestHttpURL + '/auth/oidc/initialise/' + provider).toPromise();
-        return response;
+    public getSSOUri(authKey: string, provider: string): Promise<any> {
+        return this.http.get(this.config.guestHttpURL + `/auth/sso/${authKey}/${provider}`).toPromise();
     }
 
     public loginWithToken(token: string){
