@@ -2,7 +2,6 @@
 
 namespace Kiniauth\Services\Security\SSOProvider;
 
-use Kiniauth\Objects\Account\Account;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\JWT\JWTManager;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;

@@ -499,7 +499,7 @@ class AuthenticationService {
             }
         } else {
             try {
-                $authenticator = Container::instance()->getInterfaceImplementation(SSOAuthenticator::class, $provider);
+                $authenticator = Container::instance()->getInterfaceImplementation(SSOAuthenticator::class, $providerKey);
                 return $authenticator->initialise();
             } catch (MissingInterfaceImplementationException) {
                 return null;

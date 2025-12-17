@@ -4,10 +4,12 @@ namespace Kiniauth\Services\Security\SSOProvider;
 
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Application\SettingsService;
+use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\JWT\JWTManager;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
-use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
 
 class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
@@ -25,10 +27,7 @@ class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
 
         $config = $this->getConfiguration($providerKey);
 
-        $jwtSecret = Configuration::readParameter("sso.$providerKey.jwt.secret");
-        $jwtAlg = Configuration::readParameter("sso.$providerKey.jwt.alg");
-
-        $jwtManager = new JWTManager($jwtAlg, $jwtSecret);
+        $jwtManager = new JWTManager($config->getJwtAlg(), $config->getJwtSecret());
 
         return new OpenIdAuthenticator(
             $requestDispatcher,
@@ -38,26 +37,45 @@ class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
         );
     }
 
-    private function getConfiguration($providerKey) {
+    /**
+     * @param string $providerKey
+     * @returns OpenIdAuthenticatorConfiguration
+     */
+    private function getConfiguration(string $providerKey) {
 
         /**
          * Lookup the OpenID settings for the account based on supplied provider.
          * @var Account[] $accounts
          */
-        $accounts = Account::filter("WHERE settings LIKE ?", "%\"provider\":\"$providerKey\"%");
+        $accounts = Container::instance()->get(ActiveRecordInterceptor::class)->executeInsecure(function () use ($providerKey) {
+            return Account::filter("WHERE settings LIKE ?", "%\"provider\":\"$providerKey\"%");
+        });
+
         if (sizeof($accounts) > 0) {
             $accountSettings = $accounts[0]->getSettings();
-            $openIdSettings = $accountSettings["openId"];
+            $oidcSettings = $accountSettings["oidc"] ?? null;
         } else {
-            return null;
+            throw new AccessDeniedException("Key not found");
         }
 
-        return new OpenIdAuthenticatorConfiguration(
-            $openIdSettings["clientId"],
-            $openIdSettings["issuer"],
-            $openIdSettings["authorizationEndpoint"],
-            $openIdSettings["tokenEndpoint"],
-            $openIdSettings["redirectUri"]
+        $settingsService = Container::instance()->get(SettingsService::class);
+        $frontendUrl = $settingsService->getSettingValue("frontendURL");
+
+        $redirectUri = $frontendUrl . "/guest/auth/sso";
+
+        $config = new OpenIdAuthenticatorConfiguration(
+            $oidcSettings["clientId"],
+            $oidcSettings["issuer"],
+            $oidcSettings["authorizationEndpoint"],
+            $oidcSettings["tokenExchangeEndpoint"],
+            $redirectUri
         );
+
+        if (isset($oidcSettings["jwtAlg"])) {
+            $config->setJwtSecret($oidcSettings["jwtAlg"]);
+            $config->setJwtSecret($oidcSettings["jwtSecret"]);
+        }
+
+        return $config;
     }
 }
