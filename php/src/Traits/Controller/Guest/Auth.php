@@ -137,13 +137,13 @@ trait Auth {
     }
 
     /**
-     * @http GET /oidc/initialise/$provider
+     * @http GET /sso/$authenticatorKey/$provider
      *
      * @param string $provider
      * @return string
      */
-    public function initialiseOpenId($provider) {
-        return $this->authenticationService->initialiseOpenId($provider);
+    public function initialiseSSO($authenticatorKey, $provider) {
+        return $this->authenticationService->initialiseSSO($authenticatorKey, $provider);
     }
 
     /**
@@ -156,9 +156,30 @@ trait Auth {
      */
     public function authenticateOpenId($provider, $code, $state) {
         $data = [$code, $state];
-        $this->authenticationService->authenticateBySSO($provider, $data, true);
+        $this->authenticationService->authenticateBySSO($provider, $data, "openid");
     }
 
+    /**
+     * Required for IdP to configure their end
+     *
+     * @http GET /saml/metadata
+     *
+     * @return void
+     */
+    public function getSAMLMetadata() {
+        $this->authenticationService->getSAMLMetadata();
+    }
+
+    /**
+     * @http POST /saml
+     *
+     * @param string $provider
+     * @param mixed $data
+     * @return void
+     */
+    public function authenticateSAML($provider, $data) {
+        $this->authenticationService->authenticateBySSO($provider, $data, "saml");
+    }
 
     /**
      * @http POST /sso/$provider

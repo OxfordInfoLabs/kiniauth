@@ -16,7 +16,9 @@ use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\ActivityLogger;
+use Kiniauth\Services\Security\SSOProvider\AuthenticatorFactory;
 use Kiniauth\Services\Security\SSOProvider\OpenIdAuthenticatorFactory;
+use Kiniauth\Services\Security\SSOProvider\SAMLAuthenticatorFactory;
 use Kiniauth\Services\Security\SSOProvider\SSOAuthenticator;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
@@ -372,7 +374,7 @@ class AuthenticationService {
      * @param $accountId
      * @return string
      */
-    public function createJoinAccountToken($accountId){
+    public function createJoinAccountToken($accountId) {
 
         $loggedInUser = $this->session->__getLoggedInSecurable();
 
@@ -394,8 +396,7 @@ class AuthenticationService {
     }
 
 
-
-    public function joinAccountUsingToken($token){
+    public function joinAccountUsingToken($token) {
 
         try {
             $action = $this->pendingActionService->getPendingActionByIdentifier("JOIN_ACCOUNT_TOKEN", $token);
@@ -410,7 +411,6 @@ class AuthenticationService {
         $this->pendingActionService->removePendingAction("JOIN_ACCOUNT_TOKEN", $token);
 
     }
-
 
 
     /**
@@ -479,19 +479,24 @@ class AuthenticationService {
     }
 
     /**
-     * Initialise Login with OpenId
+     * Initialise login with SSO
      *
      * Returns the authentication endpoint for the provider
      *
-     * @param string $provider
+     * @param string $authenticatorKey
+     * @param string $providerKey
      * @return string
      */
-    public function initialiseSSO($provider, bool $openId = false) {
+    public function initialiseSSO(string $authenticatorKey, string $providerKey) {
 
-        if ($openId) {
-            $factory = new OpenIdAuthenticatorFactory();
-            $authenticator = $factory->create($provider);
-            return $authenticator->initialise();
+        if ($authenticatorKey) {
+            try {
+                $factory = Container::instance()->getInterfaceImplementation(AuthenticatorFactory::class, $authenticatorKey);
+                $authenticator = $factory->create($providerKey);
+                return $authenticator->initialise();
+            } catch (MissingInterfaceImplementationException) {
+                return null;
+            }
         } else {
             try {
                 $authenticator = Container::instance()->getInterfaceImplementation(SSOAuthenticator::class, $provider);
@@ -509,15 +514,19 @@ class AuthenticationService {
      * @param $provider
      * @param $data
      * @return void
-     * 
+     *
      * @objectInterceptorDisabled
      */
-    public function authenticateBySSO($provider, $data, bool $openId = false) {
+    public function authenticateBySSO($provider, $data, ?string $authenticatorKey = null) {
 
-        if ($openId) {
-            $factory = new OpenIdAuthenticatorFactory();
-            $authenticator = $factory->create($provider);
-            $authenticator->authenticate($data);
+        if ($authenticatorKey) {
+            try {
+                $factory = Container::instance()->getInterfaceImplementation(AuthenticatorFactory::class, $authenticatorKey);
+                $authenticator = $factory->create($provider);
+                $email = $authenticator->authenticate($data);
+            } catch (MissingInterfaceImplementationException) {
+                return null;
+            }
         } else {
             try {
                 $authenticator = Container::instance()->getInterfaceImplementation(SSOAuthenticator::class, $provider);
@@ -535,6 +544,11 @@ class AuthenticationService {
             throw new \Exception("User doesn't have an account");
         }
 
+    }
+
+    public function getSAMLMetadata() {
+        $factory = new SAMLAuthenticatorFactory();
+        return $factory->getServiceProviderMetadata();
     }
 
 }
