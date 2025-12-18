@@ -546,9 +546,9 @@ class AuthenticationService {
 
     }
 
-    public function getSAMLMetadata() {
+    public function getSAMLMetadata($providerKey) {
         $factory = new SAMLAuthenticatorFactory();
-        return $factory->getServiceProviderMetadata();
+        return $factory->getServiceProviderMetadata($providerKey);
     }
 
 }
