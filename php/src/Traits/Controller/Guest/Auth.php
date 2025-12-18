@@ -162,12 +162,13 @@ trait Auth {
     /**
      * Required for IdP to configure their end
      *
-     * @http GET /saml/metadata
+     * @http GET /saml/metadata/$providerKey
      *
+     * @param string $providerKey
      * @return void
      */
-    public function getSAMLMetadata() {
-        $this->authenticationService->getSAMLMetadata();
+    public function getSAMLMetadata($providerKey) {
+        $this->authenticationService->getSAMLMetadata($providerKey);
     }
 
     /**
