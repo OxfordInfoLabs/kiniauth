@@ -43,6 +43,8 @@ import { ExportProjectComponent } from './lib/views/export-project/export-projec
 import { ImportProjectComponent } from './lib/views/import-project/import-project.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { GroupInvitationComponent } from './lib/views/group-invitation/group-invitation.component';
+import { SsoConfigurationComponent } from './lib/views/auth/sso-configuration/sso-configuration.component';
+import { SsoInitialisationComponent } from './lib/views/auth/sso-initialisation/sso-initialisation.component';
 
 @NgModule({
     declarations: [
@@ -75,7 +77,9 @@ import { GroupInvitationComponent } from './lib/views/group-invitation/group-inv
         AccountDiscoverabilityComponent,
         ExportProjectComponent,
         ImportProjectComponent,
-        GroupInvitationComponent
+        GroupInvitationComponent,
+        SsoConfigurationComponent,
+        SsoInitialisationComponent
     ],
     imports: [
         RouterModule,
@@ -115,7 +119,9 @@ import { GroupInvitationComponent } from './lib/views/group-invitation/group-inv
         AccountDiscoverabilityComponent,
         ExportProjectComponent,
         ImportProjectComponent,
-        GroupInvitationComponent
+        GroupInvitationComponent,
+        SsoConfigurationComponent,
+        SsoInitialisationComponent
     ]
 })
 export class NgKiniAuthModule {

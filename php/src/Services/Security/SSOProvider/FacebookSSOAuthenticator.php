@@ -6,7 +6,7 @@ use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
 use Kinikit\Core\HTTP\Request\Request;
 
-class FacebookSSOAuthenticator extends SSOAuthenticator {
+class FacebookSSOAuthenticator implements SSOAuthenticator {
 
     /**
      * @var HttpRequestDispatcher
@@ -18,6 +18,10 @@ class FacebookSSOAuthenticator extends SSOAuthenticator {
      */
     public function __construct(HttpRequestDispatcher $requestDispatcher) {
         $this->requestDispatcher = $requestDispatcher;
+    }
+
+    public function initialise(string $provider) {
+        return null;
     }
 
 
