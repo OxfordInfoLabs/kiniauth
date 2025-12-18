@@ -59,14 +59,14 @@ class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
         }
 
         $settingsService = Container::instance()->get(SettingsService::class);
-        $backendUrl = $settingsService->getSettingValue("backendUrl");
+        $frontendUrl = $settingsService->getSettingValue("frontendURL");
 
         $config = new OpenIdAuthenticatorConfiguration(
             $oidcSettings["clientId"],
             $oidcSettings["issuer"],
             $oidcSettings["authorizationEndpoint"],
             $oidcSettings["tokenExchangeEndpoint"],
-            "$backendUrl/guest/auth/oidc/$providerKey"
+            "$frontendUrl/sso/oidc/$providerKey"
         );
 
         if (isset($oidcSettings["jwtAlg"])) {
