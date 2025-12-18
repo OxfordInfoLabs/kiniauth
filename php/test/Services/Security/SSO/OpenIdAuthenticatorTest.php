@@ -45,6 +45,22 @@ class OpenIdAuthenticatorTest extends TestCase {
         $this->configMock->returnValue('getClientId', 'test-client-id');
     }
 
+    // --- Test Initialisation ---
+    public function testInitialiseReturnsCorrectUrlAndSetsSession(): void {
+
+        $this->configMock->returnValue('getAuthorisationEndpoint', 'https://auth.example.com/login');
+        $this->configMock->returnValue('getClientId', 'test_client_id');
+        $this->configMock->returnValue('getRedirectUri', 'https://app.example.com/callback');
+
+        $url = $this->authenticator->initialise();
+
+        $this->assertStringStartsWith('https://auth.example.com/login?', $url);
+        $this->assertStringContainsString('client_id=test_client_id', $url);
+        $this->assertStringContainsString('response_type=code', $url);
+        $this->assertStringContainsString('state=', $url);
+        $this->assertStringContainsString('nonce=', $url);
+    }
+
     // --- Test Case 1: Successful Authentication ---
     public function testAuthenticate_Success() {
         $code = 'valid-auth-code';
