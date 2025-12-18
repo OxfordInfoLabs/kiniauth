@@ -3,8 +3,8 @@
 namespace Kiniauth\Services\Security\SSOProvider;
 
 /**
- * @implementation google \Kiniauth\Services\Security\Services\SSOProvider\GoogleSSOAuthenticator
- * @implementation facebook \Kiniauth\Services\Security\Services\SSOProvider\FacebookSSOAuthenticator
+ * @implementation google \Kiniauth\Services\Security\SSOProvider\GoogleSSOAuthenticator
+ * @implementation facebook \Kiniauth\Services\Security\SSOProvider\FacebookSSOAuthenticator
  */
 interface SSOAuthenticator {
 
