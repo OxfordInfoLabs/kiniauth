@@ -7,6 +7,7 @@ use Kiniauth\Services\Security\JWT\JWTManager;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
+use Kinikit\Core\HTTP\Request\Headers;
 use Kinikit\Core\HTTP\Request\Request;
 
 class OpenIdAuthenticator {
@@ -106,7 +107,7 @@ class OpenIdAuthenticator {
             Request::METHOD_POST,
             $params,
             null,
-            ["Content-Type" => "application/x-www-form-urlencoded"]
+            new Headers(["Content-Type" => "application/x-www-form-urlencoded"])
         );
 
         $response = $this->requestDispatcher->dispatch($request);
