@@ -1,6 +1,6 @@
 {
   "name": "ng-kiniauth",
-  "version": "0.14.111b",
+  "version": "0.14.112b",
   "dependencies": {
     "tslib": "^2.0.0"
   }
