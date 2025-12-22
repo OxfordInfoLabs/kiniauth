@@ -156,7 +156,7 @@ trait Auth {
      */
     public function authenticateOpenId($providerKey, $code, $state) {
         $data = [$code, $state];
-        $this->authenticationService->authenticateBySSO($providerKey, $data, "openid");
+        $this->authenticationService->authenticateBySSO($providerKey, $data, "oidc");
     }
 
     /**
@@ -172,7 +172,7 @@ trait Auth {
     }
 
     /**
-     * @http POST /saml
+     * @http POST /saml/$providerKey
      *
      * @param string $providerKey
      * @param mixed $data
