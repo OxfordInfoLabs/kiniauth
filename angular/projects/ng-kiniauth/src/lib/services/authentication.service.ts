@@ -72,13 +72,28 @@ export class AuthenticationService {
     }
 
     /**
-     * Used for Google and Facebook SSO flow.
+     * Used for SSO flow.
      *
-     * @param state string
+     * @param providerKey string
      * @param code string
+     * @param state string
+     * @param authKey string
+     * @param data any
      */
-    public loginSSO(state: string, code: string) {
-        return this.http.post(this.config.guestHttpURL + '/auth/sso/' + state, JSON.stringify(code)).toPromise();
+    public loginSSO(providerKey: string, code: string, state?: string, authKey?: string, data?: any) {
+        if (!authKey) {
+            return this.http.post(this.config.guestHttpURL + '/auth/sso/' + providerKey, JSON.stringify(code)).toPromise();
+        }
+
+        if (authKey === 'oidc') {
+            return this.http.get(this.config.guestHttpURL + '/auth/oidc/' + providerKey, {
+                params: {code, state}
+            }).toPromise();
+        } else if (authKey === 'saml') {
+            return this.http.post(this.config.guestHttpURL + '/auth/saml/' + providerKey, data).toPromise();
+        }
+
+        return null;
     }
 
     /**
