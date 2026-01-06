@@ -1,6 +1,6 @@
 import { Directive, Input } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Directive({
     selector: '[netPostcodeLookup]',

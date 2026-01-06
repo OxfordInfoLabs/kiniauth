@@ -3,7 +3,7 @@ import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
 import * as lodash from 'lodash';
 const _ = lodash.default;
 import {AuthenticationService} from './authentication.service';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'

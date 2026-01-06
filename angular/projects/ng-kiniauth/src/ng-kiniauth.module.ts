@@ -34,7 +34,7 @@ import { NotificationComponent } from './lib/views/notifications/notification/no
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { AccountsComponent } from './lib/views/accounts/accounts.component';
 import { InvitationComponent } from './lib/views/invitation/invitation.component';
-import {HttpClientModule} from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { PasswordResetComponent } from './lib/views/password-reset/password-reset.component';
 import { ChangePasswordComponent } from './lib/views/user/change-password/change-password.component';
 import { SecurityComponent } from './lib/views/security/security.component';
@@ -44,8 +44,7 @@ import { ImportProjectComponent } from './lib/views/import-project/import-projec
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { GroupInvitationComponent } from './lib/views/group-invitation/group-invitation.component';
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         AccountSummaryComponent,
         EditNameComponent,
         EditEmailComponent,
@@ -77,23 +76,6 @@ import { GroupInvitationComponent } from './lib/views/group-invitation/group-inv
         ImportProjectComponent,
         GroupInvitationComponent
     ],
-    imports: [
-        RouterModule,
-        CommonModule,
-        FormsModule,
-        HttpClientModule,
-        ReactiveFormsModule,
-        MatPaginatorModule,
-        MatIconModule,
-        MatButtonModule,
-        MatMenuModule,
-        MatTabsModule,
-        RecaptchaModule,
-        MatTableModule,
-        MatChipsModule,
-        MatCheckboxModule,
-        MatSnackBarModule
-    ],
     exports: [
         AccountSummaryComponent,
         EditEmailComponent,
@@ -116,8 +98,20 @@ import { GroupInvitationComponent } from './lib/views/group-invitation/group-inv
         ExportProjectComponent,
         ImportProjectComponent,
         GroupInvitationComponent
-    ]
-})
+    ], imports: [RouterModule,
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatPaginatorModule,
+        MatIconModule,
+        MatButtonModule,
+        MatMenuModule,
+        MatTabsModule,
+        RecaptchaModule,
+        MatTableModule,
+        MatChipsModule,
+        MatCheckboxModule,
+        MatSnackBarModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class NgKiniAuthModule {
     static forRoot(conf?: KiniAuthModuleConfig): ModuleWithProviders<NgKiniAuthModule> {
         return {

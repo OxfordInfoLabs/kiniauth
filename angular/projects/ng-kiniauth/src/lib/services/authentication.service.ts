@@ -5,7 +5,7 @@ import * as lodash from 'lodash';
 
 const _ = lodash.default;
 import * as sha512 from 'js-sha512' ;
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {map} from 'rxjs/operators';
 
 @Injectable({

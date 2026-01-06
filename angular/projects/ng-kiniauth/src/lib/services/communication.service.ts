@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
 import * as lodash from 'lodash';
 

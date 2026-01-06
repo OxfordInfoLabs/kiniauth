@@ -1,5 +1,5 @@
 import { Directive, Input, OnInit } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Directive({
     selector: '[netCountryCodes]',
