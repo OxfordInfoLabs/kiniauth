@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 
 @Directive({
     selector: '[netCountryCodes]',
-    exportAs: 'countryCodes'
+    exportAs: 'countryCodes',
+    standalone: false
 })
 export class CountryCodesDirective implements OnInit {
 

@@ -6,7 +6,8 @@ import {BaseComponent} from '../base-component';
 @Component({
     selector: 'ka-password-reset',
     templateUrl: './password-reset.component.html',
-    styleUrls: ['./password-reset.component.sass']
+    styleUrls: ['./password-reset.component.sass'],
+    standalone: false
 })
 export class PasswordResetComponent extends BaseComponent implements OnInit {
 

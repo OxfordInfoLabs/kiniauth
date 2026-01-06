@@ -7,7 +7,8 @@ import { BaseComponent } from '../../base-component';
     selector: 'ka-edit-details',
     templateUrl: './edit-details.component.html',
     styleUrls: ['./edit-details.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class EditDetailsComponent extends BaseComponent implements OnInit, OnDestroy {
 

@@ -4,7 +4,8 @@ import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from 
     selector: 'ka-edit-mobile',
     templateUrl: './edit-mobile.component.html',
     styleUrls: ['./edit-mobile.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class EditMobileComponent implements OnInit {
 

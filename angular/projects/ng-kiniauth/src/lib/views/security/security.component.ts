@@ -11,7 +11,8 @@ const _ = lodash.default;
 
 @Component({
     selector: 'ka-security',
-    templateUrl: './security.component.html'
+    templateUrl: './security.component.html',
+    standalone: false
 })
 export class SecurityComponent implements OnInit {
 

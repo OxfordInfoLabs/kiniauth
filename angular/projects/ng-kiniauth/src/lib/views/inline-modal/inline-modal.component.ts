@@ -4,7 +4,8 @@ import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@ang
     selector: 'ka-inline-modal',
     templateUrl: './inline-modal.component.html',
     styleUrls: ['./inline-modal.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class InlineModalComponent implements OnInit {
 

@@ -3,7 +3,8 @@ import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
     selector: 'ka-base-component',
-    template: ''
+    template: '',
+    standalone: false
 })
 export class BaseComponent implements OnInit {
 

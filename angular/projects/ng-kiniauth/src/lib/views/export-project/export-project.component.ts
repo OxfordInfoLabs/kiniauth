@@ -6,7 +6,8 @@ const _ = lodash.default;
 @Component({
     selector: 'ka-export-project',
     templateUrl: './export-project.component.html',
-    styleUrls: ['./export-project.component.sass']
+    styleUrls: ['./export-project.component.sass'],
+    standalone: false
 })
 export class ExportProjectComponent implements OnInit {
 

@@ -6,7 +6,8 @@ const _ = lodash.default;
 @Component({
     selector: 'ka-notifications',
     templateUrl: './notifications.component.html',
-    styleUrls: ['./notifications.component.sass']
+    styleUrls: ['./notifications.component.sass'],
+    standalone: false
 })
 export class NotificationsComponent implements OnInit {
 

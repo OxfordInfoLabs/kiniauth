@@ -4,7 +4,8 @@ import { HttpClient } from '@angular/common/http';
 
 @Directive({
     selector: '[netPostcodeLookup]',
-    exportAs: 'postcodeLookup'
+    exportAs: 'postcodeLookup',
+    standalone: false
 })
 export class PostcodeLookupDirective {
 

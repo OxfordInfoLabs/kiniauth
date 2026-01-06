@@ -11,7 +11,8 @@ import {UserService} from '../../services/user.service';
     selector: 'ka-invite-user',
     templateUrl: './invite-user.component.html',
     styleUrls: ['./invite-user.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class InviteUserComponent implements OnInit {
 

@@ -7,7 +7,8 @@ import { HttpClient } from '@angular/common/http';
 @Component({
     selector: 'ka-contact-details',
     templateUrl: './contact-details.component.html',
-    styleUrls: ['./contact-details.component.sass']
+    styleUrls: ['./contact-details.component.sass'],
+    standalone: false
 })
 export class ContactDetailsComponent implements OnInit {
 

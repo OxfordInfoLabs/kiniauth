@@ -5,7 +5,8 @@ import { ContactService } from '../../services/contact.service';
     selector: 'ka-address-book',
     templateUrl: './address-book.component.html',
     styleUrls: ['./address-book.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class AddressBookComponent implements OnInit {
 

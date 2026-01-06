@@ -4,7 +4,8 @@ import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from 
     selector: 'ka-edit-backup-email',
     templateUrl: './edit-backup-email.component.html',
     styleUrls: ['./edit-backup-email.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class EditBackupEmailComponent implements OnInit {
 
