@@ -1,79 +1,90 @@
 <div class="p-6 bg-white border-b border-gray-200">
-    <div class="md:flex md:items-center md:justify-between md:space-x-5">
-        <div class="flex items-start flex-1">
-            <div class="pt-1.5">
-                <h1 class="text-2xl font-bold text-gray-900 mb-0">Import Project</h1>
-                <p class="text-sm font-medium text-gray-500">
-                    Import a project from a file exported from another DAP.LIVE project
-                </p>
-            </div>
-        </div>
-        <div class="mt-6 flex flex-col-reverse justify-stretch">
-            <label
-                class="relative cursor-pointer rounded-md font-medium text-secondary focus-within:outline-none">
-                <span
-                    class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none">Select Import File</span>
-                <input name="additionalUpload" multiple type="file" class="sr-only" (change)="analyseImport($event)">
-            </label>
-        </div>
+  <div class="md:flex md:items-center md:justify-between md:space-x-5">
+    <div class="flex items-start flex-1">
+      <div class="pt-1.5">
+        <h1 class="text-2xl font-bold text-gray-900 mb-0">Import Project</h1>
+        <p class="text-sm font-medium text-gray-500">
+          Import a project from a file exported from another DAP.LIVE project
+        </p>
+      </div>
     </div>
+    <div class="mt-6 flex flex-col-reverse justify-stretch">
+      <label
+        class="relative cursor-pointer rounded-md font-medium text-secondary focus-within:outline-none">
+        <span
+        class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none">Select Import File</span>
+        <input name="additionalUpload" multiple type="file" class="sr-only" (change)="analyseImport($event)">
+      </label>
+    </div>
+  </div>
 </div>
 <div class="bg-white border-b border-gray-200">
 
-    <div class="" *ngIf="analysis">
-
-        <div class="mb-0 text-xl px-4 pt-4">Import Analysis</div>
-
-        <div class="text-sm mb-5 text-gray-500 px-4">Importing from export: {{analysis.exportDateTime}}</div>
-
-        <table>
-        <tbody *ngFor="let category of keys(analysis.resourcesByType)">
-
+  @if (analysis) {
+    <div class="">
+      <div class="mb-0 text-xl px-4 pt-4">Import Analysis</div>
+      <div class="text-sm mb-5 text-gray-500 px-4">Importing from export: {{analysis.exportDateTime}}</div>
+      <table>
+        @for (category of keys(analysis.resourcesByType); track category) {
+          <tbody>
             <tr>
-                <th colspan="2" align="left" class="text-xs bg-gray-100 uppercase tracking-widest font-medium border-t border-b p-3">
-                    {{category}}
-                </th>
+              <th colspan="2" align="left" class="text-xs bg-gray-100 uppercase tracking-widest font-medium border-t border-b p-3">
+                {{category}}
+              </th>
             </tr>
-
-            <tr *ngFor="let item of analysis.resourcesByType[category]">
+            @for (item of analysis.resourcesByType[category]; track item) {
+              <tr>
                 <td class="pl-3">
-                    <label class="font-medium text-gray-700">
-                        {{item.title}}
-                    </label>
+                  <label class="font-medium text-gray-700">
+                    {{item.title}}
+                  </label>
                 </td>
-
                 <td class="pl-3">
-                    <div *ngIf="item.importStatus == 'Ignore'" class="ml-3 text-sm text-gray-300">Already Exists</div>
-                    <div *ngIf="item.importStatus == 'Update'" class="ml-3 text-sm text-orange-600">Requires Update</div>
-                    <div *ngIf="item.importStatus == 'Create'" class="ml-3 text-sm text-green-600">Will be created</div>
-                    <div *ngIf="item.importStatus == 'Delete'" class="ml-3 text-sm text-red-600">Will be deleted</div>
+                  @if (item.importStatus == 'Ignore') {
+                    <div class="ml-3 text-sm text-gray-300">Already Exists</div>
+                  }
+                  @if (item.importStatus == 'Update') {
+                    <div class="ml-3 text-sm text-orange-600">Requires Update</div>
+                  }
+                  @if (item.importStatus == 'Create') {
+                    <div class="ml-3 text-sm text-green-600">Will be created</div>
+                  }
+                  @if (item.importStatus == 'Delete') {
+                    <div class="ml-3 text-sm text-red-600">Will be deleted</div>
+                  }
                 </td>
-
-            </tr>
-
-        </tbody>
-        </table>
-
+              </tr>
+            }
+          </tbody>
+        }
+      </table>
     </div>
+  }
 
-    <hr class="mt-8"  *ngIf="analysis">
+  @if (analysis) {
+    <hr class="mt-8" >
+  }
 
-    <div class="p-5"  *ngIf="analysis">
-        <div class="flex justify-end">
-            <button type="button" (click)="import()"
-                    class="disabled:opacity-50 ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary focus:outline-none">
-                Import
-            </button>
-        </div>
+  @if (analysis) {
+    <div class="p-5" >
+      <div class="flex justify-end">
+        <button type="button" (click)="import()"
+          class="disabled:opacity-50 ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary focus:outline-none">
+          Import
+        </button>
+      </div>
     </div>
+  }
 
 
-    <div *ngIf="success" class="my-8 flex items-center justify-center" >
-        <svg xmlns="http://www.w3.org/2000/svg" class="text-green-500 h-24 w-24 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <div class="text-lg">Import completed.</div>
+  @if (success) {
+    <div class="my-8 flex items-center justify-center" >
+      <svg xmlns="http://www.w3.org/2000/svg" class="text-green-500 h-24 w-24 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <div class="text-lg">Import completed.</div>
     </div>
+  }
 
 
 </div>

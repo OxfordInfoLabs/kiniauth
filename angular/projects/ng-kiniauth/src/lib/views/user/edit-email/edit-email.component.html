@@ -1,45 +1,51 @@
 <div class="space-y-8 divide-y divide-gray-200 p-6">
-    <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
-        <div>
-            <div class="mb-8">
-                Change your email address. You will be required to confirm you identity by entering your password
-                prior to saving the new email address.
-            </div>
-            <div class="space-y-6 sm:space-y-5">
-                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
-                    <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                        Enter the new email address you want to use.</label>
-                    <div class="mt-1 sm:mt-0 sm:col-span-2">
-                        <input type="email" #email="ngModel" name="email" [(ngModel)]="newEmailAddress"
-                               (change)="checkEmail()" placeholder="New email address"
-                               class="max-w-lg block w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md">
-                        <span style="color: red" *ngIf="!emailAvailable">An account already exists with this email address</span>
-                        <span style="color: red" *ngIf="email.invalid">Not a valid email address</span>
-                    </div>
-                </div>
-            </div>
-            <div class="space-y-6 sm:space-y-5">
-                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
-                    <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                        Enter current password to confirm name change.</label>
-                    <div class="mt-1 sm:mt-0 sm:col-span-2">
-                        <input type="password" name="password" [(ngModel)]="currentPassword"
-                               class="max-w-lg block w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md">
-                    </div>
-                </div>
-            </div>
+  <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+    <div>
+      <div class="mb-8">
+        Change your email address. You will be required to confirm you identity by entering your password
+        prior to saving the new email address.
+      </div>
+      <div class="space-y-6 sm:space-y-5">
+        <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
+          <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+          Enter the new email address you want to use.</label>
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <input type="email" #email="ngModel" name="email" [(ngModel)]="newEmailAddress"
+              (change)="checkEmail()" placeholder="New email address"
+              class="max-w-lg block w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md">
+            @if (!emailAvailable) {
+              <span style="color: red">An account already exists with this email address</span>
+            }
+            @if (email.invalid) {
+              <span style="color: red">Not a valid email address</span>
+            }
+          </div>
         </div>
+      </div>
+      <div class="space-y-6 sm:space-y-5">
+        <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
+          <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+          Enter current password to confirm name change.</label>
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <input type="password" name="password" [(ngModel)]="currentPassword"
+              class="max-w-lg block w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md">
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="pt-5">
-        <div *ngIf="saveError" class="my-8 flex align-center error text-red-600">
-            {{saveError}}
-        </div>
+  </div>
+  <div class="pt-5">
+    @if (saveError) {
+      <div class="my-8 flex align-center error text-red-600">
+        {{saveError}}
+      </div>
+    }
 
-        <div class="flex justify-end">
-            <button type="button" [disabled]="!emailAvailable || !newEmailAddress || !currentPassword || email.invalid"
-                    (click)="saveEmailAddress()"
-                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary focus:outline-none">
-                Update email address</button>
-        </div>
+    <div class="flex justify-end">
+      <button type="button" [disabled]="!emailAvailable || !newEmailAddress || !currentPassword || email.invalid"
+        (click)="saveEmailAddress()"
+        class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary focus:outline-none">
+      Update email address</button>
     </div>
+  </div>
 </div>
