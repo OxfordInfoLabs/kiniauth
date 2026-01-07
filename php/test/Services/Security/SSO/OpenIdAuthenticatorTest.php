@@ -8,6 +8,7 @@ use Kiniauth\Services\Security\SSOProvider\OpenIdAuthenticator;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
+use Kinikit\Core\HTTP\Request\Headers;
 use Kinikit\Core\HTTP\Request\Request;
 use Kinikit\Core\HTTP\Response\Response;
 use Kinikit\Core\Testing\MockObjectProvider;
@@ -88,7 +89,7 @@ class OpenIdAuthenticatorTest extends TestCase {
                 "redirect_uri" => 'http://redirect.uri'
             ],
             null,
-            ["Content-Type" => "application/x-www-form-urlencoded"]
+            new Headers(["Content-Type" => "application/x-www-form-urlencoded"])
         );
         $this->requestDispatcherMock->returnValue("dispatch", $tokenResponseMock, $expectedTokenRequest);
 
