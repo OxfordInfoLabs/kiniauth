@@ -136,15 +136,60 @@ trait Auth {
         return Container::instance()->get(SessionData::class);
     }
 
+    /**
+     * @http GET /sso/$authenticatorKey/$providerKey
+     *
+     * @param string $providerKey
+     * @return string
+     */
+    public function initialiseSSO($authenticatorKey, $providerKey) {
+        return $this->authenticationService->initialiseSSO($authenticatorKey, $providerKey);
+    }
 
     /**
-     * @http POST /sso/$provider
+     * @http GET /oidc/$providerKey
      *
-     * @param string $provider
+     * @param string $providerKey
+     * @param string $code
+     * @param string $state
+     * @return void
+     */
+    public function authenticateOpenId($providerKey, $code, $state) {
+        $data = [$code, $state];
+        $this->authenticationService->authenticateBySSO($providerKey, $data, "oidc");
+    }
+
+    /**
+     * Required for IdP to configure their end
+     *
+     * @http GET /saml/metadata/$providerKey
+     *
+     * @param string $providerKey
+     * @return void
+     */
+    public function getSAMLMetadata($providerKey) {
+        $this->authenticationService->getSAMLMetadata($providerKey);
+    }
+
+    /**
+     * @http POST /saml/$providerKey
+     *
+     * @param string $providerKey
+     * @param mixed $data
+     * @return void
+     */
+    public function authenticateSAML($providerKey, $data) {
+        $this->authenticationService->authenticateBySSO($providerKey, $data, "saml");
+    }
+
+    /**
+     * @http POST /sso/$providerKey
+     *
+     * @param string $providerKey
      * @param mixed $data
      */
-    public function authenticateSSO($provider, $data) {
-        $this->authenticationService->authenticateBySSO($provider, $data);
+    public function authenticateSSO($providerKey, $data) {
+        $this->authenticationService->authenticateBySSO($providerKey, $data);
     }
 
 

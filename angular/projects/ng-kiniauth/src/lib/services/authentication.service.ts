@@ -2,11 +2,11 @@ import {Injectable} from '@angular/core';
 import {KiniAuthModuleConfig} from '../../ng-kiniauth.module';
 import {BehaviorSubject} from 'rxjs/internal/BehaviorSubject';
 import * as lodash from 'lodash';
-
-const _ = lodash.default;
 import * as sha512 from 'js-sha512' ;
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {map} from 'rxjs/operators';
+
+const _ = lodash.default;
 
 @Injectable({
     providedIn: 'root'
@@ -71,15 +71,44 @@ export class AuthenticationService {
         });
     }
 
-    public loginSSO(state: string, code: string) {
-        return this.http.post(this.config.guestHttpURL + '/auth/sso/' + state, JSON.stringify(code)).toPromise();
+    /**
+     * Used for SSO flow.
+     *
+     * @param providerKey string
+     * @param code string
+     * @param state string
+     * @param authKey string
+     * @param data any
+     */
+    public loginSSO(providerKey: string, code: string, state?: string, authKey?: string, data?: any) {
+        if (!authKey) {
+            return this.http.post(this.config.guestHttpURL + '/auth/sso/' + providerKey, JSON.stringify(code)).toPromise();
+        }
+
+        if (authKey === 'oidc') {
+            return this.http.get(this.config.guestHttpURL + '/auth/oidc/' + providerKey, {
+                params: {code, state}
+            }).toPromise();
+        } else if (authKey === 'saml') {
+            return this.http.post(this.config.guestHttpURL + '/auth/saml/' + providerKey, data).toPromise();
+        }
+
+        return null;
     }
 
+    /**
+     * Used for OpenID SSO flow.
+     *
+     * @param authKey string - which idp is being used (openId, SAML etc.)
+     * @param provider string - the identifier used to fine the idp account settings
+     */
+    public getSSOUri(authKey: string, provider: string): Promise<any> {
+        return this.http.get(this.config.guestHttpURL + `/auth/sso/${authKey}/${provider}`).toPromise();
+    }
 
     public loginWithToken(token: string){
         return this.http.post(this.config.guestHttpURL + '/auth/joinWithToken', '"' + token + '"' ).toPromise();
     }
-
 
     public sendPasswordReset(emailAddress, recaptcha?) {
         const headers = new HttpHeaders({'X-CAPTCHA-TOKEN': recaptcha || ''});

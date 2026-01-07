@@ -14,6 +14,8 @@ class AccountGroupInterceptor extends DefaultORMInterceptor {
      */
     private $securityService;
 
+    private bool $disabled = false;
+
     /**
      * @param SecurityService $securityService
      */
@@ -27,13 +29,13 @@ class AccountGroupInterceptor extends DefaultORMInterceptor {
      */
     public function preSave($object) {
 
-        if ($this->securityService->isSuperUserLoggedIn()) {
+        if ($this->securityService->isSuperUserLoggedIn() || $this->disabled) {
             return;
         } else {
             /** @var Account $loggedInAccount */
             $loggedInAccount = $this->securityService->getLoggedInSecurableAndAccount()[1];
 
-            $members = array_map(fn ($groupMemberObj) => $groupMemberObj->getMemberAccountId(), $object->getAccountGroupMembers());
+            $members = array_map(fn($groupMemberObj) => $groupMemberObj->getMemberAccountId(), $object->getAccountGroupMembers());
 
             if (!in_array($loggedInAccount?->getAccountId(), $members)) {
                 throw new AccessDeniedException();
@@ -47,7 +49,7 @@ class AccountGroupInterceptor extends DefaultORMInterceptor {
      * @return void
      */
     public function preDelete($object) {
-        if ($this->securityService->isSuperUserLoggedIn()) {
+        if ($this->securityService->isSuperUserLoggedIn() || $this->disabled) {
             return;
         } else {
             /** @var Account $loggedInAccount */
@@ -57,6 +59,31 @@ class AccountGroupInterceptor extends DefaultORMInterceptor {
                 throw new AccessDeniedException();
             }
         }
+    }
+
+    /**
+     * Execute a callable block insecurely with interceptors disabled.
+     *
+     * @param callable $callable
+     */
+    public function executeInsecure($callable) {
+
+        $previousDisabled = $this->disabled;
+
+        // Disable for the duration of the callable
+        $this->disabled = true;
+
+        // Run the callable
+        try {
+            $result = $callable();
+        } catch (\Throwable $e) {
+            $this->disabled = $previousDisabled;
+            throw($e);
+        }
+
+        $this->disabled = $previousDisabled;
+
+        return $result;
     }
 
 }

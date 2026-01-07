@@ -10,21 +10,23 @@ use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Exception\Security\InvalidReferrerException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Exception\Security\UserSuspendedException;
+use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\APIKey;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\ActivityLogger;
-use Kiniauth\Services\Security\SSOProvider\AppleSSOAuthenticator;
-use Kiniauth\Services\Security\SSOProvider\FacebookSSOAuthenticator;
-use Kiniauth\Services\Security\SSOProvider\GoogleSSOAuthenticator;
+use Kiniauth\Services\Security\SSOProvider\AuthenticatorFactory;
+use Kiniauth\Services\Security\SSOProvider\OpenIdAuthenticatorFactory;
+use Kiniauth\Services\Security\SSOProvider\SAMLAuthenticatorFactory;
+use Kiniauth\Services\Security\SSOProvider\SSOAuthenticator;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
 use Kiniauth\Services\Workflow\PendingActionService;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\DependencyInjection\MissingInterfaceImplementationException;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Exception\ItemNotFoundException;
-use Kinikit\Core\Logging\Logger;
 use Kinikit\Core\Security\Hash\HashProvider;
 use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\MVC\Request\Request;
@@ -372,7 +374,7 @@ class AuthenticationService {
      * @param $accountId
      * @return string
      */
-    public function createJoinAccountToken($accountId){
+    public function createJoinAccountToken($accountId) {
 
         $loggedInUser = $this->session->__getLoggedInSecurable();
 
@@ -394,8 +396,7 @@ class AuthenticationService {
     }
 
 
-
-    public function joinAccountUsingToken($token){
+    public function joinAccountUsingToken($token) {
 
         try {
             $action = $this->pendingActionService->getPendingActionByIdentifier("JOIN_ACCOUNT_TOKEN", $token);
@@ -410,7 +411,6 @@ class AuthenticationService {
         $this->pendingActionService->removePendingAction("JOIN_ACCOUNT_TOKEN", $token);
 
     }
-
 
 
     /**
@@ -478,6 +478,35 @@ class AuthenticationService {
         $this->securityService->logOut();
     }
 
+    /**
+     * Initialise login with SSO
+     *
+     * Returns the authentication endpoint for the provider
+     *
+     * @param string $authenticatorKey
+     * @param string $providerKey
+     * @return string
+     */
+    public function initialiseSSO(string $authenticatorKey, string $providerKey) {
+
+        if ($authenticatorKey) {
+            try {
+                $factory = Container::instance()->getInterfaceImplementation(AuthenticatorFactory::class, $authenticatorKey);
+                $authenticator = $factory->create($providerKey);
+                return $authenticator->initialise();
+            } catch (MissingInterfaceImplementationException) {
+                return null;
+            }
+        } else {
+            try {
+                $authenticator = Container::instance()->getInterfaceImplementation(SSOAuthenticator::class, $providerKey);
+                return $authenticator->initialise();
+            } catch (MissingInterfaceImplementationException) {
+                return null;
+            }
+        }
+
+    }
 
     /**
      * Perform single sign-on with the relevant provider
@@ -485,27 +514,26 @@ class AuthenticationService {
      * @param $provider
      * @param $data
      * @return void
-     * 
+     *
      * @objectInterceptorDisabled
      */
-    public function authenticateBySSO($provider, $data) {
+    public function authenticateBySSO($provider, $data, ?string $authenticatorKey = null) {
 
-        switch ($provider) {
-            case "facebook":
-                $authenticator = Container::instance()->get(FacebookSSOAuthenticator::class);
+        if ($authenticatorKey) {
+            try {
+                $factory = Container::instance()->getInterfaceImplementation(AuthenticatorFactory::class, $authenticatorKey);
+                $authenticator = $factory->create($provider);
                 $email = $authenticator->authenticate($data);
-                break;
-            case "google":
-                $authenticator = Container::instance()->get(GoogleSSOAuthenticator::class);
+            } catch (MissingInterfaceImplementationException) {
+                return null;
+            }
+        } else {
+            try {
+                $authenticator = Container::instance()->getInterfaceImplementation(SSOAuthenticator::class, $provider);
                 $email = $authenticator->authenticate($data);
-                break;
-            case "apple":
-                $authenticator = Container::instance()->get(AppleSSOAuthenticator::class);
-                $email = $authenticator->authenticate($data);
-                break;
-            default:
+            } catch (MissingInterfaceImplementationException) {
                 $email = null;
-                break;
+            }
         }
 
         $user = $this->userService->getUserByEmail($email);
@@ -516,6 +544,11 @@ class AuthenticationService {
             throw new \Exception("User doesn't have an account");
         }
 
+    }
+
+    public function getSAMLMetadata($providerKey) {
+        $factory = new SAMLAuthenticatorFactory();
+        return $factory->getServiceProviderMetadata($providerKey);
     }
 
 }

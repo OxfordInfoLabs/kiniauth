@@ -44,7 +44,9 @@ import {
 import {ExportProjectComponent} from './lib/views/export-project/export-project.component';
 import {ImportProjectComponent} from './lib/views/import-project/import-project.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {GroupInvitationComponent} from './lib/views/group-invitation/group-invitation.component';
+import { GroupInvitationComponent } from './lib/views/group-invitation/group-invitation.component';
+import { SsoConfigurationComponent } from './lib/views/auth/sso-configuration/sso-configuration.component';
+import { SsoInitialisationComponent } from './lib/views/auth/sso-initialisation/sso-initialisation.component';
 
 @NgModule({
     declarations: [
@@ -119,7 +121,10 @@ import {GroupInvitationComponent} from './lib/views/group-invitation/group-invit
         MatSnackBarModule,
     ],
     providers: [
-        provideHttpClient(withInterceptorsFromDi())
+        provideHttpClient(withInterceptorsFromDi()),
+        GroupInvitationComponent,
+        SsoConfigurationComponent,
+        SsoInitialisationComponent
     ]
 })
 

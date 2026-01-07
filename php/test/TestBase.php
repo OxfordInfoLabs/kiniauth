@@ -6,6 +6,8 @@ namespace Kiniauth\Test;
 use Kiniauth\Bootstrap;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kinikit\Core\Bootstrapper;
+use Kinikit\Core\Configuration\Configuration;
+use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Persistence\Tools\TestDataInstaller;
 
@@ -19,6 +21,9 @@ class TestBase extends \PHPUnit\Framework\TestCase {
         $bootstrap->setup();
 
         if (!self::$run) {
+            $dbPath = __DIR__ . "/" . Configuration::readParameter("db.filename");
+            if (file_exists($dbPath))
+                unlink($dbPath);
 
             $activeRecordInterceptor = Container::instance()->get(ActiveRecordInterceptor::class);
 
