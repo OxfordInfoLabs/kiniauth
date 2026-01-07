@@ -79,7 +79,9 @@ import { SsoInitialisationComponent } from './lib/views/auth/sso-initialisation/
         AccountDiscoverabilityComponent,
         ExportProjectComponent,
         ImportProjectComponent,
-        GroupInvitationComponent
+        GroupInvitationComponent,
+        SsoConfigurationComponent,
+        SsoInitialisationComponent
     ],
     exports: [
         AccountSummaryComponent,
@@ -102,7 +104,9 @@ import { SsoInitialisationComponent } from './lib/views/auth/sso-initialisation/
         AccountDiscoverabilityComponent,
         ExportProjectComponent,
         ImportProjectComponent,
-        GroupInvitationComponent
+        GroupInvitationComponent,
+        SsoConfigurationComponent,
+        SsoInitialisationComponent
     ],
     imports: [
         RouterModule,
@@ -121,10 +125,7 @@ import { SsoInitialisationComponent } from './lib/views/auth/sso-initialisation/
         MatSnackBarModule,
     ],
     providers: [
-        provideHttpClient(withInterceptorsFromDi()),
-        GroupInvitationComponent,
-        SsoConfigurationComponent,
-        SsoInitialisationComponent
+        provideHttpClient(withInterceptorsFromDi())
     ]
 })
 
