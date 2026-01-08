@@ -6,6 +6,7 @@ use Kiniauth\Objects\Account\Account;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Application\SettingsService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
+use Kiniauth\Services\Security\EncryptionService;
 use Kiniauth\Services\Security\JWT\JWTManager;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
 use Kinikit\Core\DependencyInjection\Container;
@@ -29,11 +30,14 @@ class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
 
         $jwtManager = new JWTManager($config->getJwtAlg(), $config->getJwtSecret());
 
+        $encryptionService = new EncryptionService();
+
         return new OpenIdAuthenticator(
             $requestDispatcher,
             $session,
             $config,
-            $jwtManager
+            $jwtManager,
+            $encryptionService
         );
     }
 
