@@ -4,7 +4,8 @@ import {AccountService} from '../../../services/account.service';
 @Component({
     selector: 'ka-account-discoverability',
     templateUrl: './account-discoverability.component.html',
-    styleUrls: ['./account-discoverability.component.sass']
+    styleUrls: ['./account-discoverability.component.sass'],
+    standalone: false
 })
 export class AccountDiscoverabilityComponent implements OnInit {
 

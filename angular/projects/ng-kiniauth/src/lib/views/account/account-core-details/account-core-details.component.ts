@@ -4,7 +4,8 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsula
     selector: 'ka-account-core-details',
     templateUrl: './account-core-details.component.html',
     styleUrls: ['./account-core-details.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class AccountCoreDetailsComponent implements OnInit, OnDestroy {
 

@@ -4,7 +4,8 @@ import {AuthenticationService} from '../../../services/authentication.service';
 @Component({
     selector: 'ka-sso-initialisation',
     templateUrl: './sso-initialisation.component.html',
-    styleUrls: ['./sso-initialisation.component.sass']
+    styleUrls: ['./sso-initialisation.component.sass'],
+    standalone: false
 })
 export class SsoInitialisationComponent implements OnInit {
 

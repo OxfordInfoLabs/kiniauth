@@ -1,59 +1,70 @@
-<!-- This example requires Tailwind CSS v2.0+ -->
-<div *ngIf="notification" class="bg-white shadow overflow-hidden sm:rounded-lg">
-    <div class="px-4 py-5 sm:px-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{notification.title}}
-        </h3>
-        <p class="mt-1 max-w-2xl text-sm text-gray-500">
-            Notification
-        </p>
+@if (notification) {
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                {{ notification.title }}
+            </h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                Notification
+            </p>
+        </div>
+        <div class="border-t border-gray-200">
+            <dl>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">
+                        Received at
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ notification.formattedDate }}
+                    </dd>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">
+                        Content
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ notification.content }}
+                    </dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">
+                        Level
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <mat-chip-set>
+                            @if (notification.level.key === 'critical') {
+                                <mat-chip color="warn" class="capitalize" selected>{{ notification.level.title }}
+                                </mat-chip>
+                            }
+                            @if (notification.level.key === 'warning') {
+                                <mat-chip class="bg-yellow-500 capitalize" selected>{{ notification.level.title }}
+                                </mat-chip>
+                            }
+                            @if (notification.level.key === 'info') {
+                                <mat-chip color="primary" class="capitalize" selected>{{ notification.level.title }}
+                                </mat-chip>
+                            }
+                        </mat-chip-set>
+                    </dd>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">
+                        Category
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ notification.category }}
+                    </dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">
+                        Read
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <mat-checkbox [(ngModel)]="notification.read"
+                                      (ngModelChange)="updateNotificationRead($event)"></mat-checkbox>
+                    </dd>
+                </div>
+            </dl>
+        </div>
     </div>
-    <div class="border-t border-gray-200">
-        <dl>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
-                    Received at
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{notification.formattedDate}}
-                </dd>
-            </div>
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
-                    Content
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{notification.content}}
-                </dd>
-            </div>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
-                    Level
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    <mat-chip-list>
-                        <mat-chip *ngIf="notification.level.key === 'critical'" color="warn" class="capitalize" selected>{{notification.level.title}}</mat-chip>
-                        <mat-chip *ngIf="notification.level.key === 'warning'" class="bg-yellow-500 capitalize" selected>{{notification.level.title}}</mat-chip>
-                        <mat-chip *ngIf="notification.level.key === 'info'" color="primary" class="capitalize" selected>{{notification.level.title}}</mat-chip>
-                    </mat-chip-list>
-                </dd>
-            </div>
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
-                    Category
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{notification.category}}
-                </dd>
-            </div>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                <dt class="text-sm font-medium text-gray-500">
-                    Read
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    <mat-checkbox [(ngModel)]="notification.read" (ngModelChange)="updateNotificationRead($event)"></mat-checkbox>
-                </dd>
-            </div>
-        </dl>
-    </div>
-</div>
+}

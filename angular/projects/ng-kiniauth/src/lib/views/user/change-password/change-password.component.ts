@@ -7,7 +7,8 @@ declare var hibpCheck: any;
 @Component({
     selector: 'ka-change-password',
     templateUrl: './change-password.component.html',
-    styleUrls: ['./change-password.component.sass']
+    styleUrls: ['./change-password.component.sass'],
+    standalone: false
 })
 export class ChangePasswordComponent implements OnInit, AfterViewInit {
 

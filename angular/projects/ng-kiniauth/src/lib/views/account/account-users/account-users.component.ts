@@ -14,7 +14,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
     selector: 'ka-account-users',
     templateUrl: './account-users.component.html',
     styleUrls: ['./account-users.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class AccountUsersComponent implements OnInit {
 

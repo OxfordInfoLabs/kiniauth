@@ -9,7 +9,8 @@ import {MatDialogRef} from '@angular/material/dialog';
     selector: 'ka-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class LoginComponent extends BaseComponent implements OnInit {
 

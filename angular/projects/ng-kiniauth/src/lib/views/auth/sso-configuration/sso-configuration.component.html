@@ -1,133 +1,121 @@
-<mat-tab-group *ngIf="accountSettings">
-    <mat-tab *ngIf="accountSettings.oidc" label="OpenID">
+@if (accountSettings) {
+  <mat-tab-group>
+    @if (accountSettings.oidc) {
+      <mat-tab label="OpenID">
         <div class="grid grid-cols-1 gap-x-8 gap-y-8 p-6 md:grid-cols-3 border-b">
-            <div>
-                <h2 class="text-base font-semibold text-gray-900">Connection Information</h2>
-                <p class="mt-1 text-sm/6 text-gray-600">
-                    Provide the relevant information for your connection settings to OpenID
-                </p>
-            </div>
-
-            <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 md:col-span-2">
-                <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">Endpoint</label>
-                    <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.oidc.provider"
-                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                    </div>
+          <div>
+            <h2 class="text-base font-semibold text-gray-900">Connection Information</h2>
+            <p class="mt-1 text-sm/6 text-gray-600">
+              Provide the relevant information for your connection settings to OpenID
+            </p>
+          </div>
+          <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 md:col-span-2">
+            <div class="col-span-full">
+              <label class="block text-sm/6 font-medium text-gray-900">Endpoint</label>
+              <div class="mt-2">
+                <input type="text" [(ngModel)]="accountSettings.oidc.provider"
+                  class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                 </div>
-
-                <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">SSO Login URL</label>
-                    <div class="mt-2">
-                        <div class="mb-2 font-mono text-gray-500">{{ssoLoginURL}}/oidc/{{accountSettings.oidc.provider}}</div>
-                    </div>
-                    <div class="text-xs">This is the url you will use to login via this SSO provider.</div>
+              </div>
+              <div class="col-span-full">
+                <label class="block text-sm/6 font-medium text-gray-900">SSO Login URL</label>
+                <div class="mt-2">
+                  <div class="mb-2 font-mono text-gray-500">{{ssoLoginURL}}/oidc/{{accountSettings.oidc.provider}}</div>
                 </div>
-
-                <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">Client Id</label>
-                    <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.oidc.clientId"
-                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                    </div>
+                <div class="text-xs">This is the url you will use to login via this SSO provider.</div>
+              </div>
+              <div class="col-span-full">
+                <label class="block text-sm/6 font-medium text-gray-900">Client Id</label>
+                <div class="mt-2">
+                  <input type="text" [(ngModel)]="accountSettings.oidc.clientId"
+                    class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                  </div>
                 </div>
-
                 <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">Issuer</label>
-                    <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.oidc.issuer"
-                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                  <label class="block text-sm/6 font-medium text-gray-900">Issuer</label>
+                  <div class="mt-2">
+                    <input type="text" [(ngModel)]="accountSettings.oidc.issuer"
+                      class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                     </div>
-                </div>
-
-
-                <div class="col-span-full">
+                  </div>
+                  <div class="col-span-full">
                     <label class="block text-sm/6 font-medium text-gray-900">Authorization Endpoint</label>
                     <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.oidc.authorizationEndpoint"
-                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                      <input type="text" [(ngModel)]="accountSettings.oidc.authorizationEndpoint"
+                        class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                      </div>
                     </div>
-                </div>
-
-                <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">Token Exchange Endpoint</label>
-                    <div class="mt-2">
+                    <div class="col-span-full">
+                      <label class="block text-sm/6 font-medium text-gray-900">Token Exchange Endpoint</label>
+                      <div class="mt-2">
                         <input type="text" [(ngModel)]="accountSettings.oidc.tokenExchangeEndpoint"
-                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                          class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                        </div>
+                      </div>
                     </div>
-                </div>
-
-            </div>
-        </div>
-        <div class="col-span-full flex items-center justify-between px-6 py-4">
-            <div></div>
-
-            <button mat-flat-button (click)="save()" color="primary" type="button">
-                Save Configuration
-            </button>
-        </div>
-    </mat-tab>
-
-    <mat-tab *ngIf="accountSettings.saml" label="SAML">
-        <div class="grid grid-cols-1 gap-x-8 gap-y-8 p-6 md:grid-cols-3 border-b">
-            <div>
-                <h2 class="text-base font-semibold text-gray-900">Connection Information</h2>
-                <p class="mt-1 text-sm/6 text-gray-600">
-                    Provide the relevant information for your connection settings to SAML
-                </p>
-            </div>
-
-            <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 md:col-span-2">
-                <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">Endpoint</label>
-                    <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.saml.provider"
-                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                  </div>
+                  <div class="col-span-full flex items-center justify-between px-6 py-4">
+                    <div></div>
+                    <button mat-flat-button (click)="save()" color="primary" type="button">
+                      Save Configuration
+                    </button>
+                  </div>
+                </mat-tab>
+              }
+              @if (accountSettings.saml) {
+                <mat-tab label="SAML">
+                  <div class="grid grid-cols-1 gap-x-8 gap-y-8 p-6 md:grid-cols-3 border-b">
+                    <div>
+                      <h2 class="text-base font-semibold text-gray-900">Connection Information</h2>
+                      <p class="mt-1 text-sm/6 text-gray-600">
+                        Provide the relevant information for your connection settings to SAML
+                      </p>
                     </div>
-                </div>
-
-                <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">SSO Login URL</label>
-                    <div class="mt-2">
-                        <div class="mb-2 font-mono text-gray-500">{{ssoLoginURL}}/saml/{{accountSettings.saml.provider}}</div>
-                    </div>
-                    <div class="text-xs">This is the url you will use to login via this SSO provider.</div>
-                </div>
-
-                <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">IdP Entity Id</label>
-                    <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.saml.entityId"
-                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                    </div>
-                </div>
-
-                <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">Single Sign-on URL</label>
-                    <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.saml.ssoUrl"
-                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                    </div>
-                </div>
-
-                <div class="col-span-full">
-                    <label class="block text-sm/6 font-medium text-gray-900">Public Cert</label>
-                    <div class="mt-2">
-                        <input type="text" [(ngModel)]="accountSettings.saml.x509cert"
-                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                    </div>
-                </div>
-
-            </div>
-        </div>
-        <div class="col-span-full flex items-center justify-between px-6 py-4">
-            <div></div>
-
-            <button mat-flat-button (click)="save()" color="primary" type="button">
-                Save Configuration
-            </button>
-        </div>
-    </mat-tab>
-
-</mat-tab-group>
+                    <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 md:col-span-2">
+                      <div class="col-span-full">
+                        <label class="block text-sm/6 font-medium text-gray-900">Endpoint</label>
+                        <div class="mt-2">
+                          <input type="text" [(ngModel)]="accountSettings.saml.provider"
+                            class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                          </div>
+                        </div>
+                        <div class="col-span-full">
+                          <label class="block text-sm/6 font-medium text-gray-900">SSO Login URL</label>
+                          <div class="mt-2">
+                            <div class="mb-2 font-mono text-gray-500">{{ssoLoginURL}}/saml/{{accountSettings.saml.provider}}</div>
+                          </div>
+                          <div class="text-xs">This is the url you will use to login via this SSO provider.</div>
+                        </div>
+                        <div class="col-span-full">
+                          <label class="block text-sm/6 font-medium text-gray-900">IdP Entity Id</label>
+                          <div class="mt-2">
+                            <input type="text" [(ngModel)]="accountSettings.saml.entityId"
+                              class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                            </div>
+                          </div>
+                          <div class="col-span-full">
+                            <label class="block text-sm/6 font-medium text-gray-900">Single Sign-on URL</label>
+                            <div class="mt-2">
+                              <input type="text" [(ngModel)]="accountSettings.saml.ssoUrl"
+                                class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                              </div>
+                            </div>
+                            <div class="col-span-full">
+                              <label class="block text-sm/6 font-medium text-gray-900">Public Cert</label>
+                              <div class="mt-2">
+                                <input type="text" [(ngModel)]="accountSettings.saml.x509cert"
+                                  class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-span-full flex items-center justify-between px-6 py-4">
+                            <div></div>
+                            <button mat-flat-button (click)="save()" color="primary" type="button">
+                              Save Configuration
+                            </button>
+                          </div>
+                        </mat-tab>
+                      }
+                    </mat-tab-group>
+                  }

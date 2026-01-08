@@ -1,69 +1,68 @@
-<ng-template [ngIf]="settings">
-    <div class="font-medium text-lg ml-6 mt-4">Google Authenticator</div>
-
-    <div class="space-y-8 divide-y divide-gray-200 p-6">
-        <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
-            <div>
-                <div class="space-y-6 sm:space-y-5">
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
-                        <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                            After downloading and installing the Google Authenticator app, scan the QR code below
-                            to link your account.</label>
-                        <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <img [src]="settings.qrCode" alt="">
-                        </div>
-                    </div>
-                </div>
+@if (settings) {
+  <div class="font-medium text-lg ml-6 mt-4">Google Authenticator</div>
+  <div class="space-y-8 divide-y divide-gray-200 p-6">
+    <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+      <div>
+        <div class="space-y-6 sm:space-y-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
+            <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+              After downloading and installing the Google Authenticator app, scan the QR code below
+            to link your account.</label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <img [src]="settings.qrCode" alt="">
             </div>
-            <div>
-                <div class="space-y-6 sm:space-y-5">
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
-                        <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                            If you are unable to scan the QR code below, please enter the following code...</label>
-                        <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <input type="text" name="name" [value]="settings.secret" disabled
-                                   class="max-w-lg block w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md cursor-text">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <div class="space-y-6 sm:space-y-5">
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
-                        <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                            Once linked, please enter the verification code you see in the Google Authenticator app
-                            below.</label>
-                        <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <input type="text" name="name" [(ngModel)]="twoFACode" maxlength="10"
-                                   placeholder="Enter verification code"
-                                   class="max-w-lg block w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md">
-
-                            <button type="button" [disabled]="!twoFACode" (click)="verifyCode()"
-                                    class="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary focus:outline-none">
-                                Verify Code
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-    </div>
-
-    <div class="font-medium ml-6 text-lg">Backup Codes</div>
-    <div class="space-y-8 divide-y divide-gray-200 p-6">
-        <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
-            <div>
-                <div class="space-y-6 sm:space-y-5">
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
-                        <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                            The following one-time codes can be used if you need to gain access to your account in an
-                            emergency.</label>
-                        <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <div *ngFor="let code of settings.backupCodes">{{code}}</div>
-                        </div>
-                    </div>
-                </div>
+      </div>
+      <div>
+        <div class="space-y-6 sm:space-y-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
+            <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+            If you are unable to scan the QR code below, please enter the following code...</label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <input type="text" name="name" [value]="settings.secret" disabled
+                class="max-w-lg block w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md cursor-text">
             </div>
+          </div>
         </div>
+      </div>
+      <div>
+        <div class="space-y-6 sm:space-y-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
+            <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+              Once linked, please enter the verification code you see in the Google Authenticator app
+            below.</label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <input type="text" name="name" [(ngModel)]="twoFACode" maxlength="10"
+                placeholder="Enter verification code"
+                class="max-w-lg block w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md">
+              <button type="button" [disabled]="!twoFACode" (click)="verifyCode()"
+                class="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary focus:outline-none">
+                Verify Code
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</ng-template>
+  </div>
+  <div class="font-medium ml-6 text-lg">Backup Codes</div>
+  <div class="space-y-8 divide-y divide-gray-200 p-6">
+    <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+      <div>
+        <div class="space-y-6 sm:space-y-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:py-4">
+            <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+              The following one-time codes can be used if you need to gain access to your account in an
+            emergency.</label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              @for (code of settings.backupCodes; track code) {
+                <div>{{code}}</div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -4,7 +4,8 @@ import {ProjectService} from "../../services/project.service";
 @Component({
     selector: 'ka-import-project',
     templateUrl: './import-project.component.html',
-    styleUrls: ['./import-project.component.sass']
+    styleUrls: ['./import-project.component.sass'],
+    standalone: false
 })
 export class ImportProjectComponent {
 

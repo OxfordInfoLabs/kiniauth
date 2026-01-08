@@ -6,7 +6,8 @@ import {ActivatedRoute} from '@angular/router';
 @Component({
     selector: 'ka-invitation',
     templateUrl: './invitation.component.html',
-    styleUrls: ['./invitation.component.sass']
+    styleUrls: ['./invitation.component.sass'],
+    standalone: false
 })
 export class InvitationComponent extends BaseComponent implements OnInit {
 

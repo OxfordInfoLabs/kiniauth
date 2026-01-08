@@ -6,7 +6,8 @@ import {GroupService} from '../../services/group.service';
 @Component({
     selector: 'ka-group-invitation',
     templateUrl: './group-invitation.component.html',
-    styleUrls: ['./group-invitation.component.sass']
+    styleUrls: ['./group-invitation.component.sass'],
+    standalone: false
 })
 export class GroupInvitationComponent implements OnInit {
 

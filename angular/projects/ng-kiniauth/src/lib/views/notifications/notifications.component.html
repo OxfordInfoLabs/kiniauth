@@ -1,66 +1,72 @@
 <div class="flex align-center justify-between">
-    <div></div>
-    <button mat-flat-button [matMenuTriggerFor]="actionMenu" color="primary" [disabled]="!someSelected">Actions</button>
-    <mat-menu #actionMenu="matMenu">
-        <button mat-menu-item (click)="markSelectedRead()">Mark Selected as Read</button>
-        <button mat-menu-item (click)="markSelectedUnread()">Mark Selected as Unread</button>
-    </mat-menu>
+  <div></div>
+  <button mat-flat-button [matMenuTriggerFor]="actionMenu" color="primary" [disabled]="!someSelected">Actions</button>
+  <mat-menu #actionMenu="matMenu">
+    <button mat-menu-item (click)="markSelectedRead()">Mark Selected as Read</button>
+    <button mat-menu-item (click)="markSelectedUnread()">Mark Selected as Unread</button>
+  </mat-menu>
 </div>
 
 <table mat-table [dataSource]="notifications">
 
-    <!-- Position Column -->
-    <ng-container matColumnDef="check">
-        <th mat-header-cell *matHeaderCellDef> <mat-checkbox class="pl-2" [(ngModel)]="selectAll" (ngModelChange)="selectAllChange($event)"></mat-checkbox> </th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{'bg-blue-50 border-l-4 border-blue-200': !element.read}">
-            <mat-checkbox class="pl-2" [(ngModel)]="element._checked" (ngModelChange)="checkboxChange($event)"></mat-checkbox>
-        </td>
-    </ng-container>
+  <!-- Position Column -->
+  <ng-container matColumnDef="check">
+    <th mat-header-cell *matHeaderCellDef> <mat-checkbox class="pl-2" [(ngModel)]="selectAll" (ngModelChange)="selectAllChange($event)"></mat-checkbox> </th>
+    <td mat-cell *matCellDef="let element" [class]="{'bg-blue-50 border-l-4 border-blue-200': !element.read}">
+      <mat-checkbox class="pl-2" [(ngModel)]="element._checked" (ngModelChange)="checkboxChange($event)"></mat-checkbox>
+    </td>
+  </ng-container>
 
-    <ng-container matColumnDef="title">
-        <th mat-header-cell *matHeaderCellDef> Title </th>
-        <td mat-cell *matCellDef="let element" class="truncate w-1/4 max-w-xs"
-            [ngClass]="{'bg-blue-50': !element.read}"
-            [routerLink]="['/notifications', element.id]"> {{element.title}} </td>
-    </ng-container>
+  <ng-container matColumnDef="title">
+    <th mat-header-cell *matHeaderCellDef> Title </th>
+    <td mat-cell *matCellDef="let element" class="truncate w-1/4 max-w-xs"
+      [class]="{'bg-blue-50': !element.read}"
+    [routerLink]="['/notifications', element.id]"> {{element.title}} </td>
+  </ng-container>
 
-    <ng-container matColumnDef="content">
-        <th mat-header-cell *matHeaderCellDef> Content </th>
-        <td mat-cell *matCellDef="let element" class="truncate w-1/4 max-w-xs"
-            [ngClass]="{'bg-blue-50': !element.read}"
-            [routerLink]="['/notifications', element.id]">
-            <span class="capitalize">{{element.content}}</span>
-        </td>
-    </ng-container>
+  <ng-container matColumnDef="content">
+    <th mat-header-cell *matHeaderCellDef> Content </th>
+    <td mat-cell *matCellDef="let element" class="truncate w-1/4 max-w-xs"
+      [class]="{'bg-blue-50': !element.read}"
+      [routerLink]="['/notifications', element.id]">
+      <span class="capitalize">{{element.content}}</span>
+    </td>
+  </ng-container>
 
-    <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef> Date </th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{'bg-blue-50': !element.read}"
-            [routerLink]="['/notifications', element.id]">
-            {{element.formattedDate}}
-        </td>
-    </ng-container>
+  <ng-container matColumnDef="date">
+    <th mat-header-cell *matHeaderCellDef> Date </th>
+    <td mat-cell *matCellDef="let element" [class]="{'bg-blue-50': !element.read}"
+      [routerLink]="['/notifications', element.id]">
+      {{element.formattedDate}}
+    </td>
+  </ng-container>
 
-    <ng-container matColumnDef="level">
-        <th mat-header-cell *matHeaderCellDef>  </th>
-        <td mat-cell *matCellDef="let element" class="text-right" [ngClass]="{'bg-blue-50': !element.read}"
-            [routerLink]="['/notifications', element.id]">
-            <mat-chip-list class="flex justify-end">
-                <mat-chip *ngIf="element.level.key === 'critical'" color="warn" class="capitalize" selected>{{element.level.title}}</mat-chip>
-                <mat-chip *ngIf="element.level.key === 'warning'" class="bg-yellow-500 capitalize" selected>{{element.level.title}}</mat-chip>
-                <mat-chip *ngIf="element.level.key === 'info'" color="primary" class="capitalize" selected>{{element.level.title}}</mat-chip>
-            </mat-chip-list>
-        </td>
-    </ng-container>
+  <ng-container matColumnDef="level">
+    <th mat-header-cell *matHeaderCellDef>  </th>
+    <td mat-cell *matCellDef="let element" class="text-right" [class]="{'bg-blue-50': !element.read}"
+      [routerLink]="['/notifications', element.id]">
+      <mat-chip-set class="flex justify-end">
+        @if (element.level.key === 'critical') {
+          <mat-chip color="warn" class="capitalize" selected>{{element.level.title}}</mat-chip>
+        }
+        @if (element.level.key === 'warning') {
+          <mat-chip class="bg-yellow-500 capitalize" selected>{{element.level.title}}</mat-chip>
+        }
+        @if (element.level.key === 'info') {
+          <mat-chip color="primary" class="capitalize" selected>{{element.level.title}}</mat-chip>
+        }
+      </mat-chip-set>
+    </td>
+  </ng-container>
 
-    <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef>  </th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{'bg-blue-50': !element.read}" class="text-right"
-            [routerLink]="['/notifications', element.id]">
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef>  </th>
+    <td mat-cell *matCellDef="let element" [class]="{'bg-blue-50': !element.read}" class="text-right"
+      [routerLink]="['/notifications', element.id]">
 
-        </td>
-    </ng-container>
+    </td>
+  </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="['check', 'title', 'content', 'date', 'level', 'action']"></tr>
-    <tr mat-row *matRowDef="let row; columns: ['check', 'title', 'content', 'date', 'level', 'action'];"></tr>
+  <tr mat-header-row *matHeaderRowDef="['check', 'title', 'content', 'date', 'level', 'action']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['check', 'title', 'content', 'date', 'level', 'action'];"></tr>
 </table>
