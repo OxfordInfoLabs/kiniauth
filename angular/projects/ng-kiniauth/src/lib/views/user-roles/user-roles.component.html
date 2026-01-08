@@ -1,26 +1,36 @@
 <div class="user-roles">
 
-    <div class="text-base font-medium">{{user.name}}</div>
-    <div class="text-sm text-gray-400 mb-4 border-b pb-4 border-gray-200">{{user.emailAddress}}</div>
+  <div class="text-base font-medium">{{user.name}}</div>
+  <div class="text-sm text-gray-400 mb-4 border-b pb-4 border-gray-200">{{user.emailAddress}}</div>
 
-    <div class="text-base font-medium text-gray-900 mb-4">Permissions</div>
+  <div class="text-base font-medium text-gray-900 mb-4">Permissions</div>
 
-    <div class="mb2">
-        <ka-edit-roles *ngIf="user.id" [scopeKey]="'Account'" [scope]="'ACCOUNT'" [user]="user" [(updatedScopes)]="scopeRoles.ACCOUNT"
-                       [hideApply]="true" (updatedScopesChange)="roleUpdated($event)" [userService]="userService"></ka-edit-roles>
-        <p style="color: red" *ngIf="accountError">{{accountError}}</p>
-    </div>
+  <div class="mb2">
+    @if (user.id) {
+      <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'" [user]="user" [(updatedScopes)]="scopeRoles.ACCOUNT"
+      [hideApply]="true" (updatedScopesChange)="roleUpdated($event)" [userService]="userService"></ka-edit-roles>
+    }
+    @if (accountError) {
+      <p style="color: red">{{accountError}}</p>
+    }
+  </div>
 
-    <mat-tab-group animationDuration="0" *ngIf="!accountOwner">
-        <mat-tab *ngFor="let scopeAccess of scopeAccesses" [label]="scopeAccess.scopeDescription">
-            <ka-edit-roles class="block mt-4" *ngIf="user.id" [userService]="userService"
-                [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope" [user]="user"
-                           [(updatedScopes)]="scopeRoles[scopeAccess.scope]" [hideApply]="true"></ka-edit-roles>
+  @if (!accountOwner) {
+    <mat-tab-group animationDuration="0">
+      @for (scopeAccess of scopeAccesses; track scopeAccess) {
+        <mat-tab [label]="scopeAccess.scopeDescription">
+          @if (user.id) {
+            <ka-edit-roles class="block mt-4" [userService]="userService"
+              [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope" [user]="user"
+            [(updatedScopes)]="scopeRoles[scopeAccess.scope]" [hideApply]="true"></ka-edit-roles>
+          }
         </mat-tab>
+      }
     </mat-tab-group>
+  }
 
-    <div class="flex items-center justify-between">
-        <div></div>
-        <button mat-flat-button color="primary" (click)="saveUserDetails()">Save Changes</button>
-    </div>
+  <div class="flex items-center justify-between">
+    <div></div>
+    <button mat-flat-button color="primary" (click)="saveUserDetails()">Save Changes</button>
+  </div>
 </div>

@@ -4,7 +4,8 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsula
     selector: 'ka-edit-email',
     templateUrl: './edit-email.component.html',
     styleUrls: ['./edit-email.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class EditEmailComponent implements OnInit, OnDestroy {
 

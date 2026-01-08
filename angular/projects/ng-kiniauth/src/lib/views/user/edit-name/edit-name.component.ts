@@ -4,7 +4,8 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsula
     selector: 'ka-edit-name',
     templateUrl: './edit-name.component.html',
     styleUrls: ['./edit-name.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class EditNameComponent implements OnInit, OnDestroy {
 

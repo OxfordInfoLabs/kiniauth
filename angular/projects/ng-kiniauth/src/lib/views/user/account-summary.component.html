@@ -1,185 +1,175 @@
-<ng-template [ngIf]="!editName && !editEmail && !editBackup && !editMobile && !enableTwoFa && !changePassword">
-
-    <div class="actionpanel sixtyforty mx1 mb2" *ngIf="account && showAccountDetails">
-
-        <div class="actioninfo p2w p1m">
-            <h4 class="mb1 mt0">Account Details</h4>
-
-            <p class="mb0" *ngIf="security">Your account name is currently set to
-                <strong>{{account.name}}</strong></p>
-
-        </div>
-        <div class="actions flex flex-col align-center justify-center p1">
-            <button class="button small-button white-button" (click)="editAccountName = true;">Edit Account Name
-            </button>
-        </div>
-
-    </div>
-
+@if (!editName && !editEmail && !editBackup && !editMobile && !enableTwoFa && !changePassword) {
+  @if (account && showAccountDetails) {
     <div class="actionpanel sixtyforty mx1 mb2">
-
-        <div class="actioninfo p2w p1m">
-            <h4 class="mb1 mt0 flex align-center">
-                <img src="https://www.gravatar.com/avatar/{{security.hashedEmail}}?d=mp" height="40" alt="user-gravatar"
-                     class="mr1 mr-4">
-                {{security.name}}
-            </h4>
-
-            <div class="mb1">
-                <p *ngIf="security">If you need to update your name, you can do so here.</p>
-            </div>
-
-            <div *ngIf="security">
-                <p class="mb0">Your user icon is based on your Gravatar image. You can easily create/edit your image by visiting the <a href="https://gravatar.com" target="_blank">Gravatar website.</a></p>
-            </div>
-
+      <div class="actioninfo p2w p1m">
+        <h4 class="mb1 mt0">Account Details</h4>
+        @if (security) {
+          <p class="mb0">Your account name is currently set to
+            <strong>{{account.name}}</strong></p>
+          }
         </div>
         <div class="actions flex flex-col align-center justify-center p1">
-            <button class="button small-button white-button" (click)="editName = true;">Edit Name
-            </button>
+          <button class="button small-button white-button" (click)="editAccountName = true;">Edit Account Name
+          </button>
         </div>
-
-    </div>
-
-
+      </div>
+    }
     <div class="actionpanel sixtyforty mx1 mb2">
-
-        <div class="actioninfo p2w p1m">
-            <h4 class="mb1 mt0">Email Address</h4>
-
-            <p class="mb0" *ngIf="security">Your account email address is currently set to
-                <strong>{{security.emailAddress}}</strong></p>
-
+      <div class="actioninfo p2w p1m">
+        <h4 class="mb1 mt0 flex align-center">
+          <img src="https://www.gravatar.com/avatar/{{security.hashedEmail}}?d=mp" height="40" alt="user-gravatar"
+            class="mr1 mr-4">
+          {{security.name}}
+        </h4>
+        <div class="mb1">
+          @if (security) {
+            <p>If you need to update your name, you can do so here.</p>
+          }
+        </div>
+        @if (security) {
+          <div>
+            <p class="mb0">Your user icon is based on your Gravatar image. You can easily create/edit your image by visiting the <a href="https://gravatar.com" target="_blank">Gravatar website.</a></p>
+          </div>
+        }
+      </div>
+      <div class="actions flex flex-col align-center justify-center p1">
+        <button class="button small-button white-button" (click)="editName = true;">Edit Name
+        </button>
+      </div>
+    </div>
+    <div class="actionpanel sixtyforty mx1 mb2">
+      <div class="actioninfo p2w p1m">
+        <h4 class="mb1 mt0">Email Address</h4>
+        @if (security) {
+          <p class="mb0">Your account email address is currently set to
+            <strong>{{security.emailAddress}}</strong></p>
+          }
         </div>
         <div class="actions flex flex-col align-center justify-center p1">
-            <button class="button small-button white-button" (click)="editEmail = true;">Edit Email
-                Address
-            </button>
+          <button class="button small-button white-button" (click)="editEmail = true;">Edit Email
+            Address
+          </button>
         </div>
-
-    </div>
-
-    <div class="actionpanel sixtyforty mx1 mb2" *ngIf="showPasswordReset">
-
-        <div class="actioninfo p2w p1m">
+      </div>
+      @if (showPasswordReset) {
+        <div class="actionpanel sixtyforty mx1 mb2">
+          <div class="actioninfo p2w p1m">
             <h4 class="mb1 mt0">Password</h4>
-
             <p class="mb0">Change your existing password.</p>
-
-        </div>
-        <div class="actions flex flex-col align-center justify-center p1">
+          </div>
+          <div class="actions flex flex-col align-center justify-center p1">
             <button class="button small-button white-button" (click)="changePassword = true">Change Password</button>
+          </div>
         </div>
-
-    </div>
-
-    <div class="actionpanel sixtyforty mx1 mb2">
-
+      }
+      <div class="actionpanel sixtyforty mx1 mb2">
         <div class="actioninfo p2w p1m">
-            <h4 class="mb1 mt0">Mobile Phone Number</h4>
-
-            <p *ngIf="security && security.mobileNumber">Your mobile number is currently set to
-                <strong>{{security.mobileNumber}}</strong></p>
-
-            <p *ngIf="security && !security.mobileNumber"><strong>
+          <h4 class="mb1 mt0">Mobile Phone Number</h4>
+          @if (security && security.mobileNumber) {
+            <p>Your mobile number is currently set to
+              <strong>{{security.mobileNumber}}</strong></p>
+            }
+            @if (security && !security.mobileNumber) {
+              <p><strong>
                 No mobile number has been set.
-            </strong></p>
-
+              </strong></p>
+            }
             <p class="mb0">
-                We use your mobile phone number as an extra layer of security. It can also be used to help restore
-                access to your account.
+              We use your mobile phone number as an extra layer of security. It can also be used to help restore
+              access to your account.
             </p>
-
-        </div>
-        <div class="actions flex flex-col align-center justify-center p1">
+          </div>
+          <div class="actions flex flex-col align-center justify-center p1">
             <button class="button small-button white-button" (click)="editMobile = true;">Edit Mobile Number</button>
+          </div>
         </div>
-
-    </div>
-
-    <div class="actionpanel sixtyforty mx1 mb2">
-
-        <div class="actioninfo p2w p1m">
+        <div class="actionpanel sixtyforty mx1 mb2">
+          <div class="actioninfo p2w p1m">
             <h4 class="mb1 mt0">Backup Email Address</h4>
-
-            <p *ngIf="security && security.backupEmailAddress">Your account backup email address is currently set to
+            @if (security && security.backupEmailAddress) {
+              <p>Your account backup email address is currently set to
                 <strong>{{security.backupEmailAddress}}</strong></p>
-
-            <p *ngIf="security && !security.backupEmailAddress"><strong>
-                No backup email address has been set.
-            </strong></p>
-
-            <p class="mb0">
+              }
+              @if (security && !security.backupEmailAddress) {
+                <p><strong>
+                  No backup email address has been set.
+                </strong></p>
+              }
+              <p class="mb0">
                 In the event you need to restore access to your account we can use this secondary email address
                 to help you gain access.
-            </p>
-
-        </div>
-        <div class="actions flex flex-col align-center justify-center p1">
-            <button class="button small-button white-button" (click)="editBackup = true;">Edit Email Address</button>
-        </div>
-
-    </div>
-
-<!--    <div class="actionpanel sixtyforty mx1 mb2">-->
-
-<!--        <div class="actioninfo p2w p1m">-->
-<!--            <h4 class="mb1 mt0">Two Factor Authentication</h4>-->
-
-<!--            <p class="mb0">-->
-<!--                To increase security on your account you can enable two factor authentication. Currently this uses the-->
-<!--                Google Authenticator app downloadable for your mobile device.-->
-<!--            </p>-->
-
+              </p>
+            </div>
+            <div class="actions flex flex-col align-center justify-center p1">
+              <button class="button small-button white-button" (click)="editBackup = true;">Edit Email Address</button>
+            </div>
+          </div>
+          <!--    <div class="actionpanel sixtyforty mx1 mb2">-->
+          <!--        <div class="actioninfo p2w p1m">-->
+          <!--            <h4 class="mb1 mt0">Two Factor Authentication</h4>-->
+          <!--            <p class="mb0">-->
+          <!--                To increase security on your account you can enable two factor authentication. Currently this uses the-->
+          <!--                Google Authenticator app downloadable for your mobile device.-->
+        <!--            </p>-->
+      <!--        </div>-->
+      <!--        <div class="actions flex flex-col align-center justify-center p1">-->
+      <!--            <span *ngIf="!security">Loading...</span>-->
+      <!--            <button class="button small-button white-button" (click)="enableTwoFa = true"-->
+      <!--                    *ngIf="security && !security.twoFactorData">-->
+      <!--                Enable 2FA-->
+    <!--            </button>-->
+    <!--            <button class="button small-button alert-button" *ngIf="security && security.twoFactorData"-->
+    <!--                    (click)="disable2FA()">-->
+    <!--                Disable 2FA-->
+  <!--            </button>-->
 <!--        </div>-->
-<!--        <div class="actions flex flex-col align-center justify-center p1">-->
-
-<!--            <span *ngIf="!security">Loading...</span>-->
-
-<!--            <button class="button small-button white-button" (click)="enableTwoFa = true"-->
-<!--                    *ngIf="security && !security.twoFactorData">-->
-<!--                Enable 2FA-->
-<!--            </button>-->
-<!--            <button class="button small-button alert-button" *ngIf="security && security.twoFactorData"-->
-<!--                    (click)="disable2FA()">-->
-<!--                Disable 2FA-->
-<!--            </button>-->
-<!--        </div>-->
-
 <!--    </div>-->
-
-</ng-template>
-<ka-inline-modal *ngIf="editName" (closed)="editName = false">
+}
+@if (editName) {
+  <ka-inline-modal (closed)="editName = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit User Name</div>
     <ka-edit-name [authService]="authService" (saved)="editName = false;"></ka-edit-name>
-</ka-inline-modal>
+  </ka-inline-modal>
+}
 
-<ka-inline-modal *ngIf="editAccountName" (closed)="editAccountName = false">
+@if (editAccountName) {
+  <ka-inline-modal (closed)="editAccountName = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit Account Name</div>
     <ka-account-core-details [accountService]="accountService" [authService]="authService" (saved)="loadAccount()"></ka-account-core-details>
-</ka-inline-modal>
+  </ka-inline-modal>
+}
 
-<ka-inline-modal *ngIf="editEmail" (closed)="editEmail = false">
+@if (editEmail) {
+  <ka-inline-modal (closed)="editEmail = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit Email Address</div>
     <ka-edit-email [authService]="authService" (saved)="editEmail = false;"></ka-edit-email>
-</ka-inline-modal>
+  </ka-inline-modal>
+}
 
-<ka-inline-modal *ngIf="editMobile" (closed)="editMobile = false">
+@if (editMobile) {
+  <ka-inline-modal (closed)="editMobile = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit Mobile Phone Number</div>
     <ka-edit-mobile [authService]="authService" (saved)="editMobile = false;"></ka-edit-mobile>
-</ka-inline-modal>
+  </ka-inline-modal>
+}
 
-<ka-inline-modal *ngIf="editBackup" (closed)="editBackup = false">
+@if (editBackup) {
+  <ka-inline-modal (closed)="editBackup = false">
     <div class="text-base font-medium text-gray-900 ml-6">Edit Backup Email Address</div>
     <ka-edit-backup-email [authService]="authService" (saved)="editBackup = false;"></ka-edit-backup-email>
-</ka-inline-modal>
+  </ka-inline-modal>
+}
 
-<ka-inline-modal *ngIf="enableTwoFa" (closed)="enableTwoFa = false">
+@if (enableTwoFa) {
+  <ka-inline-modal (closed)="enableTwoFa = false">
     <div class="text-base font-medium text-gray-900 ml-6">Enable Two Factor Authentication</div>
     <ka-two-factor [authService]="authService" (saved)="enableTwoFa = false;"></ka-two-factor>
-</ka-inline-modal>
+  </ka-inline-modal>
+}
 
-<ka-inline-modal *ngIf="changePassword" (closed)="changePassword = false">
+@if (changePassword) {
+  <ka-inline-modal (closed)="changePassword = false">
     <div class="text-base font-medium text-gray-900 ml-6">Change Password</div>
     <ka-change-password [authService]="authService" (saved)="changePassword = false;" [email]="security.emailAddress"></ka-change-password>
-</ka-inline-modal>
+  </ka-inline-modal>
+}

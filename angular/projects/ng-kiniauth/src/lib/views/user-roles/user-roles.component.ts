@@ -10,7 +10,8 @@ import {RoleService} from '../../services/role.service';
     selector: 'ka-user-roles',
     templateUrl: './user-roles.component.html',
     styleUrls: ['./user-roles.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class UserRolesComponent implements OnInit {
 

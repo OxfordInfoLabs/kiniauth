@@ -9,7 +9,8 @@ const _ = lodash.default;
 @Component({
     selector: 'ka-accounts',
     templateUrl: './accounts.component.html',
-    styleUrls: ['./accounts.component.sass']
+    styleUrls: ['./accounts.component.sass'],
+    standalone: false
 })
 export class AccountsComponent implements OnInit {
 

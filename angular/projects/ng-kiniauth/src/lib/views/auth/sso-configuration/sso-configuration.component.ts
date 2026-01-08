@@ -8,7 +8,8 @@ const _ = lodash.default;
 @Component({
     selector: 'ka-sso-configuration',
     templateUrl: './sso-configuration.component.html',
-    styleUrls: ['./sso-configuration.component.sass']
+    styleUrls: ['./sso-configuration.component.sass'],
+    standalone: false
 })
 export class SsoConfigurationComponent implements OnInit {
 

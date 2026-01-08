@@ -1,86 +1,87 @@
-<ng-template [ngIf]="inviteComplete">
+@if (inviteComplete) {
+  <div class="flex align-center justify-center p3 p-8 invite-sent">
+    <h3 class="mb3 mb-8"><mat-icon color="primary">check</mat-icon> Invitation Sent</h3>
+    <p class="mb3 mb-8">A confirmation email has been sent to <b>{{emailAddress}}</b>, the user will need to click on the confirmation
+  link in order to activate their account.</p>
+  <button mat-flat-button class="but" (click)="back()">Return to list</button>
+</div>
+}
 
-    <div class="flex align-center justify-center p3 p-8 invite-sent">
-
-        <h3 class="mb3 mb-8"><mat-icon color="primary">check</mat-icon> Invitation Sent</h3>
-
-        <p class="mb3 mb-8">A confirmation email has been sent to <b>{{emailAddress}}</b>, the user will need to click on the confirmation
-            link in order to activate their account.</p>
-
-        <button mat-flat-button class="but" (click)="back()">Return to list</button>
-    </div>
-
-</ng-template>
-
-<ng-template [ngIf]="!inviteComplete">
-
-
-    <div class="mb2 mb-8">
-        <div class="text-base font-medium text-gray-900 mb-4">User email address</div>
-
-        <input type="email" #firstEmail="ngModel" [class.border-red-500]="firstEmail.invalid && firstEmail.touched" required
-               pattern="^[a-z0-9._%+\-]+@[a-z0-9.\-]+.[a-z]{2,4}$" placeholder="Email address" class="flex1 mr050 mt0 full" name="primaryEmail"
-               [(ngModel)]="emailAddress" />
-
-        <div *ngIf="firstEmail.errors && (firstEmail.invalid || firstEmail.touched)">
-            <small class="text-danger" *ngIf="firstEmail.errors.required">Email is required</small>
-            <small class="text-danger" *ngIf="firstEmail.errors.pattern">Please provide a valid email address. Must be all lower case</small>
+@if (!inviteComplete) {
+  <div class="mb2 mb-8">
+    <div class="text-base font-medium text-gray-900 mb-4">User email address</div>
+    <input type="email" #firstEmail="ngModel" [class.border-red-500]="firstEmail.invalid && firstEmail.touched" required
+      pattern="^[a-z0-9._%+\-]+@[a-z0-9.\-]+.[a-z]{2,4}$" placeholder="Email address" class="flex1 mr050 mt0 full" name="primaryEmail"
+      [(ngModel)]="emailAddress" />
+    @if (firstEmail.errors && (firstEmail.invalid || firstEmail.touched)) {
+      <div>
+        @if (firstEmail.errors.required) {
+          <small class="text-danger">Email is required</small>
+        }
+        @if (firstEmail.errors.pattern) {
+          <small class="text-danger">Please provide a valid email address. Must be all lower case</small>
+        }
+      </div>
+    }
+    @if (securityDomains.length > 0) {
+      <div class="mt-1 ml-1 text-xs">
+        Must have @if (securityDomains.length == 1) {
+        <span>the suffix </span>
+        }@if (securityDomains.length > 1) {
+        <span>one of the following suffixes: </span>
+        } <span style="color: blue">{{securityDomains.join(', ')}}</span>
+      </div>
+    }
+    @if (inviteError) {
+      <div class="mt-2 border-red-400 border-l-4 bg-red-50 p-4 ml-0">
+        <div class="flex">
+          <div class="shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm text-red-700 mb-0">{{inviteError}}</h3>
+          </div>
         </div>
-
-        <div *ngIf="securityDomains.length > 0" class="mt-1 ml-1 text-xs">
-            Must have <span *ngIf="securityDomains.length == 1">the suffix </span><span *ngIf="securityDomains.length > 1">one of the following suffixes: </span> <span style="color: blue">{{securityDomains.join(', ')}}</span>
+      </div>
+    }
+  </div>
+  <div class="text-base font-medium text-gray-900 mb-4">Permissions</div>
+  <div class="mb2 mb-4">
+    <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'" [userService]="userService" [defaultScopeId]="defaultScopeId"
+    [updatedScopes]="scopeRoles['ACCOUNT']" [hideApply]="true" [defaultToOwner]="defaultToOwner"></ka-edit-roles>
+    @if (accountError) {
+      <div class="border-l-4 border-yellow-400 bg-yellow-50 p-4">
+        <div class="flex">
+          <div class="shrink-0">
+            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+              <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-yellow-700 mb-0">
+              {{accountError}}
+            </p>
+          </div>
         </div>
-
-        <div *ngIf="inviteError" class="mt-2 border-red-400 border-l-4 bg-red-50 p-4 ml-0">
-            <div class="flex">
-                <div class="shrink-0">
-                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm text-red-700 mb-0">{{inviteError}}</h3>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="text-base font-medium text-gray-900 mb-4">Permissions</div>
-
-    <div class="mb2 mb-4">
-        <ka-edit-roles [scopeKey]="'Account'" [scope]="'ACCOUNT'" [userService]="userService" [defaultScopeId]="defaultScopeId"
-                       [updatedScopes]="scopeRoles['ACCOUNT']" [hideApply]="true" [defaultToOwner]="defaultToOwner"></ka-edit-roles>
-
-        <div *ngIf="accountError" class="border-l-4 border-yellow-400 bg-yellow-50 p-4">
-            <div class="flex">
-                <div class="shrink-0">
-                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-yellow-700 mb-0">
-                        {{accountError}}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <ng-template [ngIf]="!!_.find(scopeRoles.ACCOUNT, {roleIds: [1]})">
-        <mat-tab-group animationDuration="0">
-            <mat-tab *ngFor="let scopeAccess of scopeAccesses" [label]="scopeAccess.scopeDescription">
-                <ka-edit-roles class="block mt-4" [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope"
-                               [updatedScopes]="scopeRoles[scopeAccess.scope]" [hideApply]="true"
-                               [userService]="userService"></ka-edit-roles>
-            </mat-tab>
-        </mat-tab-group>
-    </ng-template>
-
-    <div class="flex align-center justify-between mt2 mt-6">
-        <div></div>
-        <button mat-flat-button color="primary" class="but butsm" (click)="save()"
-                [disabled]="firstEmail.errors && (firstEmail.invalid || firstEmail.touched)">Invite User</button>
-    </div>
-</ng-template>
+      </div>
+    }
+  </div>
+  @if (!!_.find(scopeRoles.ACCOUNT, {roleIds: [1]})) {
+    <mat-tab-group animationDuration="0">
+      @for (scopeAccess of scopeAccesses; track scopeAccess) {
+        <mat-tab [label]="scopeAccess.scopeDescription">
+          <ka-edit-roles class="block mt-4" [scopeKey]="scopeAccess.scopeDescription" [scope]="scopeAccess.scope"
+            [updatedScopes]="scopeRoles[scopeAccess.scope]" [hideApply]="true"
+          [userService]="userService"></ka-edit-roles>
+        </mat-tab>
+      }
+    </mat-tab-group>
+  }
+  <div class="flex align-center justify-between mt2 mt-6">
+    <div></div>
+    <button mat-flat-button color="primary" class="but butsm" (click)="save()"
+    [disabled]="firstEmail.errors && (firstEmail.invalid || firstEmail.touched)">Invite User</button>
+  </div>
+}

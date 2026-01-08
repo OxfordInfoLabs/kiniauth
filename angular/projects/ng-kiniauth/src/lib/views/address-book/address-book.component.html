@@ -1,39 +1,43 @@
 <div class="contacts-wrapper">
 
-    <div class="contact-block new" [routerLink]="[editContactURL]">
-        <span style="font-size: 2rem"><b>+</b></span>
-        <span>New Contact</span>
+  <div class="contact-block new" [routerLink]="[editContactURL]">
+    <span style="font-size: 2rem"><b>+</b></span>
+    <span>New Contact</span>
+  </div>
+
+  @for (contact of contacts; track contact; let i = $index) {
+    <div class="contact-block existing">
+      @if (contactLoading === i) {
+        <div class="contact-loading">
+          <span style="color: white">loading...</span>
+        </div>
+      }
+      <div class="flex align-center justify-between" style="width: 100%">
+        <p class="m0"><strong>{{contact.name}}</strong></p>
+        <a class="delete-method" (click)="deleteContact(contact.id)" style="text-decoration: none">
+          &#10005;
+        </a>
+      </div>
+      <p [innerHTML]="contact.htmlAddressLinesString"></p>
+      <p style="margin-bottom: 0"><strong>Telephone: </strong>{{contact.telephoneNumber}}</p>
+      <p><strong>Email: </strong>{{contact.emailAddress}}</p>
+      <div style="width: 100%" class="flex align-center justify-between">
+        @if (contact.defaultContact) {
+          <p class="flex align-center confirm1 m0">
+            <span>&#10004;</span>&nbsp;&nbsp;Default contact
+          </p>
+        }
+        @if (!contact.defaultContact) {
+          <button class="but butsm"
+            (click)="makeDefault(contact.id)">
+            Make Default
+          </button>
+        }
+        <a class="edit" [routerLink]="[editContactURL + '/' + contact.id]">
+          Edit
+        </a>
+      </div>
     </div>
-
-    <div class="contact-block existing" *ngFor="let contact of contacts; let i = index">
-        <div class="contact-loading" *ngIf="contactLoading === i">
-            <span style="color: white">loading...</span>
-        </div>
-
-        <div class="flex align-center justify-between" style="width: 100%">
-            <p class="m0"><strong>{{contact.name}}</strong></p>
-            <a class="delete-method" (click)="deleteContact(contact.id)" style="text-decoration: none">
-                &#10005;
-            </a>
-        </div>
-
-        <p [innerHTML]="contact.htmlAddressLinesString"></p>
-        <p style="margin-bottom: 0"><strong>Telephone: </strong>{{contact.telephoneNumber}}</p>
-        <p><strong>Email: </strong>{{contact.emailAddress}}</p>
-
-        <div style="width: 100%" class="flex align-center justify-between">
-            <p class="flex align-center confirm1 m0" *ngIf="contact.defaultContact">
-                <span>&#10004;</span>&nbsp;&nbsp;Default contact
-            </p>
-            <button class="but butsm" *ngIf="!contact.defaultContact"
-                    (click)="makeDefault(contact.id)">
-                Make Default
-            </button>
-            <a class="edit" [routerLink]="[editContactURL + '/' + contact.id]">
-                Edit
-            </a>
-        </div>
-
-    </div>
+  }
 
 </div>

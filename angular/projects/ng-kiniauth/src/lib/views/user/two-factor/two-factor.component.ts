@@ -4,7 +4,8 @@ import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from 
     selector: 'ka-two-factor',
     templateUrl: './two-factor.component.html',
     styleUrls: ['./two-factor.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TwoFactorComponent implements OnInit {
 

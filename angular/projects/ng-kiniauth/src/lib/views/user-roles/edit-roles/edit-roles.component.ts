@@ -6,7 +6,8 @@ const _ = lodash.default;
     selector: 'ka-edit-roles',
     templateUrl: './edit-roles.component.html',
     styleUrls: ['./edit-roles.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class EditRolesComponent implements OnInit {
 

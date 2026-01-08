@@ -1,231 +1,252 @@
 <div class="p-6 bg-white border-b border-gray-200">
-    <div class="md:flex md:items-center md:justify-between md:space-x-5">
-        <div class="flex items-start flex-1">
-            <div class="pt-1.5">
-                <h1 class="text-2xl font-bold text-gray-900 font-heading mb-0 ">Account Users</h1>
-                <p class="text-sm font-medium text-gray-500">
-                    A list of all the users currently assigned to your account.
-                </p>
-            </div>
-        </div>
-        <div class="mt-6 flex flex-col-reverse justify-stretch">
-            <button type="button" [routerLink]="[inviteUserRoute || '/invite-user']" *ngIf="!disableInvite"
-                    class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none">
-                Invite User
-            </button>
-
-            <button type="button" *ngIf="createAdminUser" (click)="newAdminUser = true;"
-                    class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none">
-                Create Admin User
-            </button>
-        </div>
+  <div class="md:flex md:items-center md:justify-between md:space-x-5">
+    <div class="flex items-start flex-1">
+      <div class="pt-1.5">
+        <h1 class="text-2xl font-bold text-gray-900 font-heading mb-0 ">Account Users</h1>
+        <p class="text-sm font-medium text-gray-500">
+          A list of all the users currently assigned to your account.
+        </p>
+      </div>
     </div>
+    <div class="mt-6 flex flex-col-reverse justify-stretch">
+      @if (!disableInvite) {
+        <button type="button" [routerLink]="[inviteUserRoute || '/invite-user']"
+          class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none">
+          Invite User
+        </button>
+      }
+
+      @if (createAdminUser) {
+        <button type="button" (click)="newAdminUser = true;"
+          class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none">
+          Create Admin User
+        </button>
+      }
+    </div>
+  </div>
 </div>
 <div class="px-4 sm:px-6 lg:px-8 mt-0">
-    <div class="flex flex-col">
-        <div class="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
-            <div class="inline-block min-w-full py-2 align-middle">
+  <div class="flex flex-col">
+    <div class="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle">
 
-                <div *ngIf="newAdminAdded" class="my-8 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="text-success h-16 w-16 mr-2" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <div class="text-lg">Admin user successfully added.</div>
+        @if (newAdminAdded) {
+          <div class="my-8 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-success h-16 w-16 mr-2" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div class="text-lg">Admin user successfully added.</div>
+          </div>
+        }
+
+        @if (newAdminUser) {
+          <div class="px-6 pb-6 mt-4 flex flex-col border-b">
+            <p><b>Add New Admin User</b></p>
+            <input type="text" [(ngModel)]="newAdminName" placeholder="Enter name for user">
+            <input class="mt-2" type="email" [(ngModel)]="newAdminEmail"
+              placeholder="Enter email address for user">
+            <input class="mt-2" type="password" [(ngModel)]="newAdminPassword"
+              placeholder="Enter password for user"
+              [class]="{'border border-red-600': newAdminPassword && newAdminPassword.length < 8}">
+              @if (newAdminPassword && newAdminPassword.length < 8) {
+                <div>
+                  <small class="text-red-600">Password must be at least 8 characters long.</small>
                 </div>
-
-                <div *ngIf="newAdminUser" class="px-6 pb-6 mt-4 flex flex-col border-b">
-                    <p><b>Add New Admin User</b></p>
-                    <input type="text" [(ngModel)]="newAdminName" placeholder="Enter name for user">
-                    <input class="mt-2" type="email" [(ngModel)]="newAdminEmail"
-                           placeholder="Enter email address for user">
-                    <input class="mt-2" type="password" [(ngModel)]="newAdminPassword"
-                           placeholder="Enter password for user"
-                           [ngClass]="{'border border-red-600': newAdminPassword && newAdminPassword.length < 8}">
-                    <div *ngIf="newAdminPassword && newAdminPassword.length < 8">
-                        <small class="text-red-600">Password must be at least 8 characters long.</small>
-                    </div>
-                    <div><small>If no password is entered, one will be auto generated and sent to the user by
-                        email.</small></div>
-                    <div class="flex items-center justify-between my-4">
-                        <div></div>
-                        <button (click)="saveNewAdminUser()"
-                                class="py-2 px-4 bg-secondary text-white font-semibold rounded-md focus:outline-none">
-                            Save New User
-                        </button>
-                    </div>
-                </div>
-
-                <div *ngIf="passwordReset" class="my-8 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="text-success h-16 w-16 mr-2" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <div class="text-lg">Password reset email sent. Please check your email for further instructions
-                    </div>
-                </div>
-
-                <div *ngIf="userUnlocked" class="my-8 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="text-primary h-16 w-16 mr-2" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
-                    </svg>
-                    <div class="text-lg">This user has been successfully unlocked.</div>
-                </div>
-
-                <div *ngIf="userSuspended" class="my-8 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="text-danger h-16 w-16 mr-2" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                    </svg>
-                    <div class="text-lg">This user has been suspended.</div>
-                </div>
-
-                <div class="mt-3 sm:mt-0 flex-1">
-                    <label for="mobile-search-candidate" class="sr-only">Search</label>
-                    <div class="flex">
-                        <div class="relative flex-grow focus-within:z-10">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
-                                     viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd"
-                                          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                          clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <input type="text" name="mobile-search-candidate" id="mobile-search-candidate"
-                                   class="block w-full rounded-none pl-10 border-t-0 border-l-0 border-r-0 border-gray-300"
-                                   placeholder="Search users"
-                                   (keyup)="searchText.next($event.target.value)">
-                        </div>
-                    </div>
-                </div>
-                <table class="min-w-full border-separate bg-white" style="border-spacing: 0">
-                    <ng-template [ngIf]="users && users.length">
-
-                        <thead class="bg-gray-100">
-                        <tr>
-                            <th scope="col"
-                                class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 text-left text-xs font-semibold text-gray-900 backdrop-blur backdrop-filter">
-                                Name
-                            </th>
-                            <th scope="col"
-                                class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 text-left text-xs font-semibold text-gray-900 backdrop-blur backdrop-filter">
-                                Email
-                            </th>
-                            <th scope="col"
-                                class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 text-left text-xs font-semibold text-gray-900 backdrop-blur backdrop-filter">
-                                Status
-                            </th>
-                            <th scope="col"
-                                class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 backdrop-blur backdrop-filter">
-                                <span class="sr-only">Edit</span>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr *ngFor="let user of users; let i = index" class="hover:bg-gray-50 cursor-pointer">
-                            <td (click)="viewUser(user)"
-                                class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm font-medium text-gray-900">
-                                {{user.name}}
-                            </td>
-                            <td (click)="viewUser(user)"
-                                class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm text-gray-500">
-                                {{user.emailAddress}}
-                            </td>
-                            <td (click)="viewUser(user)"
-                                class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm text-gray-500">
-                                <span
-                                    [ngClass]="{'bg-success': user.status === 'ACTIVE', 'bg-primary': user.status === 'PENDING', 'bg-danger': user.status === 'SUSPENDED'}"
-                                    class="capitalize inline-flex rounded-full bg-gray-500 px-2 text-xs font-semibold leading-5 text-white">
-                                    {{user.status.toLowerCase()}}</span>
-                            </td>
-                            <td class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm text-gray-500">
-                                <div class="flex items-center justify-end">
-                                    <button mat-button [matMenuTriggerFor]="menu" color="primary">
-                                        Actions
-                                        <mat-icon>keyboard_arrow_down</mat-icon>
-                                    </button>
-                                    <mat-menu #menu="matMenu">
-                                        <button mat-menu-item (click)="removeUser(user)">Remove</button>
-                                        <button mat-menu-item (click)="resetPassword(user)">Reset Password</button>
-                                        <button mat-menu-item (click)="unlockUser(user.id)"
-                                                *ngIf="user.status === 'LOCKED' || user.status === 'SUSPENDED'">Unlock
-                                        </button>
-                                        <button mat-menu-item (click)="suspendUser(user.id)"
-                                                *ngIf="user.status !== 'SUSPENDED'">
-                                            Suspend
-                                        </button>
-                                    </mat-menu>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="4"
-                                class="whitespace-nowrap border-none py-0 px-4 text-sm font-medium text-gray-900">
-                                <div class="paging-toolbar flex align-center justify-end">
-                                    <mat-paginator class="user-paginator flex1 pl050 mb0" [length]="resultSize"
-                                                   [pageSize]="limit.getValue()"
-                                                   [pageIndex]="pageIndex"
-                                                   [pageSizeOptions]="[5, 10, 25, 100]"
-                                                   (page)="updatePage($event)">
-                                    </mat-paginator>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </ng-template>
-                </table>
-
-
-                <div *ngIf="invitations && invitations.length" class="bg-white">
-                    <h2 class="text-2xl font-bold text-gray-900 font-heading mb-2 px-4 ">Active Invitations</h2>
-
-                    <table class="min-w-full border-separate bg-white" style="border-spacing: 0">
-
-
-                            <thead class="bg-gray-100">
-                            <tr>
-                                <th scope="col"
-                                    class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 text-left text-xs font-semibold text-gray-900 backdrop-blur backdrop-filter">
-                                    Email Address
-                                </th>
-                                <th scope="col"
-                                    class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 text-left text-xs font-semibold text-gray-900 backdrop-blur backdrop-filter">
-                                    Expiry Date
-                                </th>
-                                <th scope="col"
-                                    class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 backdrop-blur backdrop-filter">
-                                    <span class="sr-only">Edit</span>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr *ngFor="let invitation of invitations; let i = index" class="hover:bg-gray-50 cursor-pointer">
-                                <td
-                                    class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm font-medium text-gray-900">
-                                    {{invitation.emailAddress}}
-                                </td>
-                                <td class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm font-medium text-gray-800">
-                                    {{invitation.expiryDate}}
-                                </td>
-                                <td class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm text-gray-500">
-                                    <button type="button" (click)="resendInvitation(invitation)"
-                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none">
-                                        Resend Invitation
-                                    </button>
-                                </td>
-                            </tr>
-                            </tbody>
-
-                    </table>
-                </div>
-
+              }
+              <div><small>If no password is entered, one will be auto generated and sent to the user by
+              email.</small></div>
+              <div class="flex items-center justify-between my-4">
+                <div></div>
+                <button (click)="saveNewAdminUser()"
+                  class="py-2 px-4 bg-secondary text-white font-semibold rounded-md focus:outline-none">
+                Save New User
+              </button>
             </div>
+          </div>
+        }
+
+        @if (passwordReset) {
+          <div class="my-8 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-success h-16 w-16 mr-2" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div class="text-lg">Password reset email sent. Please check your email for further instructions
+            </div>
+          </div>
+        }
+
+        @if (userUnlocked) {
+          <div class="my-8 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-primary h-16 w-16 mr-2" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+            </svg>
+            <div class="text-lg">This user has been successfully unlocked.</div>
+          </div>
+        }
+
+        @if (userSuspended) {
+          <div class="my-8 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-danger h-16 w-16 mr-2" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+            </svg>
+            <div class="text-lg">This user has been suspended.</div>
+          </div>
+        }
+
+        <div class="mt-3 sm:mt-0 flex-1">
+          <label for="mobile-search-candidate" class="sr-only">Search</label>
+          <div class="flex">
+            <div class="relative flex-grow focus-within:z-10">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <input type="text" name="mobile-search-candidate" id="mobile-search-candidate"
+                class="block w-full rounded-none pl-10 border-t-0 border-l-0 border-r-0 border-gray-300"
+                placeholder="Search users"
+                (keyup)="searchText.next($event.target.value)">
+            </div>
+          </div>
         </div>
+        <table class="min-w-full border-separate bg-white" style="border-spacing: 0">
+          @if (users && users.length) {
+            <thead class="bg-gray-100">
+              <tr>
+                <th scope="col"
+                  class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 text-left text-xs font-semibold text-gray-900 backdrop-blur backdrop-filter">
+                  Name
+                </th>
+                <th scope="col"
+                  class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 text-left text-xs font-semibold text-gray-900 backdrop-blur backdrop-filter">
+                  Email
+                </th>
+                <th scope="col"
+                  class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 text-left text-xs font-semibold text-gray-900 backdrop-blur backdrop-filter">
+                  Status
+                </th>
+                <th scope="col"
+                  class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 backdrop-blur backdrop-filter">
+                  <span class="sr-only">Edit</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of users; track user; let i = $index) {
+                <tr class="hover:bg-gray-50 cursor-pointer">
+                  <td (click)="viewUser(user)"
+                    class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm font-medium text-gray-900">
+                    {{user.name}}
+                  </td>
+                  <td (click)="viewUser(user)"
+                    class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm text-gray-500">
+                    {{user.emailAddress}}
+                  </td>
+                  <td (click)="viewUser(user)"
+                    class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm text-gray-500">
+                    <span
+                      [class]="{'bg-success': user.status === 'ACTIVE', 'bg-primary': user.status === 'PENDING', 'bg-danger': user.status === 'SUSPENDED'}"
+                      class="capitalize inline-flex rounded-full bg-gray-500 px-2 text-xs font-semibold leading-5 text-white">
+                    {{user.status.toLowerCase()}}</span>
+                  </td>
+                  <td class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm text-gray-500">
+                    <div class="flex items-center justify-end">
+                      <button mat-button [matMenuTriggerFor]="menu" color="primary">
+                        Actions
+                        <mat-icon>keyboard_arrow_down</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="removeUser(user)">Remove</button>
+                        <button mat-menu-item (click)="resetPassword(user)">Reset Password</button>
+                        @if (user.status === 'LOCKED' || user.status === 'SUSPENDED') {
+                          <button mat-menu-item (click)="unlockUser(user.id)"
+                            >Unlock
+                          </button>
+                        }
+                        @if (user.status !== 'SUSPENDED') {
+                          <button mat-menu-item (click)="suspendUser(user.id)"
+                            >
+                            Suspend
+                          </button>
+                        }
+                      </mat-menu>
+                    </div>
+                  </td>
+                </tr>
+              }
+              <tr>
+                <td colspan="4"
+                  class="whitespace-nowrap border-none py-0 px-4 text-sm font-medium text-gray-900">
+                  <div class="paging-toolbar flex align-center justify-end">
+                    <mat-paginator class="user-paginator flex1 pl050 mb0" [length]="resultSize"
+                      [pageSize]="limit.getValue()"
+                      [pageIndex]="pageIndex"
+                      [pageSizeOptions]="[5, 10, 25, 100]"
+                      (page)="updatePage($event)">
+                    </mat-paginator>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          }
+        </table>
+
+
+        @if (invitations && invitations.length) {
+          <div class="bg-white">
+            <h2 class="text-2xl font-bold text-gray-900 font-heading mb-2 px-4 ">Active Invitations</h2>
+            <table class="min-w-full border-separate bg-white" style="border-spacing: 0">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th scope="col"
+                    class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 text-left text-xs font-semibold text-gray-900 backdrop-blur backdrop-filter">
+                    Email Address
+                  </th>
+                  <th scope="col"
+                    class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 text-left text-xs font-semibold text-gray-900 backdrop-blur backdrop-filter">
+                    Expiry Date
+                  </th>
+                  <th scope="col"
+                    class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 px-4 backdrop-blur backdrop-filter">
+                    <span class="sr-only">Edit</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (invitation of invitations; track invitation; let i = $index) {
+                  <tr class="hover:bg-gray-50 cursor-pointer">
+                    <td
+                      class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm font-medium text-gray-900">
+                      {{invitation.emailAddress}}
+                    </td>
+                    <td class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm font-medium text-gray-800">
+                      {{invitation.expiryDate}}
+                    </td>
+                    <td class="whitespace-nowrap border-gray-200 px-4 py-2 text-sm text-gray-500">
+                      <button type="button" (click)="resendInvitation(invitation)"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none">
+                        Resend Invitation
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+      </div>
     </div>
+  </div>
 </div>

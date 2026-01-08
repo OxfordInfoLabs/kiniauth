@@ -9,7 +9,8 @@ import { AccountService } from '../../services/account.service';
     selector: 'ka-account-summary',
     templateUrl: './account-summary.component.html',
     styleUrls: ['./account-summary.component.sass'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class AccountSummaryComponent extends BaseComponent implements OnInit, OnDestroy {
 
