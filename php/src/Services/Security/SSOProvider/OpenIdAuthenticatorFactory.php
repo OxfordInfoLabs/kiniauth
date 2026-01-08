@@ -66,7 +66,8 @@ class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
             $oidcSettings["issuer"],
             $oidcSettings["authorizationEndpoint"],
             $oidcSettings["tokenExchangeEndpoint"],
-            "$frontendUrl/sso/oidc/$providerKey"
+            "$frontendUrl/sso/oidc/$providerKey",
+            $oidcSettings["clientSecret"]
         );
 
         if (isset($oidcSettings["jwtAlg"])) {
