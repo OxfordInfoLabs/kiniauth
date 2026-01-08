@@ -3,8 +3,10 @@
 namespace Kiniauth\Services\Security\SSOProvider;
 
 use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Security\EncryptionService;
 use Kiniauth\Services\Security\JWT\JWTManager;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
+use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
 use Kinikit\Core\HTTP\Request\Headers;
@@ -32,6 +34,11 @@ class OpenIdAuthenticator {
      */
     private JWTManager $jwtManager;
 
+    /**
+     * @var EncryptionService
+     */
+    private EncryptionService $encryptionService;
+
     private array $settings;
 
     /**
@@ -39,12 +46,14 @@ class OpenIdAuthenticator {
      * @param Session $session
      * @param OpenIdAuthenticatorConfiguration $config
      * @param JWTManager $jwtManager
+     * @param EncryptionService $encryptionService
      */
-    public function __construct(HttpRequestDispatcher $requestDispatcher, Session $session, OpenIdAuthenticatorConfiguration $config, JWTManager $jwtManager) {
+    public function __construct(HttpRequestDispatcher $requestDispatcher, Session $session, OpenIdAuthenticatorConfiguration $config, JWTManager $jwtManager, EncryptionService $encryptionService) {
         $this->requestDispatcher = $requestDispatcher;
         $this->session = $session;
         $this->config = $config;
         $this->jwtManager = $jwtManager;
+        $this->encryptionService = $encryptionService;
     }
 
     public function initialise() {
@@ -95,11 +104,15 @@ class OpenIdAuthenticator {
     }
 
     private function requestTokens(string $code): array {
+        $masterKey = Configuration::readParameter("sso.oidc.masterKey");
+        $clientSecret = $this->encryptionService->decrypt($masterKey, $this->config->getClientSecret());
 
         $params = [
             "grant_type" => "authorization_code",
             "code" => $code,
-            "redirect_uri" => $this->config->getRedirectUri()
+            "redirect_uri" => $this->config->getRedirectUri(),
+            "client_id" => $this->config->getClientId(),
+            "client_secret" => $clientSecret
         ];
 
         $request = new Request(

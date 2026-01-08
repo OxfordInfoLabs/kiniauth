@@ -33,6 +33,27 @@
                     </div>
                 </div>
 
+                <div class="col-span-full" *ngIf="!accountSettings.oidc.last4ClientSecret">
+                    <label class="block text-sm/6 font-medium text-gray-900">Client Secret</label>
+                    <div class="mt-2">
+                        <input type="text" [(ngModel)]="clientSecret"
+                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                    </div>
+                </div>
+
+                <div class="col-span-full" *ngIf="accountSettings.oidc.last4ClientSecret">
+                    <label class="block text-sm/6 font-medium text-gray-900">Client Secret</label>
+                    <div class="mt-2">
+                        <input type="text" disabled [value]="'****' + accountSettings.oidc.last4ClientSecret"
+                               class="block w-full rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 border-none sm:text-sm/6">
+                    </div>
+
+                    <button mat-flat-button (click)="updateClientSecret(accountSettings.oidc)" color="primary"
+                            type="button" class="mt-2">
+                        Update Client Secret
+                    </button>
+                </div>
+
                 <div class="col-span-full">
                     <label class="block text-sm/6 font-medium text-gray-900">Issuer</label>
                     <div class="mt-2">
@@ -63,7 +84,7 @@
         <div class="col-span-full flex items-center justify-between px-6 py-4">
             <div></div>
 
-            <button mat-flat-button (click)="save()" color="primary" type="button">
+            <button mat-flat-button (click)="save('oidc')" color="primary" type="button">
                 Save Configuration
             </button>
         </div>
@@ -124,7 +145,7 @@
         <div class="col-span-full flex items-center justify-between px-6 py-4">
             <div></div>
 
-            <button mat-flat-button (click)="save()" color="primary" type="button">
+            <button mat-flat-button (click)="save('saml')" color="primary" type="button">
                 Save Configuration
             </button>
         </div>

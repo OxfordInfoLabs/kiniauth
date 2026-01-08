@@ -3,9 +3,11 @@
 namespace Kiniauth\Test\Services\Security\SSO;
 
 use Kiniauth\Services\Application\Session;
+use Kiniauth\Services\Security\EncryptionService;
 use Kiniauth\Services\Security\JWT\JWTManager;
 use Kiniauth\Services\Security\SSOProvider\OpenIdAuthenticator;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
+use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
 use Kinikit\Core\HTTP\Request\Headers;
@@ -22,6 +24,7 @@ class OpenIdAuthenticatorTest extends TestCase {
     private $sessionMock;
     private $configMock;
     private $jwtManagerMock;
+    private $encryptionServiceMock;
     private $authenticator;
 
     protected function setUp(): void {
@@ -30,13 +33,15 @@ class OpenIdAuthenticatorTest extends TestCase {
         $this->sessionMock = MockObjectProvider::mock(Session::class);
         $this->configMock = MockObjectProvider::mock(OpenIdAuthenticatorConfiguration::class);
         $this->jwtManagerMock = MockObjectProvider::mock(JWTManager::class);
+        $this->encryptionServiceMock = MockObjectProvider::mock(EncryptionService::class);
 
         // Instantiate the class under test with the mocks
         $this->authenticator = new OpenIdAuthenticator(
             $this->requestDispatcherMock,
             $this->sessionMock,
             $this->configMock,
-            $this->jwtManagerMock
+            $this->jwtManagerMock,
+            $this->encryptionServiceMock
         );
 
         // Set up common configuration values
@@ -44,6 +49,9 @@ class OpenIdAuthenticatorTest extends TestCase {
         $this->configMock->returnValue('getTokenEndpoint', 'http://token.endpoint');
         $this->configMock->returnValue('getIssuer', 'https://issuer.com');
         $this->configMock->returnValue('getClientId', 'test-client-id');
+        $this->configMock->returnValue('getClientSecret', 'some_client_secret');
+
+        $this->encryptionServiceMock->returnValue("decrypt", "test_client_secret", [Configuration::readParameter("sso.oidc.masterKey"), "some_client_secret"]);
     }
 
     // --- Test Initialisation ---
@@ -86,7 +94,9 @@ class OpenIdAuthenticatorTest extends TestCase {
             [
                 "grant_type" => "authorization_code",
                 "code" => $code,
-                "redirect_uri" => 'http://redirect.uri'
+                "redirect_uri" => 'http://redirect.uri',
+                "client_id" => "test-client-id",
+                "client_secret" => "test_client_secret"
             ],
             null,
             new Headers(["Content-Type" => "application/x-www-form-urlencoded"])

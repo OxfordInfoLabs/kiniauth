@@ -16,3 +16,5 @@ sso.facebook.appSecret = abcdef
 sso.facebook.redirectURI = https://test.com/sso
 
 scheduled.task.default.group = defaultGroup
+
+sso.oidc.masterKey = test-master-key

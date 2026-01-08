@@ -20,13 +20,16 @@ class OpenIdAuthenticatorConfiguration {
 
     private string $jwtSecret = "default";
 
+    private string $clientSecret;
+
     public function __construct(string $clientId, string $issuer, string $authorisationEndpoint, string $tokenEndpoint,
-                                string $redirectUri) {
+                                string $redirectUri, string $clientSecret) {
         $this->clientId = $clientId;
         $this->issuer = $issuer;
         $this->authorisationEndpoint = $authorisationEndpoint;
         $this->tokenEndpoint = $tokenEndpoint;
         $this->redirectUri = $redirectUri;
+        $this->clientSecret = $clientSecret;
     }
 
     public function getClientId(): string {
@@ -63,6 +66,10 @@ class OpenIdAuthenticatorConfiguration {
 
     public function setJwtSecret(string $jwtSecret): void {
         $this->jwtSecret = $jwtSecret;
+    }
+
+    public function getClientSecret(): string {
+        return $this->clientSecret;
     }
 
 }

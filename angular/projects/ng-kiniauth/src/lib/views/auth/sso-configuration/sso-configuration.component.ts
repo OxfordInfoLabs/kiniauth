@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {AccountService} from '../../../services/account.service';
 import * as lodash from 'lodash';
+import {EncryptionService} from '../../../services/encryption.service';
 
 const _ = lodash.default;
 
@@ -15,8 +16,10 @@ export class SsoConfigurationComponent implements OnInit {
 
     public accountSettings: any;
     public account: any;
+    public clientSecret: string;
 
-    constructor(private accountService: AccountService) {
+    constructor(private accountService: AccountService,
+                private encryptionService: EncryptionService) {
     }
 
     async ngOnInit() {
@@ -34,7 +37,21 @@ export class SsoConfigurationComponent implements OnInit {
         }
     }
 
-    public async save() {
+    public updateClientSecret(settings: any) {
+        delete settings.clientSecret;
+        delete settings.last4ClientSecret;
+    }
+
+    public async save(authenticatorKey: string) {
+        if (this.clientSecret) {
+            this.accountSettings[authenticatorKey].clientSecret = await this.encryptionService.encryptSSOText(
+                authenticatorKey,
+                this.clientSecret
+            );
+            this.accountSettings[authenticatorKey].last4ClientSecret = this.clientSecret.slice(-4);
+            this.clientSecret = '';
+        }
+
         await this.accountService.updateAccountSettings(this.accountSettings);
     }
 
