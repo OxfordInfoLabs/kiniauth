@@ -143,70 +143,6 @@ class OpenIdAuthenticatorTest extends TestCase {
 
     }
 
-    // --- Test Case 4: ID Token Validation Failure (Issuer Mismatch) ---
-    public function testAuthenticate_ThrowsAccessDeniedExceptionOnIssuerMismatch() {
-        $state = 'valid-state';
-        $idToken = 'token-with-bad-issuer';
-        $accessToken = 'valid-access-token';
-        $tokenResponseBody = json_encode(['access_token' => $accessToken, 'id_token' => $idToken]);
-
-        // 1. State check passes
-        $this->sessionMock->returnValue("getValue", $state, "oidc_state");
-
-        // 2. Token request succeeds
-        $tokenResponseMock = $this->getMockedResponse(200, $tokenResponseBody);
-        $this->requestDispatcherMock->returnValue('dispatch', $tokenResponseMock);
-
-        // 3. ID Token validation setup
-        $this->jwtManagerMock->returnValue('validateToken', true, $idToken);
-
-        $this->jwtManagerMock->returnValue('decodeToken', [
-            "iss" => "https://wrong-issuer.com", // Mismatch
-            "aud" => "test-client-id",
-            "exp" => time() + 3600, // Not expired
-            "nonce" => "expected-nonce",
-        ], $idToken);
-
-        $this->sessionMock->returnValue('getValue', 'expected-nonce', 'oidc_nonce');
-
-        $this->expectException(AccessDeniedException::class);
-        $this->expectExceptionMessage("Invalid issuer");
-        $this->authenticator->authenticate(['auth-code', $state]);
-    }
-
-    // --- Test Case 5: ID Token Expiration Failure ---
-    public function testAuthenticate_ThrowsAccessDeniedExceptionOnTokenExpiration() {
-        $state = 'valid-state';
-        $idToken = 'expired-token';
-        $accessToken = 'valid-access-token';
-        $tokenResponseBody = json_encode(['access_token' => $accessToken, 'id_token' => $idToken]);
-
-        // 1. State check passes
-        $this->sessionMock->returnValue('getValue', $state, 'oidc_state');
-
-        // 2. Token request succeeds
-        $tokenResponseMock = $this->getMockedResponse(200, $tokenResponseBody);
-        $this->requestDispatcherMock->returnValue('dispatch', $tokenResponseMock);
-
-        // 3. ID Token validation setup
-        $this->jwtManagerMock->returnValue('validateToken', true, $idToken);
-
-        $this->jwtManagerMock->returnValue('decodeToken', [
-            "iss" => "https://issuer.com",
-            "aud" => "test-client-id",
-            "exp" => time() - 3600, // Expired time (way past the 30s leeway)
-            "nonce" => "expected-nonce",
-        ], $idToken);
-
-        $this->sessionMock->returnValue('getValue', 'expected-nonce', 'oidc_nonce');
-
-        $this->expectException(AccessDeniedException::class);
-        $this->expectExceptionMessage("Token expired");
-
-        $this->authenticator->authenticate(['auth-code', $state]);
-
-    }
-
     // --- Helper Methods ---
 
     /**
@@ -223,7 +159,7 @@ class OpenIdAuthenticatorTest extends TestCase {
      * Helper to mock successful ID Token validation expectations.
      */
     private function mockIdTokenValidation(string $idToken, string $email): void {
-        $this->jwtManagerMock->returnValue('validateToken', true, $idToken);
+        $this->jwtManagerMock->returnValue('validateToken', "HS100", $idToken);
 
         $this->jwtManagerMock->returnValue('decodeToken', [
             "iss" => "https://issuer.com",
@@ -231,6 +167,6 @@ class OpenIdAuthenticatorTest extends TestCase {
             "exp" => time() + 3600, // Not expired
             "nonce" => "expected-nonce",
             "email" => $email
-        ], $idToken);
+        ]);
     }
 }

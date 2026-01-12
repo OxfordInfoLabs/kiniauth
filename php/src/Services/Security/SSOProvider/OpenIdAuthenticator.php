@@ -137,48 +137,24 @@ class OpenIdAuthenticator {
     }
 
     private function validateIdToken(string $idToken): array {
+        // Validate the token and algorithm - this ensures algorithm is supported and correct format
+        $alg = $this->jwtManager->validateToken($idToken);
 
-        if (!$this->jwtManager->validateToken($idToken)) {
-            throw new AccessDeniedException("Invalid Token");
+        // Decode token through JWT library and return claims
+        $claims = $this->jwtManager->decodeToken($idToken, $alg, $this->config);
+
+        // Ensure that the claims returned match the expected provider and formats.
+        if ($claims) {
+            $this->jwtManager->validateClaims($claims, $this->config);
         }
 
-        $claims = $this->jwtManager->decodeToken($idToken);
-
-        $issuer = $claims["iss"];
-        $audience = $claims["aud"];
-        $expiry = $claims["exp"];
+        // If nonce doesn't match, refuse access
         $nonceClaim = $claims["nonce"];
-        $azp = $claims["azp"] ?? null;
-
-
-        // Follow verification as per spec
-        // 2. Issuer Identifier matches iss
-        if ($issuer != $this->config->getIssuer()) {
-            throw new AccessDeniedException("Invalid issuer");
-        }
-
-        // 3. Audience contains it's client_id registered with Issuer
-        $audienceArray = is_array($audience) ? $audience : [$audience];
-        if (!in_array($this->config->getClientId(), $audienceArray)) {
-            throw new AccessDeniedException("Client ID not in audience.");
-        }
-
-        // Check authorised parties (if present)
-        if (is_array($audience) && count($audience) > 1 && $azp != $this->config->getClientId()) {
-            throw new AccessDeniedException("Invalid authorized party (azp).");
-        }
-
-        // 9. Check token not expired (with 30s leeway)
-        if ($expiry < (time() - 30))
-            throw new AccessDeniedException("Token expired");
-
-        // 11. If nonce doesn't match, refuse access
         $expectedNonce = $this->session->getValue("oidc_nonce");
         if ($nonceClaim != $expectedNonce)
             throw new AccessDeniedException("Nonce mismatch");
 
         return $claims;
-
     }
 
 }

@@ -2,8 +2,8 @@
 
 namespace Kiniauth\Test\Services\Security\JWT;
 
-use Kiniauth\Services\Security\JWT\JWTAlg;
 use Kiniauth\Services\Security\JWT\JWTManager;
+use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
 use PHPUnit\Framework\TestCase;
 
 require_once 'autoloader.php';
@@ -12,161 +12,167 @@ class JWTManagerTest extends TestCase {
 
     private const SECRET_KEY = 'super_secret_key_for_testing';
 
-    /**
-     * Test successful token creation with default HS256 algorithm.
-     */
-    public function testCreateTokenWithDefaultAlgorithm(): void {
-        $manager = new JWTManager(JWTAlg::HS256, self::SECRET_KEY);
-        $payload = ['user_id' => 123, 'role' => 'admin', 'exp' => time() + 3600];
+    private function buildJwt(array $claims, string $alg = "HS256"): string {
 
-        $token = $manager->createToken($payload);
+        $header = base64_encode(json_encode([
+            "alg" => $alg,
+            "typ" => "JWT"
+        ]));
 
-        $this->assertIsString($token);
-        $this->assertCount(3, explode('.', $token), 'Token should have three parts separated by dots.');
+        $payload = base64_encode(json_encode($claims));
 
+        $signature = hash_hmac(
+            "sha256",
+            $header . "." . $payload,
+            self::SECRET_KEY,
+            true
+        );
+
+        return $header . "." . $payload . "." . base64_encode($signature);
     }
 
     /**
-     * Test successful token creation with a custom algorithm (even though the internal logic is fixed to sha256).
+     * Test that a token of the wrong structure gets thrown
      */
-    public function testCreateTokenWithCustomAlgorithm(): void {
+    public function testInvalidTokenStructureSupplied(): void {
+        $manager = new JWTManager();
 
-        $customAlg = JWTAlg::HS512;
-        $manager = new JWTManager($customAlg, self::SECRET_KEY);
-        $payload = ['data' => 'test'];
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Invalid Token structure");
 
-        $token = $manager->createToken($payload);
-
-        [$encodedHeader, ,] = explode('.', $token);
-
-        // Decode the header to check the 'alg' value
-        $decodedHeaderJson = base64_decode(strtr($encodedHeader, '-_', '+/'));
-        $decodedHeader = json_decode($decodedHeaderJson, true);
-
-        $this->assertArrayHasKey('alg', $decodedHeader);
-        $this->assertSame($customAlg->name, $decodedHeader['alg'], 'Header should reflect the custom algorithm.');
-
+        $manager->validateToken("hello world");
     }
 
     /**
-     * Test successful token validation.
+     * Test that a valid token returns the correct algorithm
+     *
+     * @return void
+     * @throws \Exception
      */
-    public function testValidateTokenSuccess(): void {
+    public function testAlgorithmReturnedForValidToken() {
+        $validToken = $this->buildJwt([
+            "iss" => "https://issuer.test",
+              "sub" => "user-123",
+              "aud" => "test-client-id",
+              "exp" => time(),
+              "iat" => time(),
+              "auth_time" => time(),
+              "nonce" => "random-nonce"
+        ]);
 
-        $manager = new JWTManager(JWTAlg::HS256, self::SECRET_KEY);
-        $payload = ['data' => 'test validation'];
-        $token = $manager->createToken($payload);
+        $manager = new JWTManager();
 
-        $isValid = $manager->validateToken($token);
-
-        $this->assertTrue($isValid, 'Valid token should pass validation.');
-
+        $alg = $manager->validateToken($validToken);
+        $this->assertSame("HS256", $alg);
     }
 
     /**
-     * Test token validation failure due to a bad secret key.
+     * Test that an unsupported algorithm get correctly thrown
+     *
+     * @return void
+     * @throws \Exception
      */
-    public function testValidateTokenFailureWithWrongKey(): void {
+    public function testUnsupportedAlgorithm() {
+        $validToken = $this->buildJwt([
+            "iss" => "https://issuer.test",
+            "sub" => "user-123",
+            "aud" => "test-client-id",
+            "exp" => time(),
+            "iat" => time(),
+            "auth_time" => time(),
+            "nonce" => "random-nonce"
+        ], "NA123");
 
-        $manager = new JWTManager(JWTAlg::HS256, self::SECRET_KEY);
-        $payload = ['data' => 'test validation failure'];
-        $token = $manager->createToken($payload);
+        $manager = new JWTManager();
 
-        // Create a new manager with a *different* key
-        $wrongManager = new JWTManager(JWTAlg::HS256, 'a_different_secret_key');
-
-        $isValid = $wrongManager->validateToken($token);
-
-        $this->assertFalse($isValid, 'Token created with a different key should fail validation.');
-
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Unsupported algorithm: NA123");
+        $alg = $manager->validateToken($validToken);
     }
 
-    /**
-     * Test token validation failure due to tampered payload.
-     */
-    public function testValidateTokenFailureWithTamperedPayload(): void {
 
-        $manager = new JWTManager(JWTAlg::HS256, self::SECRET_KEY);
-        $payload = ['data' => 'original payload'];
-        $originalToken = $manager->createToken($payload);
-
-        [$encodedHeader, $encodedPayload, $encodedSignature] = explode('.', $originalToken);
-
-        // Tamper the payload: change the first character of the encoded payload
-        $tamperedPayload = 'A' . substr($encodedPayload, 1);
-        $tamperedToken = $encodedHeader . '.' . $tamperedPayload . '.' . $encodedSignature;
-
-        $isValid = $manager->validateToken($tamperedToken);
-
-        $this->assertFalse($isValid, 'Tampered token (payload changed) should fail validation.');
-
-    }
-
-    /**
-     * Test successful token decoding.
-     */
-    public function testDecodeTokenSuccess(): void {
-
-        $manager = new JWTManager(JWTAlg::HS256, self::SECRET_KEY);
-        $originalPayload = [
-            'iat' => time(),
-            'iss' => 'test-issuer',
-            'sub' => 'test-subject'
+    public function testClaimAudienceClientIdMismatchException() {
+        $claims = [
+            "iss" => "https://issuer.test",
+            "sub" => "user-123",
+            "aud" => "test-client-id",
+            "exp" => time(),
+            "iat" => time(),
+            "auth_time" => time(),
+            "nonce" => "random-nonce"
         ];
 
-        $token = $manager->createToken($originalPayload);
-        $decodedPayload = $manager->decodeToken($token);
+        $clientConfig = new OpenIdAuthenticatorConfiguration(
+            "other-client-id",
+            "https://issuer.test",
+            "https://auth.test",
+            "https://token.test",
+            "https://redirect.test",
+            "test-client-secret",
+            "https://jwks.test"
+        );
 
-        $this->assertIsArray($decodedPayload);
+        $manager = new JWTManager();
 
-        // The original payload keys should be present in the decoded payload
-        $this->assertArrayHasKey('iat', $decodedPayload);
-        $this->assertArrayHasKey('iss', $decodedPayload);
-        $this->assertArrayHasKey('sub', $decodedPayload);
-
-        // Check that the values match
-        $this->assertSame($originalPayload['iat'], $decodedPayload['iat']);
-        $this->assertSame($originalPayload['iss'], $decodedPayload['iss']);
-        $this->assertSame($originalPayload['sub'], $decodedPayload['sub']);
-
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Audience mismatch: Expected {$clientConfig->getClientId()}");
+        $manager->validateClaims((object) $claims, $clientConfig);
     }
 
-    /**
-     * Test decoding a token with an empty payload.
-     */
-    public function testDecodeTokenWithEmptyPayload(): void {
+    public function testClaimIssuerMismatchException() {
+        $claims = [
+            "iss" => "https://other-issuer.test",
+            "sub" => "user-123",
+            "aud" => "test-client-id",
+            "exp" => time(),
+            "iat" => time(),
+            "auth_time" => time(),
+            "nonce" => "random-nonce"
+        ];
 
-        $manager = new JWTManager(JWTAlg::HS256, self::SECRET_KEY);
-        $originalPayload = [];
+        $clientConfig = new OpenIdAuthenticatorConfiguration(
+            "test-client-id",
+            "https://issuer.test",
+            "https://auth.test",
+            "https://token.test",
+            "https://redirect.test",
+            "test-client-secret",
+            "https://jwks.test"
+        );
 
-        $token = $manager->createToken($originalPayload);
-        $decodedPayload = $manager->decodeToken($token);
+        $manager = new JWTManager();
 
-        $this->assertIsArray($decodedPayload);
-        $this->assertEmpty($decodedPayload, 'Decoding an empty payload should result in an empty array.');
-
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Issuer mismatch");
+        $manager->validateClaims((object) $claims, $clientConfig);
     }
 
-    /**
-     * Test end-to-end token flow: Create, Validate, Decode.
-     */
-    public function testFullTokenLifecycle(): void {
+    public function testTokenExpiryInClaimException() {
+        $claims = [
+            "iss" => "https://issuer.test",
+            "sub" => "user-123",
+            "aud" => "test-client-id",
+            "exp" => time() - 3600,
+            "iat" => time(),
+            "auth_time" => time(),
+            "nonce" => "random-nonce"
+        ];
 
-        $manager = new JWTManager(JWTAlg::HS256, self::SECRET_KEY);
-        $originalPayload = ['username' => 'testuser', 'time' => microtime(true)];
+        $clientConfig = new OpenIdAuthenticatorConfiguration(
+            "test-client-id",
+            "https://issuer.test",
+            "https://auth.test",
+            "https://token.test",
+            "https://redirect.test",
+            "test-client-secret",
+            "https://jwks.test"
+        );
 
-        $token = $manager->createToken($originalPayload);
+        $manager = new JWTManager();
 
-        // 1. Validate
-        $this->assertTrue($manager->validateToken($token), 'Token must be valid immediately after creation.');
-
-        // 2. Decode
-        $decodedPayload = $manager->decodeToken($token);
-
-        // 3. Check Decoded Data
-        $this->assertSame($originalPayload['username'], $decodedPayload['username']);
-        $this->assertSame($originalPayload['time'], $decodedPayload['time']);
-
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Token has expired");
+        $manager->validateClaims((object) $claims, $clientConfig);
     }
 
 }

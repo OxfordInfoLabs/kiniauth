@@ -2,118 +2,93 @@
 
 namespace Kiniauth\Services\Security\JWT;
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\JWK;
+use Firebase\JWT\Key;
+use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
+
 /**
  * Currently only supports the HS algorithm class
  */
 class JWTManager {
 
-    private ?string $secretKey;
-
-    private JWTAlg $alg;
+    private array $supportedAlgs;
 
     /**
-     * @param $alg
-     * @param string $secretKey
+     * Set the supported algorithms
      */
-    public function __construct($alg = JWTAlg::HS256, ?string $secretKey = null) {
+    public function __construct() {
+        $this->supportedAlgs = array_keys(JWT::$supported_algs);
+    }
 
-        if (in_array($alg, [JWTAlg::HS256, JWTAlg::HS384, JWTAlg::HS512])) {
-            if (empty($secretKey)) {
-                throw new \InvalidArgumentException("A secret key must be provided for HMAC algorithms (HS256, HS384, HS512).");
-            }
+    public function validateToken(string $idToken) {
+        $tokenParts = explode('.', $idToken);
+        if (count($tokenParts) != 3) {
+            throw new \Exception("Invalid Token structure");
+        }
+        $header = json_decode(base64_decode($tokenParts[0]));
+        $alg = $header->alg;
+
+        if (!in_array($alg, $this->supportedAlgs)) {
+            throw new \Exception("Unsupported algorithm: $alg");
         }
 
-        $this->secretKey = $secretKey;
-        $this->alg = $alg;
+        return $alg;
     }
 
-    public function createToken(array $payload): string {
+    /**
+     * @param string $idToken
+     * @param OpenIdAuthenticatorConfiguration $config
+     * @return \stdClass
+     * @throws \Exception
+     */
+    public function decodeToken(string $idToken, string $alg, OpenIdAuthenticatorConfiguration $config): array {
+        $claims = null;
 
-        $encodedHeader = $this->base64UrlEncode(
-            json_encode([
-                "alg" => $this->alg->name,
-                "typ" => "JWT"
-            ])
-        );
-
-        $encodedPayload = $this->base64UrlEncode(json_encode($payload));
-
-        $signature = match ($this->alg) {
-            JWTAlg::none => "",
-            JWTAlg::HS256 => $this->signHS("sha256", $encodedHeader, $encodedPayload),
-            JWTAlg::HS384 => $this->signHS("sha384", $encodedHeader, $encodedPayload),
-            JWTAlg::HS512 => $this->signHS("sha512", $encodedHeader, $encodedPayload),
-            JWTAlg::RS256 => throw new \Exception('To be implemented'),
-            JWTAlg::RS384 => throw new \Exception('To be implemented'),
-            JWTAlg::RS512 => throw new \Exception('To be implemented'),
-            JWTAlg::ES256 => throw new \Exception('To be implemented'),
-            JWTAlg::ES384 => throw new \Exception('To be implemented'),
-            JWTAlg::ES512 => throw new \Exception('To be implemented'),
-        };
-
-        return $encodedHeader . "." . $encodedPayload . "." . $signature;
-
-    }
-
-    public function validateToken(string $token): bool {
-
-        // Check token format (must be A.B.C)
-        if (substr_count($token, ".") !== 2) {
-            return false;
+        // 2. Fetch the correct key based on the algorithm type
+        if (str_starts_with($alg, 'RS') || str_starts_with($alg, 'ES')) {
+            // Asymmetric: Fetch from JWKS (URL)
+            $jwksUri = $config->getJwksUri() || rtrim($config->getIssuer(), '/') . '/.well-known/openid-configuration';
+            $jwks = json_decode(file_get_contents($jwksUri), true);
+            $keys = JWK::parseKeySet($jwks);
+            // Pass the entire array of keys; the library finds the one matching the 'kid'
+            $claims = JWT::decode($idToken, $keys);
         }
 
-        [$encodedHeader, $encodedPayload, $encodedSignature] = explode(".", $token);
-
-        $header = json_decode($this->base64UrlDecode($encodedHeader), true);
-        $alg = $header["alg"] ?? null;
-
-        // Validate algorithm
-        if ($alg !== $this->alg->name) {
-            throw new \Exception("Algorithm does not match expected");
+        if (str_starts_with($alg, 'HS')) {
+            // Symmetric: Use the Client Secret
+            $key = new Key($config->getClientSecret(), $alg);
+            $claims = JWT::decode($idToken, $key);
         }
 
-        // Validate signature
-        $signature = match ($this->alg) {
-            JWTAlg::HS256 => $this->signHS("sha256", $encodedHeader, $encodedPayload),
-            JWTAlg::HS384 => $this->signHS("sha384", $encodedHeader, $encodedPayload),
-            JWTAlg::HS512 => $this->signHS("sha512", $encodedHeader, $encodedPayload),
-            default => throw new \Exception('Unsupported algorithm'),
-        };
-
-        return $encodedSignature === $signature;
-
+        return $claims;
     }
 
-    public function decodeToken(string $token): array {
-        [, $encodedPayload,] = explode(".", $token);
-        $payload = $this->base64UrlDecode($encodedPayload);
-        return json_decode($payload, true);
-    }
+    /**
+     * Check that the claims returned are valid
+     *
+     * @param $claims
+     * @param $config OpenIdAuthenticatorConfiguration
+     * @return void
+     * @throws \Exception
+     */
+    public function validateClaims($claims, OpenIdAuthenticatorConfiguration $config): void {
+        $now = time();
 
-    private function base64UrlEncode($data) {
-        $base64 = base64_encode($data);
-        $base64Url = strtr($base64, '+/', '-_');
-        return rtrim($base64Url, '=');
-    }
+        // Validate Audience (Is this the expected provider)
+        if ($claims->aud !== $config->getClientId()) {
+            throw new \Exception("Audience mismatch: Expected {$config->getClientId()}");
+        }
 
-    private function base64UrlDecode($data) {
-        $base64 = strtr($data, '-_', '+/');
-        $remainder = strlen($base64) % 4;
+        // Validate Issuer (Did this actually come from the provider I expect?)
+        $expectedIssuers = [$config->getIssuer(), str_replace('https://', '', $config->getIssuer())];
+        if (!in_array($claims->iss, $expectedIssuers)) {
+            throw new \Exception("Issuer mismatch");
+        }
 
-        if ($remainder)
-            $base64 = str_pad($base64, 4 - $remainder, "=", STR_PAD_RIGHT);
-
-        return base64_decode($base64);
-    }
-
-    private function signHS(string $algorithm, string $encodedHeader, string $encodedPayload): string {
-        return $this->base64UrlEncode(
-            hash_hmac(
-                algo: $algorithm,
-                data: $encodedHeader . "." . $encodedPayload,
-                key: $this->secretKey,
-                binary: true
-            )
-        );
+        // Validate Expiration (Is the token still valid?)
+        if ($claims->exp < $now) {
+            throw new \Exception("Token has expired");
+        }
     }
 }
