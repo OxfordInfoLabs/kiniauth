@@ -39,14 +39,14 @@ class JWTManager {
 
     /**
      * @param string $idToken
+     * @param string $alg
      * @param OpenIdAuthenticatorConfiguration $config
-     * @return \stdClass
+     * @return \stdClass|null
      * @throws \Exception
      */
-    public function decodeToken(string $idToken, string $alg, OpenIdAuthenticatorConfiguration $config): array {
+    public function decodeToken(string $idToken, string $alg, OpenIdAuthenticatorConfiguration $config): \stdClass|null {
         $claims = null;
-        Logger::log("CONFIG");
-        Logger::log($config);
+
         // Fetch the correct key based on the algorithm type
         if (str_starts_with($alg, 'RS') || str_starts_with($alg, 'ES')) {
             // Asymmetric: Fetch from JWKS (URL)

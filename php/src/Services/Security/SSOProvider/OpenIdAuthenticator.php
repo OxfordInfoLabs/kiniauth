@@ -99,7 +99,7 @@ class OpenIdAuthenticator {
         // 3. Validate the ID Token and get claims
         $claims = $this->validateIdToken($idToken);
 
-        return $claims["email"];
+        return $claims ? $claims->email : null;
 
     }
 
@@ -136,7 +136,7 @@ class OpenIdAuthenticator {
         return [$idToken, $accessToken];
     }
 
-    private function validateIdToken(string $idToken): array {
+    private function validateIdToken(string $idToken): \stdClass|null {
         // Validate the token and algorithm - this ensures algorithm is supported and correct format
         $alg = $this->jwtManager->validateToken($idToken);
 
@@ -146,15 +146,17 @@ class OpenIdAuthenticator {
         // Ensure that the claims returned match the expected provider and formats.
         if ($claims) {
             $this->jwtManager->validateClaims($claims, $this->config);
+
+            // If nonce doesn't match, refuse access
+            $nonceClaim = $claims->nonce;
+            $expectedNonce = $this->session->getValue("oidc_nonce");
+            if ($nonceClaim != $expectedNonce)
+                throw new AccessDeniedException("Nonce mismatch");
+
+            return $claims;
         }
 
-        // If nonce doesn't match, refuse access
-        $nonceClaim = $claims["nonce"];
-        $expectedNonce = $this->session->getValue("oidc_nonce");
-        if ($nonceClaim != $expectedNonce)
-            throw new AccessDeniedException("Nonce mismatch");
-
-        return $claims;
+        return null;
     }
 
 }
