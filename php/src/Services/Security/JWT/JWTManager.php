@@ -6,6 +6,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\JWK;
 use Firebase\JWT\Key;
 use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
+use Kinikit\Core\Logging\Logger;
 
 /**
  * Currently only supports the HS algorithm class
@@ -44,11 +45,12 @@ class JWTManager {
      */
     public function decodeToken(string $idToken, string $alg, OpenIdAuthenticatorConfiguration $config): array {
         $claims = null;
-
-        // 2. Fetch the correct key based on the algorithm type
+        Logger::log("CONFIG");
+        Logger::log($config);
+        // Fetch the correct key based on the algorithm type
         if (str_starts_with($alg, 'RS') || str_starts_with($alg, 'ES')) {
             // Asymmetric: Fetch from JWKS (URL)
-            $jwksUri = $config->getJwksUri() || rtrim($config->getIssuer(), '/') . '/.well-known/openid-configuration';
+            $jwksUri = $config->getJwksUri();
             $jwks = json_decode(file_get_contents($jwksUri), true);
             $keys = JWK::parseKeySet($jwks);
             // Pass the entire array of keys; the library finds the one matching the 'kid'
