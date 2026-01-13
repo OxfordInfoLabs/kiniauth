@@ -161,7 +161,7 @@ class OpenIdAuthenticatorTest extends TestCase {
     private function mockIdTokenValidation(string $idToken, string $email): void {
         $this->jwtManagerMock->returnValue('validateToken', "HS100", $idToken);
 
-        $this->jwtManagerMock->returnValue('decodeToken', [
+        $this->jwtManagerMock->returnValue('decodeToken', (object) [
             "iss" => "https://issuer.com",
             "aud" => "test-client-id",
             "exp" => time() + 3600, // Not expired
