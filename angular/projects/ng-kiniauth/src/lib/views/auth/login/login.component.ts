@@ -55,6 +55,16 @@ export class LoginComponent extends BaseComponent implements OnInit {
     async ngOnInit() {
         super.ngOnInit();
 
+        const authKey = this.route.snapshot.params.authKey;
+        const provider = this.route.snapshot.params.provider;
+
+        if (authKey && provider) {
+            const ssoUrl = await this.authService.getSSOUri(authKey, provider);
+            this.openSSO(ssoUrl);
+
+            return true;
+        }
+
         const params = this.route.snapshot.queryParams;
         this.unlockCode = params.unlockCode || null;
 
@@ -90,7 +100,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     }
 
     public openSSO(link: string) {
-        const popup = window.open(link, 'popup', 'popup=true,height=700,width=600');
+        const popup = window.open(link, 'popup', 'popup=true,height=800,width=700');
         const timer = setInterval(async () => {
             if (popup.closed) {
                 clearInterval(timer);
