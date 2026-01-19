@@ -59,6 +59,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
         const provider = this.route.snapshot.params.provider;
 
         if (authKey && provider) {
+            await this.authService.getSessionData();
             const ssoUrl = await this.authService.getSSOUri(authKey, provider);
             this.openSSO(ssoUrl);
 
