@@ -18,7 +18,7 @@ class SAMLAuthenticatorFactory implements AuthenticatorFactory {
     /**
      * Creates and returns a fully configured SAMLAuthenticator instance.
      *
-     * @param string $provider The identifier for the SSO provider
+     * @param string $providerKey The identifier for the SSO provider
      * @return SAMLAuthenticator
      */
     public function create(string $providerKey): SAMLAuthenticator {
@@ -36,7 +36,11 @@ class SAMLAuthenticatorFactory implements AuthenticatorFactory {
 
     public function getServiceProviderMetadata($providerKey) {
         $serviceProviderConfig = $this->getServiceProviderConfiguration($providerKey);
-        $settings = new Settings(["sp" => $serviceProviderConfig->returnSettings()]);
+        $settings = new Settings([
+            "strict" => true,
+            "debug" => false,
+            "sp" => $serviceProviderConfig->returnSettings()
+        ], true);
         return $settings->getSPMetadata();
     }
 
@@ -53,7 +57,7 @@ class SAMLAuthenticatorFactory implements AuthenticatorFactory {
         $frontendUrl = $settingsService->getSettingValue("frontendURL");
         $backendUrl = $settingsService->getSettingValue("backendURL");
 
-        $entityId = $backendUrl . "/guest/auth/saml/metadata/$providerKey";
+        $entityId = $backendUrl . "/saml/metadata/$providerKey";
         $acsUrl = $frontendUrl . "/sso/saml/$providerKey";
 
         $x509cert = file_get_contents(Configuration::readParameter("saml.path.x509cert"));
