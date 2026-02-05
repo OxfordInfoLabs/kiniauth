@@ -19,6 +19,8 @@ class SAMLAuthenticatorConfiguration {
 
     public function returnSettings(): array {
         return [
+            "strict" => true,
+            "debug" => false,
             "sp" => $this->spConfig->returnSettings(),
             "idp" => $this->idpConfig->returnSettings(),
             'security' => [

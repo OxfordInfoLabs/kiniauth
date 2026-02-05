@@ -19,7 +19,12 @@ class SAMLAuthenticator {
     }
 
     public function initialise() {
-        return $this->auth->getSSOurl();
+        $samlReq = $this->auth->buildAuthnRequest($this->settings, false, false, true);
+        $reqString = urlencode($samlReq->getRequest());
+
+        $url = $this->auth->getSSOurl() . "&SAMLRequest=" . $reqString;
+
+        return $url;
     }
 
     public function authenticate(mixed $data) {

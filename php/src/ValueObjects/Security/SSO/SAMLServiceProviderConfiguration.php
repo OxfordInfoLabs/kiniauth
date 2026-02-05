@@ -27,13 +27,12 @@ class SAMLServiceProviderConfiguration {
 
     public function returnSettings(): array {
         return [
-            "strict" => true,
-            "debug" => false,
             "entityId" => $this->entityId,
             "assertionConsumerService" => [
                 "url" => $this->acsUrl,
                 "binding" => "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
             ],
+            "NameIDFormat" => "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
             "x509cert" => $this->x509cert,
             "privateKey" => $this->privateKey
         ];

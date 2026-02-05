@@ -10,14 +10,12 @@ use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Exception\Security\InvalidReferrerException;
 use Kiniauth\Exception\Security\InvalidUserAccessTokenException;
 use Kiniauth\Exception\Security\UserSuspendedException;
-use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Security\APIKey;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserAccessToken;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Application\ActivityLogger;
 use Kiniauth\Services\Security\SSOProvider\AuthenticatorFactory;
-use Kiniauth\Services\Security\SSOProvider\OpenIdAuthenticatorFactory;
 use Kiniauth\Services\Security\SSOProvider\SAMLAuthenticatorFactory;
 use Kiniauth\Services\Security\SSOProvider\SSOAuthenticator;
 use Kiniauth\Services\Security\TwoFactor\TwoFactorProvider;
@@ -546,7 +544,7 @@ class AuthenticationService {
 
     }
 
-    public function getSAMLMetadata($providerKey) {
+    public function getSAMLMetadata($providerKey): string {
         $factory = new SAMLAuthenticatorFactory();
         return $factory->getServiceProviderMetadata($providerKey);
     }
