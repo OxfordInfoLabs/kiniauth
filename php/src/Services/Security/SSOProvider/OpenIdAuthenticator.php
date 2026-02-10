@@ -70,7 +70,7 @@ class OpenIdAuthenticator {
                 'client_id' => $this->config->getClientId(),
                 'redirect_uri' => $this->config->getRedirectUri(),
                 'response_type' => 'code',
-                'scope' => 'openid',
+                'scope' => 'openid email',
                 'state' => $state,
                 'nonce' => $nonce,
             ];
