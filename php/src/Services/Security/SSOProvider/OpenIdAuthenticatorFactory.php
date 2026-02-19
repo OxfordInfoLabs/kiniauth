@@ -12,6 +12,7 @@ use Kiniauth\ValueObjects\Security\SSO\OpenIdAuthenticatorConfiguration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
+use Kinikit\Core\Logging\Logger;
 
 class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
 
@@ -27,6 +28,8 @@ class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
         $session = Container::instance()->get(Session::class);
 
         $config = $this->getConfiguration($providerKey);
+        Logger::log("create CONFIG");
+        Logger::log($config);
 
         $jwtManager = new JWTManager($config->getJwtAlg(), $config->getJwtSecret());
 
