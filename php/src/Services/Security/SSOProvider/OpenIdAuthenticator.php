@@ -11,6 +11,7 @@ use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\HTTP\Dispatcher\HttpRequestDispatcher;
 use Kinikit\Core\HTTP\Request\Headers;
 use Kinikit\Core\HTTP\Request\Request;
+use Kinikit\Core\Logging\Logger;
 
 class OpenIdAuthenticator {
 
@@ -93,11 +94,21 @@ class OpenIdAuthenticator {
             throw new AccessDeniedException("Invalid state");
         }
 
-        // 2. Exchange the Authorization Code for Tokens
-        [$idToken, $accessToken] = $this->requestTokens($code);
+        try {
+            // 2. Exchange the Authorization Code for Tokens
+            [$idToken, $accessToken] = $this->requestTokens($code);
+            Logger::log("authenticate requestTokens");
+            Logger::log($idToken);
 
-        // 3. Validate the ID Token and get claims
-        $claims = $this->validateIdToken($idToken);
+            // 3. Validate the ID Token and get claims
+            $claims = $this->validateIdToken($idToken);
+            Logger::log("authenticate CLAIMS");
+            Logger::log($claims);
+        } catch (\Exception $e) {
+            Logger::log("authenticate EXCEPTION");
+            Logger::log($e);
+        }
+
 
         return $claims ? $claims->email : null;
 
