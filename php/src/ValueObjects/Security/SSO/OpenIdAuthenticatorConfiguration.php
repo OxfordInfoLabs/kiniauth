@@ -24,8 +24,10 @@ class OpenIdAuthenticatorConfiguration {
 
     private string $jwksUri;
 
+    private string $userInfoEndpoint;
+
     public function __construct(string $clientId, string $issuer, string $authorisationEndpoint, string $tokenEndpoint,
-                                string $redirectUri, string $clientSecret, string $jwksUri) {
+                                string $redirectUri, string $clientSecret, string $jwksUri, string $userInfoEndpoint) {
         $this->clientId = $clientId;
         $this->issuer = $issuer;
         $this->authorisationEndpoint = $authorisationEndpoint;
@@ -33,6 +35,7 @@ class OpenIdAuthenticatorConfiguration {
         $this->redirectUri = $redirectUri;
         $this->clientSecret = $clientSecret;
         $this->jwksUri = $jwksUri;
+        $this->userInfoEndpoint = $userInfoEndpoint;
     }
 
     public function getClientId(): string {
@@ -77,6 +80,10 @@ class OpenIdAuthenticatorConfiguration {
 
     public function getJwksUri(): string {
         return $this->jwksUri;
+    }
+
+    public function getUserInfoEndpoint(): string {
+        return $this->userInfoEndpoint;
     }
 
 }
