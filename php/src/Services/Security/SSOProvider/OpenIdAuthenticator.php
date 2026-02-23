@@ -162,6 +162,15 @@ class OpenIdAuthenticator {
         $accessToken = $body["access_token"] ?? null;
         $idToken = $body["id_token"] ?? null;
 
+        Logger::log("requestTokens BODY");
+        Logger::log($body);
+
+        Logger::log("requestTokens ACCESS TOKEN");
+        Logger::log($accessToken);
+
+        Logger::log("requestTokens ID TOKEN");
+        Logger::log($idToken);
+
         return [$idToken, $accessToken];
     }
 
