@@ -94,24 +94,42 @@ class OpenIdAuthenticator {
             throw new AccessDeniedException("Invalid state");
         }
 
-        try {
-            // 2. Exchange the Authorization Code for Tokens
-            [$idToken, $accessToken] = $this->requestTokens($code);
-            Logger::log("authenticate requestTokens");
-            Logger::log($idToken);
+        // 2. Exchange the Authorization Code for Tokens
+        [$idToken, $accessToken] = $this->requestTokens($code);
+        Logger::log("authenticate requestTokens");
+        Logger::log($idToken);
 
-            // 3. Validate the ID Token and get claims
-            $claims = $this->validateIdToken($idToken);
-            Logger::log("authenticate CLAIMS");
-            Logger::log($claims);
-        } catch (\Exception $e) {
-            Logger::log("authenticate EXCEPTION");
-            Logger::log($e);
+        // 3. Validate the ID Token and get claims
+        $claims = $this->validateIdToken($idToken);
+        Logger::log("authenticate CLAIMS");
+        Logger::log($claims);
+
+        // Check if we get back the email as part of the claims, otherwise we need to make another
+        // request to the userInfo endpoint to retrieve this.
+        if (property_exists($claims, "email") && $claims->email) {
+            return $claims->email;
+        } else if ($this->config->getUserInfoEndpoint()) {
+            $request = new Request(
+                $this->config->getUserInfoEndpoint(),
+                Request::METHOD_GET,
+                [],
+                null,
+                new Headers(["Authorization" => "Bearer $accessToken"])
+            );
+
+            $response = $this->requestDispatcher->dispatch($request);
+
+            if ($response->getStatusCode() !== 200) {
+                throw new \Exception("User info request failed");
+            }
+
+            $body = json_decode($response->getBody(), true);
+            Logger::log("userInfo BODY");
+            Logger::log($body);
+            return $body["email"] ?? null;
         }
 
-
-        return $claims ? $claims->email : null;
-
+        return null;
     }
 
     private function requestTokens(string $code): array {
