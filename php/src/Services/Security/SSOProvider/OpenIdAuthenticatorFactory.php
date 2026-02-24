@@ -76,7 +76,7 @@ class OpenIdAuthenticatorFactory implements AuthenticatorFactory {
             "$frontendUrl/sso/oidc/$providerKey",
             $oidcSettings["clientSecret"],
             $oidcSettings["jwksUri"],
-            $oidcSettings["userInfoEndpoint"] ?? null
+            $oidcSettings["userInfoEndpoint"] ?? ""
         );
 
         if (isset($oidcSettings["jwtAlg"])) {

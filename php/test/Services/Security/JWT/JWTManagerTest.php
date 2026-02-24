@@ -109,7 +109,8 @@ class JWTManagerTest extends TestCase {
             "https://token.test",
             "https://redirect.test",
             "test-client-secret",
-            "https://jwks.test"
+            "https://jwks.test",
+            "https://userinfo.test"
         );
 
         $manager = new JWTManager();
@@ -137,7 +138,8 @@ class JWTManagerTest extends TestCase {
             "https://token.test",
             "https://redirect.test",
             "test-client-secret",
-            "https://jwks.test"
+            "https://jwks.test",
+            "https://userinfo.test"
         );
 
         $manager = new JWTManager();
@@ -165,7 +167,8 @@ class JWTManagerTest extends TestCase {
             "https://token.test",
             "https://redirect.test",
             "test-client-secret",
-            "https://jwks.test"
+            "https://jwks.test",
+            "https://userinfo.test"
         );
 
         $manager = new JWTManager();
