@@ -124,6 +124,7 @@ class OpenIdAuthenticator {
             }
 
             $body = json_decode($response->getBody(), true);
+            $body = array_change_key_case($body, CASE_LOWER);
             Logger::log("userInfo BODY");
             Logger::log($body);
             return $body["email"] ?? null;
@@ -179,7 +180,9 @@ class OpenIdAuthenticator {
         $alg = $this->jwtManager->validateToken($idToken);
 
         // Decode token through JWT library and return claims
-        $claims = $this->jwtManager->decodeToken($idToken, $alg, $this->config);
+        $masterKey = Configuration::readParameter("sso.oidc.masterKey");
+        $clientSecret = $this->encryptionService->decrypt($masterKey, $this->config->getClientSecret());
+        $claims = $this->jwtManager->decodeToken($idToken, $alg, $this->config, $clientSecret);
 
         // Ensure that the claims returned match the expected provider and formats.
         if ($claims) {
