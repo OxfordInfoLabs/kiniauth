@@ -106,6 +106,8 @@ class OpenIdAuthenticator {
 
         // Check if we get back the email as part of the claims, otherwise we need to make another
         // request to the userInfo endpoint to retrieve this.
+        // We also need to map the claims object to use lower case keys.
+        $claims = (object)array_change_key_case((array)$claims, CASE_LOWER);
         if (property_exists($claims, "email") && $claims->email) {
             return $claims->email;
         } else if ($this->config->getUserInfoEndpoint()) {
