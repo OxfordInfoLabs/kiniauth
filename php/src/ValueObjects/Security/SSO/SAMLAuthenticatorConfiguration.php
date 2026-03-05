@@ -24,6 +24,7 @@ class SAMLAuthenticatorConfiguration {
             "sp" => $this->spConfig->returnSettings(),
             "idp" => $this->idpConfig->returnSettings(),
             'security' => [
+                'checkDestinationExists' => false,
                 'authnRequestsSigned' => true,
                 'wantAssertionsSigned' => true,
                 'wantMessagesSigned' => false,
