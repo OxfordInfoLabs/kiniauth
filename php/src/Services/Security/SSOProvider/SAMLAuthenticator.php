@@ -3,6 +3,7 @@
 namespace Kiniauth\Services\Security\SSOProvider;
 
 use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Core\Logging\Logger;
 use OneLogin\Saml2\Auth;
 use OneLogin\Saml2\Response;
 use OneLogin\Saml2\Settings;
@@ -19,7 +20,7 @@ class SAMLAuthenticator {
     }
 
     public function initialise() {
-        $samlReq = $this->auth->buildAuthnRequest($this->settings, false, false, true);
+        $samlReq = $this->auth->buildAuthnRequest($this->settings, true, false, true);
         $reqString = urlencode($samlReq->getRequest());
 
         $url = $this->auth->getSSOurl() . "&SAMLRequest=" . $reqString;
@@ -32,6 +33,7 @@ class SAMLAuthenticator {
         if ($response->isValid()) {
             return $response->getAttributes()["email"][0] ?? null;
         } else {
+            Logger::log($response->getError());
             throw new AccessDeniedException();
         }
     }
