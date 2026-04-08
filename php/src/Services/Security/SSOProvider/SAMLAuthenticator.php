@@ -30,30 +30,41 @@ class SAMLAuthenticator {
     }
 
     public function authenticate(mixed $data) {
-        $response = new Response($this->settings, $data["SAMLResponse"]);
+        $originalUri = $_SERVER['REQUEST_URI'] ?? '';
+        $originalScript = $_SERVER['SCRIPT_NAME'] ?? '';
 
-        // Set the incoming base URL to allow for proxying
-        $document = $response->document;
-        $destination = $document->documentElement->getAttribute('Destination');
+        try {
+            $response = new Response($this->settings, $data["SAMLResponse"]);
 
-        if (!empty($destination)) {
-            $parsed = parse_url($destination);
+            // Set the incoming base URL to allow for proxying
+            $document = $response->document;
+            $destination = $document->documentElement->getAttribute('Destination');
 
-            Utils::setSelfProtocol($parsed['scheme']);
-            Utils::setSelfHost($parsed['host']);
-            if (isset($parsed['port'])) {
-                Utils::setSelfPort($parsed['port']);
+            if (!empty($destination)) {
+                $parsed = parse_url($destination);
+
+                Utils::setSelfProtocol($parsed['scheme']);
+                Utils::setSelfHost($parsed['host']);
+                if (isset($parsed['port'])) {
+                    Utils::setSelfPort($parsed['port']);
+                }
+                Utils::setBaseURLPath($parsed['path']);
+                Utils::setSelfHost($parsed['host']);
+
+                $_SERVER['REQUEST_URI'] = $parsed['path'];
+                $_SERVER['SCRIPT_NAME'] = '';
             }
 
-            Utils::setBaseURLPath($parsed['path']);
-            Utils::setSelfHost($parsed['host']); // Re-confirm host
-        }
+            if ($response->isValid()) {
+                return $response->getAttributes()["email"][0] ?? null;
+            } else {
+                Logger::log($response->getError());
+                throw new AccessDeniedException();
+            }
 
-        if ($response->isValid()) {
-            return $response->getAttributes()["email"][0] ?? null;
-        } else {
-            Logger::log($response->getError());
-            throw new AccessDeniedException();
+        } finally {
+            $_SERVER['REQUEST_URI'] = $originalUri;
+            $_SERVER['SCRIPT_NAME'] = $originalScript;
         }
     }
 
