@@ -58,7 +58,8 @@ class SAMLAuthenticator {
             if ($response->isValid()) {
                 Logger::log("SAML Authentication Successful");
                 Logger::log($response->getAttributes());
-                return $response->getAttributes()["email"][0] ?? null;
+                Logger::log($response->getNameId());
+                return $response->getNameId() ?? null;
             } else {
                 Logger::log($response->getError());
                 throw new AccessDeniedException();
