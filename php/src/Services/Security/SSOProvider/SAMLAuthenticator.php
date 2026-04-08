@@ -48,7 +48,7 @@ class SAMLAuthenticator {
                 if (isset($parsed['port'])) {
                     Utils::setSelfPort($parsed['port']);
                 }
-                Utils::setBaseURLPath($parsed['path']);
+                Utils::setBaseURLPath('/');
                 Utils::setSelfHost($parsed['host']);
 
                 $_SERVER['REQUEST_URI'] = $parsed['path'];
