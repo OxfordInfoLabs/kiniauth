@@ -45,9 +45,14 @@ class SAMLAuthenticatorFactory implements AuthenticatorFactory {
     }
 
     private function getConfiguration(string $providerKey) {
+        $settingsService = Container::instance()->get(SettingsService::class);
+        $frontendUrl = $settingsService->getSettingValue("frontendURL");
+        $baseUrl = $frontendUrl . "/sso/saml/";
+
         return new SAMLAuthenticatorConfiguration(
             $this->getServiceProviderConfiguration($providerKey),
-            $this->getIdentityProviderConfiguration($providerKey)
+            $this->getIdentityProviderConfiguration($providerKey),
+            $baseUrl
         );
     }
 
