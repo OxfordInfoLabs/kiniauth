@@ -34,9 +34,19 @@ class SAMLAuthenticator {
 
         // Set the incoming base URL to allow for proxying
         $document = $response->document;
-        if ($document->documentElement->hasAttribute('Destination')) {
-            $destination = $document->documentElement->getAttribute('Destination');
-            Utils::setBaseURL($destination);
+        $destination = $document->documentElement->getAttribute('Destination');
+
+        if (!empty($destination)) {
+            $parsed = parse_url($destination);
+
+            Utils::setSelfProtocol($parsed['scheme']);
+            Utils::setSelfHost($parsed['host']);
+            if (isset($parsed['port'])) {
+                Utils::setSelfPort($parsed['port']);
+            }
+
+            Utils::setBaseURLPath($parsed['path']);
+            Utils::setSelfHost($parsed['host']); // Re-confirm host
         }
 
         if ($response->isValid()) {
