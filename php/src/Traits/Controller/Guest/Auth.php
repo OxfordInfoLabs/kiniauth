@@ -164,10 +164,12 @@ trait Auth {
      *
      * @param string $providerKey
      * @param mixed $data
-     * @return void
+     * @return string
      */
     public function authenticateSAML($providerKey, $data) {
         $this->authenticationService->authenticateBySSO($providerKey, $data, "saml");
+
+        return $this->authenticationService->generateSessionTransferToken();
     }
 
     /**
