@@ -136,4 +136,14 @@ class QueuedTaskService {
         }
     }
 
+    // task classes setter function (for testing only)
+    public function setTaskClasses($taskClasses) {
+        $this->taskClasses = $taskClasses;
+    }
+
+    // task classes clear function (for testing only)
+    public function clearTaskClasses() {
+        $this->taskClasses = [];
+    }
+
 }
