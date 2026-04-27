@@ -15,6 +15,11 @@ class AccountGroupDescriptor {
     private ?string $description;
 
     /**
+     * @var string
+     */
+    private ?string $type;
+
+    /**
      * @var int
      */
     private ?int $ownerAccountId;
@@ -22,11 +27,13 @@ class AccountGroupDescriptor {
     /**
      * @param string $name
      * @param string $description
+     * @param string $type
      * @param int $ownerAccountId
      */
-    public function __construct(?string $name = null, ?string $description = null, ?int $ownerAccountId = null) {
+    public function __construct(?string $name = null, ?string $description = null, ?string $type, ?int $ownerAccountId = null) {
         $this->name = $name;
         $this->description = $description;
+        $this->type = $type;
         $this->ownerAccountId = $ownerAccountId;
     }
 
@@ -58,6 +65,21 @@ class AccountGroupDescriptor {
      */
     public function setDescription(?string $description): void {
         $this->description = $description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): ?string {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     * @return void
+     */
+    public function setType(?string $type): void {
+        $this->type = $type;
     }
 
     /**

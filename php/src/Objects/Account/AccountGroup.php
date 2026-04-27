@@ -105,7 +105,7 @@ class AccountGroup extends ActiveRecord {
     /**
      * @return string
      */
-    public function getType(): string {
+    public function getType(): ?string {
         return $this->type;
     }
 
@@ -113,7 +113,7 @@ class AccountGroup extends ActiveRecord {
      * @param string $type
      * @return void
      */
-    public function setType(string $type): void {
+    public function setType(?string $type): void {
         $this->type = $type;
     }
 

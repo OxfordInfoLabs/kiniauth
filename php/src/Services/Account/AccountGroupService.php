@@ -114,6 +114,7 @@ class AccountGroupService {
         $accountGroup = new AccountGroup(
             $accountGroupDescriptor->getName(),
             $accountGroupDescriptor->getDescription(),
+            $accountGroupDescriptor->getType(),
             $accountId,
             [
                 new AccountGroupMember(null, $accountId)
