@@ -31,11 +31,6 @@ class AccountGroup extends ActiveRecord {
     private ?string $description;
 
     /**
-     * @var string
-     */
-    private ?string $type;
-
-    /**
      * @var int
      * @required
      */
@@ -51,15 +46,13 @@ class AccountGroup extends ActiveRecord {
     /**
      * @param string $name
      * @param string $description
-     * @param string $type
      * @param int $ownerAccountId
      * @param AccountGroupMember[] $accountGroupMembers
      */
-    public function __construct(?string $name = null, ?string $description = null, ?string $type = null, ?int $ownerAccountId = null, ?array $accountGroupMembers = [],
+    public function __construct(?string $name = null, ?string $description = null, ?int $ownerAccountId = null, ?array $accountGroupMembers = [],
                                 ?int    $accountGroupId = null) {
         $this->name = $name;
         $this->description = $description;
-        $this->type = $type;
         $this->ownerAccountId = $ownerAccountId;
         $this->accountGroupMembers = $accountGroupMembers;
         $this->accountGroupId = $accountGroupId;
@@ -100,21 +93,6 @@ class AccountGroup extends ActiveRecord {
      */
     public function setDescription(string $description): void {
         $this->description = $description;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType(): string {
-        return $this->type;
-    }
-
-    /**
-     * @param string $type
-     * @return void
-     */
-    public function setType(string $type): void {
-        $this->type = $type;
     }
 
     /**
