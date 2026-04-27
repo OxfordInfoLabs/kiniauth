@@ -2,6 +2,7 @@
   {
     "name": "First Account Group",
     "description": "description",
+    "type": "group",
     "ownerAccountId": 1,
     "accountGroupMembers": [
       {
@@ -15,6 +16,7 @@
   {
     "name": "Second Account Group",
     "description": "description 2",
+    "type": "group",
     "ownerAccountId": 2,
     "accountGroupMembers": [
       {
