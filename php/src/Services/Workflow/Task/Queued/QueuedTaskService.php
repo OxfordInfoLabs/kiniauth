@@ -3,6 +3,7 @@
 
 namespace Kiniauth\Services\Workflow\Task\Queued;
 
+use Exception;
 use Kiniauth\Exception\QueuedTask\NoQueuedTaskImplementationException;
 use Kiniauth\Services\Workflow\Task\Queued\Processor\QueuedTaskProcessor;
 use Kiniauth\ValueObjects\QueuedTask\QueueItem;
@@ -47,8 +48,8 @@ class QueuedTaskService {
 
 
     /**
-     * Queue a task for asynchronous processing using the default queue manager.  Returns the
-     * implementation specific identifier for the task.
+     * Queue a task for asynchronous processing using the default queue manager.
+     * Returns the implementation-specific identifier for the task.
      *
      * @param $queueName
      * @param $taskIdentifier
@@ -58,6 +59,7 @@ class QueuedTaskService {
      * @param integer $runOffsetSeconds
      *
      * @return string
+     * @throws Exception
      */
     public function queueTask($queueName, $taskIdentifier, $description, $configuration = [], $runDateTime = null, $runOffsetSeconds = null) {
 
@@ -72,7 +74,7 @@ class QueuedTaskService {
 
 
     /**
-     * List queued tasks
+     * List all queued tasks
      */
     public function listQueuedTasks($queueName) {
         return $this->queuedTaskProcessor->listQueuedTasks($queueName);
@@ -81,8 +83,11 @@ class QueuedTaskService {
     /**
      * Process a queued task using a passed identifier and optional configuration.
      *
+     * @param $queueName
      * @param $taskIdentifier
+     * @param $taskInstanceIdentifier
      * @param array $configuration
+     * @throws NoQueuedTaskImplementationException
      */
     public function processQueuedTask($queueName, $taskIdentifier, $taskInstanceIdentifier, $configuration = []) {
         $this->loadTaskClasses();
@@ -105,8 +110,8 @@ class QueuedTaskService {
     /**
      * Process the next queued task - this is where scheduling is manual (e.g. default task scheduler).
      *
-     * @param $taskIdentifier
-     * @param array $configuration
+     * @param $queueName
+     * @throws NoQueuedTaskImplementationException
      */
     public function processNextQueuedTask($queueName) {
         $tasks = $this->queuedTaskProcessor->listQueuedTasks($queueName);
@@ -134,20 +139,6 @@ class QueuedTaskService {
                 $this->taskClasses = array_merge($this->taskClasses, $config->getAllParameters());
             }
         }
-    }
-
-    /**
-     * task classes setter function (for testing only)
-     */
-    public function setTaskClasses($taskClasses): void {
-        $this->taskClasses = $taskClasses;
-    }
-
-    /**
-     * task classes clear function (for testing only)
-     */
-    public function clearTaskClasses(): void {
-        $this->taskClasses = [];
     }
 
 }
