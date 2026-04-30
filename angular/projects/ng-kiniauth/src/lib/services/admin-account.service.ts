@@ -23,8 +23,9 @@ export class AdminAccountService {
             });
     }
 
-    public searchForAccounts(filters?, limit?, offset?) {
-        return this.http.post(this.config.accessHttpURL + '/account/search?limit=' + limit + '&offset=' + offset, filters);
+    public searchForAccounts(filters?, ordering?, limit?, offset?) {
+        const payload = {filters, ordering};
+        return this.http.post(this.config.accessHttpURL + '/account/search?limit=' + limit + '&offset=' + offset, payload);
     }
 
     public searchForSubAccounts(searchString?, limit?, offset?) {
@@ -57,9 +58,7 @@ export class AdminAccountService {
 
     public suspendAccount(accountId, note) {
         return this.http.put(
-            this.config.accessHttpURL + '/account/' + accountId + '/suspend', {
-                params: {note}
-            })
+            this.config.accessHttpURL + '/account/' + accountId + '/suspend', JSON.stringify(note))
             .toPromise();
     }
 
@@ -84,9 +83,7 @@ export class AdminAccountService {
 
     public reactivateAccount(accountId, note) {
         return this.http.put(
-            this.config.accessHttpURL + '/account/' + accountId + '/reactivate', {
-                params: {note}
-            })
+            this.config.accessHttpURL + '/account/' + accountId + '/reactivate', JSON.stringify(note))
             .toPromise();
     }
 

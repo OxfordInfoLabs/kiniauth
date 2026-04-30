@@ -60,9 +60,7 @@ export class AccountService {
 
     public suspendAccount(accountId, note) {
         return this.http.put(
-            this.config.accessHttpURL + '/account/' + accountId + '/suspend', {
-                params: {note}
-            })
+            this.config.accessHttpURL + '/account/' + accountId + '/suspend', note)
             .toPromise();
     }
 
