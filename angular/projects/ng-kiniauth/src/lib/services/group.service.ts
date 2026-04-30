@@ -27,20 +27,20 @@ export class GroupService {
         return group;
     }
 
-    public async listAccountGroups() {
+    public async listAccountGroups(type: string = 'group') {
         const session = this.authService.sessionData.getValue();
         const accountGroups = await this.http.get(this.config.accessHttpURL + '/accountGroup/list').toPromise();
         return _(accountGroups || {}).values().map((group: any) => {
             group.owner = group.ownerAccountId === session.account.accountId;
             group.feeds = [];
             return group;
-        }).valueOf();
+        }).filter({type}).valueOf();
     }
 
-    public createAccountGroup(name: string, description: string) {
+    public createAccountGroup(name: string, description: string, type: string = 'group') {
         const session = this.authService.sessionData.getValue();
         return this.http.post(this.config.accessHttpURL + '/accountGroup/new', {
-            name, description, ownerAccountId: session.account.accountId
+            name, description, ownerAccountId: session.account.accountId, type
         }).toPromise();
     }
 
