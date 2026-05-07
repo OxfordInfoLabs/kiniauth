@@ -281,6 +281,109 @@ class AccountServiceTest extends TestBase {
 
     }
 
+    public function testCanSetFutureExpiryOnAccount() {
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $accountId = $this->accountService->createAccount("Playpen Account");
+        $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($accountId)->getStatus());
+
+        $this->accountService->setAccountExpiryDate($accountId, "2030-01-01 07:08:01");
+        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2030-01-01 07:08:01"), Account::fetch($accountId)->getExpiryDate());
+    }
+
+    public function testIfAccountAlreadyExpiredAndFutureExpiryDateSetDateIsUpdatedAndAccountIsActivated(){
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $accountId = $this->accountService->createAccount("Playpen Account");
+        $account = Account::fetch($accountId);
+        $account->setStatus(Account::STATUS_EXPIRED);
+        $account->save();
+
+        $this->assertEquals(Account::STATUS_EXPIRED, Account::fetch($accountId)->getStatus());
+
+        $this->accountService->setAccountExpiryDate($accountId, "2030-01-01 07:08:01");
+
+        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2030-01-01 07:08:01"), Account::fetch($accountId)->getExpiryDate());
+        $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($accountId)->getStatus());
+
+
+    }
+
+    public function testIfAccountAlreadyExpiredAndHistoricalExpiryDateSetDateIsUpdatedButAccountIsNotActivated(){
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $accountId = $this->accountService->createAccount("Playpen Account");
+        $account = Account::fetch($accountId);
+        $account->setStatus(Account::STATUS_EXPIRED);
+        $account->save();
+
+        $this->assertEquals(Account::STATUS_EXPIRED, Account::fetch($accountId)->getStatus());
+
+        $this->accountService->setAccountExpiryDate($accountId, "2020-01-01 07:08:01");
+
+        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2020-01-01 07:08:01"), Account::fetch($accountId)->getExpiryDate());
+        $this->assertEquals(Account::STATUS_EXPIRED, Account::fetch($accountId)->getStatus());
+
+    }
+
+    public function testIfAccountExpiredAndExpiryDateSetToNullAccountIsActivatedAndExpiryDateRemoved(){
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $accountId = $this->accountService->createAccount("Playpen Account");
+        $account = Account::fetch($accountId);
+        $account->setStatus(Account::STATUS_EXPIRED);
+        $account->setExpiryDate(new \DateTime());
+        $account->save();
+
+        $this->assertEquals(Account::STATUS_EXPIRED, Account::fetch($accountId)->getStatus());
+
+        $this->accountService->setAccountExpiryDate($accountId, null);
+
+        $this->assertNull(Account::fetch($accountId)->getExpiryDate());
+        $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($accountId)->getStatus());
+
+    }
+
+
+    public function testCanProcessAccountExpiries(){
+
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        $account1Id = $this->accountService->createAccount("Always Active");
+        $account2Id = $this->accountService->createAccount("Still Active");
+        $account3Id = $this->accountService->createAccount("Should be expired");
+        $account4Id = $this->accountService->createAccount("Should be expired but am suspended");
+
+        $account2 = Account::fetch($account2Id);
+        $account2->setExpiryDate(new \DateTime("2030-01-01 07:08:01"));
+        $account2->save();
+
+        $account3 = Account::fetch($account3Id);
+        $account3->setExpiryDate(new \DateTime("2020-01-01 07:08:01"));
+        $account3->save();
+
+        $account4 = Account::fetch($account4Id);
+        $account4->setStatus(Account::STATUS_SUSPENDED);
+        $account4->setExpiryDate(new \DateTime("2020-01-01 07:08:01"));
+        $account4->save();
+
+        $this->accountService->processAccountExpiries();
+
+        $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($account1Id)->getStatus());
+        $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($account2Id)->getStatus());
+        $this->assertEquals(Account::STATUS_EXPIRED, Account::fetch($account3Id)->getStatus());
+        $this->assertEquals(Account::STATUS_SUSPENDED, Account::fetch($account4Id)->getStatus());
+
+
+
+
+
+
+    }
+
 
     public function testCannotInviteUsersToJoinAccountIfNotLoggedInAsSuperUserForAccount() {
 

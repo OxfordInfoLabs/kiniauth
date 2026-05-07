@@ -33,6 +33,10 @@ class Account extends AccountSummary {
      */
     protected $createdDate;
 
+    /**
+     * @var \DateTime
+     */
+    protected $expiryDate;
 
     /**
      * @var mixed
@@ -155,6 +159,14 @@ class Account extends AccountSummary {
      */
     public function getCreatedDate() {
         return $this->createdDate;
+    }
+
+    public function getExpiryDate(){
+        return $this->expiryDate;
+    }
+
+    public function setExpiryDate($expiryDate): void {
+        $this->expiryDate = $expiryDate;
     }
 
     /**

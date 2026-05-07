@@ -311,6 +311,40 @@ class AccountService {
 
     }
 
+    /** Add an expiry date to the Account
+     *
+     */
+    public function setAccountExpiryDate( $accountId, $expiryDate) {
+        $dateNow = new \DateTime();
+        if ($expiryDate !== null) {
+            $newExpiryDate = date_create_from_format("Y-m-d H:i:s", $expiryDate);
+        } else {
+            $newExpiryDate = null;
+        }
+
+        $account = Account::fetch($accountId);
+        if (($account->getStatus() == Account::STATUS_EXPIRED) && (!$newExpiryDate || ($newExpiryDate > $dateNow))) {
+            $account->setStatus(Account::STATUS_ACTIVE);
+        }
+
+        $account->setExpiryDate($newExpiryDate);
+        $account->save();
+    }
+
+
+    /**
+     * Process all accounts which need to be expired based on the expiry date.
+     *
+     * @return void
+     */
+    public function processAccountExpiries(){
+        $accounts = Account::filter("WHERE expiryDate <= NOW() AND status = ?", Account::STATUS_ACTIVE);
+        foreach ($accounts as $account) {
+            $account->setStatus(Account::STATUS_EXPIRED);
+            $account->save();
+        }
+    }
+
 
     /**
      * Invite a user to join an account.  In order to do this the user must be a super user for the account.

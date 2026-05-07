@@ -60,6 +60,7 @@ class AccountSummary extends ActiveRecord {
     const STATUS_PENDING = "PENDING";
     const STATUS_ACTIVE = "ACTIVE";
     const STATUS_SUSPENDED = "SUSPENDED";
+    const STATUS_EXPIRED = "EXPIRED";
 
 
     /**
