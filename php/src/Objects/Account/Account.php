@@ -161,10 +161,17 @@ class Account extends AccountSummary {
         return $this->createdDate;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getExpiryDate(){
         return $this->expiryDate;
     }
 
+    /**
+     * @param \DateTime $expiryDate
+     * @return void
+     */
     public function setExpiryDate($expiryDate): void {
         $this->expiryDate = $expiryDate;
     }
