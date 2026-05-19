@@ -317,14 +317,19 @@ class AccountService {
     public function setAccountExpiryDate( $accountId, $expiryDate) {
         $dateNow = new \DateTime();
         if ($expiryDate !== null) {
-            $newExpiryDate = date_create_from_format("Y-m-d H:i:s", $expiryDate);
+            $newExpiryDate = date_create_from_format("Y-m-d", $expiryDate);
+            $newExpiryDate->setTime(00, 00, 00);
         } else {
             $newExpiryDate = null;
         }
 
+        /** @var Account $account */
         $account = Account::fetch($accountId);
         if (($account->getStatus() == Account::STATUS_EXPIRED) && (!$newExpiryDate || ($newExpiryDate > $dateNow))) {
             $account->setStatus(Account::STATUS_ACTIVE);
+        }
+        else if (($account->getStatus() == Account::STATUS_ACTIVE) && $newExpiryDate && ($newExpiryDate <= $dateNow)){
+            $account->setStatus(Account::STATUS_EXPIRED);
         }
 
         $account->setExpiryDate($newExpiryDate);
