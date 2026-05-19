@@ -169,7 +169,7 @@ class Account extends AccountSummary {
     }
 
     /**
-     * @param \DateTime $expiryDate
+     * @param \DateTime|null $expiryDate
      * @return void
      */
     public function setExpiryDate($expiryDate): void {

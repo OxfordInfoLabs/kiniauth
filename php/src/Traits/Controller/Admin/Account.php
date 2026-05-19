@@ -70,6 +70,18 @@ trait Account {
         $this->accountService->changeAccountName($newAccountName, null, $accountId);
     }
 
+    /**
+     * Update an account expiry date
+     *
+     * @http PUT /$accountId/expiryDate
+     *
+     * @param int $accountId
+     * @param array $payload
+     */
+    public function updateAccountExpiryDate($accountId, $payload) {
+        $this->accountService->setAccountExpiryDate($accountId, $payload["newDate"]);
+    }
+
 
     /**
      * Suspend an account
