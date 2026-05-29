@@ -15,6 +15,7 @@
     "oxil/kinikit-mvc": "dev-master",
     "oxil/kinikit-persistence": "dev-master",
     "google/recaptcha": "^1.2",
+    "google/cloud-tasks": "^2.2.0",
     "onelogin/php-saml": "4.3.1",
     "firebase/php-jwt": "^6.11"
   },
