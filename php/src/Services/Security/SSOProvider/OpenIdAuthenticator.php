@@ -94,24 +94,47 @@ class OpenIdAuthenticator {
             throw new AccessDeniedException("Invalid state");
         }
 
-        try {
-            // 2. Exchange the Authorization Code for Tokens
-            [$idToken, $accessToken] = $this->requestTokens($code);
-            Logger::log("authenticate requestTokens");
-            Logger::log($idToken);
+        // 2. Exchange the Authorization Code for Tokens
+        [$idToken, $accessToken] = $this->requestTokens($code);
+        Logger::log("authenticate requestTokens");
+        Logger::log($idToken);
 
-            // 3. Validate the ID Token and get claims
-            $claims = $this->validateIdToken($idToken);
-            Logger::log("authenticate CLAIMS");
-            Logger::log($claims);
-        } catch (\Exception $e) {
-            Logger::log("authenticate EXCEPTION");
-            Logger::log($e);
+        // 3. Validate the ID Token and get claims
+        $claims = $this->validateIdToken($idToken);
+        Logger::log("authenticate CLAIMS");
+        Logger::log((array)$claims);
+
+        // Check if we get back the email as part of the claims, otherwise we need to make another
+        // request to the userInfo endpoint to retrieve this.
+        // We also need to map the claims object to use lower case keys.
+        $claims = (object)array_change_key_case((array)$claims, CASE_LOWER);
+        if (property_exists($claims, "email") && $claims->email) {
+            Logger::log("authenticate EMAIL");
+            Logger::log($claims->email);
+            return $claims->email;
+        } else if ($this->config->getUserInfoEndpoint()) {
+            $request = new Request(
+                $this->config->getUserInfoEndpoint(),
+                Request::METHOD_GET,
+                [],
+                null,
+                new Headers(["Authorization" => "Bearer $accessToken"])
+            );
+
+            $response = $this->requestDispatcher->dispatch($request);
+
+            if ($response->getStatusCode() !== 200) {
+                throw new \Exception("User info request failed");
+            }
+
+            $body = json_decode($response->getBody(), true);
+            $body = array_change_key_case($body, CASE_LOWER);
+            Logger::log("userInfo BODY");
+            Logger::log($body);
+            return $body["email"] ?? null;
         }
 
-
-        return $claims ? $claims->email : null;
-
+        return null;
     }
 
     private function requestTokens(string $code): array {
@@ -144,6 +167,15 @@ class OpenIdAuthenticator {
         $accessToken = $body["access_token"] ?? null;
         $idToken = $body["id_token"] ?? null;
 
+        Logger::log("requestTokens BODY");
+        Logger::log($body);
+
+        Logger::log("requestTokens ACCESS TOKEN");
+        Logger::log($accessToken);
+
+        Logger::log("requestTokens ID TOKEN");
+        Logger::log($idToken);
+
         return [$idToken, $accessToken];
     }
 
@@ -152,7 +184,9 @@ class OpenIdAuthenticator {
         $alg = $this->jwtManager->validateToken($idToken);
 
         // Decode token through JWT library and return claims
-        $claims = $this->jwtManager->decodeToken($idToken, $alg, $this->config);
+        $masterKey = Configuration::readParameter("sso.oidc.masterKey");
+        $clientSecret = $this->encryptionService->decrypt($masterKey, $this->config->getClientSecret());
+        $claims = $this->jwtManager->decodeToken($idToken, $alg, $this->config, $clientSecret);
 
         // Ensure that the claims returned match the expected provider and formats.
         if ($claims) {

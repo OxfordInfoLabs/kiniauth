@@ -44,7 +44,7 @@ class JWTManager {
      * @return \stdClass|null
      * @throws \Exception
      */
-    public function decodeToken(string $idToken, string $alg, OpenIdAuthenticatorConfiguration $config): \stdClass|null {
+    public function decodeToken(string $idToken, string $alg, OpenIdAuthenticatorConfiguration $config, string $clientSecret): \stdClass|null {
         $claims = null;
 
         // Fetch the correct key based on the algorithm type
@@ -59,7 +59,7 @@ class JWTManager {
 
         if (str_starts_with($alg, 'HS')) {
             // Symmetric: Use the Client Secret
-            $key = new Key($config->getClientSecret(), $alg);
+            $key = new Key($clientSecret, $alg);
             $claims = JWT::decode($idToken, $key);
         }
 

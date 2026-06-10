@@ -8,22 +8,27 @@ class SAMLAuthenticatorConfiguration {
 
     private SAMLIdentityProviderConfiguration $idpConfig;
 
+    private string $baseUrl;
+
     /**
      * @param SAMLServiceProviderConfiguration $spConfig
      * @param SAMLIdentityProviderConfiguration $idpConfig
      */
-    public function __construct(SAMLServiceProviderConfiguration $spConfig, SAMLIdentityProviderConfiguration $idpConfig) {
+    public function __construct(SAMLServiceProviderConfiguration $spConfig, SAMLIdentityProviderConfiguration $idpConfig, string $baseUrl) {
         $this->spConfig = $spConfig;
         $this->idpConfig = $idpConfig;
+        $this->baseUrl = $baseUrl;
     }
 
     public function returnSettings(): array {
         return [
             "strict" => true,
             "debug" => false,
+            "baseurl" => $this->baseUrl,
             "sp" => $this->spConfig->returnSettings(),
             "idp" => $this->idpConfig->returnSettings(),
             'security' => [
+                'checkDestinationExists' => true,
                 'authnRequestsSigned' => true,
                 'wantAssertionsSigned' => true,
                 'wantMessagesSigned' => false,

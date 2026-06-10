@@ -89,6 +89,7 @@ class AccountGroupServiceTest extends TestBase {
             new AccountGroupDescriptor(
                 "New Account Group",
                 "bestest account group",
+                "group",
                 1
             )
         );
@@ -98,6 +99,7 @@ class AccountGroupServiceTest extends TestBase {
 
         $this->assertEquals("New Account Group", $accountGroup->getName());
         $this->assertEquals("bestest account group", $accountGroup->getDescription());
+        $this->assertEquals("group", $accountGroup->getType());
         $this->assertEquals(1, $accountGroup->getOwnerAccountId());
 
         // Check we are in the group
@@ -239,6 +241,7 @@ class AccountGroupServiceTest extends TestBase {
             new AccountGroupDescriptor(
                 "Account Group 1",
                 "First group",
+                "group",
                 1
             )
         );
@@ -246,6 +249,7 @@ class AccountGroupServiceTest extends TestBase {
         $accountGroupId2 = $this->accountGroupService->createAccountGroup(
             new AccountGroupDescriptor(
                 "Account Group 2",
+                "group",
                 "Second group",
                 1
             )
@@ -254,6 +258,7 @@ class AccountGroupServiceTest extends TestBase {
         $accountGroupId3 = $this->accountGroupService->createAccountGroup(
             new AccountGroupDescriptor(
                 "Account Group 3",
+                "group",
                 "Third group",
                 1
             )

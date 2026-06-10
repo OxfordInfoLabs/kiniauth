@@ -79,8 +79,9 @@ export class AuthenticationService {
      * @param state string
      * @param authKey string
      * @param data any
+     * @param tempId string
      */
-    public loginSSO(providerKey: string, code: string, state?: string, authKey?: string, data?: any) {
+    public async loginSSO(providerKey: string, code: string, state?: string, authKey?: string, data?: any, tempId?: string) {
         if (!authKey) {
             return this.http.post(this.config.guestHttpURL + '/auth/sso/' + providerKey, JSON.stringify(code)).toPromise();
         }
@@ -89,8 +90,12 @@ export class AuthenticationService {
             return this.http.get(this.config.guestHttpURL + '/auth/oidc/' + providerKey, {
                 params: {code, state}
             }).toPromise();
-        } else if (authKey === 'saml') {
-            return this.http.post(this.config.guestHttpURL + '/auth/saml/' + providerKey, data).toPromise();
+        } else if (authKey === 'saml' && tempId) {
+            const samlCompleteURL = (this.config.appURL || window.location.origin) + '/api/saml-complete?tempId=' + tempId;
+            const sessionTransfer: any = await this.http.get(samlCompleteURL).toPromise();
+            const transferToken = sessionTransfer.transfer;
+
+            return this.sessionTransfer(transferToken);
         }
 
         return null;

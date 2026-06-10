@@ -143,4 +143,5 @@ export class NgKiniAuthModule {
 export class KiniAuthModuleConfig {
     guestHttpURL: string;
     accessHttpURL: string;
+    appURL?: string;
 }
