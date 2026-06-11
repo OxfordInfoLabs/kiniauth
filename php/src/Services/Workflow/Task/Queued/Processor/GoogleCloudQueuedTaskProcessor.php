@@ -48,6 +48,7 @@ class GoogleCloudQueuedTaskProcessor implements QueuedTaskProcessor {
         $this->projectId = Configuration::readParameter("gcloud.project.id");
         $this->region = Configuration::readParameter("gcloud.region");
 
+        Logger::log("instantiating cloud tasks client...");
         $this->cloudTasksClient = new CloudTasksClient();
     }
 
