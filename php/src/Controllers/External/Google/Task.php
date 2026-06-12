@@ -6,10 +6,6 @@ use Kiniauth\Exception\QueuedTask\NoQueuedTaskImplementationException;
 use Kinikit\Core\Configuration\ConfigFile;
 use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
-use Kinikit\Core\Logging\Logger;
-use Kinikit\MVC\Request\Request;
-use Kinikit\MVC\Response\JSONResponse;
-use Kinikit\MVC\Response\Response;
 
 class Task {
 
@@ -40,9 +36,7 @@ class Task {
      * @throws NoQueuedTaskImplementationException
      */
     public function processTask($payload): void {
-        Logger::log("Task Endpoint Reached");
         $this->loadTaskClasses();
-        Logger::log($this->taskClasses);
 
         $taskIdentifier = $payload["taskIdentifier"];
         $taskConfiguration = $payload["configuration"];

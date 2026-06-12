@@ -12,7 +12,6 @@ use Google\Cloud\Tasks\V2\Task;
 use Google\Protobuf\Timestamp;
 use Kiniauth\ValueObjects\QueuedTask\QueueItem;
 use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\Logging\Logger;
 
 /**
  * Task processor using the Google Cloud Task Queue
@@ -48,7 +47,6 @@ class GoogleCloudQueuedTaskProcessor implements QueuedTaskProcessor {
         $this->projectId = Configuration::readParameter("gcloud.project.id");
         $this->region = Configuration::readParameter("gcloud.region");
 
-        Logger::log("instantiating cloud tasks client...");
         $this->cloudTasksClient = new CloudTasksClient();
     }
 
@@ -91,9 +89,7 @@ class GoogleCloudQueuedTaskProcessor implements QueuedTaskProcessor {
         $createTaskRequest->setParent($queue);
         $createTaskRequest->setTask($task);
 
-        Logger::log("Creating Task...");
         $task = $this->cloudTasksClient->createTask($createTaskRequest);
-        Logger::log("Task {$task->getName()} created!");
 
         return $task->getName();
     }
