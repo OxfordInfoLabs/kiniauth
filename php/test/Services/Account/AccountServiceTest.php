@@ -848,13 +848,55 @@ class AccountServiceTest extends TestBase {
 
         $accountCSVProfileSummary = new AccountCSVProfileSummary(["signal" => "hello"]);
 
-        $this->accountService->saveAccountCsvProfile($accountCSVProfileSummary);
+        // save the profile summary
+        $id = $this->accountService->saveAccountCsvProfile($accountCSVProfileSummary);
 
         // retrieve the saved CSV profile
-        $accountCSVProfileMatch = $this->accountService->getAccountCsvProfile();
+        $accountCSVProfileMatch = $this->accountService->getAccountCsvProfileById($id);
 
-        $this->assertCount(1, $accountCSVProfileMatch);
-        $this->assertEquals(["signal" => "hello"], $accountCSVProfileMatch[0]->getMapping());
+        $this->assertEquals(["signal" => "hello"], $accountCSVProfileMatch->getMapping());
+    }
+
+    public function testCanRetrieveMultipleAccountCSVProfileSummaries() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $accountCSVProfileSummaries = [
+            new AccountCSVProfileSummary(["signal" => "hello"]),
+            new AccountCSVProfileSummary(["signal" => "world!"]),
+            new AccountCSVProfileSummary(["signal" => "banana"])
+        ];
+
+        // save the profile summary
+        for ($i = 0; $i < sizeof($accountCSVProfileSummaries); $i++) {
+            $this->accountService->saveAccountCsvProfile($accountCSVProfileSummaries[$i]);
+        }
+
+        // retrieve all the saved CSV profile summaries
+        $accountCSVProfileList = $this->accountService->listAccountCsvProfiles(null, 1);
+
+        for ($i = 0; $i < sizeof($accountCSVProfileSummaries); $i++) {
+            $this->assertEquals($accountCSVProfileList[$i]->getId(), $i+1);
+            $this->assertEquals($accountCSVProfileList[$i]->getMapping(), $accountCSVProfileSummaries[$i]->getMapping());
+        }
+    }
+
+    public function testCanDeleteAccountCSVProfile() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $accountCSVProfileSummary = new AccountCSVProfileSummary(["signal" => "hello"]);
+
+        // save the profile summary
+        $id = $this->accountService->saveAccountCsvProfile($accountCSVProfileSummary);
+
+        // delete the saved CSV profile
+        $this->accountService->deleteAccountCsvProfile($id);
+
+        // assert that the profile is deleted
+        $this->expectException(ObjectNotFoundException::class);
+
+        $this->accountService->getAccountCsvProfileById($id);
     }
 
 }

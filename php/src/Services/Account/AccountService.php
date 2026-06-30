@@ -680,22 +680,43 @@ class AccountService {
 
 
     /**
-     * Get an account csv profile for a given account
+     * Get an account csv profile by id
      *
-     * @param $accountId
+     * @param $id
      *
-     * @return AccountCSVProfileSummary[]
-     *
-     * @throws ObjectNotFoundException
+     * @return AccountCSVProfile
      */
-    public function getAccountCsvProfile($accountId = Account::LOGGED_IN_ACCOUNT): array {
-        $matches = AccountCSVProfile::filter("WHERE accountId = ?", $accountId);
+    public function getAccountCsvProfileById($id): AccountCSVProfile {
+        return AccountCSVProfile::fetch($id);
+    }
 
-        if (sizeof($matches)) {
-            return $matches;
-        } else {
-            throw new ObjectNotFoundException(AccountCSVProfile::class, $accountId);
+    /**
+     * List all account csv profiles for a given project / account
+     *
+     * @param ?string $projectKey
+     * @param $accountId
+     */
+    public function listAccountCsvProfiles(?string $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT): array {
+
+        $whereClauses = [];
+        $params = [];
+
+        if ($accountId) {
+            $whereClauses[] = "accountId = ?";
+            $params[] = $accountId;
         }
+
+        if ($projectKey) {
+            $whereClauses[] = "projectKey = ?";
+            $params[] = $projectKey;
+        }
+
+        $query = (sizeof($whereClauses) ? "WHERE " : "") . join(" AND ", $whereClauses) . " ORDER BY id";
+
+        $results = AccountCSVProfile::filter($query, $params);
+        return array_map(function ($item) {
+            return $item->returnSummary();
+        }, $results);
     }
 
 
@@ -706,12 +727,25 @@ class AccountService {
      * @param $accountId
      * @param $projectKey
      *
+     * @return int
+     */
+    public function saveAccountCsvProfile(AccountCSVProfileSummary $summary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT): int {
+        $accountCsvProfile = new AccountCSVProfile($summary, $projectKey, $accountId);
+        $accountCsvProfile->save();
+
+        return $accountCsvProfile->getId();
+    }
+
+    /**
+     * Delete an account csv profile
+     *
+     * @param $id
+     *
      * @return void
      */
-    public function saveAccountCsvProfile(AccountCSVProfileSummary $summary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT): void {
-        $accountCsvProfile = new AccountCSVProfile($summary, $projectKey, $accountId);
-
-        $accountCsvProfile->save();
+    public function deleteAccountCsvProfile($id): void {
+        $accountCsvProfile = $this->getAccountCsvProfileById($id);
+        $accountCsvProfile->remove();
     }
 
 

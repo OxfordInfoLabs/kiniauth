@@ -10,6 +10,13 @@ use Kinikit\Persistence\ORM\ActiveRecord;
 class AccountCSVProfileSummary extends ActiveRecord {
 
     /**
+     * Unique primary key
+     *
+     * @autoIncrement
+     */
+    protected $id;
+
+    /**
      * Array of fields to map to
      *
      * @var array
@@ -21,9 +28,18 @@ class AccountCSVProfileSummary extends ActiveRecord {
      * AccountCSVProfileSummary constructor.
      *
      * @param array $mapping
+     * @param ?int $id
      */
-    public function __construct(array $mapping) {
+    public function __construct($mapping, $id = null) {
         $this->mapping = $mapping;
+        $this->id = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): ?int {
+        return $this->id;
     }
 
     /**

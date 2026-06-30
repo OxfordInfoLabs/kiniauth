@@ -20,7 +20,10 @@ class AccountCSVProfile extends AccountCSVProfileSummary {
      */
     public function __construct($accountCSVProfileSummary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT) {
         if ($accountCSVProfileSummary) {
-            parent::__construct($accountCSVProfileSummary->getMapping());
+            parent::__construct(
+                $accountCSVProfileSummary->getMapping(),
+                $accountCSVProfileSummary->getId()
+            );
         }
         $this->projectKey = $projectKey;
         $this->accountId = $accountId;
@@ -30,7 +33,10 @@ class AccountCSVProfile extends AccountCSVProfileSummary {
      * Return a summary object
      */
     public function returnSummary(): AccountCSVProfileSummary {
-        return new AccountCSVProfileSummary($this->getMapping());
+        return new AccountCSVProfileSummary(
+            $this->getMapping(),
+            $this->getId()
+        );
     }
 
 }

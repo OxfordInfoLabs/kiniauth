@@ -2,6 +2,7 @@
 
 namespace Kiniauth\Traits\Controller\Account;
 
+use Kiniauth\Objects\Account\AccountCSVProfileSummary;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Application\Session;
@@ -288,5 +289,50 @@ trait Account {
     public function revokeAccountInvitation($emailAddress) {
         $this->accountService->revokeActiveAccountInvitationEmail($emailAddress);
     }
+
+    /**
+     * Get all account csv profiles for a given account
+     *
+     * @http GET /csvprofile
+     *
+     * @param $accountId
+     * @param ?string $projectKey
+     *
+     * @return AccountCSVProfileSummary[]
+     */
+    public function getAllAccountCSVProfiles($accountId, $projectKey = null) {
+        return $this->accountService->listAccountCsvProfiles($projectKey, $accountId);
+    }
+
+    /**
+     * Save a new account csv profile
+     *
+     * @http POST /csvprofile
+     *
+     * @param $mapping
+     * @param $accountId
+     * @param ?string $projectKey
+     *
+     * @return void
+     */
+    public function saveAccountCSVProfile($mapping, $accountId, $projectKey = null): void {
+        $newAccountCsvProfileSummary = new AccountCSVProfileSummary($mapping);
+
+        $this->accountService->saveAccountCSVProfile($newAccountCsvProfileSummary, $projectKey, $accountId);
+    }
+
+    /**
+     * Delete an account csv profile
+     *
+     * @http DELETE /csvprofile
+     *
+     * @param $id
+     *
+     * @return void
+     */
+    public function deleteAccountCSVProfile($id): void {
+        $this->accountService->deleteAccountCSVProfile($id);
+    }
+
 
 }
