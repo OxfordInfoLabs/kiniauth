@@ -6,6 +6,8 @@ namespace Kiniauth\Test\Services\Account;
 use Kiniauth\Exception\Security\InvalidUserEmailDomainException;
 use Kiniauth\Exception\Security\UserAlreadyAttachedToAccountException;
 use Kiniauth\Objects\Account\Account;
+use Kiniauth\Objects\Account\AccountCSVProfile;
+use Kiniauth\Objects\Account\AccountCSVProfileSummary;
 use Kiniauth\Objects\Account\AccountSummary;
 use Kiniauth\Objects\Application\Activity;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
@@ -835,6 +837,24 @@ class AccountServiceTest extends TestBase {
         $account3 = $this->accountService->getAccountByExternalIdentifier("SHAREWITHME3");
         $this->assertEquals(Account::fetch(3), $account3);
 
+    }
+
+    /**
+     * @throws ObjectNotFoundException
+     */
+    public function testCanSaveAndRetrieveAccountCSVProfileSummary() {
+
+        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+
+        $accountCSVProfileSummary = new AccountCSVProfileSummary(["signal" => "hello"]);
+
+        $this->accountService->saveAccountCsvProfile($accountCSVProfileSummary);
+
+        // retrieve the saved CSV profile
+        $accountCSVProfileMatch = $this->accountService->getAccountCsvProfile();
+
+        $this->assertCount(1, $accountCSVProfileMatch);
+        $this->assertEquals(["signal" => "hello"], $accountCSVProfileMatch[0]->getMapping());
     }
 
 }

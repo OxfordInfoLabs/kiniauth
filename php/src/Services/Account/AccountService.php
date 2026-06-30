@@ -9,6 +9,8 @@ use Kiniauth\Exception\Security\UserAlreadyAttachedToAccountException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSecurityDomain;
 use Kiniauth\Objects\Account\AccountSummary;
+use Kiniauth\Objects\Account\AccountCSVProfile;
+use Kiniauth\Objects\Account\AccountCSVProfileSummary;
 use Kiniauth\Objects\Communication\Email\AccountTemplatedEmail;
 use Kiniauth\Objects\Communication\Email\UserTemplatedEmail;
 use Kiniauth\Objects\Security\Role;
@@ -674,6 +676,42 @@ class AccountService {
         } else {
             throw new ObjectNotFoundException(Account::class, $externalIdentifier);
         }
+    }
+
+
+    /**
+     * Get an account csv profile for a given account
+     *
+     * @param $accountId
+     *
+     * @return AccountCSVProfileSummary[]
+     *
+     * @throws ObjectNotFoundException
+     */
+    public function getAccountCsvProfile($accountId = Account::LOGGED_IN_ACCOUNT): array {
+        $matches = AccountCSVProfile::filter("WHERE accountId = ?", $accountId);
+
+        if (sizeof($matches)) {
+            return $matches;
+        } else {
+            throw new ObjectNotFoundException(AccountCSVProfile::class, $accountId);
+        }
+    }
+
+
+    /**
+     * Save an account csv profile
+     *
+     * @param AccountCSVProfileSummary $summary
+     * @param $accountId
+     * @param $projectKey
+     *
+     * @return void
+     */
+    public function saveAccountCsvProfile(AccountCSVProfileSummary $summary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT): void {
+        $accountCsvProfile = new AccountCSVProfile($summary, $projectKey, $accountId);
+
+        $accountCsvProfile->save();
     }
 
 
