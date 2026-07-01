@@ -686,7 +686,7 @@ class AccountService {
      *
      * @return AccountCSVProfile
      */
-    public function getAccountCsvProfileById($id): AccountCSVProfile {
+    public function getAccountCSVProfileById($id): AccountCSVProfile {
         return AccountCSVProfile::fetch($id);
     }
 
@@ -696,7 +696,7 @@ class AccountService {
      * @param ?string $projectKey
      * @param $accountId
      */
-    public function listAccountCsvProfiles(?string $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT): array {
+    public function listAccountCSVProfiles(?string $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT): array {
 
         $whereClauses = [];
         $params = [];
@@ -729,7 +729,7 @@ class AccountService {
      *
      * @return int
      */
-    public function saveAccountCsvProfile(AccountCSVProfileSummary $summary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT): int {
+    public function saveAccountCSVProfile(AccountCSVProfileSummary $summary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT): int {
         $accountCsvProfile = new AccountCSVProfile($summary, $projectKey, $accountId);
         $accountCsvProfile->save();
 
@@ -743,10 +743,21 @@ class AccountService {
      *
      * @return void
      */
-    public function deleteAccountCsvProfile($id): void {
+    public function deleteAccountCSVProfile($id): void {
         $accountCsvProfile = $this->getAccountCsvProfileById($id);
         $accountCsvProfile->remove();
     }
 
+    /**
+     * Delete all account csv profiles (For testing purposes only)
+     *
+     * @return void
+     */
+    public function deleteAllAccountCSVProfiles(): void {
+        $accountCsvProfiles = AccountCSVProfile::filter();
+        foreach ($accountCsvProfiles as $accountCsvProfile) {
+            $accountCsvProfile->remove();
+        }
+    }
 
 }
