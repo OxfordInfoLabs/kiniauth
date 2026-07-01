@@ -847,7 +847,7 @@ class AccountServiceTest extends TestBase {
 
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
-        $accountCSVProfileSummary = new AccountCSVProfileSummary(["signal" => "hello"]);
+        $accountCSVProfileSummary = new AccountCSVProfileSummary(["signal" => "hello"], ["signal" => true]);
 
         // save the profile summary
         $id = $this->accountService->saveAccountCSVProfile($accountCSVProfileSummary);
@@ -856,6 +856,7 @@ class AccountServiceTest extends TestBase {
         $accountCSVProfileMatch = $this->accountService->getAccountCSVProfileById($id);
 
         $this->assertEquals(["signal" => "hello"], $accountCSVProfileMatch->getMapping());
+        $this->assertEquals(["signal" => true], $accountCSVProfileMatch->getExtraDataFlags());
     }
 
     public function testCanRetrieveMultipleAccountCSVProfileSummaries() {
@@ -863,9 +864,9 @@ class AccountServiceTest extends TestBase {
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
         $accountCSVProfileSummaries = [
-            new AccountCSVProfileSummary(["signal" => "hello"]),
-            new AccountCSVProfileSummary(["signal" => "world!"]),
-            new AccountCSVProfileSummary(["signal" => "banana"])
+            new AccountCSVProfileSummary(["signal" => "hello"], ["signal" => true]),
+            new AccountCSVProfileSummary(["signal" => "world!"], ["signal" => true]),
+            new AccountCSVProfileSummary(["signal" => "banana"], ["signal" => true])
         ];
 
         // save the profile summary
@@ -878,6 +879,7 @@ class AccountServiceTest extends TestBase {
 
         for ($i = 0; $i < sizeof($accountCSVProfileSummaries); $i++) {
             $this->assertEquals($accountCSVProfileList[$i]->getMapping(), $accountCSVProfileSummaries[$i]->getMapping());
+            $this->assertEquals($accountCSVProfileList[$i]->getExtraDataFlags(), $accountCSVProfileSummaries[$i]->getExtraDataFlags());
         }
     }
 
@@ -885,7 +887,7 @@ class AccountServiceTest extends TestBase {
 
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
-        $accountCSVProfileSummary = new AccountCSVProfileSummary(["signal" => "hello"]);
+        $accountCSVProfileSummary = new AccountCSVProfileSummary(["signal" => "hello"], ["signal" => true]);
 
         // save the profile summary
         $id = $this->accountService->saveAccountCSVProfile($accountCSVProfileSummary);

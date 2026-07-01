@@ -25,13 +25,23 @@ class AccountCSVProfileSummary extends ActiveRecord {
     protected $mapping;
 
     /**
+     * Array of fields to be included in extra_data
+     *
+     * @var array
+     * @json
+     */
+    protected $extraDataFlags = [];
+
+    /**
      * AccountCSVProfileSummary constructor.
      *
      * @param array $mapping
+     * @param array $extraDataFlags
      * @param ?int $id
      */
-    public function __construct($mapping, $id = null) {
+    public function __construct($mapping, $extraDataFlags, $id = null) {
         $this->mapping = $mapping;
+        $this->extraDataFlags = $extraDataFlags;
         $this->id = $id;
     }
 
@@ -54,6 +64,20 @@ class AccountCSVProfileSummary extends ActiveRecord {
      */
     public function setMapping(array $mapping): void {
         $this->mapping = $mapping;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtraDataFlags(): array {
+        return $this->extraDataFlags;
+    }
+
+    /**
+     * @param array $extraDataFlags
+     */
+    public function setExtraDataFlags(array $extraDataFlags): void {
+        $this->extraDataFlags = $extraDataFlags;
     }
 
 }

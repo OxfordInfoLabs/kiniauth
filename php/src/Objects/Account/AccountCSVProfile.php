@@ -22,6 +22,7 @@ class AccountCSVProfile extends AccountCSVProfileSummary {
         if ($accountCSVProfileSummary) {
             parent::__construct(
                 $accountCSVProfileSummary->getMapping(),
+                $accountCSVProfileSummary->getExtraDataFlags(),
                 $accountCSVProfileSummary->getId()
             );
         }
@@ -35,6 +36,7 @@ class AccountCSVProfile extends AccountCSVProfileSummary {
     public function returnSummary(): AccountCSVProfileSummary {
         return new AccountCSVProfileSummary(
             $this->getMapping(),
+            $this->getExtraDataFlags(),
             $this->getId()
         );
     }
