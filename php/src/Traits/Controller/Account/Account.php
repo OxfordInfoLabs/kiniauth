@@ -323,16 +323,16 @@ trait Account {
     }
 
     /**
-     * Delete an account csv profile
+     * Delete an account csv profile given its id
      *
      * @http DELETE /csvprofile
      *
-     * @param $id
+     * @param $profileId
      *
      * @return void
      */
-    public function deleteAccountCSVProfile($id): void {
-        $this->accountService->deleteAccountCSVProfile($id);
+    public function deleteAccountCSVProfile($profileId): void {
+        $this->accountService->deleteAccountCSVProfile($profileId);
     }
 
 
