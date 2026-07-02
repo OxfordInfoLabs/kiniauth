@@ -309,14 +309,15 @@ trait Account {
      *
      * @http POST /csvprofile
      *
-     * @param $mapping
+     * @param array $mapping
+     * @param array $extraDataFlags
      * @param $accountId
      * @param ?string $projectKey
      *
      * @return void
      */
-    public function saveAccountCSVProfile($mapping, $accountId, $projectKey = null): void {
-        $newAccountCsvProfileSummary = new AccountCSVProfileSummary($mapping);
+    public function saveAccountCSVProfile($mapping, $extraDataFlags, $accountId, $projectKey = null): void {
+        $newAccountCsvProfileSummary = new AccountCSVProfileSummary($mapping, $extraDataFlags);
 
         $this->accountService->saveAccountCSVProfile($newAccountCsvProfileSummary, $projectKey, $accountId);
     }
