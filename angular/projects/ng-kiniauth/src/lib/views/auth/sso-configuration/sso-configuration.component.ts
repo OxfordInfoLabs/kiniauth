@@ -29,12 +29,12 @@ export class SsoConfigurationComponent implements OnInit {
 
         // Initialise the OpenID settings if none exist
         if (!this.accountSettings.oidc) {
-            this.accountSettings.oidc = {account: this.account.name, provider: _.camelCase(this.account.name)};
+            this.accountSettings.oidc = {account: this.account.name, provider: _.kebabCase(this.account.name)};
         }
 
         // Initialise the SAML settings if none exist
         if (!this.accountSettings.saml) {
-            this.accountSettings.saml = {account: this.account.name, provider: _.camelCase(this.account.name)};
+            this.accountSettings.saml = {account: this.account.name, provider: _.kebabCase(this.account.name)};
         }
     }
 
