@@ -60,7 +60,6 @@ class GoogleCloudQueuedTaskProcessor implements QueuedTaskProcessor {
      * @parm return string
      */
     public function queueTask($queueName, $taskIdentifier, $description, $configuration = [], $startTime = null) {
-        Logger::log("Queuing task $taskIdentifier to queue $queueName...");
         $queue = $this->cloudTasksClient->queueName($this->projectId, $this->region, $queueName);
 
         $httpRequest = new AppEngineHttpRequest();
