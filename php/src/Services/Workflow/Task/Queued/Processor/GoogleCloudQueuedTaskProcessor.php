@@ -4,6 +4,7 @@
 namespace Kiniauth\Services\Workflow\Task\Queued\Processor;
 
 use Google\Cloud\Tasks\V2\AppEngineHttpRequest;
+use Google\Cloud\Tasks\V2\AppEngineRouting;
 use Google\Cloud\Tasks\V2\Client\CloudTasksClient;
 use Google\Cloud\Tasks\V2\CreateTaskRequest;
 use Google\Cloud\Tasks\V2\HttpMethod;
@@ -33,6 +34,11 @@ class GoogleCloudQueuedTaskProcessor implements QueuedTaskProcessor {
     private $region;
 
     /**
+     * @var string
+     */
+    private $service;
+
+    /**
      * @var CloudTasksClient
      */
     private $cloudTasksClient;
@@ -46,6 +52,7 @@ class GoogleCloudQueuedTaskProcessor implements QueuedTaskProcessor {
     public function __construct() {
         $this->projectId = Configuration::readParameter("gcloud.project.id");
         $this->region = Configuration::readParameter("gcloud.region");
+        $this->service = Configuration::readParameter("gcloud.service") ?? "default";
 
         $this->cloudTasksClient = new CloudTasksClient();
     }
@@ -64,6 +71,7 @@ class GoogleCloudQueuedTaskProcessor implements QueuedTaskProcessor {
 
         $httpRequest = new AppEngineHttpRequest();
         $httpRequest->setRelativeUri("/external/google/task");
+        $httpRequest->setAppEngineRouting(new AppEngineRouting(["service" => $this->service]));
         $httpRequest->setHttpMethod(HttpMethod::POST);
         $httpRequest->setHeaders([
             "content-type" => "application/json"
