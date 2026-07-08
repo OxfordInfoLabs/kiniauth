@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Security;
 
 
 use Kiniauth\Attributes\Security\AccessNonActiveScopes;
+use Kiniauth\Exception\Security\AccountExpiredException;
 use Kiniauth\Exception\Security\AccountSuspendedException;
 use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Exception\Security\MissingScopeObjectIdForPrivilegeException;
@@ -108,6 +109,7 @@ class SecurityService {
      * @throws AccountSuspendedException
      * @throws InvalidLoginException
      * @throws UserSuspendedException
+     * @throws AccountExpiredException
      */
     public function login($securable = null, $account = null, $userAccessTokenHash = null) {
 
@@ -133,6 +135,10 @@ class SecurityService {
                 throw new AccountSuspendedException();
             }
 
+            if ($accountId && Account::fetch($accountId)->getStatus() == Account::STATUS_EXPIRED){
+                throw new AccountExpiredException();
+            }
+
             // Regenerate the session to avoid session fixation
             $this->session->regenerate();
 
@@ -152,14 +158,14 @@ class SecurityService {
                 $securable->save();
 
             }
-
-
         }
 
         if ($account) {
 
             if ($account->getStatus() == Account::STATUS_SUSPENDED) {
                 throw new AccountSuspendedException();
+            } else if ($account->getStatus() == Account::STATUS_EXPIRED) {
+                throw new AccountExpiredException();
             }
 
             $accountId = $account->getAccountId();

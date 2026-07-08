@@ -257,7 +257,7 @@ class User extends UserSummary {
 
         foreach ($rolesByAccountId as $role) {
 
-            if ($role->getAccountStatus() == Account::STATUS_ACTIVE) {
+            if ($role->getAccountStatus() == Account::STATUS_ACTIVE || $role->getAccountStatus() == Account::STATUS_EXPIRED) {
 
                 if ($this->activeAccountId == $role->getAccountId())
                     return $role->getAccountId();
