@@ -107,16 +107,6 @@ class APIKey extends APIKeySummary {
     }
 
 
-    public function getAccountIds() {
-        $accountIds = array();
-        foreach ($this->roles as $role) {
-            if ($role->getAccountId())
-                $accountIds[$role->getAccountId()] = 1;
-        }
-        return array_keys($accountIds);
-    }
-
-
     /**
      * Always return defined account id as API keys cannot cross accounts.
      *

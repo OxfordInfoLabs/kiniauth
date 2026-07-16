@@ -131,12 +131,12 @@ class SecurityService {
 
             $accountId = $securable->getActiveAccountId();
 
-            if (!$accountId && $securable->getAccountIds()) {
-                throw new AccountSuspendedException();
-            }
-
-            if ($accountId && Account::fetch($accountId)->getStatus() == Account::STATUS_EXPIRED){
-                throw new AccountExpiredException();
+            if (!$accountId && $securable->getInactiveAccountStatus()) {
+                if ($securable->getInactiveAccountStatus() == Account::STATUS_EXPIRED){
+                    throw new AccountExpiredException();
+                } else {
+                    throw new AccountSuspendedException();
+                }
             }
 
             // Regenerate the session to avoid session fixation

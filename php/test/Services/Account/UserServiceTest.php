@@ -887,7 +887,6 @@ class UserServiceTest extends TestBase {
 
         $this->assertEquals($this->userService->getUser($userId), $user);
 
-
     }
 
 

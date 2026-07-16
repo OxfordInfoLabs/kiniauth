@@ -4,6 +4,8 @@
 namespace Kiniauth\Test\Services\Security;
 
 
+use Kiniauth\Exception\Security\AccountExpiredException;
+use Kiniauth\Exception\Security\AccountSuspendedException;
 use Kiniauth\Exception\Security\NonExistentPrivilegeException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountSummary;
@@ -15,11 +17,13 @@ use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Objects\Security\UserSummary;
+use Kiniauth\Services\Account\AccountService;
 use Kiniauth\Services\Application\Session;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Test\TestBase;
 use Kinikit\Core\DependencyInjection\Container;
+use mysql_xdevapi\Exception;
 
 include_once __DIR__ . "/../../autoloader.php";
 
@@ -31,10 +35,13 @@ class SecurityServiceTest extends TestBase {
     private $securityService;
     private $authenticationService;
 
+    private $accountService;
+
     public function setUp(): void {
         parent::setUp();
         $this->authenticationService = Container::instance()->get(AuthenticationService::class);
         $this->securityService = Container::instance()->get(SecurityService::class);
+        $this->accountService = Container::instance()->get(AccountService::class);
     }
 
 
@@ -565,5 +572,64 @@ class SecurityServiceTest extends TestBase {
 
     }
 
+    public function testAccountExpiryExceptionThrownCorrectly(){
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        // Create new User
+        $newUser = new User("sheyla@badgers.com", hash("sha512", "passwordsheyla@badgers.com"), "Silly Sheyla");
+        $newUser->setStatus(User::STATUS_ACTIVE);
+        $newUser->save();
+
+        // Create new account
+        $newAccount = new Account("Badgers inc", 0, Account::STATUS_EXPIRED);
+        $newAccount->save();
+
+        // Add new user to the new account
+        $role = new UserRole(Role::SCOPE_ACCOUNT, $newAccount->getAccountId(), 0, $newAccount->getAccountId(), $newUser->getId() );
+        $role->save();
+
+        // Logged out admin
+        $this->authenticationService->logout();
+
+        // User cannot log in to expired account
+        try {
+            //Login as new user
+            AuthenticationHelper::login("sheyla@badgers.com", "password");
+            $this->fail();
+        }
+        catch (AccountExpiredException){
+            $this->assertTrue(true);
+        }
+    }
+
+    public function testAccountSuspendedExceptionThrownCorrectly(){
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        // Create new User
+        $newUser = new User("sheyla@badgers.com", hash("sha512", "passwordsheyla@badgers.com"), "Silly Sheyla");
+        $newUser->setStatus(User::STATUS_ACTIVE);
+        $newUser->save();
+
+        // Create new account
+        $newAccount = new Account("Badgers inc", 0, Account::STATUS_SUSPENDED);
+        $newAccount->save();
+
+        // Add new user to the new account
+        $role = new UserRole(Role::SCOPE_ACCOUNT, $newAccount->getAccountId(), 0, $newAccount->getAccountId(), $newUser->getId() );
+        $role->save();
+
+        // Logged out admin
+        $this->authenticationService->logout();
+
+        // User cannot log in to expired account
+        try {
+            //Login as new user
+            AuthenticationHelper::login("sheyla@badgers.com", "password");
+            $this->fail();
+        }
+        catch (AccountSuspendedException){
+            $this->assertTrue(true);
+        }
+    }
 
 }
