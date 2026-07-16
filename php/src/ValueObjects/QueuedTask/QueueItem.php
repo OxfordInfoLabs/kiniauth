@@ -58,6 +58,7 @@ class QueueItem {
 
     /**
      * @var string[string]
+     * @sqlType LONGTEXT
      */
     private $configuration;
 
