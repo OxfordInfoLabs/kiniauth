@@ -32,8 +32,8 @@ class UserRole extends SecurableRole {
      * @param integer $roleId
      * @param integer $userId
      */
-    public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $accountId = -1, $userId = null) {
-        parent::__construct($scope, $scopeId, $roleId, $accountId);
+    public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $accountId = -1, $userId = null, $account = null) {
+        parent::__construct($scope, $scopeId, $roleId, $accountId, $account);
         $this->userId = $userId;
     }
 

@@ -60,7 +60,6 @@ abstract class Securable extends ActiveRecord {
     public function getInactiveAccountStatus() {
         $suspended = false;
         foreach ($this->roles as $role) {
-            print_r($role);
             if ($role->getAccountStatus() == Account::STATUS_EXPIRED) {
                 return Account::STATUS_EXPIRED;
             }

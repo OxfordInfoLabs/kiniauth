@@ -54,7 +54,7 @@ class UserTest extends TestBase {
 
         $newUser = new User("sheyla@badgers.com", hash("sha512", "passwordsheyla@badgers.com"), "Silly Sheyla", 0, 1);
         $newAccount = new Account("Badgers inc", 0, Account::STATUS_ACTIVE, 1);
-        $role = new UserRole(Role::SCOPE_ACCOUNT, $newAccount->getAccountId(), 0, 1,1 );
+        $role = new UserRole(Role::SCOPE_ACCOUNT, $newAccount->getAccountId(), 0, 1,1, $newAccount);
         $newUser->setRoles([$role]);
 
         // Check user does not have inactive account
@@ -70,7 +70,7 @@ class UserTest extends TestBase {
 
         // Create a new expired account
         $newAccount2 = new Account("Another Company", 0, Account::STATUS_EXPIRED, 2);
-        $role2 = new UserRole(Role::SCOPE_ACCOUNT, $newAccount2->getAccountId(), 0, 2,1);
+        $role2 = new UserRole(Role::SCOPE_ACCOUNT, $newAccount2->getAccountId(), 0, 2,1, $newAccount2);
         $newUser->setRoles([$role, $role2]);
 
         // Check that we prioritise the EXPIRED status over the SUSPENDED status
