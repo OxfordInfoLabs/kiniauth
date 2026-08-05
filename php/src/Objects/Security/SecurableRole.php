@@ -86,11 +86,12 @@ abstract class SecurableRole extends ActiveRecord {
      * @param integer $roleId
      * @param integer $userId
      */
-    public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $accountId = null) {
+    public function __construct($scope = Role::SCOPE_ACCOUNT, $scopeId = null, $roleId = null, $accountId = null, $account = null) {
         $this->scope = $scope;
         $this->scopeId = $scopeId;
         $this->roleId = $roleId;
         $this->accountId = $accountId;
+        $this->account = $account;
     }
 
 

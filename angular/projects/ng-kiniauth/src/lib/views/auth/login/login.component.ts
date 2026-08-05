@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import { AuthenticationService } from '../../../services/authentication.service';
 import { BaseComponent } from '../../base-component';
 import {MatDialogRef} from '@angular/material/dialog';
+import {SafeHtml} from "@angular/platform-browser";
 
 
 @Component({
@@ -24,6 +25,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     @Input() facebookSSOURL: string;
     @Input() googleSSOURL: string;
     @Input() dialogRef: MatDialogRef<any>;
+    @Input() expiryMessage: string | SafeHtml = 'Your account has expired';
 
     @Output() loggedIn = new EventEmitter();
 
@@ -44,6 +46,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
     public unlockCode: string;
     public invalidUnlockCode = false;
     public unlocking: boolean = true;
+    public accountExpired: boolean = false;
 
     constructor(private router: Router,
                 kcAuthService: AuthenticationService,
@@ -138,12 +141,14 @@ export class LoginComponent extends BaseComponent implements OnInit {
                     }
                 })
                 .catch(err => {
+                    if (err.error?.message === 'Your account has expired.'){
+                        this.accountExpired = true;
+                    }
                     this.authService.getSessionData();
                     this.loginError = true;
                     if (this.captchaRef) {
                         this.captchaRef.reset();
                     }
-
                     this.loading = false;
                 });
         }

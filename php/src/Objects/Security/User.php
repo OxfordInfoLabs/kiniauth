@@ -237,16 +237,6 @@ class User extends UserSummary {
     }
 
 
-    public function getAccountIds() {
-        $accountIds = array();
-        foreach ($this->roles as $role) {
-            if ($role->getAccountId() && $role->getAccountId() > 0)
-                $accountIds[$role->getAccountId()] = 1;
-        }
-        return array_keys($accountIds);
-    }
-
-
     /**
      * @return int
      */

@@ -6,6 +6,7 @@ namespace Kiniauth\Services\Workflow\Task;
  * Generic task interface
  *
  * @implementation dueworkflow \Kiniauth\Services\Workflow\DueWorkflowStepsTask
+ * @implementation accountexpiry \Kiniauth\Services\Workflow\Scheduled\AccountExpiryTask
  *
  * Interface Task
  */

@@ -168,4 +168,9 @@ export class AdminAccountService {
         return await this.http.get(this.config.accessHttpURL + '/auth/joinAccountToken/' + accountId).toPromise();
     }
 
+    public async updateAccountExpiryDate(accountId: number, newDate: string){
+        return this.http.put(
+            this.config.accessHttpURL + '/account/' + accountId + '/expiryDate', {newDate}).toPromise();
+    }
+
 }
