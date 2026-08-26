@@ -39,22 +39,17 @@ class GoogleCloudQueuedTaskProcessor implements QueuedTaskProcessor {
     private $service;
 
     /**
-     * @var CloudTasksClient
-     */
-    private $cloudTasksClient;
-
-    /**
      *
      * Construct and create the task API
      *
      * GoogleCloudQueuedTaskProcessor constructor.
      */
-    public function __construct() {
+    public function __construct(
+        private CloudTasksClient $cloudTasksClient
+    ) {
         $this->projectId = Configuration::readParameter("gcloud.project.id");
         $this->region = Configuration::readParameter("gcloud.region");
         $this->service = Configuration::readParameter("gcloud.service") ?? "default";
-
-        $this->cloudTasksClient = new CloudTasksClient();
     }
 
     /**
@@ -121,9 +116,9 @@ class GoogleCloudQueuedTaskProcessor implements QueuedTaskProcessor {
      * De-queue a task using the task instance identifier
      *
      * @param $taskInstanceIdentifier
-     * @return mixed
+     * @return void
      */
-    public function deQueueTask($queueName, $taskInstanceIdentifier) {
+    public function deQueueTask($queueName, $taskInstanceIdentifier): void {
         try {
             $this->cloudTasksClient->deleteTask($taskInstanceIdentifier);
         } catch (\Exception $e) {
