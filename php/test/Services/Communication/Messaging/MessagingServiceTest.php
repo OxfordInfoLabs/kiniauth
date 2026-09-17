@@ -40,9 +40,7 @@ class MessagingServiceTest extends TestBase {
                 2,
                 null,
                 null,
-            ),
-            "1",
-            1
+            )
         );
 
         $this->assertEquals(1, $messageId);
@@ -97,10 +95,10 @@ class MessagingServiceTest extends TestBase {
         ];
 
         // save all the messages
-        $this->messagingService->saveMessage($messages[0], "1", 1);
-        $this->messagingService->saveMessage($messages[1], "1", 1);
-        $this->messagingService->saveMessage($messages[2], "1", 1);
-        $this->messagingService->saveMessage($messages[3], "1", 1);
+        $this->messagingService->saveMessage($messages[0]);
+        $this->messagingService->saveMessage($messages[1]);
+        $this->messagingService->saveMessage($messages[2]);
+        $this->messagingService->saveMessage($messages[3]);
 
         // retrieve all the messages from thread 1
         $messagesGet = $this->messagingService->getAllMessagesFromThread(1);
@@ -108,7 +106,7 @@ class MessagingServiceTest extends TestBase {
         $this->assertEquals(3, count($messagesGet));
 
         foreach($messagesGet as $messageGet) {
-            $this->assertEquals(1, $messageGet->getThreadId());
+            $this->assertEquals(1, $messageGet->getMessageThreadId());
         }
 
     }

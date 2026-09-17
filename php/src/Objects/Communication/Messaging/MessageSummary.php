@@ -47,6 +47,14 @@ class MessageSummary extends ActiveRecord {
     protected $messageText;
 
     /**
+     * Message Type
+     * TODO: set these to enums
+     *
+     * @var string
+     */
+    protected $messageType;
+
+    /**
      * Sender User ID
      *
      * @var int
@@ -80,6 +88,7 @@ class MessageSummary extends ActiveRecord {
      *
      * @param int       $messageThreadId
      * @param string    $messageText
+     * @parma string    $messageType
      * @param int       $senderUserId
      * @param int       $receiverUserId
      * @param int       $receiverAccountId
@@ -88,6 +97,7 @@ class MessageSummary extends ActiveRecord {
     public function __construct(
         $messageThreadId = null,
         $messageText = null,
+        $messageType = null,
         $senderUserId = null,
         $receiverUserId = null,
         $receiverAccountId = null,
@@ -97,6 +107,7 @@ class MessageSummary extends ActiveRecord {
     ) {
         $this->messageThreadId = $messageThreadId;
         $this->messageText = $messageText;
+        $this->messageType = $messageType;
         $this->senderUserId = $senderUserId;
         $this->receiverUserId = $receiverUserId;
         $this->receiverAccountId = $receiverAccountId;
@@ -132,6 +143,14 @@ class MessageSummary extends ActiveRecord {
 
     public function setMessageText(?string $messageText): void {
         $this->messageText = $messageText;
+    }
+
+    public function getMessageType(): ?string {
+        return $this->messageType;
+    }
+
+    public function setMessageType(?string $messageType): void {
+        $this->messageType = $messageType;
     }
 
     public function getSenderUserId(): ?int {

@@ -12,21 +12,19 @@ use Kiniauth\Traits\Account\AccountProject;
  * @generate
  */
 class Message extends MessageSummary {
-    use AccountProject;
 
     /**
      * Messages constructor
      *
      * @param MessageSummary $messageSummary
-     * @param string $projectKey
-     * @param int $accountId
      */
-    public function __construct($messageSummary, $projectKey = null, $accountId = null) {
+    public function __construct($messageSummary) {
 
         if ($messageSummary) {
             parent::__construct(
                 $messageSummary->getMessageThreadId(),
                 $messageSummary->getMessageText(),
+                $messageSummary->getMessageType(),
                 $messageSummary->getSenderUserId(),
                 $messageSummary->getReceiverUserId(),
                 $messageSummary->getReceiverAccountId(),
@@ -34,10 +32,6 @@ class Message extends MessageSummary {
                 new DateTime(),
             );
         }
-
-        $this->projectKey = $projectKey;
-        $this->accountId = $accountId;
-
     }
 
     /**
@@ -49,6 +43,7 @@ class Message extends MessageSummary {
         return new MessageSummary(
             $this->messageThreadId,
             $this->messageText,
+            $this->messageType,
             $this->senderUserId,
             $this->receiverUserId,
             $this->receiverAccountId,

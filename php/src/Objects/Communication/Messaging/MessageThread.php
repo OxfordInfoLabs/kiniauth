@@ -16,7 +16,6 @@ class MessageThread extends MessageThreadSummary{
      * MessageThread constructor
      *
      * @param MessageThreadSummary $messageThreadSummary
-     * @throws Exception
      */
     public function __construct(MessageThreadSummary $messageThreadSummary) {
         if ($messageThreadSummary) {

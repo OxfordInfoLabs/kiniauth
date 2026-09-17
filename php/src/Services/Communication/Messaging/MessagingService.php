@@ -4,10 +4,12 @@
 namespace Kiniauth\Services\Communication\Messaging;
 
 
+use Exception;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Communication\Messaging\Message;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageThread;
+use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
 
 
 /**
@@ -37,14 +39,12 @@ class MessagingService {
      * Save a new message
      *
      * @param MessageSummary $messageSummary
-     * @param string $projectKey
-     * @param int $accountId
      *
      * @return int
      */
-    public function saveMessage($messageSummary, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT): int {
+    public function saveMessage($messageSummary): int {
 
-        $message = new Message($messageSummary, $projectKey, $accountId);
+        $message = new Message($messageSummary);
         $message->save();
 
         return $message->getId();
@@ -54,29 +54,17 @@ class MessagingService {
      * Get all messages from a thread
      *
      * @param int $threadId
-     * @param string $projectKey
-     * @param int $accountId
      *
      * @return array
      */
-    public function getAllMessagesFromThread($threadId, $projectKey = null, $accountId = Account::LOGGED_IN_ACCOUNT): array {
+    public function getAllMessagesFromThread($threadId): array {
 
         $whereClauses = [];
         $params = [];
 
         if ($threadId) {
-            $whereClauses[] = "message_thread_id = ?";
+            $whereClauses[] = "messageThreadId = ?";
             $params[] = $threadId;
-        }
-
-        if ($accountId) {
-            $whereClauses[] = "accountId = ?";
-            $params[] = $accountId;
-        }
-
-        if ($projectKey) {
-            $whereClauses[] = "projectKey = ?";
-            $params[] = $projectKey;
         }
 
         $query = (sizeof($whereClauses) ? "WHERE " : "") . join(" AND ", $whereClauses) . " ORDER BY id";
@@ -87,4 +75,45 @@ class MessagingService {
         }, $results);
     }
 
+    /**
+     * @param $messageId
+     *
+     * @return void
+     */
+    public function deleteMesssage($messageId) {
+        $messageSummary = $this->getMessageSummaryById($messageId);
+        $messageSummary->remove();
+    }
+
+    /**
+     * @param $id
+     *
+     * @return MessageThreadSummary
+     */
+    public function getMessageThreadSummaryById($id) {
+        return MessageThread::fetch($id)->returnSummary();
+    }
+
+    /**
+     * @param MessageThreadSummary $messageThreadSummary
+     *
+     * @return int
+     */
+    public function saveMessageThread($messageThreadSummary) {
+
+        $messageThread = new MessageThread($messageThreadSummary);
+        $messageThread->save();
+
+        return $messageThread->getId();
+    }
+
+    /**
+     * @param int $messageThreadId
+     *
+     * @return void
+     */
+    public function deleteMessageThread($messageThreadId) {
+        $messageThreadSummary = $this->getMessageThreadSummaryById($messageThreadId);
+        $messageThreadSummary->remove();
+    }
 }
