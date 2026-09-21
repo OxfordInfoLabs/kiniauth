@@ -4,6 +4,7 @@ namespace Kiniauth\Test\Services\Communication\Messaging;
 
 
 use DateTime;
+use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
 use Kiniauth\Services\Communication\Messaging\MessagingService;
 use Kiniauth\Services\Security\AuthenticationService;
@@ -22,6 +23,9 @@ class MessagingServiceTest extends TestBase {
     private $messagingService;
 
 
+    /**
+     * @throws InvalidLoginException
+     */
     public function setUp(): void {
         parent::setUp();
 
