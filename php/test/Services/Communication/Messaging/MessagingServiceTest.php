@@ -9,6 +9,7 @@ use Kiniauth\Services\Communication\Messaging\MessagingService;
 use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
+use Kiniauth\ValueObjects\Communication\Messaging\MessageType;
 use Kinikit\Core\DependencyInjection\Container;
 
 include_once __DIR__ . "/../../../autoloader.php";
@@ -36,6 +37,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 1,
                 "hello world!",
+                MessageType::General,
                 1,
                 2,
                 null,
@@ -49,7 +51,8 @@ class MessagingServiceTest extends TestBase {
 
         $this->assertEquals(1, $messageGet->getId());
         $this->assertEquals(1, $messageGet->getMessageThreadId());
-        $this->assertEquals("hello world!", $messageGet->getMessageText());
+        $this->assertEquals("hello world!", $messageGet->getEncryptedMessage());
+        $this->assertEquals("general", $messageGet->getMessageType()->value);
         $this->assertEquals(1, $messageGet->getSenderUserId());
         $this->assertEquals(2, $messageGet->getReceiverUserId());
         $this->assertEquals(null, $messageGet->getReceiverAccountId());
@@ -63,6 +66,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 1,
                 "hello world!",
+                MessageType::General,
                 1,
                 2,
                 null,
@@ -71,6 +75,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 1,
                 "hello back!",
+                MessageType::General,
                 2,
                 1,
                 null,
@@ -79,6 +84,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 1,
                 "this is exciting!",
+                MessageType::General,
                 1,
                 2,
                 null,
@@ -87,6 +93,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 2,
                 "ignore this message!",
+                MessageType::General,
                 1,
                 2,
                 null,
@@ -103,7 +110,7 @@ class MessagingServiceTest extends TestBase {
         // retrieve all the messages from thread 1
         $messagesGet = $this->messagingService->getAllMessagesFromThread(1);
 
-        $this->assertEquals(3, count($messagesGet));
+        $this->assertCount(3, $messagesGet);
 
         foreach($messagesGet as $messageGet) {
             $this->assertEquals(1, $messageGet->getMessageThreadId());

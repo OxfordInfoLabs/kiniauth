@@ -29,7 +29,7 @@ class Messaging {
     }
 
     /**
-     * @http GET /$threadId
+     * @http GET /messageAll
      *
      * @param int $threadId
      *
@@ -62,6 +62,8 @@ class Messaging {
     }
 
     /**
+     * @http DELETE /thread
+     *
      * @param int $messageThreadId
      *
      * @return void

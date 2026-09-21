@@ -23,7 +23,7 @@ class Message extends MessageSummary {
         if ($messageSummary) {
             parent::__construct(
                 $messageSummary->getMessageThreadId(),
-                $messageSummary->getMessageText(),
+                $messageSummary->getEncryptedMessage(),
                 $messageSummary->getMessageType(),
                 $messageSummary->getSenderUserId(),
                 $messageSummary->getReceiverUserId(),
@@ -42,7 +42,7 @@ class Message extends MessageSummary {
     public function returnSummary(): MessageSummary {
         return new MessageSummary(
             $this->messageThreadId,
-            $this->messageText,
+            $this->encryptedMessage,
             $this->messageType,
             $this->senderUserId,
             $this->receiverUserId,

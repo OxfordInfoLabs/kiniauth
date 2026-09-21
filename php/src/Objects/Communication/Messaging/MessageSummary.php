@@ -4,6 +4,7 @@
 namespace Kiniauth\Objects\Communication\Messaging;
 
 use DateTime;
+use Kiniauth\ValueObjects\Communication\Messaging\MessageType;
 use Kinikit\Persistence\ORM\ActiveRecord;
 
 
@@ -39,18 +40,17 @@ class MessageSummary extends ActiveRecord {
     protected $messageDate;
 
     /**
-     * Message text
+     * Message text [encrypted]
      * TODO: encrypt the text
      *
      * @var string
      */
-    protected $messageText;
+    protected $encryptedMessage;
 
     /**
      * Message Type
-     * TODO: set these to enums
      *
-     * @var string
+     * @var MessageType
      */
     protected $messageType;
 
@@ -87,8 +87,8 @@ class MessageSummary extends ActiveRecord {
      * MessageSummary constructor.
      *
      * @param int       $messageThreadId
-     * @param string    $messageText
-     * @parma string    $messageType
+     * @param string    $encryptedMessage
+     * @param MessageType    $messageType
      * @param int       $senderUserId
      * @param int       $receiverUserId
      * @param int       $receiverAccountId
@@ -96,7 +96,7 @@ class MessageSummary extends ActiveRecord {
      */
     public function __construct(
         $messageThreadId = null,
-        $messageText = null,
+        $encryptedMessage = null,
         $messageType = null,
         $senderUserId = null,
         $receiverUserId = null,
@@ -106,7 +106,7 @@ class MessageSummary extends ActiveRecord {
         $id = null,
     ) {
         $this->messageThreadId = $messageThreadId;
-        $this->messageText = $messageText;
+        $this->encryptedMessage = $encryptedMessage;
         $this->messageType = $messageType;
         $this->senderUserId = $senderUserId;
         $this->receiverUserId = $receiverUserId;
@@ -137,19 +137,19 @@ class MessageSummary extends ActiveRecord {
         $this->messageDate = $messageDate;
     }
 
-    public function getMessageText(): ?string {
-        return $this->messageText;
+    public function getEncryptedMessage(): ?string {
+        return $this->encryptedMessage;
     }
 
-    public function setMessageText(?string $messageText): void {
-        $this->messageText = $messageText;
+    public function setEncryptedMessage(?string $encryptedMessage): void {
+        $this->encryptedMessage = $encryptedMessage;
     }
 
-    public function getMessageType(): ?string {
+    public function getMessageType(): ?MessageType {
         return $this->messageType;
     }
 
-    public function setMessageType(?string $messageType): void {
+    public function setMessageType(?MessageType $messageType): void {
         $this->messageType = $messageType;
     }
 
