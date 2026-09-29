@@ -59,20 +59,33 @@ class MessagingService {
      */
     public function getAllMessagesFromThread($threadId): array {
 
-        $whereClauses = [];
-        $params = [];
+        $query = "WHERE messageThreadId = ? ORDER BY id DESC";
 
-        if ($threadId) {
-            $whereClauses[] = "messageThreadId = ?";
-            $params[] = $threadId;
-        }
-
-        $query = (sizeof($whereClauses) ? "WHERE " : "") . join(" AND ", $whereClauses) . " ORDER BY id";
-
-        $results = Message::filter($query, $params);
+        $results = Message::filter($query, [$threadId]);
         return array_map(function ($item) {
             return $item->returnSummary();
         }, $results);
+    }
+
+    /**
+     * Get the latest message from a thead
+     *
+     * @param int $threadId
+     *
+     * @returns MessageSummary
+     *
+     */
+    public function getLatestMessageFromThread($threadId): ?MessageSummary {
+
+        $query = "WHERE messageThreadId = ? ORDER BY id DESC LIMIT 1";
+
+        $results = Message::filter($query, [$threadId]);
+
+        if (empty($results)) {
+            return null;
+        }
+
+        return $results[0]->returnSummary();
     }
 
     /**
@@ -85,7 +98,11 @@ class MessagingService {
         $messageSummary->remove();
     }
 
+
+
     /**
+     * Fetch an existing message thread and return a summary
+     *
      * @param $id
      *
      * @return MessageThreadSummary
@@ -95,11 +112,65 @@ class MessagingService {
     }
 
     /**
+     * Fetch all existing message threads at the user level
+     *
+     * @param $messageThreadUserId
+     *
+     * @return array
+     */
+    public function getMessageThreadByUserId($messageThreadUserId): array {
+
+        $query = "WHERE messageThreadUserId = ?";
+
+        $results = MessageThread::filter($query, [$messageThreadUserId]);
+        return array_map(function ($item) {
+            return $item->returnSummary();
+        }, $results);
+    }
+
+    /**
+     * Fetch all existing message threads at the account level
+     *
+     * @param $messageThreadAccountId
+     *
+     * @return array
+     */
+    public function getMessageThreadByAccountId($messageThreadAccountId): array {
+
+        $query = "WHERE messageThreadAccountId = ?";
+
+        $results = MessageThread::filter($query, [$messageThreadAccountId]);
+        return array_map(function ($item) {
+            return $item->returnSummary();
+        }, $results);
+    }
+
+    /**
+     * Fetch all existing message threads at the group level
+     *
+     * @param $messageThreadGroupId
+     *
+     * @return array
+     */
+    public function getMessageThreadByGroupId($messageThreadGroupId): array {
+
+        $query = "WHERE messageThreadGroupId = ?";
+
+        $results = MessageThread::filter($query, [$messageThreadGroupId]);
+        return array_map(function ($item) {
+            return $item->returnSummary();
+        }, $results);
+    }
+
+
+    /**
+     * Save a new message thread
+     *
      * @param MessageThreadSummary $messageThreadSummary
      *
      * @return int
      */
-    public function saveMessageThread($messageThreadSummary) {
+    public function saveMessageThread($messageThreadSummary): int {
 
         $messageThread = new MessageThread($messageThreadSummary);
         $messageThread->save();
@@ -108,6 +179,8 @@ class MessagingService {
     }
 
     /**
+     * Delete an existing message thread
+     *
      * @param int $messageThreadId
      *
      * @return void

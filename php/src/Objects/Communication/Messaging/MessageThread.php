@@ -3,8 +3,6 @@
 namespace Kiniauth\Objects\Communication\Messaging;
 
 
-use Exception;
-
 /**
  *
  * @table ka_message_thread
@@ -17,13 +15,16 @@ class MessageThread extends MessageThreadSummary{
      *
      * @param MessageThreadSummary $messageThreadSummary
      */
-    public function __construct(MessageThreadSummary $messageThreadSummary) {
+    public function __construct($messageThreadSummary) {
+
         if ($messageThreadSummary) {
             parent::__construct(
-                $messageThreadSummary->getId()
+                $messageThreadSummary->getMessageThreadId(),
+                $messageThreadSummary->getMessageThreadUserId(),
+                $messageThreadSummary->getMessageThreadAccountId(),
+                $messageThreadSummary->getMessageThreadGroupId()
             );
         }
-
     }
 
     /**
@@ -33,6 +34,10 @@ class MessageThread extends MessageThreadSummary{
      */
     public function returnSummary(): MessageThreadSummary {
         return new MessageThreadSummary(
+            $this->messageThreadId,
+            $this->messageThreadUserId,
+            $this->messageThreadAccountId,
+            $this->messageThreadGroupId,
             $this->id
         );
     }

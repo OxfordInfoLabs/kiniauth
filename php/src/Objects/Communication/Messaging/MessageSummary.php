@@ -62,6 +62,13 @@ class MessageSummary extends ActiveRecord {
     protected $senderUserId;
 
     /**
+     * Sender User Account ID
+     *
+     * @var int
+     */
+    protected $senderAccountId;
+
+    /**
      * Receiver User ID
      *
      * @var int
@@ -86,19 +93,21 @@ class MessageSummary extends ActiveRecord {
     /**
      * MessageSummary constructor.
      *
-     * @param int       $messageThreadId
-     * @param string    $encryptedMessage
-     * @param MessageType    $messageType
-     * @param int       $senderUserId
-     * @param int       $receiverUserId
-     * @param int       $receiverAccountId
-     * @param int       $receiverGroupId
+     * @param int           $messageThreadId
+     * @param string        $encryptedMessage
+     * @param MessageType   $messageType
+     * @param int           $senderUserId
+     * @param int           $senderAccountId
+     * @param int           $receiverUserId
+     * @param int           $receiverAccountId
+     * @param int           $receiverGroupId
      */
     public function __construct(
         $messageThreadId = null,
         $encryptedMessage = null,
         $messageType = null,
         $senderUserId = null,
+        $senderAccountId = null,
         $receiverUserId = null,
         $receiverAccountId = null,
         $receiverGroupId = null,
@@ -109,6 +118,7 @@ class MessageSummary extends ActiveRecord {
         $this->encryptedMessage = $encryptedMessage;
         $this->messageType = $messageType;
         $this->senderUserId = $senderUserId;
+        $this->senderAccountId = $senderAccountId;
         $this->receiverUserId = $receiverUserId;
         $this->receiverAccountId = $receiverAccountId;
         $this->receiverGroupId = $receiverGroupId;
@@ -159,6 +169,14 @@ class MessageSummary extends ActiveRecord {
 
     public function setSenderUserId(?int $senderUserId): void {
         $this->senderUserId = $senderUserId;
+    }
+
+    public function getSenderAccountId(): ?int {
+        return $this->senderAccountId;
+    }
+
+    public function setSenderAccountId(?int $senderAccountId): void {
+        $this->senderAccountId = $senderAccountId;
     }
 
     public function getReceiverUserId(): ?int {

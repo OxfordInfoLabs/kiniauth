@@ -24,7 +24,7 @@ class Messaging {
      *
      * @return int
      */
-    public function newMessage($messageSummary) {
+    public function newMessage($messageSummary): int {
         return $this->messagingService->saveMessage($messageSummary);
     }
 
@@ -46,7 +46,7 @@ class Messaging {
      * `
      * @void
      */
-    public function deleteMessage($messageId) {
+    public function deleteMessage($messageId): void {
         $this->messagingService->deleteMesssage($messageId);
     }
 
@@ -57,8 +57,41 @@ class Messaging {
      *
      * @return int
      */
-    public function newMessageThread($threadSummary) {
+    public function newMessageThread($threadSummary): int {
         return $this->messagingService->saveMessageThread($threadSummary);
+    }
+
+    /**
+     * @http GET /thread/user
+     *
+     * @param int $messageThreadUserId
+     *
+     * @return array
+     */
+    public function getAllMessageThreadsByUserId($messageThreadUserId): array {
+        return $this->getAllMessageThreadsByUserId($messageThreadUserId);
+    }
+
+    /**
+     * @http GET /thread/account
+     *
+     * @param int $messageThreadAccountId
+     *
+     * @return array
+     */
+    public function getAllMessageThreadsByAccountId($messageThreadAccountId): array {
+        return $this->getAllMessageThreadsByAccountId($messageThreadAccountId);
+    }
+
+    /**
+     * @http GET /thread/group
+     *
+     * @param int $messageThreadGroupId
+     *
+     * @return array
+     */
+    public function getAllMessageThreadsByGroupId($messageThreadGroupId): array {
+        return $this->getAllMessageThreadsByGroupId($messageThreadGroupId);
     }
 
     /**
@@ -68,7 +101,7 @@ class Messaging {
      *
      * @return void
      */
-    public function deleteMessageThread($messageThreadId) {
+    public function deleteMessageThread($messageThreadId): void {
         $this->messagingService->deleteMessageThread($messageThreadId);
     }
 
