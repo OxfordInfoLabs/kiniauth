@@ -29,6 +29,17 @@ class Messaging {
     }
 
     /**
+     * @http GET /messageLatest
+     *
+     * @param int $threadId
+     *
+     * @return MessageSummary
+     */
+    public function getLatestMessageByThread($threadId): MessageSummary {
+        return $this->messagingService->getLatestMessageFromThread($threadId);
+    }
+
+    /**
      * @http GET /messageAll
      *
      * @param int $threadId
