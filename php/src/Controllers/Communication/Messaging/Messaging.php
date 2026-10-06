@@ -32,22 +32,24 @@ class Messaging {
      * @http GET /messageLatest
      *
      * @param int $threadId
+     * @param int $userId
      *
      * @return MessageSummary
      */
-    public function getLatestMessageByThread($threadId): MessageSummary {
-        return $this->messagingService->getLatestMessageFromThread($threadId);
+    public function getLatestMessageByThread($threadId, $userId): MessageSummary {
+        return $this->messagingService->getLatestMessageFromThread($threadId, $userId);
     }
 
     /**
      * @http GET /messageAll
      *
      * @param int $threadId
+     * @param int $userId
      *
      * @return array
      */
-    public function getAllMessagesByThread($threadId): array {
-        return $this->messagingService->getAllMessagesFromThread($threadId);
+    public function getAllMessagesByThread($threadId, $userId): array {
+        return $this->messagingService->getAllMessagesFromThread($threadId, $userId);
     }
 
     /**

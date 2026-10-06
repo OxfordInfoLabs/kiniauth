@@ -3,13 +3,16 @@
 namespace Kiniauth\Test\Services\Communication\Messaging;
 
 
-use DateTime;
 use Kiniauth\Exception\Security\InvalidLoginException;
+use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
-use Kiniauth\Objects\Communication\Messaging\MessageThread;
 use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
+use Kiniauth\Objects\Security\Role;
+use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserRole;
+use Kiniauth\Objects\Security\UserSummary;
+use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Communication\Messaging\MessagingService;
-use Kiniauth\Services\Security\AuthenticationService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Communication\Messaging\MessageType;
@@ -25,6 +28,7 @@ class MessagingServiceTest extends TestBase {
      */
     private $messagingService;
 
+    private array $userIds = [];
 
     /**
      * @throws InvalidLoginException
@@ -32,8 +36,24 @@ class MessagingServiceTest extends TestBase {
     public function setUp(): void {
         parent::setUp();
 
-        $authenticationService = Container::instance()->get(AuthenticationService::class);
-        $authenticationService->login("sam@samdavisdesign.co.uk", AuthenticationHelper::encryptPasswordForLogin("passwordsam@samdavisdesign.co.uk"));
+        AuthenticationHelper::login("admin@kinicart.com", "password");
+
+        // create a test group with test users
+        $userService = Container::instance()->get(UserService::class);
+
+        $userId = $userService->createUser(
+            "hello@myworld.com",
+            hash("sha512", "newpassword1"),
+            "Hello World",
+            new UserRole(Role::SCOPE_ACCOUNT, 99, 0, 99)
+        );
+
+        $userService->updateUserPersonalEncryptionKey(
+            "test-personal-encryption-key",
+            $userId
+        );
+
+        $this->userIds[] = $userId;
 
         $this->messagingService = new MessagingService();
     }
@@ -47,26 +67,28 @@ class MessagingServiceTest extends TestBase {
                 MessageType::General,
                 1,
                 null,
-                2,
+                $this->userIds[0],
                 null,
                 null,
             )
         );
 
-        $this->assertEquals(1, $messageId);
+        $this->assertEquals(0, $messageId);
 
-        $messageGet = $this->messagingService->getMessageSummaryById($messageId);
+        $messageGet = $this->messagingService->getAllMessagesFromThread(1, $this->userIds[0]);
 
-        $this->assertEquals(1, $messageGet->getId());
-        $this->assertEquals(1, $messageGet->getMessageThreadId());
-        $this->assertEquals("hello world!", $messageGet->getEncryptedMessage());
-        $this->assertEquals("general", $messageGet->getMessageType()->value);
-        $this->assertEquals(1, $messageGet->getSenderUserId());
-        $this->assertEquals(null, $messageGet->getSenderAccountId());
-        $this->assertEquals(2, $messageGet->getReceiverUserId());
-        $this->assertEquals(null, $messageGet->getReceiverAccountId());
-        $this->assertEquals(null, $messageGet->getReceiverGroupId());
-        $this->assertNotNull($messageGet->getMessageDate());
+        $this->assertCount(1, $messageGet);
+
+        $this->assertEquals(1, $messageGet[0]->getId());
+        $this->assertEquals(1, $messageGet[0]->getMessageThreadId());
+        $this->assertEquals("hello world!", $messageGet[0]->getEncryptedMessage());
+        $this->assertEquals("general", $messageGet[0]->getMessageType()->value);
+        $this->assertEquals(1, $messageGet[0]->getSenderUserId());
+        $this->assertEquals(null, $messageGet[0]->getSenderAccountId());
+        $this->assertEquals(99, $messageGet[0]->getReceiverUserId());
+        $this->assertEquals(null, $messageGet[0]->getReceiverAccountId());
+        $this->assertEquals(null, $messageGet[0]->getReceiverGroupId());
+        $this->assertNotNull($messageGet[0]->getMessageDate());
     }
 
     public function testCanGetAllMessagesFromAThread() {

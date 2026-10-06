@@ -10,8 +10,6 @@ use Kiniauth\Traits\Account\AccountProject;
  *
  * @table ka_message
  * @generate
- *
- * @interceptor \Kiniauth\Objects\Communication\Messaging\MessageInterceptor
  */
 class Message extends MessageSummary {
 
