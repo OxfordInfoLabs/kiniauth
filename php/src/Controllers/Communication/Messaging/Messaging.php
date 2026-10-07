@@ -3,14 +3,14 @@
 namespace Kiniauth\Controllers\Communication\Messaging;
 
 
-
+use Exception;
 use Kiniauth\Objects\Communication\Messaging\Message;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
+use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Communication\Messaging\MessagingService;
 
 class Messaging {
-
 
     public function __construct(
         private readonly MessagingService $messagingService
@@ -22,10 +22,11 @@ class Messaging {
      *
      * @param MessageSummary $messageSummary
      *
-     * @return int
+     * @return void
+     * @throws Exception
      */
-    public function newMessage($messageSummary): int {
-        return $this->messagingService->saveMessage($messageSummary);
+    public function newMessage($messageSummary): void {
+        $this->messagingService->saveMessage($messageSummary);
     }
 
     /**
@@ -35,8 +36,9 @@ class Messaging {
      * @param int $userId
      *
      * @return MessageSummary
+     * @throws Exception
      */
-    public function getLatestMessageByThread($threadId, $userId): MessageSummary {
+    public function getLatestMessageByThread($threadId, $userId = User::LOGGED_IN_USER): MessageSummary {
         return $this->messagingService->getLatestMessageFromThread($threadId, $userId);
     }
 
@@ -47,8 +49,9 @@ class Messaging {
      * @param int $userId
      *
      * @return array
+     * @throws Exception
      */
-    public function getAllMessagesByThread($threadId, $userId): array {
+    public function getAllMessagesByThread($threadId, $userId = User::LOGGED_IN_USER): array {
         return $this->messagingService->getAllMessagesFromThread($threadId, $userId);
     }
 
@@ -60,7 +63,7 @@ class Messaging {
      * @void
      */
     public function deleteMessage($messageId): void {
-        $this->messagingService->deleteMesssage($messageId);
+        $this->messagingService->deleteMessage($messageId);
     }
 
     /**
@@ -82,7 +85,7 @@ class Messaging {
      * @return array
      */
     public function getAllMessageThreadsByUserId($messageThreadUserId): array {
-        return $this->getAllMessageThreadsByUserId($messageThreadUserId);
+        return $this->messagingService->getAllMessageThreadsByUserId($messageThreadUserId);
     }
 
     /**
@@ -93,7 +96,7 @@ class Messaging {
      * @return array
      */
     public function getAllMessageThreadsByAccountId($messageThreadAccountId): array {
-        return $this->getAllMessageThreadsByAccountId($messageThreadAccountId);
+        return $this->messagingService->getAllMessageThreadsByAccountId($messageThreadAccountId);
     }
 
     /**
@@ -104,7 +107,7 @@ class Messaging {
      * @return array
      */
     public function getAllMessageThreadsByGroupId($messageThreadGroupId): array {
-        return $this->getAllMessageThreadsByGroupId($messageThreadGroupId);
+        return $this->messagingService->getAllMessageThreadsByGroupId($messageThreadGroupId);
     }
 
     /**

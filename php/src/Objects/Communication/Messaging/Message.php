@@ -51,7 +51,8 @@ class Message extends MessageSummary {
             $this->receiverAccountId,
             $this->receiverGroupId,
             $this->messageDate,
-            $this->id
+            $this->id,
+            $this->messageId
         );
     }
 

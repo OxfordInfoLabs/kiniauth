@@ -19,10 +19,10 @@ class MessageThread extends MessageThreadSummary{
 
         if ($messageThreadSummary) {
             parent::__construct(
-                $messageThreadSummary->getMessageThreadId(),
-                $messageThreadSummary->getMessageThreadUserId(),
+                $messageThreadSummary->getMessageThreadUserId1(),
+                $messageThreadSummary->getMessageThreadUserId2(),
                 $messageThreadSummary->getMessageThreadAccountId(),
-                $messageThreadSummary->getMessageThreadGroupId()
+                $messageThreadSummary->getMessageThreadGroupId(),
             );
         }
     }
@@ -34,10 +34,11 @@ class MessageThread extends MessageThreadSummary{
      */
     public function returnSummary(): MessageThreadSummary {
         return new MessageThreadSummary(
-            $this->messageThreadId,
-            $this->messageThreadUserId,
+            $this->messageThreadUserId1,
+            $this->messageThreadUserId2,
             $this->messageThreadAccountId,
             $this->messageThreadGroupId,
+            $this->messageCount,
             $this->id
         );
     }

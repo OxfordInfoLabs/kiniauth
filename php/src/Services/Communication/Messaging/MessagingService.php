@@ -46,19 +46,31 @@ class MessagingService {
      *
      * @param MessageSummary $messageSummary
      *
-     * @return int
+     * @return void
      * @throws Exception
      */
-    public function saveMessage($messageSummary): int {
+    public function saveMessage($messageSummary): void {
 
+        $threadId = $messageSummary->getMessageThreadId() ?? null;
+
+        if (!$threadId) {
+            throw new Exception("Message thread id is required to save a message");
+        }
+
+        $senderUserId = $messageSummary->getSenderUserId() ?? null;
         $receiverUserId = $messageSummary->getReceiverUserId() ?? null;
         $receiverAccountId = $messageSummary->getReceiverAccountId() ?? null;
         $receiverGroupId = $messageSummary->getReceiverGroupId() ?? null;
 
-        $users = $this->getAllValidUsers($receiverUserId, $receiverAccountId, $receiverGroupId);
+        $users = $this->getAllValidUsers(
+            $senderUserId,
+            $receiverUserId,
+            $receiverAccountId,
+            $receiverGroupId)
+        ;
 
         if (empty($users)) {
-            return -1;
+            throw new Exception("No valid users present for saving message");
         }
 
         foreach ($users as $user) {
@@ -89,21 +101,25 @@ class MessagingService {
             );
             $recipientMessage->save();
         }
-
-        return 0;
     }
 
     /**
      * Retrieves a list of unique and active user based on the hierarchy of recipient parameters
      * Higher-level parameters take precedence over lower-level ones when resolving user IDs.
      *
+     * @param ?int $senderUserId
      * @param ?int $receiverUserId
      * @param ?int $receiverAccountId
      * @param ?int $receiverGroupId
      *
      * @return array
      */
-    private function getAllValidUsers(?int $receiverUserId, ?int $receiverAccountId, ?int $receiverGroupId): array {
+    private function getAllValidUsers(
+        ?int $senderUserId,
+        ?int $receiverUserId,
+        ?int $receiverAccountId,
+        ?int $receiverGroupId
+    ): array {
 
         $userIds = [];
 
@@ -150,6 +166,10 @@ class MessagingService {
             $userIds = [$receiverUserId];
         }
 
+        if ($senderUserId) {
+            $userIds[] = $senderUserId;
+        }
+
         // Remove duplicate user IDs before doing the final user lookup
         $userIds = array_values(array_unique($userIds));
 
@@ -161,14 +181,13 @@ class MessagingService {
                 array_fill(0, count($userIds), '?')
             );
 
-            $userIds = User::filter(
+            return User::filter(
                 "WHERE status = 'ACTIVE' AND id IN ($userPlaceholders)",
                 [...$userIds]
             );
         }
 
-        // final deduplication
-        return array_values(array_unique($userIds));
+        return [];
     }
 
     /**
@@ -281,9 +300,9 @@ class MessagingService {
      * @return array
      * @throws Exception
      */
-    public function getAllMessagesFromThread($threadId, $userId): array {
+    public function getAllMessagesFromThread($threadId, $userId = User::LOGGED_IN_USER): array {
 
-        $query = "WHERE messageThreadId = ? AND userId = ? ORDER BY id DESC";
+        $query = "WHERE messageThreadId = ? AND receiverUserId = ? ORDER BY id DESC";
 
         $results = Message::filter($query, [$threadId, $userId]);
 
@@ -292,7 +311,7 @@ class MessagingService {
         }
 
         $user = User::filter(
-            "WHERE status = 'ACTIVE' AND id = ?)",
+            "WHERE status = 'ACTIVE' AND id = ?",
             [$userId]
         );
 
@@ -300,19 +319,22 @@ class MessagingService {
             throw new Exception("User data (ID: {$userId}) not found in user table.");
         }
 
-        return array_map(function ($item) {
+        $decryptedResults = [];
 
-            $summary = $item->returnSummary();
+        foreach ($results as $result) {
+            $summary = $result->returnSummary();
 
             $summary->setEncryptedMessage(
                 $this->decryptMessage(
-                    $item->getEncryptedMessage(),
-                    //key-here
+                    $result->getEncryptedMessage(),
+                    $user[0]->getPersonalEncryptionKey()
                 )
             );
 
-            return $summary;
-        }, $results);
+            $decryptedResults[] = $summary;
+        }
+
+        return $decryptedResults;
     }
 
     /**
@@ -322,11 +344,11 @@ class MessagingService {
      * @param int $userId
      *
      * @returns MessageSummary
-     *
+     * @throws Exception
      */
-    public function getLatestMessageFromThread($threadId, $userId): ?MessageSummary {
+    public function getLatestMessageFromThread($threadId, $userId = User::LOGGED_IN_USER): ?MessageSummary {
 
-        $query = "WHERE messageThreadId = ? AND userId = ? ORDER BY id DESC LIMIT 1";
+        $query = "WHERE messageThreadId = ? AND receiverUserId = ? ORDER BY id DESC LIMIT 1";
 
         $results = Message::filter($query, [$threadId, $userId]);
 
@@ -335,11 +357,11 @@ class MessagingService {
         }
 
         $user = User::filter(
-            "WHERE status = 'ACTIVE' AND id = ?)",
+            "WHERE status = 'ACTIVE' AND id = ?",
             [$userId]
         );
 
-        if (count($user) === 1) {
+        if (empty($user)) {
             throw new Exception("User data (ID: {$userId}) not found in user table.");
         }
 
@@ -352,7 +374,7 @@ class MessagingService {
             )
         );
 
-        return $results[0]->returnSummary();
+        return $summary;
     }
 
     /**
@@ -360,7 +382,7 @@ class MessagingService {
      *
      * @return void
      */
-    public function deleteMesssage($messageId) {
+    public function deleteMessage($messageId): void {
         $messageSummary = $this->getMessageSummaryById($messageId);
         $messageSummary->remove();
     }
@@ -370,12 +392,12 @@ class MessagingService {
     /**
      * Fetch an existing message thread and return a summary
      *
-     * @param $id
+     * @param $messageThreadId
      *
      * @return MessageThreadSummary
      */
-    public function getMessageThreadSummaryById($id) {
-        return MessageThread::fetch($id)->returnSummary();
+    public function getMessageThreadSummaryById($messageThreadId): MessageThreadSummary {
+        return MessageThread::fetch($messageThreadId)->returnSummary();
     }
 
     /**
@@ -385,11 +407,11 @@ class MessagingService {
      *
      * @return array
      */
-    public function getMessageThreadByUserId($messageThreadUserId): array {
+    public function getAllMessageThreadsByUserId($messageThreadUserId): array {
 
-        $query = "WHERE messageThreadUserId = ?";
+        $query = "WHERE messageThreadUserId1 = ? OR messageThreadUserId2 = ?";
 
-        $results = MessageThread::filter($query, [$messageThreadUserId]);
+        $results = MessageThread::filter($query, [$messageThreadUserId, $messageThreadUserId]);
         return array_map(function ($item) {
             return $item->returnSummary();
         }, $results);
@@ -402,7 +424,7 @@ class MessagingService {
      *
      * @return array
      */
-    public function getMessageThreadByAccountId($messageThreadAccountId): array {
+    public function getAllMessageThreadsByAccountId($messageThreadAccountId): array {
 
         $query = "WHERE messageThreadAccountId = ?";
 
@@ -419,7 +441,7 @@ class MessagingService {
      *
      * @return array
      */
-    public function getMessageThreadByGroupId($messageThreadGroupId): array {
+    public function getAllMessageThreadsByGroupId($messageThreadGroupId): array {
 
         $query = "WHERE messageThreadGroupId = ?";
 
@@ -442,7 +464,7 @@ class MessagingService {
         $messageThread = new MessageThread($messageThreadSummary);
         $messageThread->save();
 
-        return $messageThread->getId();
+        return $messageThread->getMessageThreadId();
     }
 
     /**

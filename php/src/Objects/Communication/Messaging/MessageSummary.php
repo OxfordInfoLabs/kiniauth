@@ -26,6 +26,15 @@ class MessageSummary extends ActiveRecord {
     protected $id;
 
     /**
+     * Message ID
+     *
+     * Used to link the same message across multiple users
+     *
+     * @var int
+     */
+    protected $messageId;
+
+    /**
      * MessageThread ID
      *
      * @var int
@@ -93,14 +102,17 @@ class MessageSummary extends ActiveRecord {
     /**
      * MessageSummary constructor.
      *
-     * @param int           $messageThreadId
-     * @param string        $encryptedMessage
-     * @param MessageType   $messageType
-     * @param int           $senderUserId
-     * @param int           $senderAccountId
-     * @param int           $receiverUserId
-     * @param int           $receiverAccountId
-     * @param int           $receiverGroupId
+     * @param ?int           $messageThreadId
+     * @param ?string        $encryptedMessage
+     * @param ?MessageType   $messageType
+     * @param ?int           $senderUserId
+     * @param ?int           $senderAccountId
+     * @param ?int           $receiverUserId
+     * @param ?int           $receiverAccountId
+     * @param ?int           $receiverGroupId
+     * @param ?DateTime      $messageDate
+     * @param ?int           $id
+     * @param ?int           $messageId
      */
     public function __construct(
         $messageThreadId = null,
@@ -113,6 +125,7 @@ class MessageSummary extends ActiveRecord {
         $receiverGroupId = null,
         $messageDate = null,
         $id = null,
+        $messageId = null
     ) {
         $this->messageThreadId = $messageThreadId;
         $this->encryptedMessage = $encryptedMessage;
@@ -124,11 +137,20 @@ class MessageSummary extends ActiveRecord {
         $this->receiverGroupId = $receiverGroupId;
         $this->messageDate = $messageDate;
         $this->id = $id;
+        $this->messageId = $messageId;
     }
 
 
     public function getId(): ?int {
         return $this->id;
+    }
+
+    public function getMessageId(): ?int {
+        return $this->messageId;
+    }
+
+    public function setMessageId(?int $messageId): void {
+        $this->messageId = $messageId;
     }
 
     public function getMessageThreadId(): int {

@@ -22,18 +22,18 @@ class MessageThreadSummary extends ActiveRecord {
     protected $id;
 
     /**
-     * Message thread id
+     * Message thread user id (first user)
      *
      * @var int
      */
-    protected $messageThreadId;
+    protected $messageThreadUserId1;
 
     /**
-     * Message thread user id
+     * Message thread user id (second user)
      *
      * @var int
      */
-    protected $messageThreadUserId;
+    protected $messageThreadUserId2;
 
     /**
      * Message thread account id
@@ -50,47 +50,57 @@ class MessageThreadSummary extends ActiveRecord {
     protected $messageThreadGroupId;
 
     /**
+     * Thread message count
+     *
+     * @var int
+     */
+    protected $messageCount;
+
+    /**
      * MessageSummary constructor.
      *
-     * @param int       $messageThreadId
-     * @param int       $messageThreadUserId
+     * @param int       $messageThreadUserId1
+     * @param int       $messageThreadUserId2
      * @param int       $messageThreadAccountId
      * @param int       $messageThreadGroupId
-     * @param int       $id
+     * @param int       $messageCount
+     * @param int       $messageThreadId
      */
     public function __construct(
-        $messageThreadId = null,
-        $messageThreadUserId = null,
+        $messageThreadUserId1 = null,
+        $messageThreadUserId2 = null,
         $messageThreadAccountId = null,
         $messageThreadGroupId = null,
-        $id = null,
+        $messageCount = 0,
+        $messageThreadId = null,
     ) {
-        $this->messageThreadId = $messageThreadId;
-        $this->messageThreadUserId = $messageThreadUserId;
+        $this->messageThreadUserId1 = $messageThreadUserId1;
+        $this->messageThreadUserId2 = $messageThreadUserId2;
         $this->messageThreadAccountId = $messageThreadAccountId;
         $this->messageThreadGroupId = $messageThreadGroupId;
-        $this->id = $id;
+        $this->messageCount = $messageCount;
+        $this->id = $messageThreadId;
     }
 
 
-    public function getId(): ?int {
+    public function getMessageThreadId(): ?int {
         return $this->id;
     }
 
-    public function getMessageThreadId(): ?int {
-        return $this->messageThreadId;
+    public function getMessageThreadUserId1(): ?int {
+        return $this->messageThreadUserId1;
     }
 
-    public function setMessageThreadId(?int $messageThreadId) {
-        $this->messageThreadId = $messageThreadId;
+    public function getMessageThreadUserId2(): ?int {
+        return $this->messageThreadUserId2;
     }
 
-    public function getMessageThreadUserId(): ?int {
-        return $this->messageThreadUserId;
+    public function setMessageThreadUserId1(?int $messageThreadUserId1): void {
+        $this->messageThreadUserId1 = $messageThreadUserId1;
     }
 
-    public function setMessageThreadUserId(?int $messageThreadUserId): void {
-        $this->messageThreadUserId = $messageThreadUserId;
+    public function setMessageThreadUserId2(?int $messageThreadUserId2): void {
+        $this->messageThreadUserId2 = $messageThreadUserId2;
     }
 
     public function getMessageThreadAccountId(): ?int {
@@ -109,7 +119,13 @@ class MessageThreadSummary extends ActiveRecord {
         $this->messageThreadGroupId = $messageThreadGroupId;
     }
 
+    public function getMessageCount(): ?int {
+        return $this->messageCount;
+    }
 
+    public function setMessageCount(?int $messageCount): void {
+        $this->messageCount = $messageCount;
+    }
 
 }
 
