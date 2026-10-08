@@ -26,7 +26,9 @@ class Messaging {
      * @throws Exception
      */
     public function newMessage($messageSummary): void {
-        $this->messagingService->saveMessage($messageSummary);
+        $this->messagingService->saveMessage(
+            messageSummary: $messageSummary
+        );
     }
 
     /**
@@ -39,7 +41,10 @@ class Messaging {
      * @throws Exception
      */
     public function getLatestMessageByThread($threadId, $userId = User::LOGGED_IN_USER): MessageSummary {
-        return $this->messagingService->getLatestMessageFromThread($threadId, $userId);
+        return $this->messagingService->getLatestMessageFromThread(
+            threadId: $threadId,
+            userId: $userId
+        );
     }
 
     /**
@@ -52,18 +57,42 @@ class Messaging {
      * @throws Exception
      */
     public function getAllMessagesByThread($threadId, $userId = User::LOGGED_IN_USER): array {
-        return $this->messagingService->getAllMessagesFromThread($threadId, $userId);
+        return $this->messagingService->getAllMessagesFromThread(
+            threadId: $threadId,
+            userId: $userId
+        );
     }
 
     /**
      * @http DELETE /message
      *
+     * @param int $threadId
      * @param int $messageId
+     * @param int $userId
      * `
      * @void
      */
-    public function deleteMessage($messageId): void {
-        $this->messagingService->deleteMessage($messageId);
+    public function deleteMessageForUser($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
+        $this->messagingService->deleteMessageForUser(
+            threadId: $threadId,
+            messageId: $messageId,
+            userId: $userId
+        );
+    }
+
+    /**
+     * @http DELETE /messageAll
+     *
+     * @param int $threadId
+     * @param int $messageId
+     *
+     * @void
+     */
+    public function deleteMessageForAll($threadId, $messageId): void {
+        $this->messagingService->deleteMessageForAllUsers(
+            threadId: $threadId,
+            messageId: $messageId
+        );
     }
 
     /**
@@ -74,7 +103,9 @@ class Messaging {
      * @return int
      */
     public function newMessageThread($threadSummary): int {
-        return $this->messagingService->saveMessageThread($threadSummary);
+        return $this->messagingService->saveMessageThread(
+            messageThreadSummary: $threadSummary
+        );
     }
 
     /**
@@ -85,7 +116,9 @@ class Messaging {
      * @return array
      */
     public function getAllMessageThreadsByUserId($messageThreadUserId): array {
-        return $this->messagingService->getAllMessageThreadsByUserId($messageThreadUserId);
+        return $this->messagingService->getAllMessageThreadsByUserId(
+            messageThreadUserId: $messageThreadUserId
+        );
     }
 
     /**
@@ -96,7 +129,9 @@ class Messaging {
      * @return array
      */
     public function getAllMessageThreadsByAccountId($messageThreadAccountId): array {
-        return $this->messagingService->getAllMessageThreadsByAccountId($messageThreadAccountId);
+        return $this->messagingService->getAllMessageThreadsByAccountId(
+            messageThreadAccountId: $messageThreadAccountId
+        );
     }
 
     /**
@@ -107,7 +142,9 @@ class Messaging {
      * @return array
      */
     public function getAllMessageThreadsByGroupId($messageThreadGroupId): array {
-        return $this->messagingService->getAllMessageThreadsByGroupId($messageThreadGroupId);
+        return $this->messagingService->getAllMessageThreadsByGroupId(
+            messageThreadGroupId: $messageThreadGroupId
+        );
     }
 
     /**
@@ -118,7 +155,9 @@ class Messaging {
      * @return void
      */
     public function deleteMessageThread($messageThreadId): void {
-        $this->messagingService->deleteMessageThread($messageThreadId);
+        $this->messagingService->deleteMessageThread(
+            messageThreadId: $messageThreadId
+        );
     }
 
 }

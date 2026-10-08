@@ -38,6 +38,7 @@ class MessageSummary extends ActiveRecord {
      * MessageThread ID
      *
      * @var int
+     * @required
      */
     protected $messageThreadId;
 
@@ -161,11 +162,11 @@ class MessageSummary extends ActiveRecord {
         $this->messageThreadId = $messageThreadId;
     }
 
-    public function getMessageDate(): ?DateTime {
+    public function getMessageDate(): DateTime|string|null {
         return $this->messageDate;
     }
 
-    public function setMessageDate(?DateTime $messageDate): void {
+    public function setMessageDate(DateTime|string|null $messageDate): void {
         $this->messageDate = $messageDate;
     }
 

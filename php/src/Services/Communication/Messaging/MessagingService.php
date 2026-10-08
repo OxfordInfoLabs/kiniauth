@@ -57,21 +57,38 @@ class MessagingService {
             throw new Exception("Message thread id is required to save a message");
         }
 
+        $messageThread = $this->getMessageThreadSummaryById($threadId);
+
         $senderUserId = $messageSummary->getSenderUserId() ?? null;
         $receiverUserId = $messageSummary->getReceiverUserId() ?? null;
         $receiverAccountId = $messageSummary->getReceiverAccountId() ?? null;
         $receiverGroupId = $messageSummary->getReceiverGroupId() ?? null;
 
+        // get all the users associated with the message
         $users = $this->getAllValidUsers(
-            $senderUserId,
-            $receiverUserId,
-            $receiverAccountId,
-            $receiverGroupId)
-        ;
+            senderUserId: $senderUserId,
+            receiverUserId: $receiverUserId,
+            receiverAccountId: $receiverAccountId,
+            receiverGroupId: $receiverGroupId
+        );
 
         if (empty($users)) {
             throw new Exception("No valid users present for saving message");
         }
+
+        // verify that the details in the message and the message thread are consistent
+        $this->validateMessageThreadAccess(
+            thread: $messageThread,
+            users: $users
+        );
+
+        // we calculate the message id by incrementing the message count of the message thread
+        $messageId = $messageThread->getMessageCount() + 1;
+        $messageThread->setMessageCount($messageId);
+        $messageThread->save();
+
+        // ensure all messages we create have the same date
+        $messageDate = date("Y-m-d H:i:s");
 
         foreach ($users as $user) {
 
@@ -82,21 +99,22 @@ class MessagingService {
             }
 
             $encryptedMessage = $this->encryptMessage(
-                $messageSummary->getEncryptedMessage(),
-                $personalEncryptionKey
+                message: $messageSummary->getEncryptedMessage(),
+                personalEncryptionKey: $personalEncryptionKey
             );
 
             $recipientMessage = new Message(
                 new MessageSummary(
-                    $messageSummary->getMessageThreadId(),
-                    $encryptedMessage,
-                    $messageSummary->getMessageType(),
-                    $messageSummary->getSenderUserId(),
-                    $messageSummary->getSenderAccountId(),
-                    $user->getId(),
-                    $messageSummary->getReceiverAccountId(),
-                    $messageSummary->getReceiverGroupId(),
-                    $messageSummary->getMessageDate()
+                    messageThreadId: $messageSummary->getMessageThreadId(),
+                    encryptedMessage: $encryptedMessage,
+                    messageType: $messageSummary->getMessageType(),
+                    senderUserId: $messageSummary->getSenderUserId(),
+                    senderAccountId: $messageSummary->getSenderAccountId(),
+                    receiverUserId: $user->getId(),
+                    receiverAccountId: $messageSummary->getReceiverAccountId(),
+                    receiverGroupId: $messageSummary->getReceiverGroupId(),
+                    messageDate: $messageDate,
+                    messageId: $messageId
                 )
             );
             $recipientMessage->save();
@@ -188,6 +206,83 @@ class MessagingService {
         }
 
         return [];
+    }
+
+    /**
+     * Function to validate if the user ids associated with a message
+     * are valid to the message thread its attempting to send to
+     *
+     * @param MessageThreadSummary $thread
+     * @param array $users
+     *
+     * @return void
+     * @throws Exception
+     */
+    private function validateMessageThreadAccess(
+        MessageThreadSummary $thread,
+        array $users
+    ): void {
+
+        $threadUserId1 = $thread->getMessageThreadUserId1();
+        $threadUserId2 = $thread->getMessageThreadUserId2();
+        $threadAccountId = $thread->getMessageThreadAccountId();
+        $threadGroupId = $thread->getMessageThreadGroupId();
+
+        if ($threadGroupId) {
+
+            $accountIds = AccountGroupMember::values(
+                "member_account_id",
+                "WHERE account_group_id = ?",
+                [$threadGroupId]
+            );
+
+            $allowedUserIds = [];
+
+            if (!empty($accountIds)) {
+
+                $accountIds = array_values(array_unique($accountIds));
+
+                $accountPlaceholders = implode(
+                    ',',
+                    array_fill(0, count($accountIds), '?')
+                );
+
+                $allowedUserIds = UserRole::values(
+                    "scope_id",
+                    "WHERE scope = ? AND account_id IN ($accountPlaceholders)",
+                    [Role::SCOPE_ACCOUNT, ...$accountIds]
+                );
+            }
+
+        } elseif ($threadAccountId) {
+
+            $allowedUserIds = UserRole::values(
+                "scope_id",
+                "WHERE account_id = ? AND scope = ?",
+                [$threadAccountId, Role::SCOPE_ACCOUNT]
+            );
+
+        } elseif ($threadUserId1 || $threadUserId2) {
+
+            $allowedUserIds = [$threadUserId1, $threadUserId2];
+
+        } else {
+            throw new Exception("Message thread has no valid access scope");
+        }
+
+        $allowedUserIds = array_map(
+            'intval',
+            array_unique($allowedUserIds)
+        );
+
+        foreach ($users as $user) {
+
+            if (!in_array((int) $user->getId(), $allowedUserIds, true)) {
+                throw new Exception(
+                    "User {$user->getId()} does not have access to message thread {$thread->getId()}"
+                );
+            }
+        }
     }
 
     /**
@@ -324,12 +419,16 @@ class MessagingService {
         foreach ($results as $result) {
             $summary = $result->returnSummary();
 
-            $summary->setEncryptedMessage(
-                $this->decryptMessage(
-                    $result->getEncryptedMessage(),
-                    $user[0]->getPersonalEncryptionKey()
-                )
-            );
+            $encryptedMessage = $summary->getEncryptedMessage();
+
+            if ($encryptedMessage !== null) {
+                $summary->setEncryptedMessage(
+                    $this->decryptMessage(
+                        encryptedMessage: $encryptedMessage,
+                        personalEncryptionKey: $user[0]->getPersonalEncryptionKey()
+                    )
+                );
+            }
 
             $decryptedResults[] = $summary;
         }
@@ -367,24 +466,63 @@ class MessagingService {
 
         $summary = $results[0]->returnSummary();
 
-        $summary->setEncryptedMessage(
-            $this->decryptMessage(
-                $results[0]->getEncryptedMessage(),
-                $user[0]->getPersonalEncryptionKey()
-            )
-        );
+        $encryptedMessage = $results[0]->getEncryptedMessage();
+
+        if ($encryptedMessage !== null) {
+            $summary->setEncryptedMessage(
+                $this->decryptMessage(
+                    encryptedMessage: $encryptedMessage,
+                    personalEncryptionKey: $user[0]->getPersonalEncryptionKey()
+                )
+            );
+        }
 
         return $summary;
     }
 
     /**
+     * Delete a message for a specific user in a message thread
+     *
+     * We retain the message object but remove the encrypted message content.
+     *
+     * @param $threadId
+     * @param $messageId
+     * @param $userId
+     *
+     * @return void
+     */
+    public function deleteMessageForUser($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
+        $messages = Message::filter(
+            "WHERE messageThreadId = ? AND messageId = ? AND receiverUserId = ?",
+            [$threadId, $messageId, $userId]
+        );
+
+        foreach ($messages as $message) {
+            $message->setEncryptedMessage(null);
+            $message->save();
+        }
+    }
+
+    /**
+     * Delete a message for all users in a message thread
+     *
+     * We retain the message object but remove the encrypted message content.
+     *
+     * @param $threadId
      * @param $messageId
      *
      * @return void
      */
-    public function deleteMessage($messageId): void {
-        $messageSummary = $this->getMessageSummaryById($messageId);
-        $messageSummary->remove();
+    public function deleteMessageForAllUsers($threadId, $messageId): void {
+        $messages = Message::filter(
+            "WHERE messageThreadId = ? AND messageId = ?",
+            [$threadId, $messageId]
+        );
+
+        foreach ($messages as $message) {
+            $message->setEncryptedMessage(null);
+            $message->save();
+        }
     }
 
 
@@ -464,7 +602,7 @@ class MessagingService {
         $messageThread = new MessageThread($messageThreadSummary);
         $messageThread->save();
 
-        return $messageThread->getMessageThreadId();
+        return $messageThread->getId();
     }
 
     /**

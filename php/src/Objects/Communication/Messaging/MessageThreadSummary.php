@@ -64,7 +64,7 @@ class MessageThreadSummary extends ActiveRecord {
      * @param int       $messageThreadAccountId
      * @param int       $messageThreadGroupId
      * @param int       $messageCount
-     * @param int       $messageThreadId
+     * @param int       $id
      */
     public function __construct(
         $messageThreadUserId1 = null,
@@ -72,18 +72,18 @@ class MessageThreadSummary extends ActiveRecord {
         $messageThreadAccountId = null,
         $messageThreadGroupId = null,
         $messageCount = 0,
-        $messageThreadId = null,
+        $id = null
     ) {
         $this->messageThreadUserId1 = $messageThreadUserId1;
         $this->messageThreadUserId2 = $messageThreadUserId2;
         $this->messageThreadAccountId = $messageThreadAccountId;
         $this->messageThreadGroupId = $messageThreadGroupId;
         $this->messageCount = $messageCount;
-        $this->id = $messageThreadId;
+        $this->id = $id;
     }
 
 
-    public function getMessageThreadId(): ?int {
+    public function getId(): ?int {
         return $this->id;
     }
 
