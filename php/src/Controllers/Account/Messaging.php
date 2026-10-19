@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiniauth\Controllers\Communication\Messaging;
+namespace Kiniauth\Controllers\Account;
 
 
 use Exception;
