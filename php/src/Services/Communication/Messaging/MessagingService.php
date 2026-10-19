@@ -76,16 +76,14 @@ class MessagingService {
             throw new Exception("No valid users present for saving message");
         }
 
-        // verify that the details in the message and the message thread are consistent
-        $this->validateMessageThreadAccess(
-            thread: $messageThread,
-            users: $users
-        );
+//        // verify that the details in the message and the message thread are consistent
+//        $this->validateMessageThreadAccess(
+//            thread: $messageThread,
+//            users: $users
+//        );
 
         // we calculate the message id by incrementing the message count of the message thread
         $messageId = $messageThread->getMessageCount() + 1;
-        $messageThread->setMessageCount($messageId);
-        $messageThread->save();
 
         // ensure all messages we create have the same date
         $messageDate = date("Y-m-d H:i:s");
@@ -119,6 +117,10 @@ class MessagingService {
             );
             $recipientMessage->save();
         }
+
+        // save the changes to the message thread
+        $messageThread->setMessageCount($messageId);
+        $messageThread->save();
     }
 
     /**
