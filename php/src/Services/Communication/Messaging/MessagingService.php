@@ -452,7 +452,7 @@ class MessagingService {
         $results = Message::filter($query, [$threadId, $userId]);
 
         if (empty($results)) {
-            throw new Exception("No messages found for user (ID: ({$userId}) in thread (ID: ({$threadId}).");
+            throw new Exception("No messages found for user (ID: {$userId}) in thread (ID: {$threadId}).");
         }
 
         $user = User::filter(
