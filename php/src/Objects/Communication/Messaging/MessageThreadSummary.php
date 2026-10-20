@@ -15,6 +15,15 @@ class MessageThreadSummary extends ActiveRecord {
 
 
     /**
+     * Unique primary key
+     *
+     * @var int
+     * @primaryKey
+     * @autoIncrement
+     */
+    protected $id;
+
+    /**
      * Message thread user id (first user)
      *
      * @var int
@@ -52,11 +61,12 @@ class MessageThreadSummary extends ActiveRecord {
     /**
      * MessageSummary constructor.
      *
-     * @param ?int       $messageThreadUserId1
-     * @param ?int       $messageThreadUserId2
-     * @param ?int       $messageThreadAccountId
-     * @param ?int       $messageThreadGroupId
+     * @param int       $messageThreadUserId1
+     * @param int       $messageThreadUserId2
+     * @param int       $messageThreadAccountId
+     * @param int       $messageThreadGroupId
      * @param int       $messageCount
+     * @param int       $id
      */
     public function __construct(
         $messageThreadUserId1 = null,
@@ -64,14 +74,20 @@ class MessageThreadSummary extends ActiveRecord {
         $messageThreadAccountId = null,
         $messageThreadGroupId = null,
         $messageCount = 0,
+        $id = null
     ) {
         $this->messageThreadUserId1 = $messageThreadUserId1;
         $this->messageThreadUserId2 = $messageThreadUserId2;
         $this->messageThreadAccountId = $messageThreadAccountId;
         $this->messageThreadGroupId = $messageThreadGroupId;
         $this->messageCount = $messageCount;
+        $this->id = $id;
     }
 
+
+    public function getId(): ?int {
+        return $this->id;
+    }
 
     public function getMessageThreadUserId1(): ?int {
         return $this->messageThreadUserId1;

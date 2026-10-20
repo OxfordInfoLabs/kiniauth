@@ -11,21 +11,11 @@ namespace Kiniauth\Objects\Communication\Messaging;
 class MessageThread extends MessageThreadSummary{
 
     /**
-     * Unique primary key
-     *
-     * @var int
-     * @primaryKey
-     * @autoIncrement
-     */
-    protected $id;
-
-    /**
      * MessageThread constructor
      *
      * @param MessageThreadSummary $messageThreadSummary
-     * @param ?int $id
      */
-    public function __construct($messageThreadSummary, $id = null) {
+    public function __construct($messageThreadSummary) {
 
         if ($messageThreadSummary) {
             parent::__construct(
@@ -35,7 +25,6 @@ class MessageThread extends MessageThreadSummary{
                 messageThreadGroupId: $messageThreadSummary->getMessageThreadGroupId(),
             );
         }
-        $this->id = $id;
     }
 
     /**
@@ -50,11 +39,8 @@ class MessageThread extends MessageThreadSummary{
             messageThreadAccountId: $this->messageThreadAccountId,
             messageThreadGroupId: $this->messageThreadGroupId,
             messageCount: $this->messageCount,
+            id: $this->id
         );
-    }
-
-    public function getId(): ?int {
-        return $this->id;
     }
 
 }

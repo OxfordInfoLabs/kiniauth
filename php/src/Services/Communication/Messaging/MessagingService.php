@@ -516,17 +516,6 @@ class MessagingService {
     }
 
     /**
-     * Fetch an existing message thread object
-     *
-     * @param int $messageThreadId
-     *
-     * @return MessageThread
-     */
-    public function getMessageThreadById($messageThreadId): MessageThread {
-        return MessageThread::fetch($messageThreadId);
-    }
-
-    /**
      * Fetch all existing message threads at the user level
      *
      * @param int $messageThreadUserId
@@ -592,7 +581,7 @@ class MessagingService {
      * @return void
      */
     public function deleteMessageThread($messageThreadId): void {
-        $messageThreadSummary = $this->getMessageThreadById($messageThreadId);
+        $messageThreadSummary = $this->getMessageThreadSummaryById($messageThreadId);
         $messageThreadSummary->remove();
     }
 }
