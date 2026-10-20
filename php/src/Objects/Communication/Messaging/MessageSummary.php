@@ -17,15 +17,6 @@ class MessageSummary extends ActiveRecord {
 
 
     /**
-     * Unique primary key
-     *
-     * @var int
-     * @primaryKey
-     * @autoIncrement
-     */
-    protected $id;
-
-    /**
      * Message ID
      *
      * Used to link the same message across multiple users
@@ -51,7 +42,6 @@ class MessageSummary extends ActiveRecord {
 
     /**
      * Message text [encrypted]
-     * TODO: encrypt the text
      *
      * @var string
      */
@@ -60,7 +50,7 @@ class MessageSummary extends ActiveRecord {
     /**
      * Message Type
      *
-     * @var MessageType
+     * @var MessageType|null
      */
     protected $messageType;
 
@@ -112,7 +102,6 @@ class MessageSummary extends ActiveRecord {
      * @param ?int           $receiverAccountId
      * @param ?int           $receiverGroupId
      * @param ?DateTime      $messageDate
-     * @param ?int           $id
      * @param ?int           $messageId
      */
     public function __construct(
@@ -125,7 +114,6 @@ class MessageSummary extends ActiveRecord {
         $receiverAccountId = null,
         $receiverGroupId = null,
         $messageDate = null,
-        $id = null,
         $messageId = null
     ) {
         $this->messageThreadId = $messageThreadId;
@@ -137,14 +125,9 @@ class MessageSummary extends ActiveRecord {
         $this->receiverAccountId = $receiverAccountId;
         $this->receiverGroupId = $receiverGroupId;
         $this->messageDate = $messageDate;
-        $this->id = $id;
         $this->messageId = $messageId;
     }
 
-
-    public function getId(): ?int {
-        return $this->id;
-    }
 
     public function getMessageId(): ?int {
         return $this->messageId;

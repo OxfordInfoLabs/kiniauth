@@ -15,12 +15,23 @@ use Kiniauth\Traits\Account\AccountProject;
 class Message extends MessageSummary {
 
     /**
+     * Unique primary key
+     *
+     * @var int
+     * @primaryKey
+     * @autoIncrement
+     */
+    protected $id;
+
+    /**
      * Messages constructor
      *
      * @param MessageSummary $messageSummary
+     * @param ?int $id
+     *
      * @throws Exception
      */
-    public function __construct($messageSummary) {
+    public function __construct($messageSummary, $id = null) {
 
         if ($messageSummary) {
             parent::__construct(
@@ -36,6 +47,8 @@ class Message extends MessageSummary {
                 messageId: $messageSummary->getMessageId()
             );
         }
+
+        $this->id = $id;
     }
 
     /**
@@ -56,6 +69,10 @@ class Message extends MessageSummary {
             messageDate: $this->messageDate,
             messageId: $this->messageId
         );
+    }
+
+    public function getId(): ?int {
+        return $this->id;
     }
 
 }
