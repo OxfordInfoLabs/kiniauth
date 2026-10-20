@@ -46,6 +46,7 @@ class MessagingService {
      *
      * @return void
      * @throws Exception
+     *
      * @objectInterceptorDisabled
      */
     public function saveMessage($messageSummary): void {
@@ -75,11 +76,14 @@ class MessagingService {
             throw new Exception("No valid users present for saving message");
         }
 
-//        // verify that the details in the message and the message thread are consistent
-//        $this->validateMessageThreadAccess(
-//            thread: $messageThread,
-//            users: $users
-//        );
+        // verify that the details in the message and the message thread are consistent
+        $this->verifyThreadAndMessageConsistency(
+            senderUserId: $senderUserId,
+            receiverUserId: $receiverUserId,
+            receiverAccountId: $receiverAccountId,
+            receiverGroupId: $receiverGroupId,
+            messageThread: $messageThread,
+        );
 
         // we calculate the message id by incrementing the message count of the message thread
         $messageId = $messageThread->getMessageCount() + 1;
@@ -117,7 +121,7 @@ class MessagingService {
             $recipientMessage->save();
         }
 
-        // save the changes to the message thread
+        // save the updated message count to the message thread
         $messageThread->setMessageCount($messageId);
         $messageThread->save();
     }
@@ -132,6 +136,7 @@ class MessagingService {
      * @param ?int $receiverGroupId
      *
      * @return array
+     * @throws Exception
      */
     private function getAllValidUsers(
         ?int $senderUserId,
@@ -168,6 +173,11 @@ class MessagingService {
                     "WHERE scope = ? AND account_id IN ($accountPlaceholders)",
                     [Role::SCOPE_ACCOUNT, ...$accountIds]
                 );
+
+                // check to see if the sender is in the groups valid users list
+                if (!in_array($senderUserId, $userIds)) {
+                    throw new exception("Sender user (ID: {$senderUserId}) is not a member of the group (ID: {$receiverGroupId})");
+                }
             }
         }
         elseif ($receiverAccountId) {
@@ -178,6 +188,11 @@ class MessagingService {
                 "WHERE account_id = ? AND scope = ?",
                 [$receiverAccountId, Role::SCOPE_ACCOUNT]
             );
+
+            // check to see if the sender is in the accounts valid users list
+            if (!in_array($senderUserId, $userIds)) {
+                throw new exception("Sender user (ID: {$senderUserId}) is not a member of the account (ID: {$receiverAccountId})");
+            }
         }
         elseif ($receiverUserId) {
 
@@ -185,9 +200,9 @@ class MessagingService {
             $userIds = [$receiverUserId];
         }
 
-        if ($senderUserId) {
-            $userIds[] = $senderUserId;
-        }
+        // add the sender user ID so sender can see their own messages
+        $userIds[] = $senderUserId;
+
 
         // Remove duplicate user IDs before doing the final user lookup
         $userIds = array_values(array_unique($userIds));
@@ -210,78 +225,39 @@ class MessagingService {
     }
 
     /**
-     * Function to validate if the user ids associated with a message
-     * are valid to the message thread its attempting to send to
-     *
-     * @param MessageThreadSummary $thread
-     * @param array $users
-     *
-     * @return void
      * @throws Exception
      */
-    private function validateMessageThreadAccess(
-        MessageThreadSummary $thread,
-        array $users
-    ): void {
+    private function verifyThreadAndMessageConsistency(
+        ?int $senderUserId,
+        ?int $receiverUserId,
+        ?int $receiverAccountId,
+        ?int $receiverGroupId,
+        MessageThreadSummary $messageThread
+    ):void {
 
-        $threadUserId1 = $thread->getMessageThreadUserId1();
-        $threadUserId2 = $thread->getMessageThreadUserId2();
-        $threadAccountId = $thread->getMessageThreadAccountId();
-        $threadGroupId = $thread->getMessageThreadGroupId();
-
-        if ($threadGroupId) {
-
-            $accountIds = AccountGroupMember::values(
-                "member_account_id",
-                "WHERE account_group_id = ?",
-                [$threadGroupId]
-            );
-
-            $allowedUserIds = [];
-
-            if (!empty($accountIds)) {
-
-                $accountIds = array_values(array_unique($accountIds));
-
-                $accountPlaceholders = implode(
-                    ',',
-                    array_fill(0, count($accountIds), '?')
-                );
-
-                $allowedUserIds = UserRole::values(
-                    "scope_id",
-                    "WHERE scope = ? AND account_id IN ($accountPlaceholders)",
-                    [Role::SCOPE_ACCOUNT, ...$accountIds]
-                );
+        // handling group id based consistency
+        if (isset ($receiverGroupId)) {
+            if ($messageThread->getMessageThreadGroupId() !== $receiverGroupId) {
+                throw new Exception('Receiver group id does not match thread group id.');
             }
-
-        } elseif ($threadAccountId) {
-
-            $allowedUserIds = UserRole::values(
-                "scope_id",
-                "WHERE account_id = ? AND scope = ?",
-                [$threadAccountId, Role::SCOPE_ACCOUNT]
-            );
-
-        } elseif ($threadUserId1 || $threadUserId2) {
-
-            $allowedUserIds = [$threadUserId1, $threadUserId2];
-
-        } else {
-            throw new Exception("Message thread has no valid access scope");
         }
 
-        $allowedUserIds = array_map(
-            'intval',
-            array_unique($allowedUserIds)
-        );
+        // handling account id based consistency
+        if (isset ($receiverAccountId)) {
+            if ($messageThread->getMessageThreadAccountId() !== $receiverAccountId) {
+                throw new Exception('Receiver account id does not match thread account id.');
+            }
+        }
 
-        foreach ($users as $user) {
 
-            if (!in_array((int) $user->getId(), $allowedUserIds, true)) {
-                throw new Exception(
-                    "User {$user->getId()} does not have access to message thread {$thread->getId()}"
-                );
+        // handling user id based consistency
+        elseif (isset($receiverUserId)) {
+            if ($messageThread->getMessageThreadUserId1() !== $senderUserId && $messageThread->getMessageThreadUserId2() !== $senderUserId) {
+                throw new Exception('Sender user id does not match thread user ids.');
+            }
+
+            if ($messageThread->getMessageThreadUserId1() !== $receiverUserId && $messageThread->getMessageThreadUserId2() !== $receiverUserId) {
+                throw new Exception('Receiver user id does not match thread user ids.');
             }
         }
     }
@@ -486,9 +462,9 @@ class MessagingService {
      *
      * We retain the message object but remove the encrypted message content.
      *
-     * @param $threadId
-     * @param $messageId
-     * @param $userId
+     * @param int $threadId
+     * @param int $messageId
+     * @param int $userId
      *
      * @return void
      */
@@ -509,8 +485,8 @@ class MessagingService {
      *
      * We retain the message object but remove the encrypted message content.
      *
-     * @param $threadId
-     * @param $messageId
+     * @param int $threadId
+     * @param int $messageId
      *
      * @return void
      */
@@ -531,7 +507,7 @@ class MessagingService {
     /**
      * Fetch an existing message thread and return a summary
      *
-     * @param $messageThreadId
+     * @param int $messageThreadId
      *
      * @return MessageThreadSummary
      */
@@ -540,9 +516,20 @@ class MessagingService {
     }
 
     /**
+     * Fetch an existing message thread object
+     *
+     * @param int $messageThreadId
+     *
+     * @return MessageThread
+     */
+    public function getMessageThreadById($messageThreadId): MessageThread {
+        return MessageThread::fetch($messageThreadId);
+    }
+
+    /**
      * Fetch all existing message threads at the user level
      *
-     * @param $messageThreadUserId
+     * @param int $messageThreadUserId
      *
      * @return array
      */
@@ -550,16 +537,13 @@ class MessagingService {
 
         $query = "WHERE messageThreadUserId1 = ? OR messageThreadUserId2 = ?";
 
-        $results = MessageThread::filter($query, [$messageThreadUserId, $messageThreadUserId]);
-        return array_map(function ($item) {
-            return $item->returnSummary();
-        }, $results);
+        return MessageThread::filter($query, [$messageThreadUserId, $messageThreadUserId]);
     }
 
     /**
      * Fetch all existing message threads at the account level
      *
-     * @param $messageThreadAccountId
+     * @param int $messageThreadAccountId
      *
      * @return array
      */
@@ -567,16 +551,13 @@ class MessagingService {
 
         $query = "WHERE messageThreadAccountId = ?";
 
-        $results = MessageThread::filter($query, [$messageThreadAccountId]);
-        return array_map(function ($item) {
-            return $item->returnSummary();
-        }, $results);
+        return MessageThread::filter($query, [$messageThreadAccountId]);
     }
 
     /**
      * Fetch all existing message threads at the group level
      *
-     * @param $messageThreadGroupId
+     * @param int $messageThreadGroupId
      *
      * @return array
      */
@@ -584,10 +565,7 @@ class MessagingService {
 
         $query = "WHERE messageThreadGroupId = ?";
 
-        $results = MessageThread::filter($query, [$messageThreadGroupId]);
-        return array_map(function ($item) {
-            return $item->returnSummary();
-        }, $results);
+        return MessageThread::filter($query, [$messageThreadGroupId]);
     }
 
 
@@ -613,8 +591,8 @@ class MessagingService {
      *
      * @return void
      */
-    public function deleteMessageThread($messageThreadId) {
-        $messageThreadSummary = $this->getMessageThreadSummaryById($messageThreadId);
+    public function deleteMessageThread($messageThreadId): void {
+        $messageThreadSummary = $this->getMessageThreadById($messageThreadId);
         $messageThreadSummary->remove();
     }
 }

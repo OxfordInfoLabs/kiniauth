@@ -149,7 +149,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[0],
                 encryptedMessage: "hello world!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[1],
@@ -169,7 +169,7 @@ class MessagingServiceTest extends TestBase {
 
         $this->assertEquals($this->messageThreadIds[0], $messageGet[0]->getMessageThreadId());
         $this->assertEquals("hello world!", $messageGet[0]->getEncryptedMessage());
-        $this->assertEquals("general", $messageGet[0]->getMessageType()->value);
+        $this->assertEquals("general", $messageGet[0]->getMessageType());
         $this->assertEquals($this->userIds[0], $messageGet[0]->getSenderUserId());
         $this->assertEquals($this->userIds[0], $messageGet[0]->getReceiverUserId());
         $this->assertNotNull($messageGet[0]->getMessageDate());
@@ -185,7 +185,7 @@ class MessagingServiceTest extends TestBase {
 
         $this->assertEquals($this->messageThreadIds[0], $messageGet[0]->getMessageThreadId());
         $this->assertEquals("hello world!", $messageGet[0]->getEncryptedMessage());
-        $this->assertEquals("general", $messageGet[0]->getMessageType()->value);
+        $this->assertEquals("general", $messageGet[0]->getMessageType());
         $this->assertEquals($this->userIds[0], $messageGet[0]->getSenderUserId());
         $this->assertEquals($this->userIds[1], $messageGet[0]->getReceiverUserId());
         $this->assertNotNull($messageGet[0]->getMessageDate());
@@ -200,7 +200,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[2],
                 encryptedMessage: "hello world!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: null,
@@ -220,7 +220,7 @@ class MessagingServiceTest extends TestBase {
 
         $this->assertEquals($this->messageThreadIds[2], $messageGet[0]->getMessageThreadId());
         $this->assertEquals("hello world!", $messageGet[0]->getEncryptedMessage());
-        $this->assertEquals("general", $messageGet[0]->getMessageType()->value);
+        $this->assertEquals("general", $messageGet[0]->getMessageType());
         $this->assertEquals($this->userIds[0], $messageGet[0]->getSenderUserId());
         $this->assertEquals($this->userIds[0], $messageGet[0]->getReceiverUserId());
         $this->assertEquals(99, $messageGet[0]->getReceiverAccountId());
@@ -237,7 +237,7 @@ class MessagingServiceTest extends TestBase {
 
         $this->assertEquals($this->messageThreadIds[2], $messageGet[0]->getMessageThreadId());
         $this->assertEquals("hello world!", $messageGet[0]->getEncryptedMessage());
-        $this->assertEquals("general", $messageGet[0]->getMessageType()->value);
+        $this->assertEquals("general", $messageGet[0]->getMessageType());
         $this->assertEquals($this->userIds[0], $messageGet[0]->getSenderUserId());
         $this->assertEquals($this->userIds[1], $messageGet[0]->getReceiverUserId());
         $this->assertEquals(99, $messageGet[0]->getReceiverAccountId());
@@ -253,7 +253,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[3],
                 encryptedMessage: "hello world!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: null,
@@ -273,7 +273,7 @@ class MessagingServiceTest extends TestBase {
 
         $this->assertEquals($this->messageThreadIds[3], $messageGet[0]->getMessageThreadId());
         $this->assertEquals("hello world!", $messageGet[0]->getEncryptedMessage());
-        $this->assertEquals("general", $messageGet[0]->getMessageType()->value);
+        $this->assertEquals("general", $messageGet[0]->getMessageType());
         $this->assertEquals($this->userIds[0], $messageGet[0]->getSenderUserId());
         $this->assertEquals(99, $messageGet[0]->getReceiverGroupId());
         $this->assertNotNull($messageGet[0]->getMessageDate());
@@ -289,7 +289,7 @@ class MessagingServiceTest extends TestBase {
 
         $this->assertEquals($this->messageThreadIds[3], $messageGet[0]->getMessageThreadId());
         $this->assertEquals("hello world!", $messageGet[0]->getEncryptedMessage());
-        $this->assertEquals("general", $messageGet[0]->getMessageType()->value);
+        $this->assertEquals("general", $messageGet[0]->getMessageType());
         $this->assertEquals($this->userIds[0], $messageGet[0]->getSenderUserId());
         $this->assertEquals($this->userIds[1], $messageGet[0]->getReceiverUserId());
         $this->assertEquals(99, $messageGet[0]->getReceiverGroupId());
@@ -309,7 +309,7 @@ class MessagingServiceTest extends TestBase {
                 new MessageSummary(
                     messageThreadId: $this->messageThreadIds[0],
                     encryptedMessage: "hello world!",
-                    messageType: MessageType::General,
+                    messageType: "general", //MessageType::General,
                     senderUserId: 99,
                     senderAccountId: null,
                     receiverUserId: 100,
@@ -330,7 +330,7 @@ class MessagingServiceTest extends TestBase {
                 new MessageSummary(
                     messageThreadId: $this->messageThreadIds[2],
                     encryptedMessage: "hello world!",
-                    messageType: MessageType::General,
+                    messageType: "general", //MessageType::General,
                     senderUserId: $this->userIds[0],
                     senderAccountId: null,
                     receiverUserId: null,
@@ -351,7 +351,7 @@ class MessagingServiceTest extends TestBase {
                 new MessageSummary(
                     messageThreadId: $this->messageThreadIds[3],
                     encryptedMessage: "hello world!",
-                    messageType: MessageType::General,
+                    messageType: "general", //MessageType::General,
                     senderUserId: $this->userIds[0],
                     senderAccountId: null,
                     receiverUserId: null,
@@ -376,7 +376,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[0],
                 encryptedMessage: "hello world!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[1],
@@ -386,7 +386,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[0],
                 encryptedMessage: "hello back!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[1],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[0],
@@ -396,7 +396,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[0],
                 encryptedMessage: "this is exciting!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[1],
@@ -406,7 +406,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[1],
                 encryptedMessage: "ignore this message!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[1],
@@ -450,7 +450,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[0],
                 encryptedMessage: "hello world!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[1],
@@ -460,7 +460,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[0],
                 encryptedMessage: "hello back!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[1],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[0],
@@ -470,7 +470,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[0],
                 encryptedMessage: "this is exciting!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[1],
@@ -480,7 +480,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[1],
                 encryptedMessage: "ignore this message!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[1],
@@ -529,7 +529,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[0],
                 encryptedMessage: "hello world!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[1],
@@ -575,7 +575,7 @@ class MessagingServiceTest extends TestBase {
             new MessageSummary(
                 messageThreadId: $this->messageThreadIds[0],
                 encryptedMessage: "hello world!",
-                messageType: MessageType::General,
+                messageType: "general", //MessageType::General,
                 senderUserId: $this->userIds[0],
                 senderAccountId: null,
                 receiverUserId: $this->userIds[1],
