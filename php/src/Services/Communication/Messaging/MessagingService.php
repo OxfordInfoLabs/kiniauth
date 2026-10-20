@@ -5,7 +5,6 @@ namespace Kiniauth\Services\Communication\Messaging;
 
 
 use Exception;
-use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Objects\Communication\Messaging\Message;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
@@ -14,7 +13,6 @@ use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
-use Kiniauth\Objects\Security\UserSummary;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\Logging\Logger;
 

@@ -50,7 +50,7 @@ class MessageSummary extends ActiveRecord {
     /**
      * Message Type
      *
-     * @var MessageType|null
+     * @var string
      */
     protected $messageType;
 
@@ -93,16 +93,16 @@ class MessageSummary extends ActiveRecord {
     /**
      * MessageSummary constructor.
      *
-     * @param ?int           $messageThreadId
-     * @param ?string        $encryptedMessage
-     * @param ?MessageType   $messageType
-     * @param ?int           $senderUserId
-     * @param ?int           $senderAccountId
-     * @param ?int           $receiverUserId
-     * @param ?int           $receiverAccountId
-     * @param ?int           $receiverGroupId
-     * @param ?DateTime      $messageDate
-     * @param ?int           $messageId
+     * @param ?int      $messageThreadId
+     * @param ?string   $encryptedMessage
+     * @param ?string   $messageType
+     * @param ?int      $senderUserId
+     * @param ?int      $senderAccountId
+     * @param ?int      $receiverUserId
+     * @param ?int      $receiverAccountId
+     * @param ?int      $receiverGroupId
+     * @param ?DateTime $messageDate
+     * @param ?int      $messageId
      */
     public function __construct(
         $messageThreadId = null,
@@ -161,11 +161,11 @@ class MessageSummary extends ActiveRecord {
         $this->encryptedMessage = $encryptedMessage;
     }
 
-    public function getMessageType(): ?MessageType {
+    public function getMessageType(): ?string {
         return $this->messageType;
     }
 
-    public function setMessageType(?MessageType $messageType): void {
+    public function setMessageType(?string $messageType): void {
         $this->messageType = $messageType;
     }
 
