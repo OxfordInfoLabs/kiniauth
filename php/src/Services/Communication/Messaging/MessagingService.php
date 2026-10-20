@@ -14,7 +14,6 @@ use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kinikit\Core\Configuration\Configuration;
-use Kinikit\Core\Logging\Logger;
 
 
 /**
@@ -47,6 +46,7 @@ class MessagingService {
      *
      * @return void
      * @throws Exception
+     * @objectInterceptorDisabled
      */
     public function saveMessage($messageSummary): void {
 
@@ -70,8 +70,6 @@ class MessagingService {
             receiverAccountId: $receiverAccountId,
             receiverGroupId: $receiverGroupId
         );
-
-        Logger::log("Users: " . json_encode($users));
 
         if (empty($users)) {
             throw new Exception("No valid users present for saving message");

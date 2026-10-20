@@ -4,7 +4,6 @@ namespace Kiniauth\Controllers\Account;
 
 
 use Exception;
-use Kiniauth\Objects\Communication\Messaging\Message;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
 use Kiniauth\Objects\Security\User;
