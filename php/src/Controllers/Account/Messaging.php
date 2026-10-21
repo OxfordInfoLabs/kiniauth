@@ -31,6 +31,25 @@ class Messaging {
     }
 
     /**
+     * @http PATCH /message
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param string $newMessage
+     * @param int $userId
+     *
+     * @returns void
+     * @throws Exception
+     */
+    public function editMessage($threadId, $messageId, $newMessage, $userId = User::LOGGED_IN_USER,): void {
+        $this->messagingService->editMessage(
+            threadId: $threadId,
+            messageId: $messageId,
+            newMessage: $newMessage
+        );
+    }
+
+    /**
      * @http GET /messageLatest
      *
      * @param int $threadId

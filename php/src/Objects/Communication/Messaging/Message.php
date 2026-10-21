@@ -39,12 +39,13 @@ class Message extends MessageSummary {
                 encryptedMessage: $messageSummary->getEncryptedMessage(),
                 messageType: $messageSummary->getMessageType(),
                 senderUserId: $messageSummary->getSenderUserId(),
+                senderUserName: $messageSummary->getSenderUserName(),
                 senderAccountId: $messageSummary->getSenderAccountId(),
                 receiverUserId: $messageSummary->getReceiverUserId(),
                 receiverAccountId: $messageSummary->getReceiverAccountId(),
                 receiverGroupId: $messageSummary->getReceiverGroupId(),
                 messageDate: new DateTime($messageSummary->getMessageDate()),
-                messageId: $messageSummary->getMessageId()
+                messageId: $messageSummary->getMessageId(),
             );
         }
 
@@ -62,6 +63,7 @@ class Message extends MessageSummary {
             encryptedMessage: $this->encryptedMessage,
             messageType: $this->messageType,
             senderUserId: $this->senderUserId,
+            senderUserName: $this->senderUserName,
             senderAccountId: $this->senderAccountId,
             receiverUserId: $this->receiverUserId,
             receiverAccountId: $this->receiverAccountId,

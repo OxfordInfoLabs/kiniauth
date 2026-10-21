@@ -62,6 +62,13 @@ class MessageSummary extends ActiveRecord {
     protected $senderUserId;
 
     /**
+     * Sender User Name
+     *
+     * @var string
+     */
+    protected $senderUserName;
+
+    /**
      * Sender User Account ID
      *
      * @var int
@@ -97,6 +104,7 @@ class MessageSummary extends ActiveRecord {
      * @param ?string   $encryptedMessage
      * @param ?string   $messageType
      * @param ?int      $senderUserId
+     * @param ?string    $senderUserName
      * @param ?int      $senderAccountId
      * @param ?int      $receiverUserId
      * @param ?int      $receiverAccountId
@@ -105,10 +113,11 @@ class MessageSummary extends ActiveRecord {
      * @param ?int      $messageId
      */
     public function __construct(
-        $messageThreadId = null,
-        $encryptedMessage = null,
+        $messageThreadId,
+        $encryptedMessage,
         $messageType = null,
         $senderUserId = null,
+        $senderUserName = null,
         $senderAccountId = null,
         $receiverUserId = null,
         $receiverAccountId = null,
@@ -120,6 +129,7 @@ class MessageSummary extends ActiveRecord {
         $this->encryptedMessage = $encryptedMessage;
         $this->messageType = $messageType;
         $this->senderUserId = $senderUserId;
+        $this->senderUserName = $senderUserName;
         $this->senderAccountId = $senderAccountId;
         $this->receiverUserId = $receiverUserId;
         $this->receiverAccountId = $receiverAccountId;
@@ -183,6 +193,14 @@ class MessageSummary extends ActiveRecord {
 
     public function setSenderAccountId(?int $senderAccountId): void {
         $this->senderAccountId = $senderAccountId;
+    }
+
+    public function getSenderUserName(): ?string {
+        return $this->senderUserName;
+    }
+
+    public function setSenderUserName(?string $senderUserName): void {
+        $this->senderUserName = $senderUserName;
     }
 
     public function getReceiverUserId(): ?int {

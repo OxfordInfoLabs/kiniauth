@@ -96,7 +96,7 @@ class MessagingService {
             $personalEncryptionKey = $user->getPersonalEncryptionKey();
 
             if (!$personalEncryptionKey) {
-                throw new Exception("User {$user->getId()} does not have a personal encryption key");
+                throw new Exception("User (ID: {$user->getId()}) does not have a personal encryption key");
             }
 
             $encryptedMessage = $this->encryptMessage(
@@ -110,6 +110,7 @@ class MessagingService {
                     encryptedMessage: $encryptedMessage,
                     messageType: $messageSummary->getMessageType(),
                     senderUserId: $messageSummary->getSenderUserId(),
+                    senderUserName: $messageSummary->getSenderUserName(),
                     senderAccountId: $messageSummary->getSenderAccountId(),
                     receiverUserId: $user->getId(),
                     receiverAccountId: $messageSummary->getReceiverAccountId(),
@@ -361,6 +362,78 @@ class MessagingService {
         }
 
         return $decryptedMessage;
+    }
+
+    /**
+     * Edit the encrypted message text of an existing message
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param string $newMessage
+     * @param int $userId
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function editMessage(int $threadId, int $messageId, string $newMessage, $userId = User::LOGGED_IN_USER): void {
+
+        // fetch all messages we want to edit
+        $messages = Message::filter(
+            "WHERE messageThreadId = ? AND messageId = ?",
+            [$threadId, $messageId]
+        );
+
+        if (empty($messages)) {
+            throw new Exception("Message (ID: {$messageId}) not found in thread (ID: {$threadId}).");
+        }
+
+        $receiverKeys = [];
+
+        // get all the personal encryption keys for all the recipients
+        foreach ($messages as $message) {
+
+            $senderUserId = $message->getSenderUserId();
+            $receiverUserId = $message->getReceiverUserId();
+
+            // only allow the user who sent the message to edit it
+            if ($senderUserId !== $userId) {
+                throw new Exception("User (ID: {$userId}) is not the sender of the message (ID: {$messageId})");
+            }
+
+            $user = User::filter(
+                "WHERE status = 'ACTIVE' AND id = ?",
+                [$receiverUserId]
+            );
+
+            if (empty($user)) {
+                throw new Exception("User (ID: {$receiverUserId}) not found.");
+            }
+
+            $personalEncryptionKey = $user[0]->getPersonalEncryptionKey();
+
+            if (!$personalEncryptionKey) {
+                throw new Exception("User (ID: {$receiverUserId}) does not have a personal encryption key");
+            }
+
+            $receiverKeys[$receiverUserId] = $personalEncryptionKey;
+        }
+
+        // set a new message date for all messages
+        $messageDate = date("Y-m-d H:i:s");
+
+        foreach ($messages as $message) {
+
+            // encrypt new message
+            $encryptedMessage = $this->encryptMessage(
+                message: $newMessage,
+                personalEncryptionKey: $receiverKeys[$message->getReceiverUserId()]
+            );
+
+            // update message with new details
+            $message->setEncryptedMessage($encryptedMessage);
+            $message->setMessageDate($messageDate);
+            $message->save();
+        }
     }
 
     /**
