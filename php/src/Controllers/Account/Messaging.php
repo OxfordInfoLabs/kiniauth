@@ -5,6 +5,7 @@ namespace Kiniauth\Controllers\Account;
 
 use Exception;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
+use Kiniauth\Objects\Communication\Messaging\MessageReactionSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Services\Communication\Messaging\MessagingService;
@@ -110,6 +111,38 @@ class Messaging {
         $this->messagingService->deleteMessageForAllUsers(
             threadId: $threadId,
             messageId: $messageId
+        );
+    }
+
+    /**
+     * @http POST /message/reaction
+     *
+     * @param MessageReactionSummary $messageReactionSummary
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function saveMessageReaction($messageReactionSummary): void {
+        $this->messagingService->saveMessageReaction(
+            messageReactionSummary: $messageReactionSummary
+        );
+    }
+
+    /**
+     * @http DELETE /message/reaction
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param int $userId
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function deleteMessageReaction($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
+        $this->messagingService->deleteMessageReaction(
+            threadId: $threadId,
+            messageId: $messageId,
+            userId: $userId
         );
     }
 

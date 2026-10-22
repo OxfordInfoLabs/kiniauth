@@ -7,12 +7,19 @@ namespace Kiniauth\Services\Communication\Messaging;
 use Exception;
 use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Objects\Communication\Messaging\Message;
+use Kiniauth\Objects\Communication\Messaging\MessageReaction;
+use Kiniauth\Objects\Communication\Messaging\MessageReactionSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageThread;
 use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
+use Kiniauth\Objects\Communication\Notification\Notification;
+use Kiniauth\Objects\Communication\Notification\NotificationSummary;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
+use Kiniauth\Objects\Security\UserCommunicationData;
 use Kiniauth\Objects\Security\UserRole;
+use Kiniauth\Services\Communication\Notification\CommunicationMethod\EmailNotificationCommunicationMethod;
+use Kiniauth\Services\Communication\Notification\NotificationService;
 use Kinikit\Core\Configuration\Configuration;
 
 
@@ -24,7 +31,10 @@ class MessagingService {
 
     /**
      */
-    public function __construct() {
+    public function __construct(
+        private readonly NotificationService                    $notificationService,
+        private readonly EmailNotificationCommunicationMethod   $communicationMethod
+    ) {
     }
 
 
@@ -51,7 +61,7 @@ class MessagingService {
      */
     public function saveMessage($messageSummary): void {
 
-        $threadId = $messageSummary->getMessageThreadId() ?? null;
+        $threadId = $messageSummary->getMessageThreadId();
 
         if (!$threadId) {
             throw new Exception("Message thread id is required to save a message");
@@ -59,10 +69,10 @@ class MessagingService {
 
         $messageThread = $this->getMessageThreadSummaryById($threadId);
 
-        $senderUserId = $messageSummary->getSenderUserId() ?? null;
-        $receiverUserId = $messageSummary->getReceiverUserId() ?? null;
-        $receiverAccountId = $messageSummary->getReceiverAccountId() ?? null;
-        $receiverGroupId = $messageSummary->getReceiverGroupId() ?? null;
+        $senderUserId = $messageSummary->getSenderUserId();
+        $receiverUserId = $messageSummary->getReceiverUserId();
+        $receiverAccountId = $messageSummary->getReceiverAccountId();
+        $receiverGroupId = $messageSummary->getReceiverGroupId();
 
         // get all the users associated with the message
         $users = $this->getAllValidUsers(
@@ -120,6 +130,24 @@ class MessagingService {
                 )
             );
             $recipientMessage->save();
+
+            // send a notification to all recipients except the sender
+            if ($user->getId() !== $messageSummary->getSenderUserId()) {
+
+                // create a notification for each message we create
+                $notificationId = $this->notificationService->createNotification(
+                    new NotificationSummary(
+                        "New Message Notification",
+                        "You have received a new message.",
+                        new UserCommunicationData($user->getId())
+                    )
+                );
+
+                // send an email of this notification to the recipient
+                $this->communicationMethod->processIndividualNotification(
+                    Notification::fetch($notificationId)
+                );
+            }
         }
 
         // save the updated message count to the message thread
@@ -375,7 +403,12 @@ class MessagingService {
      * @return void
      * @throws Exception
      */
-    public function editMessage(int $threadId, int $messageId, string $newMessage, $userId = User::LOGGED_IN_USER): void {
+    public function editMessage(
+        int $threadId,
+        int $messageId,
+        string $newMessage,
+        $userId = User::LOGGED_IN_USER
+    ): void {
 
         // fetch all messages we want to edit
         $messages = Message::filter(
@@ -576,6 +609,157 @@ class MessagingService {
     }
 
 
+    /**
+     * Function to give a reaction to a message
+     *
+     * @param MessageReactionSummary $messageReactionSummary
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function saveMessageReaction(MessageReactionSummary $messageReactionSummary): void {
+
+        $reaction = $messageReactionSummary->getReaction();
+        $threadId = $messageReactionSummary->getMessageThreadId();
+        $messageId = $messageReactionSummary->getMessageId();
+        $userId = $messageReactionSummary->getSenderUserId();
+        $userName = $messageReactionSummary->getSenderUserName();
+
+        if (trim($reaction) === "") {
+            throw new Exception("Reaction cannot be empty");
+        }
+
+        // get all the messages
+        $messages = Message::filter(
+            "WHERE messageThreadId = ? AND messageID = ?",
+            [$threadId, $messageId]
+        );
+
+        if (empty($messages)) {
+            throw new Exception("Message (ID: {$messageId}) not found in thread (ID: {$threadId})");
+        }
+
+        // verify that the user is a recipient of the message
+        $userMessage = array_values(array_filter(
+            $messages,
+            fn($message) => $message->getReceiverUserId() === $userId
+        ));
+
+        if (empty($userMessage)) {
+            throw new Exception("User (ID: {$userId}) is not a recipient of message " .
+                "(ID: {$messageId}) in thread (ID: {$threadId})"
+            );
+        }
+
+        // check to see if this user has reacted already
+        $existingReaction = MessageReaction::filter(
+            "WHERE messageThreadId = ? AND messageId = ? AND senderUserId = ?",
+            [$threadId, $messageId, $userId]
+        );
+
+        $reactionDate = date("Y-m-d H:i:s");
+
+        if (!empty($existingReaction)) {
+
+            // update the existing reaction with new data
+            $existingReaction[0]->setReaction($reaction);
+            $existingReaction[0]->setReactionDate($reactionDate);
+            $existingReaction[0]->save();
+        }
+        else {
+            // otherwise create a new reaction
+            $reaction = new MessageReaction(
+                new MessageReactionSummary(
+                    messageId: $messageId,
+                    messageThreadId:$threadId,
+                    reaction: $reaction,
+                    senderUserId: $userId,
+                    senderUserName: $userName,
+                    reactionDate: $reactionDate,
+                )
+            );
+            $reaction->save();
+        }
+    }
+
+    /**
+     * Function to get all the message reactions for a message
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param int $userId
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getMessageReactions(
+        int $threadId,
+        int $messageId,
+        $userId = User::LOGGED_IN_USER
+    ): array {
+
+        // verify that the user has access to this message
+        $messages = Message::filter(
+            "WHERE messageThreadId = ? AND messageId = ? AND receiverUserId = ?",
+            [$threadId, $messageId, $userId]
+        );
+
+        if (empty($messages)) {
+            throw new Exception("User (ID: {$userId}) is not a recipient of message " .
+                "(ID: {$messageId}) in thread (ID: {$threadId})"
+            );
+        }
+
+        // Fetch all reactions for the message
+        $reactions = MessageReaction::filter(
+            "WHERE messageThreadId = ? AND messageId = ? ORDER BY id DESC",
+            [$threadId, $messageId]
+        );
+
+        return array_map(
+            fn($reaction) => $reaction->getSummary(),
+            $reactions
+        );
+    }
+
+    /**
+     * Function to remove a reaction from a message
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param int $userId
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function deleteMessageReaction(
+        int $threadId,
+        int $messageId,
+        $userId = User::LOGGED_IN_USER
+    ): void {
+        // verify that the user has access to this message
+        $messages = Message::filter(
+            "WHERE messageThreadId = ? AND messageId = ? AND receiverUserId = ?",
+            [$threadId, $messageId, $userId]
+        );
+
+        if (empty($messages)) {
+            throw new Exception("User (ID: {$userId}) is not a recipient of message " .
+                "(ID: {$messageId}) in thread (ID: {$threadId})"
+            );
+        }
+
+        // Fetch the users reaction for the message
+        $reactions = MessageReaction::filter(
+            "WHERE messageThreadId = ? AND messageId = ? AND senderUserId = ?",
+            [$threadId, $messageId, $userId]
+        );
+
+        // Remove all reactions for the message from this user
+        foreach ($reactions as $reaction) {
+            $reaction->remove();
+        }
+    }
 
     /**
      * Fetch an existing message thread and return a summary

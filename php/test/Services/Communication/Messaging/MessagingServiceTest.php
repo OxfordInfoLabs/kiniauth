@@ -9,11 +9,15 @@ use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageThread;
 use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
+use Kiniauth\Objects\Communication\Notification\Notification;
+use Kiniauth\Objects\Communication\Notification\UserNotification;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Communication\Messaging\MessagingService;
+use Kiniauth\Services\Communication\Notification\CommunicationMethod\EmailNotificationCommunicationMethod;
+use Kiniauth\Services\Communication\Notification\NotificationService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Communication\Messaging\MessageType;
@@ -30,6 +34,8 @@ class MessagingServiceTest extends TestBase {
     private $messagingService;
     private array $users;
     private array $messageThreadIds;
+    private NotificationService $notificationService;
+    private EmailNotificationCommunicationMethod $communicationMethod;
 
     /**
      * @throws InvalidLoginException
@@ -39,7 +45,13 @@ class MessagingServiceTest extends TestBase {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
-        $this->messagingService = new MessagingService();
+        $this->notificationService = Container::instance()->get(NotificationService::class);
+        $this->communicationMethod = $this->createMock(EmailNotificationCommunicationMethod::class);
+
+        $this->messagingService = new MessagingService(
+            $this->notificationService,
+            $this->communicationMethod
+        );
 
         // create a test group with test users
         $userService = Container::instance()->get(UserService::class);
@@ -130,8 +142,27 @@ class MessagingServiceTest extends TestBase {
     public function tearDown(): void {
         parent::tearDownAfterClass();
 
+        // clean up any user data created in other tables
         foreach ($this->users as $user) {
             $user->remove();
+
+            $userNotifications = UserNotification::filter(
+                "WHERE user_id = ?",
+                [$user->getId()]
+            );
+
+            foreach ($userNotifications as $userNotification) {
+                $userNotification->remove();
+            }
+
+            $notifications = Notification::filter(
+                "WHERE user_id = ?",
+                [$user->getId()]
+            );
+
+            foreach ($notifications as $notification) {
+                $notification->remove();
+            }
         }
 
         $accountGroupMember = AccountGroupMember::filter("WHERE account_group_id = 99");
