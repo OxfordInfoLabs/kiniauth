@@ -139,15 +139,15 @@ class MessagingService {
                 $notificationId = $this->notificationService->createNotification(
                     new NotificationSummary(
                         "New Message Notification",
-                        "You have received a new message.",
+                        "You have received a new message from thread (ID: {$threadId}).",
                         new UserCommunicationData($user->getId())
                     )
                 );
 
                 // send an email of this notification to the recipient
-                $this->communicationMethod->processIndividualNotification(
-                    Notification::fetch($notificationId)
-                );
+//                $this->communicationMethod->processIndividualNotification(
+//                    Notification::fetch($notificationId)
+//                );
             }
         }
 
