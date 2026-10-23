@@ -119,6 +119,7 @@ class MessagingService {
                     messageThreadId: $messageSummary->getMessageThreadId(),
                     encryptedMessage: $encryptedMessage,
                     messageType: $messageSummary->getMessageType(),
+                    messageReactions: [],
                     senderUserId: $messageSummary->getSenderUserId(),
                     senderUserName: $messageSummary->getSenderUserName(),
                     senderAccountId: $messageSummary->getSenderAccountId(),
@@ -472,13 +473,15 @@ class MessagingService {
     /**
      * Get all messages from a thread
      *
+     * Will include reactions
+     *
      * @param int $threadId
      * @param int $userId
      *
      * @return array
      * @throws Exception
      */
-    public function getAllMessagesFromThread($threadId, $userId = User::LOGGED_IN_USER): array {
+    public function getAllMessagesFromThreadAndReactions($threadId, $userId = User::LOGGED_IN_USER): array {
 
         $query = "WHERE messageThreadId = ? AND receiverUserId = ? ORDER BY id DESC";
 
@@ -513,6 +516,20 @@ class MessagingService {
                 );
             }
 
+            // Fetch all reactions for this message
+            $reactions = MessageReaction::filter(
+                "WHERE messageThreadId = ? AND messageId = ? ORDER BY id DESC",
+                [$threadId, $summary->getMessageId()]
+            );
+
+            $reactionSummaries = array_map(
+                fn($reaction) => $reaction->returnSummary(),
+                $reactions
+            );
+
+            // Attach the reactions to the message summary
+            $summary->setMessageReactions($reactionSummaries);
+
             $decryptedResults[] = $summary;
         }
 
@@ -521,6 +538,8 @@ class MessagingService {
 
     /**
      * Get the latest message from a thead
+     *
+     * Won't include reactions
      *
      * @param int $threadId
      * @param int $userId
@@ -631,7 +650,7 @@ class MessagingService {
 
         // get all the messages
         $messages = Message::filter(
-            "WHERE messageThreadId = ? AND messageID = ?",
+            "WHERE messageThreadId = ? AND messageId = ?",
             [$threadId, $messageId]
         );
 

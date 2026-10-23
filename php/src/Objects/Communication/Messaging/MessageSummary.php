@@ -55,6 +55,14 @@ class MessageSummary extends ActiveRecord {
     protected $messageType;
 
     /**
+     * Message Reactions array
+     *
+     * @unmapped
+     * @var array
+     */
+    protected $messageReactions = [];
+
+    /**
      * Sender User ID
      *
      * @var int
@@ -62,7 +70,7 @@ class MessageSummary extends ActiveRecord {
     protected $senderUserId;
 
     /**
-     * Sender User Name
+     * Sender Username
      *
      * @var string
      */
@@ -103,8 +111,9 @@ class MessageSummary extends ActiveRecord {
      * @param ?int      $messageThreadId
      * @param ?string   $encryptedMessage
      * @param ?string   $messageType
+     * @param array     $messageReactions
      * @param ?int      $senderUserId
-     * @param ?string    $senderUserName
+     * @param ?string   $senderUserName
      * @param ?int      $senderAccountId
      * @param ?int      $receiverUserId
      * @param ?int      $receiverAccountId
@@ -116,6 +125,7 @@ class MessageSummary extends ActiveRecord {
         $messageThreadId,
         $encryptedMessage,
         $messageType = null,
+        $messageReactions = [],
         $senderUserId = null,
         $senderUserName = null,
         $senderAccountId = null,
@@ -128,6 +138,7 @@ class MessageSummary extends ActiveRecord {
         $this->messageThreadId = $messageThreadId;
         $this->encryptedMessage = $encryptedMessage;
         $this->messageType = $messageType;
+        $this->messageReactions = $messageReactions;
         $this->senderUserId = $senderUserId;
         $this->senderUserName = $senderUserName;
         $this->senderAccountId = $senderAccountId;
@@ -177,6 +188,14 @@ class MessageSummary extends ActiveRecord {
 
     public function setMessageType(?string $messageType): void {
         $this->messageType = $messageType;
+    }
+
+    public function getMessageReactions(): ?array {
+        return $this->messageReactions;
+    }
+
+    public function setMessageReactions(?array $messageReactions): void {
+        $this->messageReactions = $messageReactions;
     }
 
     public function getSenderUserId(): ?int {

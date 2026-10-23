@@ -76,7 +76,7 @@ class Messaging {
      * @throws Exception
      */
     public function getAllMessagesByThread($threadId, $userId = User::LOGGED_IN_USER): array {
-        return $this->messagingService->getAllMessagesFromThread(
+        return $this->messagingService->getAllMessagesFromThreadAndReactions(
             threadId: $threadId,
             userId: $userId
         );
