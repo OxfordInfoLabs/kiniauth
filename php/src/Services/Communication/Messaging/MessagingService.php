@@ -175,6 +175,10 @@ class MessagingService {
         ?int $receiverGroupId
     ): array {
 
+        if (!$receiverUserId && !$receiverAccountId && !$receiverGroupId) {
+            throw new Exception("At least one recipient parameter must be provided.");
+        }
+
         $userIds = [];
 
         // If a higher-level recipient is present, lower-level recipient IDs are ignored
@@ -423,16 +427,16 @@ class MessagingService {
 
         $receiverKeys = [];
 
+        // only allow the user who sent the message to edit it
+        if ($messages[0]->getSenderUserId() !== $userId) {
+            throw new Exception("User (ID: {$userId}) is not the sender of the message (ID: {$messageId})."
+                . " Only the sender can edit a message.");
+        }
+
         // get all the personal encryption keys for all the recipients
         foreach ($messages as $message) {
 
-            $senderUserId = $message->getSenderUserId();
             $receiverUserId = $message->getReceiverUserId();
-
-            // only allow the user who sent the message to edit it
-            if ($senderUserId !== $userId) {
-                throw new Exception("User (ID: {$userId}) is not the sender of the message (ID: {$messageId})");
-            }
 
             $user = User::filter(
                 "WHERE status = 'ACTIVE' AND id = ?",
@@ -481,7 +485,7 @@ class MessagingService {
      * @return array
      * @throws Exception
      */
-    public function getAllMessagesFromThreadAndReactions($threadId, $userId = User::LOGGED_IN_USER): array {
+    public function getAllMessagesAndReactionsFromThread($threadId, $userId = User::LOGGED_IN_USER): array {
 
         $query = "WHERE messageThreadId = ? AND receiverUserId = ? ORDER BY id DESC";
 
@@ -592,12 +596,17 @@ class MessagingService {
      * @param int $userId
      *
      * @return void
+     * @throws Exception
      */
     public function deleteMessageForUser($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
         $messages = Message::filter(
             "WHERE messageThreadId = ? AND messageId = ? AND receiverUserId = ?",
             [$threadId, $messageId, $userId]
         );
+
+        if (empty($messages)) {
+            throw new Exception("Message (ID: {$messageId}) not found in thread (ID: {$threadId})");
+        }
 
         foreach ($messages as $message) {
             $message->setEncryptedMessage(null);
@@ -612,14 +621,25 @@ class MessagingService {
      *
      * @param int $threadId
      * @param int $messageId
+     * @param int $userId
      *
      * @return void
+     * @throws Exception
      */
-    public function deleteMessageForAllUsers($threadId, $messageId): void {
+    public function deleteMessageForAllUsers($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
         $messages = Message::filter(
             "WHERE messageThreadId = ? AND messageId = ?",
             [$threadId, $messageId]
         );
+
+        if (empty($messages)) {
+            throw new Exception("Message (ID: {$messageId}) not found in thread (ID: {$threadId})");
+        }
+
+        // only the sender of the message can delete the message for all users
+        if ($messages[0]->getSenderUserId() !== $userId) {
+            throw new Exception("Only the sender of the message can delete the message for everyone");
+        }
 
         foreach ($messages as $message) {
             $message->setEncryptedMessage(null);
@@ -699,46 +719,6 @@ class MessagingService {
             );
             $reaction->save();
         }
-    }
-
-    /**
-     * Function to get all the message reactions for a message
-     *
-     * @param int $threadId
-     * @param int $messageId
-     * @param int $userId
-     *
-     * @return array
-     * @throws Exception
-     */
-    public function getMessageReactions(
-        int $threadId,
-        int $messageId,
-        $userId = User::LOGGED_IN_USER
-    ): array {
-
-        // verify that the user has access to this message
-        $messages = Message::filter(
-            "WHERE messageThreadId = ? AND messageId = ? AND receiverUserId = ?",
-            [$threadId, $messageId, $userId]
-        );
-
-        if (empty($messages)) {
-            throw new Exception("User (ID: {$userId}) is not a recipient of message " .
-                "(ID: {$messageId}) in thread (ID: {$threadId})"
-            );
-        }
-
-        // Fetch all reactions for the message
-        $reactions = MessageReaction::filter(
-            "WHERE messageThreadId = ? AND messageId = ? ORDER BY id DESC",
-            [$threadId, $messageId]
-        );
-
-        return array_map(
-            fn($reaction) => $reaction->getSummary(),
-            $reactions
-        );
     }
 
     /**

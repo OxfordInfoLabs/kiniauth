@@ -76,7 +76,7 @@ class Messaging {
      * @throws Exception
      */
     public function getAllMessagesByThread($threadId, $userId = User::LOGGED_IN_USER): array {
-        return $this->messagingService->getAllMessagesFromThreadAndReactions(
+        return $this->messagingService->getAllMessagesAndReactionsFromThread(
             threadId: $threadId,
             userId: $userId
         );
@@ -88,8 +88,9 @@ class Messaging {
      * @param int $threadId
      * @param int $messageId
      * @param int $userId
-     * `
+     *
      * @void
+     * @throws Exception
      */
     public function deleteMessageForUser($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
         $this->messagingService->deleteMessageForUser(
@@ -104,13 +105,16 @@ class Messaging {
      *
      * @param int $threadId
      * @param int $messageId
+     * @param int $userId
      *
      * @void
+     * @throws Exception
      */
-    public function deleteMessageForAll($threadId, $messageId): void {
+    public function deleteMessageForAll($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
         $this->messagingService->deleteMessageForAllUsers(
             threadId: $threadId,
-            messageId: $messageId
+            messageId: $messageId,
+            userId: $userId
         );
     }
 
