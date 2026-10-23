@@ -139,7 +139,8 @@ class MessagingService {
                 $notificationId = $this->notificationService->createNotification(
                     new NotificationSummary(
                         "New Message Notification",
-                        "You have received a new message from thread (ID: {$threadId}).",
+                        "You have received a new message from {$messageSummary->getSenderUsername()}" .
+                        " in thread (ID: {$threadId}).",
                         new UserCommunicationData($user->getId())
                     )
                 );
