@@ -108,7 +108,7 @@ class MessageSummary extends ActiveRecord {
     /**
      * MessageSummary constructor.
      *
-     * @param ?int      $messageThreadId
+     * @param int      $messageThreadId
      * @param ?string   $encryptedMessage
      * @param ?string   $messageType
      * @param array     $messageReactions
@@ -158,7 +158,7 @@ class MessageSummary extends ActiveRecord {
         $this->messageId = $messageId;
     }
 
-    public function getMessageThreadId(): int {
+    public function getMessageThreadId(): ?int {
         return $this->messageThreadId;
     }
 

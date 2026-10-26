@@ -37,6 +37,10 @@ class MessagingService {
     ) {
     }
 
+    //
+    // Messages
+    //
+
 
     /**
      * Get a message summary by id
@@ -74,6 +78,15 @@ class MessagingService {
         $receiverAccountId = $messageSummary->getReceiverAccountId();
         $receiverGroupId = $messageSummary->getReceiverGroupId();
 
+        // verify that the details in the message and the message thread are consistent
+        $this->verifyThreadAndMessageConsistency(
+            senderUserId: $senderUserId,
+            receiverUserId: $receiverUserId,
+            receiverAccountId: $receiverAccountId,
+            receiverGroupId: $receiverGroupId,
+            messageThread: $messageThread,
+        );
+
         // get all the users associated with the message
         $users = $this->getAllValidUsers(
             senderUserId: $senderUserId,
@@ -85,15 +98,6 @@ class MessagingService {
         if (empty($users)) {
             throw new Exception("No valid users present for saving message");
         }
-
-        // verify that the details in the message and the message thread are consistent
-        $this->verifyThreadAndMessageConsistency(
-            senderUserId: $senderUserId,
-            receiverUserId: $receiverUserId,
-            receiverAccountId: $receiverAccountId,
-            receiverGroupId: $receiverGroupId,
-            messageThread: $messageThread,
-        );
 
         // we calculate the message id by incrementing the message count of the message thread
         $messageId = $messageThread->getMessageCount() + 1;
@@ -175,10 +179,6 @@ class MessagingService {
         ?int $receiverAccountId,
         ?int $receiverGroupId
     ): array {
-
-        if (!$receiverUserId && !$receiverAccountId && !$receiverGroupId) {
-            throw new Exception("At least one recipient parameter must be provided.");
-        }
 
         $userIds = [];
 
@@ -269,6 +269,10 @@ class MessagingService {
         ?int $receiverGroupId,
         MessageThreadSummary $messageThread
     ):void {
+
+        if (!$receiverUserId && !$receiverAccountId && !$receiverGroupId) {
+            throw new Exception("At least one recipient parameter must be provided.");
+        }
 
         // handling group id based consistency
         if (isset ($receiverGroupId)) {
@@ -648,6 +652,9 @@ class MessagingService {
         }
     }
 
+    //
+    // Reactions
+    //
 
     /**
      * Function to give a reaction to a message
@@ -760,6 +767,10 @@ class MessagingService {
             $reaction->remove();
         }
     }
+
+    //
+    // Message Threads
+    //
 
     /**
      * Fetch an existing message thread and return a summary

@@ -99,7 +99,7 @@ class MessageReactionSummary extends ActiveRecord {
         $this->messageId = $messageId;
     }
 
-    public function getMessageThreadId(): int {
+    public function getMessageThreadId(): ?int {
         return $this->messageThreadId;
     }
 
