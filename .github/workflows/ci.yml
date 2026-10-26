@@ -10,7 +10,7 @@ jobs:
   phpunit:
     uses: OxfordInfoLabs/ci-workflows/.github/workflows/phpunit.yml@main
     with:
-      php-version: "8.2"
+      php-version: "8.5"
       coverage: false
       working-directory: "php/test"
       root-directory: "."
