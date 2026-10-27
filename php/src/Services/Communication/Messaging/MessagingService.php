@@ -638,7 +638,8 @@ class MessagingService {
         );
 
         if (empty($messages)) {
-            throw new Exception("Message (ID: {$messageId}) not found in thread (ID: {$threadId})");
+            throw new Exception("Message (ID: {$messageId}) not found in thread (ID: {$threadId})" .
+            " for user (ID: {$userId})");
         }
 
         foreach ($messages as $message) {
