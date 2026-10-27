@@ -123,7 +123,6 @@ class MessagingService {
                     messageThreadId: $messageSummary->getMessageThreadId(),
                     encryptedMessage: $encryptedMessage,
                     messageType: $messageSummary->getMessageType(),
-                    messageReactions: [],
                     senderUserId: $messageSummary->getSenderUserId(),
                     senderUserName: $messageSummary->getSenderUserName(),
                     senderAccountId: $messageSummary->getSenderAccountId(),
@@ -134,26 +133,32 @@ class MessagingService {
                     messageId: $messageId
                 )
             );
+
+            // mark the message as read for the sender user
+            if ($user->getId() === $messageSummary->getSenderUserId()) {
+                $recipientMessage->setMessageRead(true);
+            }
+
             $recipientMessage->save();
 
-            // send a notification to all recipients except the sender
-            if ($user->getId() !== $messageSummary->getSenderUserId()) {
-
-                // create a notification for each message we create
-                $notificationId = $this->notificationService->createNotification(
-                    new NotificationSummary(
-                        "New Message Notification",
-                        "You have received a new message from {$messageSummary->getSenderUsername()}" .
-                        " in thread (ID: {$threadId}).",
-                        new UserCommunicationData($user->getId())
-                    )
-                );
-
-                // send an email of this notification to the recipient
+//            // send a notification to all recipients except the sender
+//            if ($user->getId() !== $messageSummary->getSenderUserId()) {
+//
+//                // create a notification for each message we create
+//                $notificationId = $this->notificationService->createNotification(
+//                    new NotificationSummary(
+//                        "New Message Notification",
+//                        "You have received a new message from {$messageSummary->getSenderUsername()}" .
+//                        " in thread (ID: {$threadId}).",
+//                        new UserCommunicationData($user->getId())
+//                    )
+//                );
+//
+//                // send an email of this notification to the recipient
 //                $this->communicationMethod->processIndividualNotification(
 //                    Notification::fetch($notificationId)
 //                );
-            }
+//            }
         }
 
         // save the updated message count to the message thread
@@ -480,6 +485,29 @@ class MessagingService {
     }
 
     /**
+     * Function to mark a message as read
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param $userId
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function markMessageRead(int $threadId, int $messageId, $userId = User::LOGGED_IN_USER): void {
+        $message = Message::filter("WHERE messageThreadId = ? AND messageId = ? AND receiverUserId = ?",
+            [$threadId, $messageId, $userId]
+        );
+
+        if (empty($message)) {
+            throw new Exception("Message not found for user (ID: ({$userId}) in thread (ID: ({$threadId}).");
+        }
+
+        $message[0]->setMessageRead(true);
+        $message[0]->save();
+    }
+
+    /**
      * Get all messages from a thread
      *
      * Will include reactions
@@ -739,11 +767,7 @@ class MessagingService {
      * @return void
      * @throws Exception
      */
-    public function deleteMessageReaction(
-        int $threadId,
-        int $messageId,
-        $userId = User::LOGGED_IN_USER
-    ): void {
+    public function deleteMessageReaction(int $threadId, int $messageId, $userId = User::LOGGED_IN_USER): void {
         // verify that the user has access to this message
         $messages = Message::filter(
             "WHERE messageThreadId = ? AND messageId = ? AND receiverUserId = ?",

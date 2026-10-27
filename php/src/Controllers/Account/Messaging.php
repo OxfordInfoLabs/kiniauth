@@ -51,6 +51,24 @@ class Messaging {
     }
 
     /**
+     * @http PATCH /messageRead
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param int $userId
+     *
+     * @returns void
+     * @throws Exception
+     */
+    public function markMessageRead($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
+        $this->messagingService->markMessageRead(
+            threadId: $threadId,
+            messageId: $messageId,
+            userId: $userId
+        );
+    }
+
+    /**
      * @http GET /messageLatest
      *
      * @param int $threadId

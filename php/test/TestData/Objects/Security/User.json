@@ -11,7 +11,8 @@
         "roleId": 0,
         "accountId": -1
       }
-    ]
+    ],
+    "personalEncryptionKey": "test-key-1"
   },
   {
     "id": 2,
@@ -27,7 +28,8 @@
         "accountId": 1,
         "roleId": 0
       }
-    ]
+    ],
+    "personalEncryptionKey": "test-key-2"
   },
   {
     "id": 3,
@@ -41,7 +43,8 @@
         "accountId": 2,
         "roleId": 0
       }
-    ]
+    ],
+    "personalEncryptionKey": "test-key-3"
   },
   {
     "id": 4,
@@ -61,13 +64,15 @@
         "accountId": 3,
         "roleId": 0
       }
-    ]
+    ],
+    "personalEncryptionKey": "test-key-4"
   },
   {
     "id": 5,
     "emailAddress": "suspended@suspendeduser.com",
     "hashedPassword": "01acbcc2b174876264c2fee7d3b8bda45c278de3607839bb99138cfbeba02423a404266d1a4ad3f209a379456dea612008bb47b66c1df4d10201137564528741",
-    "status": "SUSPENDED"
+    "status": "SUSPENDED",
+    "personalEncryptionKey": "test-key-5"
   },
   {
     "id": 6,
@@ -80,7 +85,8 @@
         "accountId": 4,
         "roleId": 1
       }
-    ]
+    ],
+    "personalEncryptionKey": "test-key-6"
   },
   {
     "id": 7,
@@ -100,14 +106,16 @@
         "accountId": 2,
         "roleId": 3
       }
-    ]
+    ],
+    "personalEncryptionKey": "test-key-7"
   },
   {
     "id": 8,
     "emailAddress": "pending@myfactoryoutlet.com",
     "hashedPassword": "560c0afd4aa367418085f12df899e7348a270d7b4c9f7f0752f991c4b50797119d8c5c0eb1f61f60b746cb514e0703d06fda5e106dd66d89c19193edb548a09f",
     "activeAccountId": 2,
-    "status": "PENDING"
+    "status": "PENDING",
+    "personalEncryptionKey": "test-key-8"
   },
   {
     "id": 9,
@@ -123,7 +131,8 @@
         "accountId": 5,
         "roleId": 0
       }
-    ]
+    ],
+    "personalEncryptionKey": "test-key-9"
   },
   {
     "id": 10,
@@ -144,7 +153,8 @@
         "roleId": 4,
         "scope": "PROJECT"
       }
-    ]
+    ],
+    "personalEncryptionKey": "test-key-10"
   },
   {
     "id": 11,
@@ -159,6 +169,7 @@
         "roleId": 0
       }
     ],
+    "personalEncryptionKey": "test-key-11",
     "twoFactorData": "H5OW4O4TUP4W2CGP"
   },
   {
@@ -180,6 +191,7 @@
         "scope": "PROJECT"
       }
     ],
-    "twoFactorData": "H5OW4O4TUP4W2CGP"
+    "twoFactorData": "H5OW4O4TUP4W2CGP",
+    "personalEncryptionKey": "test-key-12"
   }
 ]

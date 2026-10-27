@@ -63,6 +63,13 @@ class MessageSummary extends ActiveRecord {
     protected $messageReactions = [];
 
     /**
+     * Message read/unread flag
+     *
+     * @var bool
+     */
+    protected $messageRead;
+
+    /**
      * Sender User ID
      *
      * @var int
@@ -112,6 +119,7 @@ class MessageSummary extends ActiveRecord {
      * @param ?string   $encryptedMessage
      * @param ?string   $messageType
      * @param array     $messageReactions
+     * @param bool      $messageRead
      * @param ?int      $senderUserId
      * @param ?string   $senderUserName
      * @param ?int      $senderAccountId
@@ -126,6 +134,7 @@ class MessageSummary extends ActiveRecord {
         $encryptedMessage,
         $messageType = null,
         $messageReactions = [],
+        $messageRead = false,
         $senderUserId = null,
         $senderUserName = null,
         $senderAccountId = null,
@@ -139,6 +148,7 @@ class MessageSummary extends ActiveRecord {
         $this->encryptedMessage = $encryptedMessage;
         $this->messageType = $messageType;
         $this->messageReactions = $messageReactions;
+        $this->messageRead = $messageRead;
         $this->senderUserId = $senderUserId;
         $this->senderUserName = $senderUserName;
         $this->senderAccountId = $senderAccountId;
@@ -196,6 +206,14 @@ class MessageSummary extends ActiveRecord {
 
     public function setMessageReactions(?array $messageReactions): void {
         $this->messageReactions = $messageReactions;
+    }
+
+    public function getMessageRead(): ?bool {
+        return $this->messageRead;
+    }
+
+    public function setMessageRead(?bool $messageRead): void {
+        $this->messageRead = $messageRead;
     }
 
     public function getSenderUserId(): ?int {

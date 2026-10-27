@@ -67,20 +67,10 @@ class MessagingServiceTest extends TestBase {
             "Hello World"
         );
 
-        $this->userService->updateUserPersonalEncryptionKey(
-            "test-personal-encryption-key",
-            $userId1
-        );
-
         $userId2 = $this->userService->createUser(
             "happy@myworld.com",
             hash("sha512", "newpassword1"),
             "Happy World"
-        );
-
-        $this->userService->updateUserPersonalEncryptionKey(
-            "another-test-personal-encryption-key",
-            $userId2
         );
 
         // save the created users for later
@@ -559,6 +549,12 @@ class MessagingServiceTest extends TestBase {
             "bad@myworld.com",
             hash("sha512", "newpassword1"),
             "Bad World"
+        );
+
+        // set the personal encryption key to null
+        $this->userService->updateUserPersonalEncryptionKey(
+            null,
+            $userId
         );
 
         // save the created user, so it will be removed later
@@ -1510,6 +1506,175 @@ class MessagingServiceTest extends TestBase {
         } catch (Exception $e) {
             $this->assertEquals("Message (ID: 99) not found in thread (ID: {$this->messageThreadIds[1]}).", $e->getMessage());
         }
+    }
+
+    //
+    // Message Read/Unread
+    //
+
+    /**
+     * @throws Exception
+     */
+    public function testMessagesCanBeMarkedReadAtTheUserLevel() {
+
+        $this->messagingService->saveMessage(
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[0],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[1]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            )
+        );
+
+        // check that the message was saved to the sender user
+        /** @var MessageSummary $messageGet */
+        $messageGet = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[0],
+            userId: $this->users[0]->getId()
+        );
+
+
+        $this->assertTrue($messageGet->getMessageRead());
+
+        // check that the message was saved to the receiver user
+        /** @var MessageSummary $messageGet */
+        $messageGet = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[0],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertFalse($messageGet->getMessageRead());
+
+        // mark the message as read for the receiver user
+        $this->messagingService->markMessageRead(
+            threadId: $this->messageThreadIds[0],
+            messageId: $messageGet->getMessageId(),
+            userId: $this->users[1]->getId()
+        );
+
+        // check that this has updated for the receiver user
+        /** @var MessageSummary $messageGet */
+        $messageGet = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[0],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertTrue($messageGet->getMessageRead());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testMessagesCanBeMarkedReadAtTheAccountLevel() {
+
+        $this->messagingService->saveMessage(
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[2],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: null,
+                receiverAccountId: 99,
+                receiverGroupId: null,
+            )
+        );
+
+        // check that the message was saved to the sender user
+        /** @var MessageSummary $messageGet */
+        $messageGet = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[2],
+            userId: $this->users[0]->getId()
+        );
+
+
+        $this->assertTrue($messageGet->getMessageRead());
+
+        // check that the message was saved to the receiver user
+        /** @var MessageSummary $messageGet */
+        $messageGet = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[2],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertFalse($messageGet->getMessageRead());
+
+        // mark the message as read for the receiver user
+        $this->messagingService->markMessageRead(
+            threadId: $this->messageThreadIds[2],
+            messageId: $messageGet->getMessageId(),
+            userId: $this->users[1]->getId()
+        );
+
+        // check that this has updated for the receiver user
+        /** @var MessageSummary $messageGet */
+        $messageGet = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[2],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertTrue($messageGet->getMessageRead());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testMessagesCanBeMarkedReadAtTheGroupLevel() {
+
+        $this->messagingService->saveMessage(
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[3],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: null,
+                receiverAccountId: null,
+                receiverGroupId: 99,
+            )
+        );
+
+        // check that the message was saved to the sender user
+        /** @var MessageSummary $messageGet */
+        $messageGet = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[3],
+            userId: $this->users[0]->getId()
+        );
+
+
+        $this->assertTrue($messageGet->getMessageRead());
+
+        // check that the message was saved to the receiver user
+        /** @var MessageSummary $messageGet */
+        $messageGet = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[3],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertFalse($messageGet->getMessageRead());
+
+        // mark the message as read for the receiver user
+        $this->messagingService->markMessageRead(
+            threadId: $this->messageThreadIds[3],
+            messageId: $messageGet->getMessageId(),
+            userId: $this->users[1]->getId()
+        );
+
+        // check that this has updated for the receiver user
+        /** @var MessageSummary $messageGet */
+        $messageGet = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[3],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertTrue($messageGet->getMessageRead());
     }
 
     //
