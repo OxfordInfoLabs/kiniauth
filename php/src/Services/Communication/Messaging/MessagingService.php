@@ -5,6 +5,7 @@ namespace Kiniauth\Services\Communication\Messaging;
 
 
 use Exception;
+use InvalidArgumentException;
 use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Objects\Communication\Messaging\Message;
 use Kiniauth\Objects\Communication\Messaging\MessageReaction;
@@ -105,6 +106,9 @@ class MessagingService {
         // ensure all messages we create have the same date
         $messageDate = date("Y-m-d H:i:s");
 
+        // save recipient messages to ensure everything is good before saving
+        $recipientMessages = [];
+
         foreach ($users as $user) {
 
             $personalEncryptionKey = $user->getPersonalEncryptionKey();
@@ -139,10 +143,15 @@ class MessagingService {
                 $recipientMessage->setMessageRead(true);
             }
 
+            $recipientMessages[] = $recipientMessage;
+        }
+
+        // save all recipient messages
+        foreach ($recipientMessages as $recipientMessage) {
             $recipientMessage->save();
 
 //            // send a notification to all recipients except the sender
-//            if ($user->getId() !== $messageSummary->getSenderUserId()) {
+//            if ($recipientMessage->getReceiverUserId() !== $messageSummary->getSenderUserId()) {
 //
 //                // create a notification for each message we create
 //                $notificationId = $this->notificationService->createNotification(
@@ -150,7 +159,7 @@ class MessagingService {
 //                        "New Message Notification",
 //                        "You have received a new message from {$messageSummary->getSenderUsername()}" .
 //                        " in thread (ID: {$threadId}).",
-//                        new UserCommunicationData($user->getId())
+//                        new UserCommunicationData($recipientMessage->getReceiverUserId())
 //                    )
 //                );
 //
@@ -218,6 +227,9 @@ class MessagingService {
                 if (!in_array($senderUserId, $userIds)) {
                     throw new exception("Sender user (ID: {$senderUserId}) is not a member of the group (ID: {$receiverGroupId})");
                 }
+            }
+            else {
+                throw new exception("Sender user (ID: {$senderUserId}) is not a member of the group (ID: {$receiverGroupId})");
             }
         }
         elseif ($receiverAccountId) {
@@ -520,14 +532,7 @@ class MessagingService {
      */
     public function getAllMessagesAndReactionsFromThread($threadId, $userId = User::LOGGED_IN_USER): array {
 
-        $query = "WHERE messageThreadId = ? AND receiverUserId = ? ORDER BY id DESC";
-
-        $results = Message::filter($query, [$threadId, $userId]);
-
-        if (empty($results)) {
-            throw new Exception("No messages found for user (ID: ({$userId}) in thread (ID: ({$threadId}).");
-        }
-
+        // check that the user is active
         $user = User::filter(
             "WHERE status = 'ACTIVE' AND id = ?",
             [$userId]
@@ -535,6 +540,15 @@ class MessagingService {
 
         if (empty($user)) {
             throw new Exception("User data (ID: {$userId}) not found in user table.");
+        }
+
+        // search for all messages in the thread
+        $query = "WHERE messageThreadId = ? AND receiverUserId = ? ORDER BY id DESC";
+
+        $results = Message::filter($query, [$threadId, $userId]);
+
+        if (empty($results)) {
+            return [];
         }
 
         $decryptedResults = [];
@@ -586,14 +600,7 @@ class MessagingService {
      */
     public function getLatestMessageFromThread($threadId, $userId = User::LOGGED_IN_USER): ?MessageSummary {
 
-        $query = "WHERE messageThreadId = ? AND receiverUserId = ? ORDER BY id DESC LIMIT 1";
-
-        $results = Message::filter($query, [$threadId, $userId]);
-
-        if (empty($results)) {
-            throw new Exception("No messages found for user (ID: {$userId}) in thread (ID: {$threadId}).");
-        }
-
+        // check that the user is active
         $user = User::filter(
             "WHERE status = 'ACTIVE' AND id = ?",
             [$userId]
@@ -601,6 +608,15 @@ class MessagingService {
 
         if (empty($user)) {
             throw new Exception("User data (ID: {$userId}) not found in user table.");
+        }
+
+        // search for the latest message in the thread
+        $query = "WHERE messageThreadId = ? AND receiverUserId = ? ORDER BY id DESC LIMIT 1";
+
+        $results = Message::filter($query, [$threadId, $userId]);
+
+        if (empty($results)) {
+            return null;
         }
 
         $summary = $results[0]->returnSummary();
@@ -857,8 +873,23 @@ class MessagingService {
      * @param MessageThreadSummary $messageThreadSummary
      *
      * @return int
+     * @throws Exception
      */
     public function saveMessageThread($messageThreadSummary): int {
+
+        $messageThreadUserId1 = $messageThreadSummary->getMessageThreadUserId1();
+        $messageThreadUserId2 = $messageThreadSummary->getMessageThreadUserId2();
+        $messageThreadAccountId = $messageThreadSummary->getMessageThreadAccountId();
+        $messageThreadGroupId = $messageThreadSummary->getMessageThreadGroupId();
+
+        // A thread can only be user-2-user, account based or group based, but not a combination of them
+        $isUserToUser = $messageThreadUserId1 && $messageThreadUserId2 && !$messageThreadAccountId && !$messageThreadGroupId;
+        $isAccountBased = !$messageThreadUserId1 && !$messageThreadUserId2 && $messageThreadAccountId && !$messageThreadGroupId;
+        $isGroupBased = !$messageThreadUserId1 && !$messageThreadUserId2 && !$messageThreadAccountId && $messageThreadGroupId;
+
+        if (!$isUserToUser && !$isAccountBased && !$isGroupBased) {
+            throw new Exception("Message thread must be either user-2-user, account based, or group based.");
+        }
 
         $messageThread = new MessageThread($messageThreadSummary);
         $messageThread->save();
