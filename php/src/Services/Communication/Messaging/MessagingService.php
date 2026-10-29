@@ -482,6 +482,11 @@ class MessagingService {
         $messageDate = date("Y-m-d H:i:s");
 
         foreach ($messages as $message) {
+            
+            // ignore deleted messages
+            if ($message->getEncryptedMessage === null) {
+                continue;
+            }
 
             // encrypt new message
             $encryptedMessage = $this->encryptMessage(
