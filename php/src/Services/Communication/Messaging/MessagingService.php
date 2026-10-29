@@ -32,27 +32,12 @@ class MessagingService {
 
     /**
      */
-    public function __construct(
-        private readonly NotificationService                    $notificationService,
-        private readonly EmailNotificationCommunicationMethod   $communicationMethod
-    ) {
+    public function __construct() {
     }
 
     //
     // Messages
     //
-
-
-    /**
-     * Get a message summary by id
-     *
-     * @param int $id
-     *
-     * @return MessageSummary
-     */
-    public function getMessageSummaryById($id) {
-        return Message::fetch($id)->returnSummary();
-    }
 
     /**
      * Save a new message
@@ -66,13 +51,26 @@ class MessagingService {
      */
     public function saveMessage($messageSummary): void {
 
+        // make sure the message isn't empty
+        if (
+            $messageSummary->getEncryptedMessage() === null ||
+            trim($messageSummary->getEncryptedMessage()) === ''
+        ) {
+            throw new Exception("New message cannot be empty");
+        }
+
         $threadId = $messageSummary->getMessageThreadId();
 
         if (!$threadId) {
             throw new Exception("Message thread id is required to save a message");
         }
 
-        $messageThread = $this->getMessageThreadSummaryById($threadId);
+        try {
+            $messageThread = $this->getMessageThreadSummaryById($threadId);
+        }
+        catch (Exception $e) {
+            throw new Exception("Message thread (ID: {$threadId}) cannot be found");
+        }
 
         $senderUserId = $messageSummary->getSenderUserId();
         $receiverUserId = $messageSummary->getReceiverUserId();
@@ -149,25 +147,6 @@ class MessagingService {
         // save all recipient messages
         foreach ($recipientMessages as $recipientMessage) {
             $recipientMessage->save();
-
-//            // send a notification to all recipients except the sender
-//            if ($recipientMessage->getReceiverUserId() !== $messageSummary->getSenderUserId()) {
-//
-//                // create a notification for each message we create
-//                $notificationId = $this->notificationService->createNotification(
-//                    new NotificationSummary(
-//                        "New Message Notification",
-//                        "You have received a new message from {$messageSummary->getSenderUsername()}" .
-//                        " in thread (ID: {$threadId}).",
-//                        new UserCommunicationData($recipientMessage->getReceiverUserId())
-//                    )
-//                );
-//
-//                // send an email of this notification to the recipient
-//                $this->communicationMethod->processIndividualNotification(
-//                    Notification::fetch($notificationId)
-//                );
-//            }
         }
 
         // save the updated message count to the message thread
@@ -292,22 +271,30 @@ class MessagingService {
         }
 
         // handling group id based consistency
-        if (isset ($receiverGroupId)) {
+        if ($messageThread->getMessageThreadGroupId() !== null) {
             if ($messageThread->getMessageThreadGroupId() !== $receiverGroupId) {
                 throw new Exception('Receiver group id does not match thread group id.');
+            }
+
+            if (isset($receiverAccountId) || isset($receiverUserId)) {
+                throw new Exception('Incoming group message contains unnecessary account or user data.');
             }
         }
 
         // handling account id based consistency
-        if (isset ($receiverAccountId)) {
+        else if ($messageThread->getMessageThreadAccountId() !== null) {
             if ($messageThread->getMessageThreadAccountId() !== $receiverAccountId) {
                 throw new Exception('Receiver account id does not match thread account id.');
+            }
+
+            if (isset($receiverUserId) || isset($receiverGroupId)) {
+                throw new Exception('Incoming account message contains unnecessary user or group data.');
             }
         }
 
 
         // handling user id based consistency
-        elseif (isset($receiverUserId)) {
+        else if ($messageThread->getMessageThreadUserId1() !== null && $messageThread->getMessageThreadUserId2() !== null) {
             if ($messageThread->getMessageThreadUserId1() !== $senderUserId && $messageThread->getMessageThreadUserId2() !== $senderUserId) {
                 throw new Exception('Sender user id does not match thread user ids.');
             }
@@ -315,7 +302,15 @@ class MessagingService {
             if ($messageThread->getMessageThreadUserId1() !== $receiverUserId && $messageThread->getMessageThreadUserId2() !== $receiverUserId) {
                 throw new Exception('Receiver user id does not match thread user ids.');
             }
+
+            if (isset($receiverAccountId) || isset($receiverGroupId)) {
+                throw new Exception('Incoming user message contains unnecessary account or group data.');
+            }
         }
+
+        else (
+            throw new Exception("Message thread is malformed")
+        );
     }
 
     /**
@@ -437,6 +432,11 @@ class MessagingService {
         $userId = User::LOGGED_IN_USER
     ): void {
 
+        // make sure the message isn't empty
+        if (trim($newMessage) === '') {
+            throw new Exception("New message cannot be empty");
+        }
+
         // fetch all messages we want to edit
         $messages = Message::filter(
             "WHERE messageThreadId = ? AND messageId = ?",
@@ -447,13 +447,13 @@ class MessagingService {
             throw new Exception("Message (ID: {$messageId}) not found in thread (ID: {$threadId}).");
         }
 
-        $receiverKeys = [];
-
         // only allow the user who sent the message to edit it
         if ($messages[0]->getSenderUserId() !== $userId) {
             throw new Exception("User (ID: {$userId}) is not the sender of the message (ID: {$messageId})."
                 . " Only the sender can edit a message.");
         }
+
+        $receiverKeys = [];
 
         // get all the personal encryption keys for all the recipients
         foreach ($messages as $message) {
@@ -539,7 +539,12 @@ class MessagingService {
         );
 
         if (empty($user)) {
-            throw new Exception("User data (ID: {$userId}) not found in user table.");
+            throw new Exception("User (ID: {$userId}) not found in user table.");
+        }
+
+        // make sure the user has a personal encryption key
+        if ($user[0]->getPersonalEncryptionKey() === null) {
+            throw new Exception("User (ID: {$userId}) does not have a personal encryption key.");
         }
 
         // search for all messages in the thread
@@ -607,7 +612,12 @@ class MessagingService {
         );
 
         if (empty($user)) {
-            throw new Exception("User data (ID: {$userId}) not found in user table.");
+            throw new Exception("User (ID: {$userId}) not found in user table.");
+        }
+
+        // make sure the user has a personal encryption key
+        if ($user[0]->getPersonalEncryptionKey() === null) {
+            throw new Exception("User (ID: {$userId}) does not have a personal encryption key.");
         }
 
         // search for the latest message in the thread
@@ -717,7 +727,7 @@ class MessagingService {
         $userId = $messageReactionSummary->getSenderUserId();
         $userName = $messageReactionSummary->getSenderUserName();
 
-        if (trim($reaction) === "") {
+        if (trim($reaction) === "" || $reaction === null) {
             throw new Exception("Reaction cannot be empty");
         }
 
@@ -803,10 +813,14 @@ class MessagingService {
             [$threadId, $messageId, $userId]
         );
 
-        // Remove all reactions for the message from this user
-        foreach ($reactions as $reaction) {
-            $reaction->remove();
+        if (empty($reactions)) {
+            throw new Exception("User (ID: {$userId}) has not reacted to message " .
+                "(ID: {$messageId}) in thread (ID: {$threadId})"
+            );
         }
+
+        // Remove the reaction for the message from this user
+        $reactions[0]->remove();
     }
 
     //

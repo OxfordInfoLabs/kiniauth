@@ -39,8 +39,6 @@ class MessagingServiceTest extends TestBase {
     private array $userGroups;
     private array $messageThreadIds;
     private UserService $userService;
-    private NotificationService $notificationService;
-    private EmailNotificationCommunicationMethod $communicationMethod;
 
     /**
      * @throws Exception
@@ -50,12 +48,7 @@ class MessagingServiceTest extends TestBase {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
-        $this->notificationService = Container::instance()->get(NotificationService::class);
-        $this->communicationMethod = $this->createMock(EmailNotificationCommunicationMethod::class);
-
         $this->messagingService = new MessagingService(
-            $this->notificationService,
-            $this->communicationMethod
         );
 
         // create a test group with test users
@@ -153,24 +146,6 @@ class MessagingServiceTest extends TestBase {
         // clean up any user data created in other tables
         foreach ($this->users as $user) {
             $user->remove();
-
-//            $userNotifications = UserNotification::filter(
-//                "WHERE user_id = ?",
-//                [$user->getId()]
-//            );
-//
-//            foreach ($userNotifications as $userNotification) {
-//                $userNotification->remove();
-//            }
-//
-//            $notifications = Notification::filter(
-//                "WHERE user_id = ?",
-//                [$user->getId()]
-//            );
-//
-//            foreach ($notifications as $notification) {
-//                $notification->remove();
-//            }
         }
 
         foreach ($this->userAccounts as $userAccount) {
@@ -374,7 +349,7 @@ class MessagingServiceTest extends TestBase {
     /**
      * @throws Exception
      */
-    public function testMessagesCannotBeSavedTheGroupLevelIfSenderIsNotAGroupMember() {
+    public function testMessagesCannotBeSavedAtTheGroupLevelIfSenderIsNotAGroupMember() {
 
         // create an empty group
         $accountGroupMember = new AccountGroupMember(100, 100);
@@ -500,6 +475,123 @@ class MessagingServiceTest extends TestBase {
     /**
      * @throws Exception
      */
+    public function testCannotSaveUserMessageToGroupThread() {
+
+        try {
+            // user level
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: $this->messageThreadIds[3],
+                    encryptedMessage: "hello world!",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: $this->users[1]->getId(),
+                    receiverAccountId: null,
+                    receiverGroupId: null,
+                )
+            );
+            $this->fail("Expected exception was not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Receiver group id does not match thread group id.", $e->getMessage());
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [$this->messageThreadIds[3]]
+            )
+        );
+
+        // check that the thread message count wasn't updated
+        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[3])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotSaveUserMessageToAccountThread() {
+
+        try {
+            // user level
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: $this->messageThreadIds[2],
+                    encryptedMessage: "hello world!",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: $this->users[1]->getId(),
+                    receiverAccountId: null,
+                    receiverGroupId: null,
+                )
+            );
+            $this->fail("Expected exception was not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Receiver account id does not match thread account id.", $e->getMessage());
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [$this->messageThreadIds[2]]
+            )
+        );
+
+        // check that the thread message count wasn't updated
+        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[2])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotSaveMalformedUserMessageToUserThread() {
+
+        try {
+            // user level
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: $this->messageThreadIds[0],
+                    encryptedMessage: "hello world!",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: $this->users[1]->getId(),
+                    receiverAccountId: 99,
+                    receiverGroupId: 99,
+                )
+            );
+            $this->fail("Expected exception was not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "Incoming user message contains unnecessary account or group data.",
+                $e->getMessage()
+            );
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [$this->messageThreadIds[0]]
+            )
+        );
+
+        // check that the thread message count wasn't updated
+        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testCannotSaveMessageWhenAccountDoesNotMatchThread() {
 
         try {
@@ -521,6 +613,123 @@ class MessagingServiceTest extends TestBase {
         }
         catch (Exception $e) {
             $this->assertEquals("Receiver account id does not match thread account id.", $e->getMessage());
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [$this->messageThreadIds[2]]
+            )
+        );
+
+        // check that the thread message count wasn't updated
+        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[2])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotSaveAccountMessageToGroupThread() {
+
+        try {
+            // account level
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: $this->messageThreadIds[3],
+                    encryptedMessage: "hello world!",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: null,
+                    receiverAccountId: 99,
+                    receiverGroupId: null,
+                )
+            );
+            $this->fail("Expected exception was not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Receiver group id does not match thread group id.", $e->getMessage());
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [$this->messageThreadIds[3]]
+            )
+        );
+
+        // check that the thread message count wasn't updated
+        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[3])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotSaveAccountMessageToUserThread() {
+
+        try {
+            // account level
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: $this->messageThreadIds[0],
+                    encryptedMessage: "hello world!",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: null,
+                    receiverAccountId: 99,
+                    receiverGroupId: null,
+                )
+            );
+            $this->fail("Expected exception was not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Receiver user id does not match thread user ids.", $e->getMessage());
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [$this->messageThreadIds[0]]
+            )
+        );
+
+        // check that the thread message count wasn't updated
+        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotSaveMalformedAccountMessageToAccountThread() {
+
+        try {
+            // account level
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: $this->messageThreadIds[2],
+                    encryptedMessage: "hello world!",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: $this->users[1]->getId(),
+                    receiverAccountId: 99,
+                    receiverGroupId: 99,
+                )
+            );
+            $this->fail("Expected exception was not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "Incoming account message contains unnecessary user or group data.",
+                $e->getMessage()
+            );
         }
 
         // check that no message was saved
@@ -576,12 +785,169 @@ class MessagingServiceTest extends TestBase {
     /**
      * @throws Exception
      */
+    public function testCannotSaveGroupMessageToUserThread() {
+
+        try {
+            // group level
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: $this->messageThreadIds[0],
+                    encryptedMessage: "hello world!",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: null,
+                    receiverAccountId: null,
+                    receiverGroupId: 99,
+                )
+            );
+            $this->fail("Expected exception was not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Receiver user id does not match thread user ids.", $e->getMessage());
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [$this->messageThreadIds[0]]
+            )
+        );
+
+        // check that the thread message count wasn't updated
+        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotSaveGroupMessageToAccountThread() {
+
+        try {
+            // group level
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: $this->messageThreadIds[2],
+                    encryptedMessage: "hello world!",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: null,
+                    receiverAccountId: null,
+                    receiverGroupId: 99,
+                )
+            );
+            $this->fail("Expected exception was not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Receiver account id does not match thread account id.", $e->getMessage());
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [$this->messageThreadIds[2]]
+            )
+        );
+
+        // check that the thread message count wasn't updated
+        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[2])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotSaveMalformedGroupMessageToGroupThread() {
+
+        try {
+            // group level
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: $this->messageThreadIds[3],
+                    encryptedMessage: "hello world!",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: $this->users[1]->getId(),
+                    receiverAccountId: 99,
+                    receiverGroupId: 99,
+                )
+            );
+            $this->fail("Expected exception was not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "Incoming group message contains unnecessary account or user data.",
+                $e->getMessage()
+            );
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [$this->messageThreadIds[3]]
+            )
+        );
+
+        // check that the thread message count wasn't updated
+        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[3])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testEmptyMessageCannotBeSaved() {
+
+        try {
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: $this->messageThreadIds[0],
+                    encryptedMessage: "",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: $this->users[1]->getId(),
+                    receiverAccountId: null,
+                    receiverGroupId: null,
+                )
+            );
+            $this->fail("Exception should have been thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "New message cannot be empty",
+                $e->getMessage()
+            );
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [$this->messageThreadIds[0]]
+            )
+        );
+
+        // check that the thread message count wasn't updated
+        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testMessagesCannotBeSavedWithoutAThreadId() {
 
         try {
             $this->messagingService->saveMessage(
                 new MessageSummary(
-                    messageThreadId: null, //unknown thread ID
+                    messageThreadId: null,
                     encryptedMessage: "hello world!",
                     messageType: "general", //MessageType::General,
                     senderUserId: $this->users[0]->getId(),
@@ -601,13 +967,49 @@ class MessagingServiceTest extends TestBase {
         // check that no message was saved
         $this->assertCount(0,
             Message::filter(
-                "WHERE messageThreadId = ?",
-                [$this->messageThreadIds[0]]
+                "WHERE id >= 0"
             )
         );
 
         // check that the thread message count wasn't updated
         $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testMessagesCannotBeSavedToNonExistingThread() {
+
+        try {
+            $this->messagingService->saveMessage(
+                new MessageSummary(
+                    messageThreadId: 99,
+                    encryptedMessage: "hello world!",
+                    messageType: "general", //MessageType::General,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                    senderAccountId: null,
+                    receiverUserId: $this->users[1]->getId(),
+                    receiverAccountId: null,
+                    receiverGroupId: null,
+                )
+            );
+            $this->fail("Exception should have been thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "Message thread (ID: 99) cannot be found",
+                $e->getMessage()
+            );
+        }
+
+        // check that no message was saved
+        $this->assertCount(0,
+            Message::filter(
+                "WHERE messageThreadId = ?",
+                [99]
+            )
+        );
     }
 
     /**
@@ -843,6 +1245,89 @@ class MessagingServiceTest extends TestBase {
     /**
      * @throws Exception
      */
+    public function testCannotGetAllMessagesFromAGivenThreadIfUserDoesNotExist(): void {
+
+        try {
+            // retrieve all the messages from thread 1
+            $this->messagingService->getAllMessagesAndReactionsFromThread(
+                threadId: $this->messageThreadIds[0],
+                userId: 99
+            );
+            $this->fail();
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "User (ID: 99) not found in user table.",
+                $e->getMessage()
+            );
+        }
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotGetAllMessagesFromAGivenThreadIfUserLacksAPersonalEncryptionKey(): void {
+
+        // create new test user
+        $userId = $this->userService->createUser(
+            "bad@myworld.com",
+            hash("sha512", "newpassword1"),
+            "Bad World"
+        );
+
+        // set the personal encryption key to null
+        $this->userService->updateUserPersonalEncryptionKey(
+            null,
+            $userId
+        );
+
+        // save the created user, so it will be removed later
+        $this->users[] = User::fetch($userId);
+
+        // create message thread for this test
+        $testMessageThreadId = $this->messagingService->saveMessageThread(
+            new MessageThreadSummary(
+                messageThreadUserId1: $userId,
+                messageThreadUserId2: $userId,
+            ),
+        );
+
+        // save a new message directly
+        $message = new Message(
+            new MessageSummary(
+                messageThreadId: $testMessageThreadId,
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $userId,
+                senderAccountId: null,
+                receiverUserId: $userId,
+                receiverAccountId: null,
+                receiverGroupId: null,
+            ),
+        );
+        $message->save();
+
+        try {
+            // retrieve all the messages from the thread
+            $this->messagingService->getAllMessagesAndReactionsFromThread(
+                threadId: $testMessageThreadId,
+                userId: $userId
+            );
+            $this->fail();
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "User (ID: {$userId}) does not have a personal encryption key.",
+                $e->getMessage()
+            );
+        }
+
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testGettingAllMessagesFromAnEmptyThreadReturnsBlankArray(): void {
 
         $newMessageThreadId = $this->messagingService->saveMessageThread(
@@ -947,6 +1432,89 @@ class MessagingServiceTest extends TestBase {
         $this->assertEquals("this is exciting!", $messagesGet1User2->getEncryptedMessage());
         $this->assertEquals("ignore this message!", $messagesGet2User1->getEncryptedMessage());
         $this->assertEquals("ignore this message!", $messagesGet2User2->getEncryptedMessage());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotGetLatestMessageFromAGivenThreadIfUserDoesNotExist(): void {
+
+        try {
+            // retrieve all the messages from thread 1
+            $this->messagingService->getLatestMessageFromThread(
+                threadId: $this->messageThreadIds[0],
+                userId: 99
+            );
+            $this->fail();
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "User (ID: 99) not found in user table.",
+                $e->getMessage()
+            );
+        }
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotGetLatestMessageFromAGivenThreadIfUserLacksAPersonalEncryptionKey(): void {
+
+        // create new test user
+        $userId = $this->userService->createUser(
+            "bad@myworld.com",
+            hash("sha512", "newpassword1"),
+            "Bad World"
+        );
+
+        // set the personal encryption key to null
+        $this->userService->updateUserPersonalEncryptionKey(
+            null,
+            $userId
+        );
+
+        // save the created user, so it will be removed later
+        $this->users[] = User::fetch($userId);
+
+        // create message thread for this test
+        $testMessageThreadId = $this->messagingService->saveMessageThread(
+            new MessageThreadSummary(
+                messageThreadUserId1: $userId,
+                messageThreadUserId2: $userId,
+            ),
+        );
+
+        // save a new message directly
+        $message = new Message(
+            new MessageSummary(
+                messageThreadId: $testMessageThreadId,
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $userId,
+                senderAccountId: null,
+                receiverUserId: $userId,
+                receiverAccountId: null,
+                receiverGroupId: null,
+            ),
+        );
+        $message->save();
+
+        try {
+            // retrieve all the messages from the thread
+            $this->messagingService->getLatestMessageFromThread(
+                threadId: $testMessageThreadId,
+                userId: $userId
+            );
+            $this->fail();
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "User (ID: {$userId}) does not have a personal encryption key.",
+                $e->getMessage()
+            );
+        }
+
     }
 
     /**
@@ -1478,7 +2046,7 @@ class MessagingServiceTest extends TestBase {
             )
         );
 
-        // check that the message was saved to the sender user
+        // get the message we created
         $senderMessages = $this->messagingService->getLatestMessageFromThread(
             threadId: $this->messageThreadIds[1],
             userId: $this->users[0]->getId()
@@ -1505,6 +2073,16 @@ class MessagingServiceTest extends TestBase {
         $this->assertCount(1, $senderMessages[0]->getMessageReactions());
         $this->assertEquals("👍", $senderMessages[0]->getMessageReactions()[0]->getReaction());
 
+        // retrieve the message and reaction for the receiver user
+        $receiverMessages = $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertCount(1, $receiverMessages);
+        $this->assertCount(1, $receiverMessages[0]->getMessageReactions());
+        $this->assertEquals("👍", $receiverMessages[0]->getMessageReactions()[0]->getReaction());
+
         // delete the reaction
         $this->messagingService->deleteMessageReaction(
             threadId: $senderMessages[0]->getMessageThreadId(),
@@ -1520,6 +2098,103 @@ class MessagingServiceTest extends TestBase {
 
         $this->assertCount(1, $senderMessages);
         $this->assertEmpty($senderMessages[0]->getMessageReactions());
+
+        // retrieve the message and reaction for the receiver user
+        $receiverMessages = $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertCount(1, $receiverMessages);
+        $this->assertEmpty($receiverMessages[0]->getMessageReactions());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSavingAnotherReactionUpdatesExistingReaction() {
+
+        $this->messagingService->saveMessage(
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[1],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[1]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            )
+        );
+
+        // get the message we created
+        $senderMessages = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        );
+
+        // save a reaction to this message
+        $this->messagingService->saveMessageReaction(
+            new MessageReactionSummary(
+                messageId: $senderMessages->getMessageId(),
+                messageThreadId: $senderMessages->getMessageThreadId(),
+                reaction: "👍",
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+            )
+        );
+
+        // retrieve the message and reaction for the sender user
+        $senderMessages = $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        );
+
+        $this->assertCount(1, $senderMessages);
+        $this->assertCount(1, $senderMessages[0]->getMessageReactions());
+        $this->assertEquals("👍", $senderMessages[0]->getMessageReactions()[0]->getReaction());
+
+        // retrieve the message and reaction for the receiver user
+        $receiverMessages = $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertCount(1, $receiverMessages);
+        $this->assertCount(1, $receiverMessages[0]->getMessageReactions());
+        $this->assertEquals("👍", $receiverMessages[0]->getMessageReactions()[0]->getReaction());
+
+        // save another reaction to this message
+        $this->messagingService->saveMessageReaction(
+            new MessageReactionSummary(
+                messageId: $senderMessages[0]->getMessageId(),
+                messageThreadId: $senderMessages[0]->getMessageThreadId(),
+                reaction: "❤️",
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+            )
+        );
+
+        // retrieve the message and reaction for the sender user
+        $senderMessages = $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        );
+
+        $this->assertCount(1, $senderMessages);
+        $this->assertCount(1, $senderMessages[0]->getMessageReactions());
+        $this->assertEquals("❤️", $senderMessages[0]->getMessageReactions()[0]->getReaction());
+
+        // retrieve the message and reaction for the receiver user
+        $receiverMessages = $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertCount(1, $receiverMessages);
+        $this->assertCount(1, $receiverMessages[0]->getMessageReactions());
+        $this->assertEquals("❤️", $receiverMessages[0]->getMessageReactions()[0]->getReaction());
     }
 
     /**
@@ -1527,23 +2202,210 @@ class MessagingServiceTest extends TestBase {
      */
     public function testReactionsCannotBeSavedForANonExistentMessage() {
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Message (ID: 99) not found in thread (ID: {$this->messageThreadIds[1]})");
+        try {
+            // save a reaction to a non-existent message
+            $this->messagingService->saveMessageReaction(
+                new MessageReactionSummary(
+                    messageId: 99, // non-existent message id
+                    messageThreadId: $this->messageThreadIds[1],
+                    reaction: "👍",
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                )
+            );
+            $this->fail("Expected exception not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Message (ID: 99) not found in thread (ID: {$this->messageThreadIds[1]})", $e->getMessage());
+        }
 
-        // save a reaction to a non-existent message
-        $this->messagingService->saveMessageReaction(
-            new MessageReactionSummary(
-                messageId: 99, // non-existent message id
-                messageThreadId: $this->messageThreadIds[1],
-                reaction: "👍",
-                senderUserId: $this->users[0]->getId(),
-                senderUserName: $this->users[0]->getName(),
-            )
+        // check to see than no message reaction was created
+        $messageReactions = MessageReaction::filter(
+            "WHERE message_id = 99"
         );
-        $this->fail("Expected exception not thrown");
+        $this->assertEquals(0, count($messageReactions));
     }
 
-    //ToDO: test for empty reaction, test for non recipient, test for updating a message reaction
+    /**
+     * @throws Exception
+     */
+    public function testEmptyReactionsCannotBeSaved() {
+
+        $this->messagingService->saveMessage(
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[1],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[1]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            )
+        );
+
+        // get the message we created
+        $senderMessages = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        );
+
+        try {
+            // save a reaction to this message
+            $this->messagingService->saveMessageReaction(
+                new MessageReactionSummary(
+                    messageId: $senderMessages->getMessageId(),
+                    messageThreadId: $senderMessages->getMessageThreadId(),
+                    reaction: null,
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                )
+            );
+            $this->fail("Expected exception not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Reaction cannot be empty", $e->getMessage());
+        }
+
+        try {
+            // save a reaction to this message
+            $this->messagingService->saveMessageReaction(
+                new MessageReactionSummary(
+                    messageId: $senderMessages->getMessageId(),
+                    messageThreadId: $senderMessages->getMessageThreadId(),
+                    reaction: "",
+                    senderUserId: $this->users[0]->getId(),
+                    senderUserName: $this->users[0]->getName(),
+                )
+            );
+            $this->fail("Expected exception not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Reaction cannot be empty", $e->getMessage());
+        }
+
+        // make sure no message reactions were created
+        $messageReactions = MessageReaction::filter(
+            "WHERE messageThreadId = ?",
+            [$this->messageThreadIds[1]]
+        );
+        $this->assertCount(0, $messageReactions);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotSaveReactionsFromNonRecipient() {
+
+        $this->messagingService->saveMessage(
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[1],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[1]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            )
+        );
+
+        // get the message we created
+        $senderMessages = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        );
+
+        try {
+            // save a reaction to this message
+            $this->messagingService->saveMessageReaction(
+                new MessageReactionSummary(
+                    messageId: $senderMessages->getMessageId(),
+                    messageThreadId: $senderMessages->getMessageThreadId(),
+                    reaction: "👍",
+                    senderUserId: 99,
+                )
+            );
+            $this->fail("Expected exception not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "User (ID: 99) is not a recipient of message " .
+                "(ID: {$senderMessages->getMessageId()}) in thread (ID: {$senderMessages->getMessageThreadId()})",
+                $e->getMessage()
+            );
+        }
+
+        // make sure no message reactions were created
+        $messageReactions = MessageReaction::filter(
+            "WHERE messageThreadId = ?",
+            [$senderMessages->getMessageId()]
+        );
+        $this->assertCount(0, $messageReactions);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCannotDeleteReactionsThatDoNotExist() {
+
+        $this->messagingService->saveMessage(
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[1],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[1]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            )
+        );
+
+        // get the message we created
+        $senderMessages = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        );
+
+        try {
+            // delete the reaction
+            $this->messagingService->deleteMessageReaction(
+                threadId: $senderMessages->getMessageThreadId(),
+                messageId: $senderMessages->getMessageId(),
+                userId: $this->users[0]->getId(),
+            );
+            $this->fail("Expected exception was not thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "User (ID: {$this->users[0]->getId()}) has not reacted to message " .
+                "(ID: {$senderMessages->getMessageId()}) in thread (ID: {$senderMessages->getMessageThreadId()})",
+                $e->getMessage()
+            );
+        }
+
+        // retrieve the message and reaction for the sender user
+        $senderMessages = $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        );
+
+        $this->assertCount(1, $senderMessages);
+        $this->assertEmpty($senderMessages[0]->getMessageReactions());
+
+        // retrieve the message and reaction for the receiver user
+        $receiverMessages = $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertCount(1, $receiverMessages);
+        $this->assertEmpty($receiverMessages[0]->getMessageReactions());
+    }
 
     //
     // Editing messages
@@ -1741,6 +2603,60 @@ class MessagingServiceTest extends TestBase {
     /**
      * @throws Exception
      */
+    public function testMessagesCannotBeEditedWithEmptyMessage() {
+
+        $this->messagingService->saveMessage(
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[1],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[1]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            )
+        );
+
+        // check that the message was saved to the sender user
+        $messageId = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        )->getMessageId();
+
+        try {
+            // edit the message to something new
+            $this->messagingService->editMessage(
+                threadId: $this->messageThreadIds[1],
+                messageId: $messageId,
+                newMessage: "",
+                userId: $this->users[0]->getId()
+            );
+            $this->fail("Exception not thrown when editing message");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("New message cannot be empty", $e->getMessage());
+        }
+
+        // check to see that the message was unedited
+        $senderMessage = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        )->getEncryptedMessage();
+
+        $receiverMessage = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[1]->getId()
+        )->getEncryptedMessage();
+
+        $this->assertEquals("hello world!", $senderMessage);
+        $this->assertEquals("hello world!", $receiverMessage);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testMessagesCannotBeEditedByNonSender() {
 
         $this->messagingService->saveMessage(
@@ -1811,6 +2727,141 @@ class MessagingServiceTest extends TestBase {
             userId: $this->users[1]->getId()
         );
         $this->fail("Exception not thrown when editing message");
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testMessagesCannotBeEditedIfRecipientIsNotActive() {
+
+        $this->messagingService->saveMessage(
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[1],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[1]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            )
+        );
+
+        // get the message id of the message sent by the sender
+        $senderMessageId = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        )->getMessageId();
+
+        // remove one of the users
+        $this->users[1]->remove();
+
+        try {
+            // edit the message to something new
+            $this->messagingService->editMessage(
+                threadId: $this->messageThreadIds[1],
+                messageId: $senderMessageId,
+                newMessage: "goodbye world!",
+                userId: $this->users[0]->getId()
+            );
+            $this->fail("Expected exception not thrown ");
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "User (ID: {$this->users[1]->getId()}) not found.",
+                $e->getMessage()
+            );
+        }
+
+        // reset the user
+        $this->users[1]->save();
+
+        // check to see if the message was unchanged for all recipients
+        $senderMessages = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        );
+
+        $this->assertEquals($this->messageThreadIds[1], $senderMessages->getMessageThreadId());
+        $this->assertEquals("hello world!", $senderMessages->getEncryptedMessage());
+
+        $receiverMessages = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertEquals($this->messageThreadIds[1], $receiverMessages->getMessageThreadId());
+        $this->assertEquals("hello world!", $receiverMessages->getEncryptedMessage());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testMessagesCannotBeEditedIfRecipientLacksAPersonalEncryptionKey() {
+
+        $this->messagingService->saveMessage(
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[1],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[1]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            )
+        );
+
+        // get the message id of the message sent by the sender
+        $senderMessageId = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        )->getMessageId();
+
+        // set the receiver users encryption key to null
+        $encryptionKey = $this->users[1]->getPersonalEncryptionKey();
+        $this->users[1]->setPersonalEncryptionKey(null);
+        $this->users[1]->save();
+
+        try {
+            // edit the message to something new
+            $this->messagingService->editMessage(
+                threadId: $this->messageThreadIds[1],
+                messageId: $senderMessageId,
+                newMessage: "goodbye world!",
+                userId: $this->users[0]->getId()
+            );
+            $this->fail("Expected exception not thrown ");
+        }
+        catch (Exception $e) {
+            $this->assertEquals(
+                "User (ID: {$this->users[1]->getId()}) does not have a personal encryption key",
+                $e->getMessage()
+            );
+        }
+
+        // reset the encryption key
+        $this->users[1]->setPersonalEncryptionKey($encryptionKey);
+        $this->users[1]->save();
+
+        // check to see if the message was unchanged for all recipients
+        $senderMessages = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[0]->getId()
+        );
+
+        $this->assertEquals($this->messageThreadIds[1], $senderMessages->getMessageThreadId());
+        $this->assertEquals("hello world!", $senderMessages->getEncryptedMessage());
+
+        $receiverMessages = $this->messagingService->getLatestMessageFromThread(
+            threadId: $this->messageThreadIds[1],
+            userId: $this->users[1]->getId()
+        );
+
+        $this->assertEquals($this->messageThreadIds[1], $receiverMessages->getMessageThreadId());
+        $this->assertEquals("hello world!", $receiverMessages->getEncryptedMessage());
     }
 
     //
@@ -2144,6 +3195,9 @@ class MessagingServiceTest extends TestBase {
     // Saving and retrieving message threads
     //
 
+    /**
+     * @throws Exception
+     */
     public function testCanCreateNewMessageThread() {
 
         $threadId = $this->messagingService->saveMessageThread(
@@ -2341,6 +3395,9 @@ class MessagingServiceTest extends TestBase {
         $this->assertCount(0, $messageThreads);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanGetAllMessageThreadsAtTheUserLevel() {
 
         // user level
@@ -2362,6 +3419,9 @@ class MessagingServiceTest extends TestBase {
         $this->assertEquals($messageThreadId, $userThreadsUser2[0]->getId());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanGetAllMessageThreadsAtTheAccountLevel() {
 
         // account level
@@ -2380,6 +3440,9 @@ class MessagingServiceTest extends TestBase {
         $this->assertEquals($messageThreadId, $accountThreads[0]->getId());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanGetAllMessageThreadsAtTheGroupLevel() {
 
         $messageThreadId = $this->messagingService->saveMessageThread(
