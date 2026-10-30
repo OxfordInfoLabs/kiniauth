@@ -29,7 +29,6 @@ class MessageSummary extends ActiveRecord {
      * MessageThread ID
      *
      * @var int
-     * @required
      */
     protected $messageThreadId;
 

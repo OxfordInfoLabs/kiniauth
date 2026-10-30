@@ -517,7 +517,8 @@ class MessagingService {
         );
 
         if (empty($message)) {
-            throw new Exception("Message not found for user (ID: ({$userId}) in thread (ID: ({$threadId}).");
+            throw new Exception("Message (ID: {$messageId}) not found for user (ID: {$userId}) ".
+                "in thread (ID: {$threadId}).");
         }
 
         $message[0]->setMessageRead(true);

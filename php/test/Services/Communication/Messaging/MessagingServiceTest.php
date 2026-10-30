@@ -3023,6 +3023,23 @@ class MessagingServiceTest extends TestBase {
         $this->assertTrue($receiverMessages->getMessageRead());
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testCannotMarkNonExistentMessageRead() {
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("Message (ID: 99) not found for user (ID: {$this->users[1]->getId()}) ".
+            "in thread (ID: {$this->messageThreadIds[0]}).");
+
+        // mark the message as read for the receiver user
+        $this->messagingService->markMessageRead(
+            threadId: $this->messageThreadIds[0],
+            messageId: 99,
+            userId: $this->users[1]->getId()
+        );
+    }
+
     //
     // Message deletion
     //
