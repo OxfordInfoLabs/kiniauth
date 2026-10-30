@@ -5,7 +5,6 @@ namespace Kiniauth\Services\Communication\Messaging;
 
 
 use Exception;
-use InvalidArgumentException;
 use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Objects\Communication\Messaging\Message;
 use Kiniauth\Objects\Communication\Messaging\MessageReaction;
@@ -13,14 +12,8 @@ use Kiniauth\Objects\Communication\Messaging\MessageReactionSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageThread;
 use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
-use Kiniauth\Objects\Communication\Notification\Notification;
-use Kiniauth\Objects\Communication\Notification\NotificationSummary;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
-use Kiniauth\Objects\Security\UserCommunicationData;
-use Kiniauth\Objects\Security\UserRole;
-use Kiniauth\Services\Communication\Notification\CommunicationMethod\EmailNotificationCommunicationMethod;
-use Kiniauth\Services\Communication\Notification\NotificationService;
 use Kinikit\Core\Configuration\Configuration;
 
 
@@ -215,11 +208,15 @@ class MessagingService {
                     array_fill(0, count($accountIds), '?')
                 );
 
-                $userIds = UserRole::values(
-                    "scope_id",
-                    "WHERE scope = ? AND account_id IN ($accountPlaceholders)",
+                $accountUsers = User::filter(
+                    "WHERE roles.scope = ? AND roles.account_id IN ($accountPlaceholders)",
                     [Role::SCOPE_ACCOUNT, ...$accountIds]
                 );
+
+                $userIds = array_values(array_unique(array_map(
+                    fn($user) => $user->getId(),
+                    $accountUsers
+                )));
 
                 // check to see if the sender is in the groups valid users list
                 if (!in_array($senderUserId, $userIds)) {
@@ -233,11 +230,15 @@ class MessagingService {
         elseif ($receiverAccountId) {
 
             // resolve the account directly
-            $userIds = UserRole::values(
-                "scope_id",
-                "WHERE account_id = ? AND scope = ?",
-                [$receiverAccountId, Role::SCOPE_ACCOUNT]
+            $accountUsers = User::filter(
+                "WHERE roles.scope = ? AND roles.account_id = ?",
+                [Role::SCOPE_ACCOUNT, $receiverAccountId]
             );
+
+            $userIds = array_values(array_unique(array_map(
+                fn($user) => $user->getId(),
+                $accountUsers
+            )));
 
             // check to see if the sender is in the accounts valid users list
             if (!in_array($senderUserId, $userIds)) {
