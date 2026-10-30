@@ -391,9 +391,6 @@ class MessagingServiceTest extends TestBase {
                 [$newMessageThreadId]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($newMessageThreadId)->getMessageCount());
     }
 
     /**
@@ -429,9 +426,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[0]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
     }
 
     /**
@@ -467,9 +461,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[0]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
     }
 
     /**
@@ -505,9 +496,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[3]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[3])->getMessageCount());
     }
 
     /**
@@ -543,9 +531,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[2]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[2])->getMessageCount());
     }
 
     /**
@@ -584,9 +569,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[0]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
     }
 
     /**
@@ -622,9 +604,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[2]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[2])->getMessageCount());
     }
 
     /**
@@ -660,9 +639,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[3]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[3])->getMessageCount());
     }
 
     /**
@@ -698,9 +674,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[0]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
     }
 
     /**
@@ -739,9 +712,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[2]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[2])->getMessageCount());
     }
 
     /**
@@ -777,9 +747,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[3]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[3])->getMessageCount());
     }
 
     /**
@@ -815,9 +782,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[0]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
     }
 
     /**
@@ -853,9 +817,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[2]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[2])->getMessageCount());
     }
 
     /**
@@ -894,9 +855,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[3]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[3])->getMessageCount());
     }
 
     /**
@@ -934,9 +892,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[0]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
     }
 
     /**
@@ -970,9 +925,6 @@ class MessagingServiceTest extends TestBase {
                 "WHERE id >= 0"
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
     }
 
     /**
@@ -1044,9 +996,6 @@ class MessagingServiceTest extends TestBase {
                 [$this->messageThreadIds[0]]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($this->messageThreadIds[0])->getMessageCount());
     }
 
     /**
@@ -1092,9 +1041,6 @@ class MessagingServiceTest extends TestBase {
                 [$testMessageThreadId]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($testMessageThreadId)->getMessageCount());
     }
 
     /**
@@ -1153,9 +1099,6 @@ class MessagingServiceTest extends TestBase {
                 [$testMessageThreadId]
             )
         );
-
-        // check that the thread message count wasn't updated
-        $this->assertEquals(0, MessageThread::fetch($testMessageThreadId)->getMessageCount());
     }
 
     /**
@@ -3234,7 +3177,6 @@ class MessagingServiceTest extends TestBase {
         $this->assertEquals($this->users[1]->getId(), $messageThreadGet->getMessageThreadUserId2());
         $this->assertEquals(null, $messageThreadGet->getMessageThreadAccountId());
         $this->assertEquals(null, $messageThreadGet->getMessageThreadGroupId());
-        $this->assertEquals(0, $messageThreadGet->getMessageCount());
     }
 
     public function testCannotSaveInvalidMessageThreadWithNoTargets() {
@@ -3477,121 +3419,14 @@ class MessagingServiceTest extends TestBase {
         $this->assertEquals($messageThreadId, $groupThreads[0]->getId());
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testSavingANewMessageIncreasesTheMessagedCountAtTheUserLevel() {
-
-        // user level
-        $messageThreadId = $this->messagingService->saveMessageThread(
-            new MessageThreadSummary(
-                messageThreadUserId1: $this->users[0]->getId(),
-                messageThreadUserId2: $this->users[1]->getId(),
-                messageThreadAccountId: null,
-                messageThreadGroupId: null
-            )
-        );
-
-        // save a message
-        $this->messagingService->saveMessage(
-            new MessageSummary(
-                messageThreadId: $messageThreadId,
-                encryptedMessage: "hello world!",
-                messageType: "general", //MessageType::General,
-                senderUserId: $this->users[0]->getId(),
-                senderUserName: $this->users[0]->getName(),
-                senderAccountId: null,
-                receiverUserId: $this->users[1]->getId(),
-                receiverAccountId: null,
-                receiverGroupId: null,
-            )
-        );
-
-        $threadSummary = $this->messagingService->getMessageThreadSummaryById(
-            $messageThreadId
-        );
-
-        $this->assertEquals(1, $threadSummary->getMessageCount());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testSavingANewMessageIncreasesTheMessagedCountAtTheAccountLevel() {
-
-        // account level
-        $messageThreadId = $this->messagingService->saveMessageThread(
-            new MessageThreadSummary(
-                messageThreadUserId1: null,
-                messageThreadUserId2: null,
-                messageThreadAccountId: 99,
-                messageThreadGroupId: null
-            )
-        );
-
-        // save a message
-        $this->messagingService->saveMessage(
-            new MessageSummary(
-                messageThreadId: $messageThreadId,
-                encryptedMessage: "hello world!",
-                messageType: "general", //MessageType::General,
-                senderUserId: $this->users[0]->getId(),
-                senderUserName: $this->users[0]->getName(),
-                senderAccountId: null,
-                receiverUserId: null,
-                receiverAccountId: 99,
-                receiverGroupId: null,
-            )
-        );
-
-        $threadSummary = $this->messagingService->getMessageThreadSummaryById(
-            $messageThreadId
-        );
-
-        $this->assertEquals(1, $threadSummary->getMessageCount());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testSavingANewMessageIncreasesTheMessagedCountAtTheGroupLevel() {
-
-        // group level
-        $messageThreadId = $this->messagingService->saveMessageThread(
-            new MessageThreadSummary(
-                messageThreadUserId1: null,
-                messageThreadUserId2: null,
-                messageThreadAccountId: null,
-                messageThreadGroupId: 99
-            )
-        );
-
-        // save a message
-        $this->messagingService->saveMessage(
-            new MessageSummary(
-                messageThreadId: $messageThreadId,
-                encryptedMessage: "hello world!",
-                messageType: "general", //MessageType::General,
-                senderUserId: $this->users[0]->getId(),
-                senderUserName: $this->users[0]->getName(),
-                senderAccountId: null,
-                receiverUserId: null,
-                receiverAccountId: null,
-                receiverGroupId: 99,
-            )
-        );
-
-        $threadSummary = $this->messagingService->getMessageThreadSummaryById(
-            $messageThreadId
-        );
-
-        $this->assertEquals(1, $threadSummary->getMessageCount());
-    }
 
     //
     // Deleting message threads
     //
 
+    /**
+     * @throws Exception
+     */
     public function testCanDeleteAMessageThread() {
         $threadId = $this->messagingService->saveMessageThread(
             new MessageThreadSummary(

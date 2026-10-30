@@ -98,8 +98,8 @@ class MessagingService {
             throw new Exception("No valid users present for saving message");
         }
 
-        // we calculate the message id by incrementing the message count of the message thread
-        $messageId = $messageThread->getMessageCount() + 1;
+        // we generate a random positive message ID that is not already used in this thread
+        $messageId = $this->generateUniqueMessageId($threadId);
 
         // ensure all messages we create have the same date
         $messageDate = date("Y-m-d H:i:s");
@@ -148,10 +148,29 @@ class MessagingService {
         foreach ($recipientMessages as $recipientMessage) {
             $recipientMessage->save();
         }
+    }
 
-        // save the updated message count to the message thread
-        $messageThread->setMessageCount($messageId);
-        $messageThread->save();
+    /**
+     * Generate a random positive message ID that is not already used in a thread.
+     *
+     * @param int $threadId
+     *
+     * @return int
+     * @throws Exception
+     */
+    private function generateUniqueMessageId(int $threadId): int {
+
+        do {
+            $messageId = random_int(1, PHP_INT_MAX);
+
+            $existingMessages = Message::filter(
+                "WHERE messageThreadId = ? AND messageId = ?",
+                [$threadId, $messageId]
+            );
+
+        } while (!empty($existingMessages));
+
+        return $messageId;
     }
 
     /**
@@ -484,7 +503,7 @@ class MessagingService {
         foreach ($messages as $message) {
             
             // ignore deleted messages
-            if ($message->getEncryptedMessage === null) {
+            if ($message->getEncryptedMessage() === null) {
                 continue;
             }
 

@@ -52,20 +52,12 @@ class MessageThreadSummary extends ActiveRecord {
     protected $messageThreadGroupId;
 
     /**
-     * Thread message count
-     *
-     * @var int
-     */
-    protected $messageCount;
-
-    /**
      * MessageSummary constructor.
      *
      * @param int       $messageThreadUserId1
      * @param int       $messageThreadUserId2
      * @param int       $messageThreadAccountId
      * @param int       $messageThreadGroupId
-     * @param int       $messageCount
      * @param int       $id
      */
     public function __construct(
@@ -73,14 +65,12 @@ class MessageThreadSummary extends ActiveRecord {
         $messageThreadUserId2 = null,
         $messageThreadAccountId = null,
         $messageThreadGroupId = null,
-        $messageCount = 0,
         $id = null
     ) {
         $this->messageThreadUserId1 = $messageThreadUserId1;
         $this->messageThreadUserId2 = $messageThreadUserId2;
         $this->messageThreadAccountId = $messageThreadAccountId;
         $this->messageThreadGroupId = $messageThreadGroupId;
-        $this->messageCount = $messageCount;
         $this->id = $id;
     }
 
@@ -119,14 +109,6 @@ class MessageThreadSummary extends ActiveRecord {
 
     public function setMessageThreadGroupId(?int $messageThreadGroupId): void {
         $this->messageThreadGroupId = $messageThreadGroupId;
-    }
-
-    public function getMessageCount(): ?int {
-        return $this->messageCount;
-    }
-
-    public function setMessageCount(?int $messageCount): void {
-        $this->messageCount = $messageCount;
     }
 
 }

@@ -38,7 +38,6 @@ class MessageThread extends MessageThreadSummary{
             messageThreadUserId2: $this->messageThreadUserId2,
             messageThreadAccountId: $this->messageThreadAccountId,
             messageThreadGroupId: $this->messageThreadGroupId,
-            messageCount: $this->messageCount,
             id: $this->id
         );
     }
