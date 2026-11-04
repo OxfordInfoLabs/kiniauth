@@ -154,7 +154,7 @@ class MessagingService {
     private function generateUniqueMessageId(int $threadId): int {
 
         do {
-            $messageId = random_int(1, PHP_INT_MAX);
+            $messageId = random_int(1, 2147483647);
 
             $existingMessages = Message::filter(
                 "WHERE messageThreadId = ? AND messageId = ?",
