@@ -552,11 +552,27 @@ class MessagingService {
      *
      * @param int $threadId
      * @param int $userId
+     * @param int $limit
+     * @param int $offset
      *
      * @return array
      * @throws Exception
      */
-    public function getAllMessagesAndReactionsFromThread($threadId, $userId = User::LOGGED_IN_USER): array {
+    public function getAllMessagesAndReactionsFromThread(
+        int $threadId,
+        $userId = User::LOGGED_IN_USER,
+        int $limit = 50,
+        int $offset = 0,
+    ): array {
+
+        // validate limit and offset
+        if ($limit < 1) {
+            throw new Exception("Limit must be greater than one.");
+        }
+
+        if ($offset < 0) {
+            throw new Exception("Offset must be greater than zero.");
+        }
 
         // check that the user is active
         $user = User::filter(
@@ -574,9 +590,10 @@ class MessagingService {
         }
 
         // search for all messages in the thread
-        $query = "WHERE messageThreadId = ? AND receiverUserId = ? ORDER BY id DESC";
+        // use limit and offset as necessary
+        $query = "WHERE messageThreadId = ? AND receiverUserId = ? ORDER BY id DESC LIMIT ? OFFSET ?";
 
-        $results = Message::filter($query, [$threadId, $userId]);
+        $results = Message::filter($query, [$threadId, $userId, $limit, $offset]);
 
         if (empty($results)) {
             return [];

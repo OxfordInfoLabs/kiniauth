@@ -1188,6 +1188,104 @@ class MessagingServiceTest extends TestBase {
     /**
      * @throws Exception
      */
+    public function testCanGetAllMessagesFromAGivenThreadWithLimitAndOffset(): void {
+
+        $messages = [
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[0],
+                encryptedMessage: "hello world!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[1]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            ),
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[0],
+                encryptedMessage: "hello back!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[1]->getId(),
+                senderUserName: $this->users[1]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[0]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            ),
+            new MessageSummary(
+                messageThreadId: $this->messageThreadIds[0],
+                encryptedMessage: "this is exciting!",
+                messageType: "general", //MessageType::General,
+                senderUserId: $this->users[0]->getId(),
+                senderUserName: $this->users[0]->getName(),
+                senderAccountId: null,
+                receiverUserId: $this->users[1]->getId(),
+                receiverAccountId: null,
+                receiverGroupId: null,
+            )
+        ];
+
+        // save all the messages
+        $this->messagingService->saveMessage($messages[0]);
+        $this->messagingService->saveMessage($messages[1]);
+        $this->messagingService->saveMessage($messages[2]);
+
+        // retrieve the messages from thread 1, limit to 1 and offset by 1
+        $messagesGet1User1 = $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $this->messageThreadIds[0],
+            userId: $this->users[0]->getId(),
+            limit: 1,
+            offset: 1,
+        );
+        $messagesGet1User2 = $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $this->messageThreadIds[0],
+            userId: $this->users[1]->getId(),
+            limit: 1,
+            offset: 1,
+        );
+
+        $this->assertCount(1, $messagesGet1User1);
+        $this->assertCount(1, $messagesGet1User2);
+
+        $this->assertEquals("hello back!", $messagesGet1User1[0]->getEncryptedMessage());
+        $this->assertEquals("hello back!", $messagesGet1User2[0]->getEncryptedMessage());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCanGetAllMessagesFromAGivenThreadThrowsExceptionsForInvalidLimitAndOffset(): void {
+
+        try {
+            $this->messagingService->getAllMessagesAndReactionsFromThread(
+                threadId: $this->messageThreadIds[0],
+                userId: $this->users[0]->getId(),
+                limit: 0
+            );
+            $this->fail("Exception should have been thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Limit must be greater than one.", $e->getMessage());
+        }
+
+        try {
+            $messagesGet1User2 = $this->messagingService->getAllMessagesAndReactionsFromThread(
+                threadId: $this->messageThreadIds[0],
+                userId: $this->users[1]->getId(),
+                offset: -1,
+            );
+            $this->fail("Exception should have been thrown");
+        }
+        catch (Exception $e) {
+            $this->assertEquals("Offset must be greater than zero.", $e->getMessage());
+        }
+
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testCannotGetAllMessagesFromAGivenThreadIfUserDoesNotExist(): void {
 
         try {

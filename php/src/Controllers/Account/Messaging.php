@@ -89,14 +89,23 @@ class Messaging {
      *
      * @param int $threadId
      * @param int $userId
+     * @param int $limit
+     * @param int $offset
      *
      * @return array
      * @throws Exception
      */
-    public function getAllMessagesByThread($threadId, $userId = User::LOGGED_IN_USER): array {
+    public function getAllMessagesByThread(
+        $threadId,
+        $userId = User::LOGGED_IN_USER,
+        $limit = 50,
+        $offset = 0
+    ): array {
         return $this->messagingService->getAllMessagesAndReactionsFromThread(
             threadId: $threadId,
-            userId: $userId
+            userId: $userId,
+            limit: $limit,
+            offset: $offset
         );
     }
 
