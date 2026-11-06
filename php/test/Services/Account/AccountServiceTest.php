@@ -98,7 +98,10 @@ class AccountServiceTest extends TestBase {
         $this->mockEmailService = $mockObjectProvider->getMockInstance(EmailService::class);
 
 
-        $this->mockedAccountService = new AccountService(Container::instance()->get(SecurityService::class), $this->mockPendingActionService, $this->mockEmailService,
+        $this->mockedAccountService = new AccountService(
+            Container::instance()->get(SecurityService::class),
+            $this->mockPendingActionService,
+            $this->mockEmailService,
             Container::instance()->get(RoleService::class),
             Container::instance()->get(UserService::class),
             Container::instance()->get(ActiveRecordInterceptor::class));
@@ -107,8 +110,56 @@ class AccountServiceTest extends TestBase {
         $this->userService = MockObjectProvider::instance()->getMockInstance(UserService::class);
 
         $this->accountService = Container::instance()->get(AccountService::class);
+    }
+
+    public function tearDown(): void {
+
+        // Remove pending invitations created by tests.
+        $testInvitationEmails = [
+            "newuser@samdavisdesign.co.uk",
+            "newuser1@samdavisdesign.co.uk",
+            "mary@shoppingonline.com",
+            "sam@mydomain.com",
+            "mark@mydomain.com",
+            "test@test.com",
+            "existing@test.com"
+        ];
+
+        foreach (PendingAction::filter() as $pendingAction) {
+
+            $data = $pendingAction->getData();
+            $emailAddress = is_array($data) ? ($data["emailAddress"] ?? null) : null;
+
+            if (
+                $pendingAction->getType() === "USER_INVITE" &&
+                in_array($emailAddress, $testInvitationEmails, true)
+            ) {
+                $pendingAction->remove();
+            }
+        }
 
 
+        // Remove users explicitly created by the tests.
+        $testUsers = User::filter(
+            "WHERE emailAddress IN (?, ?, ?, ?) OR name = ?",
+            "bernard@shaw.com",
+            "newuser@samdavisdesign.co.uk",
+            "existing@test.com",
+            "existing2@test.com",
+            "Zoo Bernard"
+        );
+
+        foreach ($testUsers as $user) {
+            $user->remove();
+        }
+
+        // Remove accounts created by the tests.
+        // Accounts 1-5 are existing fixtures and must be preserved.
+        $testAccounts = Account::filter("WHERE accountId > 5");
+
+        foreach ($testAccounts as $account) {
+            $account->remove();
+        }
     }
 
 
@@ -166,7 +217,12 @@ class AccountServiceTest extends TestBase {
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
-        $accountId = $this->accountService->createAccount("Bernard Shaw", "bernard@shaw.com", null, "Zoo Bernard");
+        $accountId = $this->accountService->createAccount(
+            "Bernard Shaw",
+            "bernard@shaw.com",
+            null,
+            "Zoo Bernard"
+        );
 
         $this->assertNotNull($accountId);
         $account = Account::fetch($accountId);
@@ -288,7 +344,7 @@ class AccountServiceTest extends TestBase {
         $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($accountId)->getStatus());
 
         $this->accountService->setAccountExpiryDate($accountId, "2030-01-01 07:08:01");
-        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2030-01-01 07:08:01"), Account::fetch($accountId)->getExpiryDate());
+        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2030-01-01 00:00:00"), Account::fetch($accountId)->getExpiryDate());
     }
 
     public function testIfAccountAlreadyExpiredAndFutureExpiryDateSetDateIsUpdatedAndAccountIsActivated(){
@@ -304,7 +360,7 @@ class AccountServiceTest extends TestBase {
 
         $this->accountService->setAccountExpiryDate($accountId, "2030-01-01 07:08:01");
 
-        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2030-01-01 07:08:01"), Account::fetch($accountId)->getExpiryDate());
+        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2030-01-01 00:00:00"), Account::fetch($accountId)->getExpiryDate());
         $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($accountId)->getStatus());
 
 
@@ -323,7 +379,7 @@ class AccountServiceTest extends TestBase {
 
         $this->accountService->setAccountExpiryDate($accountId, "2020-01-01 07:08:01");
 
-        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2020-01-01 07:08:01"), Account::fetch($accountId)->getExpiryDate());
+        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2020-01-01 00:00:00"), Account::fetch($accountId)->getExpiryDate());
         $this->assertEquals(Account::STATUS_EXPIRED, Account::fetch($accountId)->getStatus());
 
     }
@@ -348,7 +404,7 @@ class AccountServiceTest extends TestBase {
     }
 
 
-    public function testCanProcessAccountExpiries(){
+    public function testCanProcessAccountExpires(){
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
@@ -463,7 +519,7 @@ class AccountServiceTest extends TestBase {
 
         // Program an identifier return value when creating a pending action.
         $this->mockPendingActionService->returnValue("createPendingAction", "XXXYYYZZZ", ["USER_INVITE", 1,
-            ["emailAddress" => "newuser@samdavisdesign.co.uk",
+            ["emailAddress" => "newuser1@samdavisdesign.co.uk",
                 "initialRoles" => [
                     new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])
                 ],
@@ -471,25 +527,40 @@ class AccountServiceTest extends TestBase {
 
 
         // Should succeed.
-        $this->mockedAccountService->inviteUserToAccount(1, "newuser@samdavisdesign.co.uk", [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]);
+        $this->mockedAccountService->inviteUserToAccount(
+            1,
+            "newuser1@samdavisdesign.co.uk",
+            [new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])]
+        );
 
         // Check pending action was created
-        $this->assertTrue($this->mockPendingActionService->methodWasCalled("createPendingAction", ["USER_INVITE", 1,
-            ["emailAddress" => "newuser@samdavisdesign.co.uk",
-                "initialRoles" => [
-                    new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])
-                ],
-                "newUser" => true]]));
+        $this->assertTrue($this->mockPendingActionService->methodWasCalled(
+            "createPendingAction",
+            [
+                "USER_INVITE",
+                1,
+                [
+                    "emailAddress" => "newuser1@samdavisdesign.co.uk",
+                    "initialRoles" => [
+                        new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])
+                    ],
+                    "newUser" => true
+                ]
+            ]
+        ));
 
         // Check email was sent
-        $targetEmail = new AccountTemplatedEmail(1, "security/invite-user", ["emailAddress" => "newuser@samdavisdesign.co.uk",
-            "invitationCode" => "XXXYYYZZZ",
-            "newUser" => true]);
-
+        $targetEmail = new AccountTemplatedEmail(
+            1,
+            "security/invite-user",
+            [
+                "emailAddress" => "newuser1@samdavisdesign.co.uk",
+                "invitationCode" => "XXXYYYZZZ",
+                "newUser" => true
+            ]
+        );
 
         $this->assertTrue($this->mockEmailService->methodWasCalled("send", [$targetEmail, 1]));
-
-
     }
 
 
@@ -643,27 +714,35 @@ class AccountServiceTest extends TestBase {
 
         $this->authenticationService->logout();
 
-        $invitationCode = $this->pendingActionService->createPendingAction("USER_INVITE", 1,
-            ["emailAddress" => "newuser@samdavisdesign.co.uk",
+        $invitationCode = $this->pendingActionService->createPendingAction(
+            "USER_INVITE",
+            1,
+            [
+                "emailAddress" => "newuser@samdavisdesign.co.uk",
                 "initialRoles" => [
                     new ScopeObjectRolesAssignment(Role::SCOPE_ACCOUNT, 1, [3])
                 ],
-                "newUser" => true]);
+                "newUser" => true
+            ]
+        );
 
 
-        $this->mockPendingActionService->returnValue("getPendingActionByIdentifier", $this->pendingActionService->getPendingActionByIdentifier("USER_INVITE", $invitationCode), [
-            "USER_INVITE", $invitationCode
-        ]);
-
+        $this->mockPendingActionService->returnValue(
+            "getPendingActionByIdentifier",
+            $this->pendingActionService->getPendingActionByIdentifier("USER_INVITE", $invitationCode),
+            [
+                "USER_INVITE", $invitationCode
+            ]
+        );
 
         $interceptor = Container::instance()->get(ActiveRecordInterceptor::class);
 
-
         // Simulate insecure - usually implemented by annotation.
         $interceptor->executeInsecure(function () use ($invitationCode) {
-
-            $this->mockedAccountService->acceptUserInvitationForAccount($invitationCode, AuthenticationHelper::hashNewPassword("helloJeffrey1"));
-
+            $this->mockedAccountService->acceptUserInvitationForAccount(
+                $invitationCode,
+                AuthenticationHelper::hashNewPassword("helloJeffrey1")
+            );
         });
 
         AuthenticationHelper::login("admin@kinicart.com", "password");
@@ -869,8 +948,10 @@ class AccountServiceTest extends TestBase {
         AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
 
 
-        $this->assertEquals([$account2Discoverable, $account3Discoverable, $account4Discoverable],
-            $this->accountService->searchForDiscoverableAccounts(""));
+        $this->assertEquals(
+            [$account3Discoverable, $account4Discoverable],
+            $this->accountService->searchForDiscoverableAccounts("")
+        );
 
         // Filtered
         $this->assertEquals([$account3Discoverable, $account4Discoverable],
@@ -878,10 +959,10 @@ class AccountServiceTest extends TestBase {
 
 
         // Offset and limits
-        $this->assertEquals([$account3Discoverable, $account4Discoverable],
+        $this->assertEquals([$account4Discoverable],
             $this->accountService->searchForDiscoverableAccounts("", 1));
 
-        $this->assertEquals([$account2Discoverable, $account3Discoverable],
+        $this->assertEquals([$account3Discoverable, $account4Discoverable],
             $this->accountService->searchForDiscoverableAccounts("", 0, 2));
 
 

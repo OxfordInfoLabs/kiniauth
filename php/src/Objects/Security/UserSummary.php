@@ -55,6 +55,14 @@ class UserSummary extends Securable {
      */
     protected $emailAddress;
 
+    /**
+     * Personal encryption key used to encrypt and decrypt messages for this user.
+     *
+     * @var string
+     * @maxLength 255
+     */
+    protected $personalEncryptionKey;
+
 
     /**
      * An array of explicit role objects
@@ -91,15 +99,30 @@ class UserSummary extends Securable {
 
     /**
      * UserSummary constructor.
-     * @param string $name
-     * @param string $status
+     *
+     * @param string    $name
+     * @param string    $status
+     * @param string    $emailAddress
+     * @param integer   $successfulLogins
+     * @param mixed     $applicationSettings
+     * @param string    $personalEncryptionKey
+     * @param integer   $id
      */
-    public function __construct($name = null, $status = null, $emailAddress = null, $successfulLogins = 0, $applicationSettings = [], $id = null) {
+    public function __construct(
+        $name = null,
+        $status = null,
+        $emailAddress = null,
+        $successfulLogins = 0,
+        $applicationSettings = [],
+        $personalEncryptionKey = null,
+        $id = null
+    ) {
         $this->name = $name;
         $this->status = $status;
         $this->emailAddress = $emailAddress;
         $this->successfulLogins = $successfulLogins;
         $this->applicationSettings = $applicationSettings;
+        $this->personalEncryptionKey = $personalEncryptionKey;
         $this->id = $id;
     }
 
@@ -145,6 +168,19 @@ class UserSummary extends Securable {
         return $this->emailAddress;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getPersonalEncryptionKey(): ?string {
+        return $this->personalEncryptionKey;
+    }
+
+    /**
+     * @param string|null $personalEncryptionKey
+     */
+    public function setPersonalEncryptionKey(?string $personalEncryptionKey): void {
+        $this->personalEncryptionKey = $personalEncryptionKey;
+    }
 
     /**
      * @return int

@@ -55,4 +55,19 @@ class EmailNotificationCommunicationMethod implements NotificationCommunicationM
         }
 
     }
+
+    /**
+     * Process this notification (outside a group) for email
+     *
+     * @param Notification $notification
+     */
+    public function processIndividualNotification($notification) {
+
+        if ($notification->getUser()) {
+            $email = new UserTemplatedEmail($notification->getUser()->getId(), "notification/notification", [
+                "notification" => $notification
+            ]);
+            $this->emailService->send($email, $notification->getAccountId(), $notification->getUser()->getId());
+        }
+    }
 }

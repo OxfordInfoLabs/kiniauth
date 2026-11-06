@@ -221,7 +221,6 @@ class SecurityServiceTest extends TestBase {
 
     }
 
-
     public function testObjectsWhichHaveBeenSharedUsingObjectScopeAccessAreResolvedForSecurityCorrectlyForWriteAndGrantOperations() {
 
         $contact = new SharableContact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
@@ -246,7 +245,6 @@ class SecurityServiceTest extends TestBase {
         $this->assertTrue($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_GRANT));
 
     }
-
 
     public function testObjectsSharedWithExpiredScopeAccessesAreNotResolvedForSecurity() {
 
@@ -273,7 +271,6 @@ class SecurityServiceTest extends TestBase {
 
     }
 
-
     public function testObjectsWithAccountIdOfZeroAreSuperUserAccessibleOnly() {
 
         $contact = new Contact("Mark R", "Test Organisation", "My Lane", "My Shire", "Oxford",
@@ -298,7 +295,6 @@ class SecurityServiceTest extends TestBase {
 
 
     }
-
 
     public function testObjectsWithNullOrNegativeOneAccountIdAreAccessibleToAllLoggedInUsersInReadAccessMode() {
 
@@ -371,10 +367,6 @@ class SecurityServiceTest extends TestBase {
         $this->assertFalse($this->securityService->checkLoggedInObjectAccess($contact, SecurityService::ACCESS_WRITE));
     }
 
-
-
-
-
     public function testCanGetAllPrivileges() {
 
         $allPrivileges = $this->securityService->getAllPrivileges();
@@ -385,7 +377,6 @@ class SecurityServiceTest extends TestBase {
         $this->assertEquals(new Privilege("deletedata", "Test Delete Data Privilege.", "ACCOUNT"), $allPrivileges["ACCOUNT"]["deletedata"]);
 
     }
-
 
     public function testCanCheckLoggedInHasPrivilege() {
 
@@ -428,7 +419,6 @@ class SecurityServiceTest extends TestBase {
 
     }
 
-
     public function testCanBecomeSuperUser() {
 
         $this->securityService->logout();
@@ -440,7 +430,6 @@ class SecurityServiceTest extends TestBase {
         $this->assertTrue($this->securityService->isSuperUserLoggedIn());
 
     }
-
 
     public function testCanBecomeUser() {
 
@@ -459,7 +448,6 @@ class SecurityServiceTest extends TestBase {
 
     }
 
-
     public function testCanBecomeUserWithActivatedAccount(){
 
 
@@ -476,8 +464,6 @@ class SecurityServiceTest extends TestBase {
 
 
     }
-
-
 
     public function testCanBecomeApiKey() {
 
@@ -498,7 +484,6 @@ class SecurityServiceTest extends TestBase {
 
     }
 
-
     public function testCanBecomeAccount() {
         $this->securityService->logout();
 
@@ -514,7 +499,6 @@ class SecurityServiceTest extends TestBase {
 
 
     }
-
 
     public function testCanCheckObjectAccessScope() {
 
@@ -576,7 +560,7 @@ class SecurityServiceTest extends TestBase {
         AuthenticationHelper::login("admin@kinicart.com", "password");
 
         // Create new User
-        $newUser = new User("sheyla@badgers.com", hash("sha512", "passwordsheyla@badgers.com"), "Silly Sheyla");
+        $newUser = new User("sheyla2@badgers.com", hash("sha512", "passwordsheyla2@badgers.com"), "Silly Sheyla 2");
         $newUser->setStatus(User::STATUS_ACTIVE);
         $newUser->save();
 
@@ -594,7 +578,7 @@ class SecurityServiceTest extends TestBase {
         // User cannot log in to expired account
         try {
             //Login as new user
-            AuthenticationHelper::login("sheyla@badgers.com", "password");
+            AuthenticationHelper::login("sheyla2@badgers.com", "password");
             $this->fail();
         }
         catch (AccountExpiredException){
@@ -631,5 +615,4 @@ class SecurityServiceTest extends TestBase {
             $this->assertTrue(true);
         }
     }
-
 }

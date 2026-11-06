@@ -1,0 +1,245 @@
+<?php
+
+namespace Kiniauth\Controllers\Account;
+
+
+use Exception;
+use Kiniauth\Objects\Communication\Messaging\MessageSummary;
+use Kiniauth\Objects\Communication\Messaging\MessageReactionSummary;
+use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
+use Kiniauth\Objects\Security\User;
+use Kiniauth\Services\Communication\Messaging\MessagingService;
+
+class Messaging {
+
+    public function __construct(
+        private readonly MessagingService $messagingService
+    ) {
+    }
+
+    /**
+     * @http POST /message
+     *
+     * @param MessageSummary $messageSummary
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function newMessage($messageSummary): void {
+        $this->messagingService->saveMessage(
+            messageSummary: $messageSummary
+        );
+    }
+
+    /**
+     * @http PATCH /message
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param string $newMessage
+     * @param int $userId
+     *
+     * @returns void
+     * @throws Exception
+     */
+    public function editMessage($threadId, $messageId, $newMessage, $userId = User::LOGGED_IN_USER,): void {
+        $this->messagingService->editMessage(
+            threadId: $threadId,
+            messageId: $messageId,
+            newMessage: $newMessage
+        );
+    }
+
+    /**
+     * @http PATCH /messageRead
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param int $userId
+     *
+     * @returns void
+     * @throws Exception
+     */
+    public function markMessageRead($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
+        $this->messagingService->markMessageRead(
+            threadId: $threadId,
+            messageId: $messageId,
+            userId: $userId
+        );
+    }
+
+    /**
+     * @http GET /messageLatest
+     *
+     * @param int $threadId
+     * @param int $userId
+     *
+     * @return MessageSummary
+     * @throws Exception
+     */
+    public function getLatestMessageByThread($threadId, $userId = User::LOGGED_IN_USER): MessageSummary {
+        return $this->messagingService->getLatestMessageFromThread(
+            threadId: $threadId,
+            userId: $userId
+        );
+    }
+
+    /**
+     * @http GET /messageAll
+     *
+     * @param int $threadId
+     * @param int $userId
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getAllMessagesByThread(
+        $threadId,
+        $userId = User::LOGGED_IN_USER,
+        $limit = 50,
+        $offset = 0
+    ): array {
+        return $this->messagingService->getAllMessagesAndReactionsFromThread(
+            threadId: $threadId,
+            userId: $userId,
+            limit: $limit,
+            offset: $offset
+        );
+    }
+
+    /**
+     * @http DELETE /message
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param int $userId
+     *
+     * @void
+     * @throws Exception
+     */
+    public function deleteMessageForUser($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
+        $this->messagingService->deleteMessageForUser(
+            threadId: $threadId,
+            messageId: $messageId,
+            userId: $userId
+        );
+    }
+
+    /**
+     * @http DELETE /messageAll
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param int $userId
+     *
+     * @void
+     * @throws Exception
+     */
+    public function deleteMessageForAll($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
+        $this->messagingService->deleteMessageForAllUsers(
+            threadId: $threadId,
+            messageId: $messageId,
+            userId: $userId
+        );
+    }
+
+    /**
+     * @http POST /message/reaction
+     *
+     * @param MessageReactionSummary $messageReactionSummary
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function saveMessageReaction($messageReactionSummary): void {
+        $this->messagingService->saveMessageReaction(
+            messageReactionSummary: $messageReactionSummary
+        );
+    }
+
+    /**
+     * @http DELETE /message/reaction
+     *
+     * @param int $threadId
+     * @param int $messageId
+     * @param int $userId
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function deleteMessageReaction($threadId, $messageId, $userId = User::LOGGED_IN_USER): void {
+        $this->messagingService->deleteMessageReaction(
+            threadId: $threadId,
+            messageId: $messageId,
+            userId: $userId
+        );
+    }
+
+    /**
+     * @http POST /thread
+     *
+     * @param MessageThreadSummary $threadSummary
+     *
+     * @return int
+     */
+    public function newMessageThread($threadSummary): int {
+        return $this->messagingService->saveMessageThread(
+            messageThreadSummary: $threadSummary
+        );
+    }
+
+    /**
+     * @http GET /thread/user
+     *
+     * @param int $messageThreadUserId
+     *
+     * @return array
+     */
+    public function getAllMessageThreadsByUserId($messageThreadUserId): array {
+        return $this->messagingService->getAllMessageThreadsByUserId(
+            messageThreadUserId: $messageThreadUserId
+        );
+    }
+
+    /**
+     * @http GET /thread/account
+     *
+     * @param int $messageThreadAccountId
+     *
+     * @return array
+     */
+    public function getAllMessageThreadsByAccountId($messageThreadAccountId): array {
+        return $this->messagingService->getAllMessageThreadsByAccountId(
+            messageThreadAccountId: $messageThreadAccountId
+        );
+    }
+
+    /**
+     * @http GET /thread/group
+     *
+     * @param int $messageThreadGroupId
+     *
+     * @return array
+     */
+    public function getAllMessageThreadsByGroupId($messageThreadGroupId): array {
+        return $this->messagingService->getAllMessageThreadsByGroupId(
+            messageThreadGroupId: $messageThreadGroupId
+        );
+    }
+
+    /**
+     * @http DELETE /thread
+     *
+     * @param int $messageThreadId
+     *
+     * @return void
+     */
+    public function deleteMessageThread($messageThreadId): void {
+        $this->messagingService->deleteMessageThread(
+            messageThreadId: $messageThreadId
+        );
+    }
+
+}

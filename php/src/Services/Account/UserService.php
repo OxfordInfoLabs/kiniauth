@@ -34,6 +34,7 @@ use Kinikit\Core\Security\Hash\SHA512HashProvider;
 use Kinikit\Core\Util\StringUtils;
 use Kinikit\Core\Validation\FieldValidationError;
 use Kinikit\Core\Validation\ValidationException;
+use Random\RandomException;
 
 
 class UserService {
@@ -115,6 +116,9 @@ class UserService {
         $user->setParentAccountId($parentAccountId);
         $user->setCustomData($customData);
 
+        // autogenerate a personal encryption key
+        $user->setPersonalEncryptionKey(bin2hex(random_bytes(32)));
+
         $validationErrors = $user->validate();
 
         if (isset($validationErrors["emailAddress"])) {
@@ -162,6 +166,8 @@ class UserService {
         $user->setName($name);
         $user->setStatus(User::STATUS_ACTIVE);
 
+        // autogenerate a personal encryption key
+        $user->setPersonalEncryptionKey(bin2hex(random_bytes(32)));
 
         if (!$hashedPassword) {
             $plainPassword = $user->generateAndUpdatePassword();
@@ -659,7 +665,7 @@ class UserService {
             throw new ValidationException(["password" => [
                 "invalid" => new FieldValidationError("password", "invalid", "The supplied password was incorrect")
             ]]);
-        };
+        }
     }
 
     public function changeUserDetails($newEmailAddress, $newName, $password, $userId) {
@@ -817,6 +823,21 @@ class UserService {
         $matchingUsers = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $emailAddress, $parentAccountId);
 
         return sizeof($matchingUsers) > 0 && $matchingUsers[0]->passwordMatches($password, $this->session->__getSessionSalt());
+    }
+
+    /**
+     * Update user personal encryption key for a given user id
+     *
+     * @param string $newPersonalEncryptionKey
+     * @param integer $userId
+     */
+    public function updateUserPersonalEncryptionKey($newPersonalEncryptionKey = "", $userId = User::LOGGED_IN_USER) {
+
+        /** @var User $user */
+        $user = User::fetch($userId);
+
+        $user->setPersonalEncryptionKey($newPersonalEncryptionKey);
+        $user->save();
     }
 
 

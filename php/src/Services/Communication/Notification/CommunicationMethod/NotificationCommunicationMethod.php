@@ -24,4 +24,11 @@ interface NotificationCommunicationMethod {
      */
     public function processNotification($notification, $groupMembers);
 
+    /**
+     * Process a notification for this communication method using the notification user.
+     *
+     * @param Notification $notification
+     */
+    public function processIndividualNotification($notification);
+
 }
