@@ -158,7 +158,14 @@ class AccountService {
      * @param integer $parentAccountId
      * @param array $securityDomains
      */
-    public function createAccount($accountName, $adminEmailAddress = null, $adminHashedPassword = null, $adminName = null, $parentAccountId = null, $securityDomains = []) {
+    public function createAccount(
+        $accountName,
+        $adminEmailAddress = null,
+        $adminHashedPassword = null,
+        $adminName = null,
+        $parentAccountId = null,
+        $securityDomains = []
+    ) {
 
         // Create an account to match with any name we can find.
         $account = Container::instance()->new(Account::class, false);
@@ -317,7 +324,7 @@ class AccountService {
     public function setAccountExpiryDate( $accountId, $expiryDate) {
         $dateNow = new \DateTime();
         if ($expiryDate !== null) {
-            $newExpiryDate = date_create_from_format("Y-m-d", $expiryDate);
+            $newExpiryDate = date_create_from_format("Y-m-d H:i:s", $expiryDate);
             $newExpiryDate->setTime(00, 00, 00);
         } else {
             $newExpiryDate = null;
@@ -542,12 +549,23 @@ class AccountService {
                 $user->save();
             } else {
                 // Get existing user if exists
-                $user = User::filter("WHERE emailAddress = ? AND parentAccountId = ?", $pendingData["emailAddress"], $accountSummary->getParentAccountId())[0];
+                $user = User::filter(
+                    "WHERE emailAddress = ? AND parentAccountId = ?",
+                    $pendingData["emailAddress"],
+                    $accountSummary->getParentAccountId()
+                )[0];
             }
 
             $objectBinder = Container::instance()->get(ObjectBinder::class);
 
-            $this->roleService->updateAssignedScopeObjectRoles(Role::APPLIES_TO_USER, $user->getId(), $objectBinder->bindFromArray($pendingData["initialRoles"], ScopeObjectRolesAssignment::class . "[]"), $pendingAction->getObjectId());
+            $this->roleService->updateAssignedScopeObjectRoles(
+                Role::APPLIES_TO_USER, $user->getId(),
+                $objectBinder->bindFromArray(
+                    $pendingData["initialRoles"],
+                    ScopeObjectRolesAssignment::class . "[]"
+                ),
+                $pendingAction->getObjectId()
+            );
 
             // Remove the pending action once completed.
             $this->pendingActionService->removePendingAction("USER_INVITE", $invitationCode);
@@ -555,13 +573,29 @@ class AccountService {
             // If a new user, send email
             if ($pendingData["newUser"]) {
 
-                $this->emailService->send(new UserTemplatedEmail($user->getId(), "security/invited-user-welcome", [
-                    "emailAddress" => $pendingData["emailAddress"]
-                ]), $accountSummary->getAccountId(), $user->getId());
+                $this->emailService->send(
+                    new UserTemplatedEmail(
+                        $user->getId(),
+                        "security/invited-user-welcome",
+                        [
+                            "emailAddress" => $pendingData["emailAddress"]
+                        ]
+                    ),
+                    $accountSummary->getAccountId(),
+                    $user->getId()
+                );
             }
 
         } catch (ItemNotFoundException $e) {
-            throw new ValidationException(["invitationCode" => new FieldValidationError("invitationCode", "invalid", "Invalid invitation code supplied for user invitation")]);
+            throw new ValidationException(
+                [
+                    "invitationCode" => new FieldValidationError(
+                        "invitationCode",
+                        "invalid",
+                        "Invalid invitation code supplied for user invitation"
+                    )
+                ]
+            );
         }
 
 

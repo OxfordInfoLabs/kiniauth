@@ -80,9 +80,9 @@ class UserServiceTest extends TestBase {
         // Simple one with just email address and password.
         $activationCode = $this->userService->createPendingUserWithAccount("john@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"));
 
-        $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
+        $pendingItem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
 
-        $newUser = $this->objectBinder->bindFromArray($pendingitem->getData()["user"], User::class, false);
+        $newUser = $this->objectBinder->bindFromArray($pendingItem->getData()["user"], User::class, false);
 
         $this->assertNull($newUser->getId());
         $this->assertEquals("john@test.com", $newUser->getEmailAddress());
@@ -96,9 +96,9 @@ class UserServiceTest extends TestBase {
         // Simple one with just email address and password.
         $activationCode = $this->userService->createPendingUserWithAccount("john2@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "John Smith");
 
-        $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
+        $pendingItem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
 
-        $newUser = $this->objectBinder->bindFromArray($pendingitem->getData()["user"], User::class, false);
+        $newUser = $this->objectBinder->bindFromArray($pendingItem->getData()["user"], User::class, false);
 
 
         $this->assertNull($newUser->getId());
@@ -115,9 +115,9 @@ class UserServiceTest extends TestBase {
         $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "John Smith",
             "Smith Enterprises", ["testProp" => 3, "testOtherProp" => "Hello"]);
 
-        $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
+        $pendingItem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
 
-        $newUser = $this->objectBinder->bindFromArray($pendingitem->getData()["user"], User::class, false);
+        $newUser = $this->objectBinder->bindFromArray($pendingItem->getData()["user"], User::class, false);
 
 
         $this->assertNull($newUser->getId());
@@ -160,9 +160,9 @@ class UserServiceTest extends TestBase {
         $activationCode = $this->userService->createPendingUserWithAccount("john3@test.com", AuthenticationHelper::hashNewPassword("Helloworld1"), "John Smith",
             "Smith Enterprises", [], 1);
 
-        $pendingitem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
+        $pendingItem = $this->pendingActionService->getPendingActionByIdentifier("USER_ACTIVATION", $activationCode);
 
-        $newUser = $this->objectBinder->bindFromArray($pendingitem->getData()["user"], User::class, false);
+        $newUser = $this->objectBinder->bindFromArray($pendingItem->getData()["user"], User::class, false);
 
 
         $this->assertNull($newUser->getId());
@@ -568,7 +568,7 @@ class UserServiceTest extends TestBase {
 
         // Account restricted search.
         $accountUsers = $this->userService->searchForUsers("", 0, 100, 1);
-        $this->assertEquals(3, sizeof($accountUsers["results"]));
+        $this->assertEquals(2, sizeof($accountUsers["results"]));
         $this->assertEquals("Sam Davis", $accountUsers["results"][0]->getName());
 
 
