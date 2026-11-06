@@ -26,7 +26,13 @@ class UserTest extends TestBase {
         $this->accountService = Container::instance()->get(AccountService::class);
     }
 
-
+    public function tearDown(): void {
+        /** @var User[] $users */
+        $users = User::filter("WHERE email_address = ?", "hello@myworld.com");
+        foreach ($users as $user) {
+            $user->remove();
+        }
+    }
 
     public function testCannotUpdatePasswordWithPreviouslyUsedHash() {
 
@@ -52,7 +58,7 @@ class UserTest extends TestBase {
 
     public function testCanGetInactiveAccountStatus(){
 
-        $newUser = new User("sheyla@badgers.com", hash("sha512", "passwordsheyla@badgers.com"), "Silly Sheyla", 0, 1);
+        $newUser = new User("hello@myworld.com", hash("sha512", "passwordhello@myworld.com"), "Hello There", 0, 1);
         $newAccount = new Account("Badgers inc", 0, Account::STATUS_ACTIVE, 1);
         $role = new UserRole(Role::SCOPE_ACCOUNT, $newAccount->getAccountId(), 0, 1,1, $newAccount);
         $newUser->setRoles([$role]);
