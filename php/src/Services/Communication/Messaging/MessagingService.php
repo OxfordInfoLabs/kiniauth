@@ -567,11 +567,11 @@ class MessagingService {
 
         // validate limit and offset
         if ($limit < 1) {
-            throw new Exception("Limit must be greater than one.");
+            throw new Exception("Limit must be greater than zero.");
         }
 
         if ($offset < 0) {
-            throw new Exception("Offset must be greater than zero.");
+            throw new Exception("Offset cannot be negative.");
         }
 
         // check that the user is active
@@ -599,6 +599,32 @@ class MessagingService {
             return [];
         }
 
+        // collect all unique message IDs from the batch
+        $messageIds = array_values(array_unique(array_map(
+            fn($message) => $message->getMessageId(),
+            $results
+        )));
+
+        // fetch all the reactions for the messages in a single query
+        $reactionPlaceholders = implode(
+            ',',
+            array_fill(0, count($messageIds), '?')
+        );
+
+        $reactions = MessageReaction::filter(
+            "WHERE messageThreadId = ? AND messageId IN ($reactionPlaceholders) ORDER BY id DESC",
+            [$threadId, ...$messageIds]
+        );
+
+        // Group reactions by message ID for easy access
+        $reactionsByMessage = [];
+
+        foreach ($reactions as $reaction) {
+            $messageId = $reaction->getMessageId();
+            $reactionsByMessage[$messageId][] = $reaction->returnSummary();
+        }
+
+        // Decrypt messages and attach reactions
         $decryptedResults = [];
 
         foreach ($results as $result) {
@@ -615,19 +641,12 @@ class MessagingService {
                 );
             }
 
-            // Fetch all reactions for this message
-            $reactions = MessageReaction::filter(
-                "WHERE messageThreadId = ? AND messageId = ? ORDER BY id DESC",
-                [$threadId, $summary->getMessageId()]
-            );
+            // Attach reactions already fetched for this message
+            $messageId = $summary->getMessageId();
 
-            $reactionSummaries = array_map(
-                fn($reaction) => $reaction->returnSummary(),
-                $reactions
+            $summary->setMessageReactions(
+                $reactionsByMessage[$messageId] ?? []
             );
-
-            // Attach the reactions to the message summary
-            $summary->setMessageReactions($reactionSummaries);
 
             $decryptedResults[] = $summary;
         }

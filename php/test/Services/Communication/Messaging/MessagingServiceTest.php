@@ -4,7 +4,6 @@ namespace Kiniauth\Test\Services\Communication\Messaging;
 
 
 use Exception;
-use Kiniauth\Exception\Security\InvalidLoginException;
 use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Objects\Communication\Messaging\Message;
 use Kiniauth\Objects\Communication\Messaging\MessageReaction;
@@ -12,18 +11,13 @@ use Kiniauth\Objects\Communication\Messaging\MessageReactionSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageSummary;
 use Kiniauth\Objects\Communication\Messaging\MessageThread;
 use Kiniauth\Objects\Communication\Messaging\MessageThreadSummary;
-use Kiniauth\Objects\Communication\Notification\Notification;
-use Kiniauth\Objects\Communication\Notification\UserNotification;
 use Kiniauth\Objects\Security\Role;
 use Kiniauth\Objects\Security\User;
 use Kiniauth\Objects\Security\UserRole;
 use Kiniauth\Services\Account\UserService;
 use Kiniauth\Services\Communication\Messaging\MessagingService;
-use Kiniauth\Services\Communication\Notification\CommunicationMethod\EmailNotificationCommunicationMethod;
-use Kiniauth\Services\Communication\Notification\NotificationService;
 use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
-use Kiniauth\ValueObjects\Communication\Messaging\MessageType;
 use Kinikit\Core\Configuration\Configuration;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
@@ -1266,7 +1260,7 @@ class MessagingServiceTest extends TestBase {
             $this->fail("Exception should have been thrown");
         }
         catch (Exception $e) {
-            $this->assertEquals("Limit must be greater than one.", $e->getMessage());
+            $this->assertEquals("Limit must be greater than zero.", $e->getMessage());
         }
 
         try {
@@ -1278,7 +1272,7 @@ class MessagingServiceTest extends TestBase {
             $this->fail("Exception should have been thrown");
         }
         catch (Exception $e) {
-            $this->assertEquals("Offset must be greater than zero.", $e->getMessage());
+            $this->assertEquals("Offset cannot be negative.", $e->getMessage());
         }
 
     }
