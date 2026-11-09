@@ -182,6 +182,10 @@ class UserSummary extends Securable {
         $this->personalEncryptionKey = $personalEncryptionKey;
     }
 
+    public function setRandomPersonalEncryptionKey(): void {
+        $this->personalEncryptionKey = bin2hex(random_bytes(32));
+    }
+
     /**
      * @return int
      */

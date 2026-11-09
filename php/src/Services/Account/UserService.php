@@ -117,7 +117,7 @@ class UserService {
         $user->setCustomData($customData);
 
         // autogenerate a personal encryption key
-        $user->setPersonalEncryptionKey(bin2hex(random_bytes(32)));
+        $user->setRandomPersonalEncryptionKey();
 
         $validationErrors = $user->validate();
 
@@ -167,7 +167,7 @@ class UserService {
         $user->setStatus(User::STATUS_ACTIVE);
 
         // autogenerate a personal encryption key
-        $user->setPersonalEncryptionKey(bin2hex(random_bytes(32)));
+        $user->setRandomPersonalEncryptionKey();
 
         if (!$hashedPassword) {
             $plainPassword = $user->generateAndUpdatePassword();
