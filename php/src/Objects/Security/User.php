@@ -104,7 +104,7 @@ class User extends UserSummary {
         $this->name = $name;
         $this->parentAccountId = $parentAccountId ? $parentAccountId : 0;
         $this->id = $id;
-
+        $this->setRandomPersonalEncryptionKey();
     }
 
 
@@ -360,5 +360,8 @@ class User extends UserSummary {
         return new UserSummary($this->name, $this->status, $this->emailAddress, $this->successfulLogins, $this->applicationSettings);
     }
 
+    public static function generatePersonalEncryptionKey() {
+        return bin2hex(random_bytes(32));
+    }
 
 }
