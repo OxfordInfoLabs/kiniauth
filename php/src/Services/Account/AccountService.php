@@ -324,8 +324,7 @@ class AccountService {
     public function setAccountExpiryDate( $accountId, $expiryDate) {
         $dateNow = new \DateTime();
         if ($expiryDate !== null) {
-            $newExpiryDate = date_create_from_format("Y-m-d H:i:s", $expiryDate);
-            $newExpiryDate->setTime(00, 00, 00);
+            $newExpiryDate = new \DateTime($expiryDate);
         } else {
             $newExpiryDate = null;
         }
