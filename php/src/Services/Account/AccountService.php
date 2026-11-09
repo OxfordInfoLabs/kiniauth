@@ -546,6 +546,7 @@ class AccountService {
             if ($pendingData["newUser"]) {
                 $user = new User($pendingData["emailAddress"], $password, $name, $accountSummary->getParentAccountId());
                 $user->setStatus(User::STATUS_ACTIVE);
+                $user->setRandomPersonalEncryptionKey();
                 $user->save();
             } else {
                 // Get existing user if exists
