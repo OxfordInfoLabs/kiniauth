@@ -104,7 +104,6 @@ class User extends UserSummary {
         $this->name = $name;
         $this->parentAccountId = $parentAccountId ? $parentAccountId : 0;
         $this->id = $id;
-        $this->setRandomPersonalEncryptionKey();
     }
 
 

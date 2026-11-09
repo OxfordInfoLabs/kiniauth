@@ -831,7 +831,7 @@ class UserService {
      * @param string $newPersonalEncryptionKey
      * @param integer $userId
      */
-    public function updateUserPersonalEncryptionKey($newPersonalEncryptionKey = "", $userId = User::LOGGED_IN_USER) {
+    public function updateUserPersonalEncryptionKey($newPersonalEncryptionKey = null, $userId = User::LOGGED_IN_USER) {
 
         /** @var User $user */
         $user = User::fetch($userId);
