@@ -343,8 +343,8 @@ class AccountServiceTest extends TestBase {
         $accountId = $this->accountService->createAccount("Playpen Account");
         $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($accountId)->getStatus());
 
-        $this->accountService->setAccountExpiryDate($accountId, "2030-01-01 07:08:01");
-        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2030-01-01 00:00:00"), Account::fetch($accountId)->getExpiryDate());
+        $this->accountService->setAccountExpiryDate($accountId, "2030-01-01");
+        $this->assertEquals(new \DateTime("2030-01-01"), Account::fetch($accountId)->getExpiryDate());
     }
 
     public function testIfAccountAlreadyExpiredAndFutureExpiryDateSetDateIsUpdatedAndAccountIsActivated(){
@@ -358,9 +358,9 @@ class AccountServiceTest extends TestBase {
 
         $this->assertEquals(Account::STATUS_EXPIRED, Account::fetch($accountId)->getStatus());
 
-        $this->accountService->setAccountExpiryDate($accountId, "2030-01-01 07:08:01");
+        $this->accountService->setAccountExpiryDate($accountId, "2030-01-01");
 
-        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2030-01-01 00:00:00"), Account::fetch($accountId)->getExpiryDate());
+        $this->assertEquals(new \DateTime("2030-01-01"), Account::fetch($accountId)->getExpiryDate());
         $this->assertEquals(Account::STATUS_ACTIVE, Account::fetch($accountId)->getStatus());
 
 
@@ -377,9 +377,9 @@ class AccountServiceTest extends TestBase {
 
         $this->assertEquals(Account::STATUS_EXPIRED, Account::fetch($accountId)->getStatus());
 
-        $this->accountService->setAccountExpiryDate($accountId, "2020-01-01 07:08:01");
+        $this->accountService->setAccountExpiryDate($accountId, "2020-01-01");
 
-        $this->assertEquals(date_create_from_format("Y-m-d H:i:s", "2020-01-01 00:00:00"), Account::fetch($accountId)->getExpiryDate());
+        $this->assertEquals(new \DateTime("2020-01-01"), Account::fetch($accountId)->getExpiryDate());
         $this->assertEquals(Account::STATUS_EXPIRED, Account::fetch($accountId)->getStatus());
 
     }
