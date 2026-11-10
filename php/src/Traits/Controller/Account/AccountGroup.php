@@ -6,6 +6,9 @@ use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Services\Account\AccountGroupService;
 use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
 use Kiniauth\ValueObjects\Account\AccountGroupInvitation;
+use Kiniauth\Objects\Account\Account;
+use Kinikit\Core\Exception\AccessDeniedException;
+use Kinikit\Core\Validation\ValidationException;
 
 trait AccountGroup {
 
@@ -15,7 +18,7 @@ trait AccountGroup {
      * Account constructor.
      * @param AccountGroupService $accountGroupService
      */
-    public function __construct($accountGroupService) {
+    public function __construct(AccountGroupService $accountGroupService) {
         $this->accountGroupService = $accountGroupService;
     }
 
@@ -25,12 +28,14 @@ trait AccountGroup {
      * @http GET /
      *
      * @param int $accountGroupId
+     * @param int $accountId
      *
      * @return \Kiniauth\Objects\Account\AccountGroup
      *
+     * @throws AccessDeniedException
      */
-    public function getAccountGroup($accountGroupId) {
-        return $this->accountGroupService->getAccountGroup($accountGroupId);
+    public function getAccountGroup($accountGroupId, $accountId = Account::LOGGED_IN_ACCOUNT) {
+        return $this->accountGroupService->getAccountGroup($accountGroupId, $accountId);
     }
 
     /**
@@ -39,7 +44,7 @@ trait AccountGroup {
      * @param $accountId
      * @return \Kiniauth\Objects\Account\AccountGroup[]
      */
-    public function listAccountGroup($accountId = \Kiniauth\Objects\Account\Account::LOGGED_IN_ACCOUNT) {
+    public function listAccountGroup($accountId = Account::LOGGED_IN_ACCOUNT) {
         return $this->accountGroupService->listAccountGroupsForAccount($accountId);
     }
 
@@ -62,6 +67,7 @@ trait AccountGroup {
      * @param int $accountGroupId
      *
      * @return AccountGroupMember[]
+     * @throws AccessDeniedException
      */
     public function getAccountGroupMembers($accountGroupId) {
         return $this->accountGroupService->getMembersOfAccountGroup($accountGroupId);
@@ -72,6 +78,7 @@ trait AccountGroup {
      *
      * @param int $accountGroupId
      * @param int $accountId
+     * @throws AccessDeniedException
      */
     public function removeAccountFromAccountGroup(int $accountGroupId, int $accountId) {
         $this->accountGroupService->removeMemberFromAccountGroup($accountGroupId, $accountId);
@@ -144,6 +151,7 @@ trait AccountGroup {
      * @param string $invitationCode
      *
      * @return void
+     * @throws ValidationException
      */
     public function acceptInviteToAccountGroup($invitationCode) {
         $this->accountGroupService->acceptAccountGroupInvitation($invitationCode);

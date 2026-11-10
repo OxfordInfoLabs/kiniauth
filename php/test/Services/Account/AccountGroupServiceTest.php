@@ -12,7 +12,6 @@ use Kiniauth\Objects\Workflow\PendingAction;
 use Kiniauth\Services\Account\AccountGroupService;
 use Kiniauth\Services\Account\AccountService;
 use Kiniauth\Services\Communication\Email\EmailService;
-use Kiniauth\Services\Security\AccountGroupInterceptor;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
@@ -21,6 +20,7 @@ use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
 use Kinikit\Core\Configuration\FileResolver;
 use Kinikit\Core\DependencyInjection\Container;
+use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Core\Testing\MockObjectProvider;
 use Kinikit\Persistence\ORM\Exception\ObjectNotFoundException;
 
@@ -42,7 +42,9 @@ class AccountGroupServiceTest extends TestBase {
         $fileResolver->addSearchPath(__DIR__ . "/../../../src");
 
         $this->emailService = MockObjectProvider::instance()->getMockInstance(EmailService::class);
-        $this->pendingActionService = MockObjectProvider::instance()->getMockInstance(PendingActionService::class);
+        $this->pendingActionService = MockObjectProvider::instance()->getMockInstance(
+            PendingActionService::class
+        );
         $this->accountService = MockObjectProvider::instance()->getMockInstance(AccountService::class);
 
         $this->accountGroupService = new AccountGroupService($this->emailService, $this->pendingActionService,
@@ -61,6 +63,16 @@ class AccountGroupServiceTest extends TestBase {
 
         $this->assertCount(2, $accountGroups[0]->getAccountGroupMembers());
         $this->assertCount(3, $accountGroups[1]->getAccountGroupMembers());
+    }
+
+    public function testCannotGetAccountGroupThatAUserIsNotAPartOf() {
+
+        // user 4 is not in any account group
+        $this->securityService->becomeAccount(4);
+
+        $this->expectException(AccessDeniedException::class);
+
+        $this->accountGroupService->getAccountGroup(1);
     }
 
     public function testCanGetMembersOfAccountGroup() {
@@ -103,9 +115,16 @@ class AccountGroupServiceTest extends TestBase {
         $this->assertEquals(1, $accountGroup->getOwnerAccountId());
 
         // Check we are in the group
-        $this->assertEquals([
-            new AccountGroupMember($accountGroupId, 1, new AccountLabel(1, "Sam Davis Design"))
-        ], $accountGroup->getAccountGroupMembers());
+        $this->assertEquals(
+            [
+                new AccountGroupMember(
+                    $accountGroupId,
+                    1,
+                    new AccountLabel(1, "Sam Davis Design")
+                )
+            ],
+            $accountGroup->getAccountGroupMembers()
+        );
 
     }
 
@@ -164,12 +183,20 @@ class AccountGroupServiceTest extends TestBase {
 
 
         try {
-            $this->accountGroupService->inviteAccountToAccountGroup(1, "APPLEPIE", 3);
+            $this->accountGroupService->inviteAccountToAccountGroup(
+                1,
+                "APPLEPIE",
+                2
+            );
         } catch (InvalidAccountGroupOwnerException $e) {
             $this->assertEquals("The logged in account doesn't own the account group", $e->getMessage());
         }
 
-        $this->accountGroupService->inviteAccountToAccountGroup(1, "APPLEPIE", 1);
+        $this->accountGroupService->inviteAccountToAccountGroup(
+            1,
+            "APPLEPIE",
+            1
+        );
 
         $this->securityService->becomeSuperUser();
         $invitationEmail = new AccountTemplatedEmail(3, "security/account-group-invite", [
@@ -182,9 +209,15 @@ class AccountGroupServiceTest extends TestBase {
 
         // Test accepting
         $pendingAction = new PendingAction("ACCOUNT_GROUP_INVITE", 1, ["accountId" => 3]);
-        $this->pendingActionService->returnValue("getPendingActionByIdentifier", $pendingAction, ["ACCOUNT_GROUP_INVITE", "mycode123"]);
+        $this->pendingActionService->returnValue(
+            "getPendingActionByIdentifier",
+            $pendingAction, ["ACCOUNT_GROUP_INVITE", "mycode123"]
+        );
 
         $this->securityService->logout();
+
+        $this->securityService->becomeAccount(3);
+
         $activeRecordInterceptor = Container::instance()->get(ActiveRecordInterceptor::class);
         $activeRecordInterceptor->executeInsecure(function () {
             $this->accountGroupService->acceptAccountGroupInvitation("mycode123");
@@ -197,7 +230,11 @@ class AccountGroupServiceTest extends TestBase {
             $this->fail("Object should exist");
         }
 
-        $this->assertTrue($this->pendingActionService->methodWasCalled("removePendingAction", ["ACCOUNT_GROUP_INVITE", "mycode123"]));
+        $this->assertTrue(
+            $this->pendingActionService->methodWasCalled(
+                "removePendingAction", ["ACCOUNT_GROUP_INVITE", "mycode123"]
+            )
+        );
 
         $this->securityService->becomeSuperUser();
         $acceptEmail = new AccountTemplatedEmail(3, "security/account-group-welcome", []);
@@ -207,30 +244,39 @@ class AccountGroupServiceTest extends TestBase {
 
     public function testCanListActiveAccountGroupInvitations() {
 
+        $this->securityService->becomeAccount(1);
+
         $this->pendingActionService->returnValue("getAllPendingActionsForTypeAndObjectId",
             [new PendingAction("ACCOUNT_GROUP_INVITE", 1, ["accountId" => 1])],
             ["ACCOUNT_GROUP_INVITE", 1]);
 
         $this->accountGroupService->getActiveAccountGroupInvitationAccounts(1);
 
-        $this->assertTrue($this->pendingActionService->methodWasCalled("getAllPendingActionsForTypeAndObjectId", [
-            "ACCOUNT_GROUP_INVITE", 1
-        ]));
+        $this->assertTrue(
+            $this->pendingActionService->methodWasCalled(
+                "getAllPendingActionsForTypeAndObjectId", ["ACCOUNT_GROUP_INVITE", 1]
+            )
+        );
     }
 
-
     public function testCanGetAccountGroupInvitationDetails() {
+
+        $this->securityService->becomeAccount(1);
+
         $pendingAction = new PendingAction("ACCOUNT_GROUP_INVITE", 2, ["accountId" => 3]);
         $code = $pendingAction->getIdentifier();
 
-        $this->pendingActionService->returnValue("getPendingActionByIdentifier", $pendingAction, ["ACCOUNT_GROUP_INVITE", $code]);
+        $this->pendingActionService->returnValue(
+            "getPendingActionByIdentifier",
+            $pendingAction,
+            ["ACCOUNT_GROUP_INVITE", $code]
+        );
 
         $invitationDetails = $this->accountGroupService->getInvitationDetails($code);
 
         $this->assertEquals(2, $invitationDetails->getAccountGroupId());
         $this->assertEquals(3, $invitationDetails->getAccountId());
     }
-
 
     public function testCanGetMultipleAccountGroupsById() {
 
