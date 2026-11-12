@@ -4,6 +4,8 @@ namespace Kiniauth\Test\Services\Account;
 
 use Exception;
 use Kiniauth\Exception\Security\AccountAlreadyAttachedToAccountGroupException;
+use Kiniauth\Exception\Security\AccountGroupOwnerCannotLeaveException;
+use Kiniauth\Exception\Security\AccountGroupOwnerCannotRemoveThemselvesException;
 use Kiniauth\Exception\Security\InvalidAccountGroupOwnerException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountGroup;
@@ -18,7 +20,6 @@ use Kiniauth\Services\Communication\Email\EmailService;
 use Kiniauth\Services\Security\ActiveRecordInterceptor;
 use Kiniauth\Services\Security\SecurityService;
 use Kiniauth\Services\Workflow\PendingActionService;
-use Kiniauth\Test\Services\Security\AuthenticationHelper;
 use Kiniauth\Test\TestBase;
 use Kiniauth\ValueObjects\Account\AccountGroupDescriptor;
 use Kinikit\Core\Communication\Email\MissingEmailTemplateException;
@@ -80,39 +81,43 @@ class AccountGroupServiceTest extends TestBase {
 
     public function tearDown(): void {
 
-        if (self::$originalAccountGroupSnapshot !== null) {
+        try {
+            if (self::$originalAccountGroupSnapshot !== null) {
 
-            $this->securityService->becomeSuperUser();
+                $this->securityService->becomeSuperUser();
 
-            $originalGroupIds = array_keys(self::$originalAccountGroupSnapshot);
+                $originalGroupIds = array_keys(self::$originalAccountGroupSnapshot);
 
-            // Remove any account groups created during the tests.
-            $existingAccountGroups = AccountGroup::filter();
+                // Remove any account groups created during the tests.
+                $existingAccountGroups = AccountGroup::filter();
 
-            foreach ($existingAccountGroups as $accountGroup) {
+                foreach ($existingAccountGroups as $accountGroup) {
 
-                if (!in_array($accountGroup->getId(), $originalGroupIds)) {
-                    $accountGroup->remove();
-                }
-            }
-
-            // Restore original account group memberships.
-            foreach (self::$originalAccountGroupSnapshot as $groupId => $memberAccountIds) {
-
-                /** @var AccountGroup $accountGroup */
-                $accountGroup = AccountGroup::fetch($groupId);
-
-                $members = [];
-
-                foreach ($memberAccountIds as $memberAccountId) {
-                    $members[] = new AccountGroupMember($groupId, $memberAccountId);
+                    if (!in_array($accountGroup->getId(), $originalGroupIds)) {
+                        $accountGroup->remove();
+                    }
                 }
 
-                $accountGroup->setAccountGroupMembers($members);
-                $accountGroup->save();
-            }
+                // Restore original account group memberships.
+                foreach (self::$originalAccountGroupSnapshot as $groupId => $memberAccountIds) {
 
-            $this->securityService->logout();
+                    /** @var AccountGroup $accountGroup */
+                    $accountGroup = AccountGroup::fetch($groupId);
+
+                    $members = [];
+
+                    foreach ($memberAccountIds as $memberAccountId) {
+                        $members[] = new AccountGroupMember($groupId, $memberAccountId);
+                    }
+
+                    $accountGroup->setAccountGroupMembers($members);
+                    $accountGroup->save();
+                }
+
+                $this->securityService->logout();
+            }
+        } finally {
+            parent::tearDown();
         }
     }
 
@@ -136,6 +141,10 @@ class AccountGroupServiceTest extends TestBase {
 
         $this->assertEquals(1, $accountGroup->getId());
         $this->assertEquals("First Account Group", $accountGroup->getName());
+        $this->assertEquals("description", $accountGroup->getDescription());
+        $this->assertEquals(1, $accountGroup->getOwnerAccountId());
+
+        $this->assertCount(2, $accountGroup->getAccountGroupMembers());
     }
 
     public function testCannotGetAccountGroupThatAUserIsNotAPartOf() {
@@ -153,7 +162,7 @@ class AccountGroupServiceTest extends TestBase {
 
         $this->expectException(ObjectNotFoundException::class);
 
-        // user 5 is not in any account group
+        // group 5 does not exist
         $this->accountGroupService->getAccountGroup(5, 1);
     }
 
@@ -161,8 +170,14 @@ class AccountGroupServiceTest extends TestBase {
      * @throws AccessDeniedException
      */
     public function testCanGetMembersOfAccountGroup() {
-        $groupOneMembers = $this->accountGroupService->getMembersOfAccountGroup(1, 1);
-        $groupTwoMembers = $this->accountGroupService->getMembersOfAccountGroup(2, 1);
+        $groupOneMembers = $this->accountGroupService->getMembersOfAccountGroup(
+            1,
+            1
+        );
+        $groupTwoMembers = $this->accountGroupService->getMembersOfAccountGroup(
+            2,
+            1
+        );
 
         $this->assertCount(2, $groupOneMembers);
         $this->assertCount(3, $groupTwoMembers);
@@ -221,7 +236,7 @@ class AccountGroupServiceTest extends TestBase {
     }
 
     /**
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function testCanDeleteAnAccountGroup() {
 
@@ -251,19 +266,22 @@ class AccountGroupServiceTest extends TestBase {
             AccountGroup::fetch($accountGroupId);
             $this->fail("Account group object still exist");
         }
-        catch (ObjectNotFoundException $e) {}
+        catch (ObjectNotFoundException) {}
 
         // make sure its members were removed as well
         try {
             AccountGroupMember::fetch([$accountGroupId, 1]);
-            $this->fail("Account group member object still exist");
+            $this->fail("Account group member object(s) still exist");
         }
-        catch (ObjectNotFoundException $e) {}
+        catch (ObjectNotFoundException) {}
     }
 
+    /**
+     * @throws AccessDeniedException
+     */
     public function testNonOwnerCannotDeleteAccountGroup(): void {
 
-        $this->expectException(AccessDeniedException::class);
+        $this->expectException(InvalidAccountGroupOwnerException::class);
 
         $this->accountGroupService->deleteAccountGroup(1, 2);
     }
@@ -281,13 +299,6 @@ class AccountGroupServiceTest extends TestBase {
         } catch (ObjectNotFoundException) {
             $this->fail("Couldn't find object");
         }
-
-        try {
-            $this->accountGroupService->addMemberToAccountGroup(10, 1, 1);
-            $this->fail("Should've thrown here");
-        } catch (ObjectNotFoundException) {
-            $this->assertTrue(true);
-        }
     }
 
     /**
@@ -295,6 +306,7 @@ class AccountGroupServiceTest extends TestBase {
      */
     public function testAddingExistingMemberDoesNotCreateDuplicateMembership(): void {
 
+        // user 2 already in account group 1
         $this->accountGroupService->addMemberToAccountGroup(1, 2, 1);
 
         $members = $this->accountGroupService->getMembersOfAccountGroup(1, 1);
@@ -308,14 +320,20 @@ class AccountGroupServiceTest extends TestBase {
         $this->assertCount(1, array_filter($memberIds, fn($id) => $id == 2));
     }
 
+    /**
+     * @throws AccessDeniedException
+     */
     public function testNonOwnerCannotAddMemberToAccountGroup(): void {
 
-        $this->expectException(AccessDeniedException::class);
+        $this->expectException(InvalidAccountGroupOwnerException::class);
 
         // Account 2 is a member but not the owner of group 1.
         $this->accountGroupService->addMemberToAccountGroup(1, 4, 2);
     }
 
+    /**
+     * @throws AccessDeniedException
+     */
     public function testCanRemoveMembersFromAccountGroup() {
         // Remove someone
         $this->accountGroupService->removeMemberFromAccountGroup(2, 3, 2);
@@ -330,7 +348,6 @@ class AccountGroupServiceTest extends TestBase {
         $this->assertCount(1, $accountGroupMembers);
     }
 
-
     /**
      * @throws AccessDeniedException
      */
@@ -338,7 +355,11 @@ class AccountGroupServiceTest extends TestBase {
 
         try {
             // Remove someone
-            $this->accountGroupService->removeMemberFromAccountGroup(2, 4, 2);
+            $this->accountGroupService->removeMemberFromAccountGroup(
+                2,
+                4,
+                2
+            );
         }
         catch (Exception $e) {
             $this->fail("Some exception was thrown: " . $e->getMessage());
@@ -348,9 +369,12 @@ class AccountGroupServiceTest extends TestBase {
         $this->assertCount(3, $accountGroupMembers);
     }
 
+    /**
+     * @throws AccessDeniedException
+     */
     public function testNonOwnerCannotRemoveMemberFromAccountGroup(): void {
 
-        $this->expectException(AccessDeniedException::class);
+        $this->expectException(InvalidAccountGroupOwnerException::class);
 
         $this->accountGroupService->removeMemberFromAccountGroup(1, 2, 2);
     }
@@ -360,8 +384,7 @@ class AccountGroupServiceTest extends TestBase {
      */
     public function testOwnerCannotRemoveThemselvesFromAccountGroup(): void {
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage("Owner cannot remove themselves from their own group");
+        $this->expectException(AccountGroupOwnerCannotRemoveThemselvesException::class);
 
         $this->accountGroupService->removeMemberFromAccountGroup(1, 1, 1);
     }
@@ -371,10 +394,31 @@ class AccountGroupServiceTest extends TestBase {
      */
     public function testCanLeaveAccountGroup() {
 
+        // user 3 leaves from group 2
         $this->accountGroupService->leaveAccountGroup(2, 3);
 
         $accountGroupMembers = $this->accountGroupService->getMembersOfAccountGroup(2, 1);
         $this->assertCount(2, $accountGroupMembers);
+    }
+
+    /**
+     * @throws AccessDeniedException
+     */
+    public function testNonMembersLeavingAccountGroupDoesThrowsException(): void {
+
+        try {
+            // non-member tries to leave account group
+            $this->accountGroupService->leaveAccountGroup(
+                2,
+                4,
+            );
+            $this->fail("Exception should have been thrown");
+        }
+        catch (AccessDeniedException) {
+        }
+
+        $accountGroupMembers = $this->accountGroupService->getMembersOfAccountGroup(2, 2);
+        $this->assertCount(3, $accountGroupMembers);
     }
 
     /**
@@ -386,8 +430,8 @@ class AccountGroupServiceTest extends TestBase {
             $this->accountGroupService->leaveAccountGroup(1, 1);
             $this->fail("Owner shouldn't be able to leave their own group");
         }
-        catch (Exception $e) {
-            $this->assertEquals("Owner cannot leave their own group", $e->getMessage());
+        catch (AccountGroupOwnerCannotLeaveException $e) {
+            $this->assertEquals("The account group owner cannot leave their own group", $e->getMessage());
         }
 
         $accountGroupMembers = $this->accountGroupService->getMembersOfAccountGroup(1, 1);
@@ -423,25 +467,18 @@ class AccountGroupServiceTest extends TestBase {
     public function testCanInviteAccountToJoinAccountGroupAndInvitationCanBeAccepted() {
 
         // Test the invite
-        $this->pendingActionService->returnValue("createPendingAction", "mycode123", [
-            "ACCOUNT_GROUP_INVITE",
-            1,
-            ["accountId" => 3]
-        ]);
+        $this->pendingActionService->returnValue(
+            "createPendingAction",
+            "mycode123",
+            [
+                "ACCOUNT_GROUP_INVITE",
+                1,
+                ["accountId" => 3]
+            ]
+        );
 
         $account = new Account("Test", 0, AccountSummary::STATUS_ACTIVE, 3);
         $this->accountService->returnValue("getAccountByExternalIdentifier", $account, ["APPLEPIE"]);
-
-        try {
-            $this->accountGroupService->inviteAccountToAccountGroup(
-                1,
-                "APPLEPIE",
-                2
-            );
-            $this->fail("Exception should have thrown here");
-        } catch (InvalidAccountGroupOwnerException $e) {
-            $this->assertEquals("The logged in account doesn't own the account group", $e->getMessage());
-        }
 
         $this->accountGroupService->inviteAccountToAccountGroup(
             1,
@@ -450,11 +487,14 @@ class AccountGroupServiceTest extends TestBase {
         );
 
         $this->securityService->becomeSuperUser();
-        $invitationEmail = new AccountTemplatedEmail(3, "security/account-group-invite", [
-            "accountGroup" => AccountGroup::fetch(1),
-            "invitationCode" => "mycode123"
-        ]);
-
+        $invitationEmail = new AccountTemplatedEmail(
+            3,
+            "security/account-group-invite",
+            [
+                "accountGroup" => AccountGroup::fetch(1),
+                "invitationCode" => "mycode123"
+            ]
+        );
 
         $this->assertTrue($this->emailService->methodWasCalled("send", [$invitationEmail, 3]));
 
@@ -488,13 +528,136 @@ class AccountGroupServiceTest extends TestBase {
         $this->securityService->becomeSuperUser();
         $acceptEmail = new AccountTemplatedEmail(3, "security/account-group-welcome", []);
         $this->assertTrue($this->emailService->methodWasCalled("send", [$acceptEmail, 3]));
+        $this->securityService->logout();
     }
 
     /**
-     * @throws Throwable
      * @throws ValidationException
+     * @throws MissingEmailTemplateException
+     * @throws InvalidAccountGroupOwnerException
+     * @throws Throwable
+     * @throws AccountAlreadyAttachedToAccountGroupException
      */
-    public function testAcceptingInvitationToAnAccountTheyAreAlreadyInDoesNothing(): void {
+    public function testNonOwnerCannotInviteAccountToJoinAccountGroup() {
+
+        // Test the invite
+        $this->pendingActionService->returnValue("createPendingAction", "mycode123", [
+            "ACCOUNT_GROUP_INVITE",
+            1,
+            ["accountId" => 3]
+        ]);
+
+        $account = new Account("Test", 0, AccountSummary::STATUS_ACTIVE, 3);
+        $this->accountService->returnValue("getAccountByExternalIdentifier", $account, ["APPLEPIE"]);
+
+        try {
+            $this->accountGroupService->inviteAccountToAccountGroup(
+                1,
+                "APPLEPIE",
+                2
+            );
+            $this->fail("Exception should have thrown here");
+        } catch (InvalidAccountGroupOwnerException $e) {
+            $this->assertEquals("The logged in account doesn't own the account group", $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws ValidationException
+     * @throws MissingEmailTemplateException
+     * @throws InvalidAccountGroupOwnerException
+     * @throws Throwable
+     * @throws AccountAlreadyAttachedToAccountGroupException
+     */
+    public function testInvitingAccountToJoinGroupItIsAlreadyAMemberThrowsAnException() {
+
+        $this->securityService->becomeAccount(3);
+
+        // Test the invite
+        $this->pendingActionService->returnValue(
+            "createPendingAction",
+            "mycode123",
+            [
+                "ACCOUNT_GROUP_INVITE",
+                1,
+                ["accountId" => 3]
+            ]
+        );
+
+        $account = new Account("Test", 0, AccountSummary::STATUS_ACTIVE, 3);
+        $this->accountService->returnValue("getAccountByExternalIdentifier", $account, ["APPLEPIE"]);
+
+        // save user 3 to the account
+        $accountGroupMember = new AccountGroupMember(1, 3);
+        $accountGroupMember->save();
+
+        try {
+            $this->accountGroupService->inviteAccountToAccountGroup(
+                1,
+                "APPLEPIE",
+                1
+            );
+            $this->fail("Exception should have thrown here");
+        }
+        catch (AccountAlreadyAttachedToAccountGroupException $e) {
+            $this->assertEquals(
+                "The account Smart Coasting is already attached to this account group",
+                $e->getMessage()
+            );
+        }
+
+        $this->securityService->logout();
+
+        $this->assertFalse($this->pendingActionService->methodWasCalled("createPendingAction"));
+
+        $this->assertFalse($this->emailService->methodWasCalled("send"));
+    }
+
+    /**
+     * @throws ValidationException
+     * @throws MissingEmailTemplateException
+     * @throws InvalidAccountGroupOwnerException
+     * @throws Throwable
+     * @throws AccountAlreadyAttachedToAccountGroupException
+     */
+    public function testExceptionInEmailServiceRollsBackInviteToJoinAccountGroup() {
+
+        // Test the invite
+        $this->pendingActionService->returnValue("createPendingAction", "mycode123", [
+            "ACCOUNT_GROUP_INVITE",
+            1,
+            ["accountId" => 3]
+        ]);
+
+        $account = new Account("Test", 0, AccountSummary::STATUS_ACTIVE, 3);
+        $this->accountService->returnValue("getAccountByExternalIdentifier", $account, ["APPLEPIE"]);
+
+        // fake an exception from the email service
+        $this->emailService->throwException(
+            "send",
+            new Exception()
+        );
+
+        try {
+            $this->accountGroupService->inviteAccountToAccountGroup(
+                1,
+                "APPLEPIE",
+                1
+            );
+            $this->fail("Exception should have thrown here");
+        } catch (Exception) {}
+
+        // assert that the invite was rolled back
+        $this->assertTrue($this->pendingActionService->methodWasCalled("removePendingAction"));
+    }
+
+    /**
+     * @throws Throwable|ValidationException
+     * @objectInterceptorDisabled
+     */
+    public function testAcceptingInvitationToAnAccountTheyAreAlreadyInThrowsException(): void {
+
+        $this->securityService->becomeAccount(3);
 
         $pendingAction = new PendingAction(
             "ACCOUNT_GROUP_INVITE",
@@ -515,7 +678,18 @@ class AccountGroupServiceTest extends TestBase {
         $accountGroupMember->save();
 
         // Account 1 attempts to accept an invitation intended for account 3.
-        $this->accountGroupService->acceptAccountGroupInvitation($code, 3);
+        try {
+            $this->accountGroupService->acceptAccountGroupInvitation($code, 3);
+            $this->fail("Exception should have thrown here");
+        }
+        catch (AccountAlreadyAttachedToAccountGroupException $e) {
+            $this->assertEquals(
+                "The account Smart Coasting is already attached to this account group",
+                $e->getMessage()
+            );
+        }
+
+        $this->securityService->logout();
 
         $this->assertTrue(
             $this->pendingActionService->methodWasCalled(
@@ -540,8 +714,66 @@ class AccountGroupServiceTest extends TestBase {
     }
 
     /**
-     * @throws Throwable
-     * @throws ValidationException
+     * @throws Throwable|ValidationException
+     * @objectInterceptorDisabled
+     */
+    public function testExceptionInEmailServiceStillAcceptsInviteToJoinAccountGroup(): void {
+
+        $this->securityService->becomeAccount(3);
+
+        $pendingAction = new PendingAction(
+            "ACCOUNT_GROUP_INVITE",
+            1,
+            ["accountId" => 3]
+        );
+
+        $code = $pendingAction->getIdentifier();
+
+        $this->pendingActionService->returnValue(
+            "getPendingActionByIdentifier",
+            $pendingAction,
+            ["ACCOUNT_GROUP_INVITE", $code]
+        );
+
+        // fake an exception from the email service
+        $this->emailService->throwException(
+            "send",
+            new Exception()
+        );
+
+        // Account 1 attempts to accept an invitation intended for account 3.
+        try {
+            $this->accountGroupService->acceptAccountGroupInvitation($code, 3);
+            $this->fail("Exception should have thrown here");
+        }
+        catch (Exception) {}
+
+        $this->securityService->logout();
+
+        $this->assertTrue(
+            $this->pendingActionService->methodWasCalled(
+                "removePendingAction", ["ACCOUNT_GROUP_INVITE", $code]
+            )
+        );
+
+        $this->assertFalse(
+            $this->emailService->methodWasCalled("send")
+        );
+
+        // make sure the user was still added
+        $accountGroupMembers = $this->accountGroupService->getMembersOfAccountGroup(1, 1);
+
+        $memberIds = array_map(
+            fn(AccountGroupMember $member) => $member->getMemberAccountId(),
+            $accountGroupMembers
+        );
+
+        $this->assertCount(3, $memberIds);
+        $this->assertTrue(in_array(3, $memberIds));
+    }
+
+    /**
+     * @throws Throwable|ValidationException
      */
     public function testCannotAcceptInvitationForAnotherAccount(): void {
 
@@ -566,7 +798,22 @@ class AccountGroupServiceTest extends TestBase {
     }
 
     /**
-     * @throws AccessDeniedException
+     * @throws ValidationException|AccessDeniedException|Throwable
+     */
+    public function testCannotAcceptInvalidInvitationCode(): void {
+
+        $this->pendingActionService->throwException(
+            "getPendingActionByIdentifier",
+            new ItemNotFoundException()
+        );
+
+        $this->expectException(ValidationException::class);
+
+        $this->accountGroupService->acceptAccountGroupInvitation("invalid-code", 3);
+    }
+
+    /**
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function testCanListActiveAccountGroupInvitations() {
 
@@ -574,7 +821,10 @@ class AccountGroupServiceTest extends TestBase {
             [new PendingAction("ACCOUNT_GROUP_INVITE", 1, ["accountId" => 1])],
             ["ACCOUNT_GROUP_INVITE", 1]);
 
-        $groupInvitations = $this->accountGroupService->getActiveAccountGroupInvitationAccounts(1, 1);
+        $groupInvitations = $this->accountGroupService->getActiveAccountGroupInvitationAccounts(
+            1,
+            1
+        );
 
         $this->assertTrue(
             $this->pendingActionService->methodWasCalled(
@@ -593,7 +843,7 @@ class AccountGroupServiceTest extends TestBase {
     }
 
     /**
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function testListingNoActiveAccountGroupInvitationsReturnsEmptyArray(): void {
 
@@ -612,6 +862,9 @@ class AccountGroupServiceTest extends TestBase {
         $this->assertEmpty($groupInvitations);
     }
 
+    /**
+     * @throws InvalidAccountGroupOwnerException
+     */
     public function testNonMemberCannotListActiveAccountGroupInvitations() {
 
         $this->pendingActionService->returnValue("getAllPendingActionsForTypeAndObjectId",
@@ -632,7 +885,7 @@ class AccountGroupServiceTest extends TestBase {
     }
 
     /**
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function testAccountOwnerCanRevokeAccountGroupInvitation(): void {
 
@@ -664,7 +917,7 @@ class AccountGroupServiceTest extends TestBase {
     }
 
     /**
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function testAccountOwnerCanRevokeAccountGroupInvitationWhenMultipleInvitationsExist(): void {
 
@@ -710,7 +963,7 @@ class AccountGroupServiceTest extends TestBase {
     }
 
     /**
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function testAccountCannotRevokeAccountGroupInvitationIfNotGroupOwner(): void {
 
@@ -729,14 +982,14 @@ class AccountGroupServiceTest extends TestBase {
         $invitations = $this->accountGroupService->getActiveAccountGroupInvitationAccounts(1, 1);
         $this->assertCount(1, $invitations);
 
-        $this->expectException(AccessDeniedException::class);
+        $this->expectException(InvalidAccountGroupOwnerException::class);
 
         // Account 2 is a member of group 1, but is not its owner.
         $this->accountGroupService->revokeAccountGroupInvitation($invitations[0], 2);
     }
 
     /**
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function testAccountCannotRevokeAccountGroupInvitationIfNotGroupMember(): void {
 
@@ -762,8 +1015,7 @@ class AccountGroupServiceTest extends TestBase {
     }
 
     /**
-     * @throws AccessDeniedException
-     * @throws ValidationException
+     * @throws AccessDeniedException|ValidationException
      */
     public function testCanGetAccountGroupInvitationDetails() {
 
@@ -810,7 +1062,7 @@ class AccountGroupServiceTest extends TestBase {
     /**
      * @throws AccessDeniedException
      */
-    public function testInvalidInvitationCodeThrowsValidationException(): void {
+    public function testGettingInvalidInvitationCodeThrowsValidationException(): void {
 
         $this->pendingActionService->throwException(
             "getPendingActionByIdentifier",
@@ -824,7 +1076,7 @@ class AccountGroupServiceTest extends TestBase {
 
     public function testCanGetMultipleAccountGroupsById() {
 
-        AuthenticationHelper::login("sam@samdavisdesign.co.uk", "password");
+        $this->securityService->becomeAccount(1);
 
         $accountGroupId1 = $this->accountGroupService->createAccountGroup(
             new AccountGroupDescriptor(

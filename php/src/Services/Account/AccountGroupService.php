@@ -4,6 +4,8 @@ namespace Kiniauth\Services\Account;
 
 use Exception;
 use Kiniauth\Exception\Security\AccountAlreadyAttachedToAccountGroupException;
+use Kiniauth\Exception\Security\AccountGroupOwnerCannotLeaveException;
+use Kiniauth\Exception\Security\AccountGroupOwnerCannotRemoveThemselvesException;
 use Kiniauth\Exception\Security\InvalidAccountGroupOwnerException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountGroup;
@@ -147,6 +149,7 @@ class AccountGroupService {
      * @return AccountGroup[]
      */
     public function listAccountGroupsForAccount($accountId = Account::LOGGED_IN_ACCOUNT): array {
+
         /** @var AccountGroupMember[] $accountGroupMembers */
         $accountGroupMembers = AccountGroupMember::filter("WHERE member_account_id = ?", $accountId);
 
@@ -213,7 +216,7 @@ class AccountGroupService {
      * @param int $loggedInAccountId
      *
      * @return void
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function addMemberToAccountGroup(
         int $accountGroupId,
@@ -223,8 +226,8 @@ class AccountGroupService {
 
         $accountGroup = $this->getAccountGroup($accountGroupId, $loggedInAccountId);
 
-        if ($accountGroup->getOwnerAccountId() !== $loggedInAccountId) {
-            throw new AccessDeniedException();
+        if ($accountGroup->getOwnerAccountId() != $loggedInAccountId) {
+            throw new InvalidAccountGroupOwnerException();
         }
 
         // Check if member exists
@@ -248,8 +251,7 @@ class AccountGroupService {
      * @param int $loggedInAccountId
      *
      * @return void
-     * @throws AccessDeniedException
-     * @throws Exception
+     * @throws AccessDeniedException|Exception
      */
     public function removeMemberFromAccountGroup(
         int $accountGroupId,
@@ -260,12 +262,12 @@ class AccountGroupService {
         // Check the logged in account is the account group owner
         $accountGroup = $this->getAccountGroup($accountGroupId, $loggedInAccountId);
 
-        if ($accountGroup->getOwnerAccountId() !== $loggedInAccountId) {
-            throw new AccessDeniedException();
+        if ($accountGroup->getOwnerAccountId() != $loggedInAccountId) {
+            throw new InvalidAccountGroupOwnerException();
         }
 
-        if ($accountGroup->getOwnerAccountId() === $removingAccountId) {
-            throw new Exception("Owner cannot remove themselves from their own group");
+        if ($accountGroup->getOwnerAccountId() == $removingAccountId) {
+            throw new AccountGroupOwnerCannotRemoveThemselvesException();
         }
 
         try {
@@ -286,8 +288,7 @@ class AccountGroupService {
      * @param int $loggedInAccountId
      *
      * @return void
-     * @throws AccessDeniedException
-     * @throws Exception
+     * @throws AccessDeniedException|Exception
      */
     public function leaveAccountGroup(
         int $accountGroupId,
@@ -296,8 +297,8 @@ class AccountGroupService {
 
         $accountGroup = $this->getAccountGroup($accountGroupId, $loggedInAccountId);
 
-        if ($accountGroup->getOwnerAccountId() === $loggedInAccountId) {
-            throw new Exception("Owner cannot leave their own group");
+        if ($accountGroup->getOwnerAccountId() == $loggedInAccountId) {
+            throw new AccountGroupOwnerCannotLeaveException();
         }
 
         try {
@@ -319,7 +320,7 @@ class AccountGroupService {
      * @param int $loggedInAccountId
      *
      * @return void
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function deleteAccountGroup(
         int $accountGroupId,
@@ -329,7 +330,7 @@ class AccountGroupService {
         $accountGroup = $this->getAccountGroup($accountGroupId, $loggedInAccountId);
 
         if ($accountGroup->getOwnerAccountId() != $loggedInAccountId) {
-            throw new AccessDeniedException();
+            throw new InvalidAccountGroupOwnerException();
         }
 
         $accountGroup->remove();
@@ -345,9 +346,7 @@ class AccountGroupService {
      * @return void
      *
      * @objectInterceptorDisabled
-     * @throws InvalidAccountGroupOwnerException
-     * @throws AccountAlreadyAttachedToAccountGroupException
-     * @throws Throwable
+     * @throws InvalidAccountGroupOwnerException|AccountAlreadyAttachedToAccountGroupException|Throwable
      */
     public function inviteAccountToAccountGroup(
         int $accountGroupId,
@@ -359,52 +358,74 @@ class AccountGroupService {
         $accountGroup = $this->getAccountGroup($accountGroupId, $loggedInAccountId);
 
         // Verify permission
-        if ($accountGroup->getOwnerAccountId() !== $loggedInAccountId) {
+        if ($accountGroup->getOwnerAccountId() != $loggedInAccountId) {
             throw new InvalidAccountGroupOwnerException();
         }
 
         // Get the account id for the external identifier
         $accountId = $this->accountService->getAccountByExternalIdentifier($accountExternalIdentifier)->getAccountId();
 
-        // If already a member, return
+        // If already a member throw exception
         try {
             AccountGroupMember::fetch([$accountGroupId, $accountId]);
-            throw new AccountAlreadyAttachedToAccountGroupException($accountId);
+            $alreadyMember = true;
         } catch (ObjectNotFoundException) {
-            // Carry on. This is a new member
+            $alreadyMember = false;
+        }
+
+        if ($alreadyMember) {
+            throw new AccountAlreadyAttachedToAccountGroupException($accountId);
         }
 
         // Create a pending action for the invite
-        $invitationCode = $this->pendingActionService->createPendingAction("ACCOUNT_GROUP_INVITE", $accountGroupId, [
-            "accountId" => $accountId
-        ]);
+        $invitationCode = $this->pendingActionService->createPendingAction(
+            "ACCOUNT_GROUP_INVITE",
+            $accountGroupId,
+            [
+                "accountId" => $accountId
+            ]
+        );
 
+        // if the email fails to be sent, roll back invitation
+        try {
+            // Allow insecure sending of email.
+            $this->activeRecordInterceptor->executeInsecure(
+                function () use ($accountId, $accountGroup, $invitationCode) {
 
-        // Allow insecure sending of email.
-        $this->activeRecordInterceptor->executeInsecure(function () use ($accountId, $accountGroup, $invitationCode) {
+                    // Send an invitation email attached to the account
+                    $invitationEmail = new AccountTemplatedEmail(
+                        $accountId,
+                        "security/account-group-invite",
+                        [
+                            "accountGroup" => $accountGroup,
+                            "invitationCode" => $invitationCode
+                        ]
+                    );
 
-            // Send an invitation email attached to the account
-            $invitationEmail = new AccountTemplatedEmail($accountId, "security/account-group-invite", [
-                "accountGroup" => $accountGroup,
-                "invitationCode" => $invitationCode
-            ]);
+                    $this->emailService->send($invitationEmail, $accountId);
+                }
+            );
+        }
+        catch (Throwable $e) {
+            $this->pendingActionService->removePendingAction(
+                "ACCOUNT_GROUP_INVITE",
+                $invitationCode
+            );
 
-            $this->emailService->send($invitationEmail, $accountId);
-
-        });
-
-
+            throw $e;
+        }
     }
 
 
     /**
      * Function to get all the active account group invitations.
+     * Only the owner should be able to see active group invitations for their group.
      *
      * @param int $accountGroupId
      * @param int $loggedInAccountId
      *
      * @return AccountGroupInvitation[]
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function getActiveAccountGroupInvitationAccounts(
         int $accountGroupId,
@@ -412,6 +433,10 @@ class AccountGroupService {
     ): array {
 
         $accountGroup = $this->getAccountGroup($accountGroupId, $loggedInAccountId);
+
+        if ($accountGroup->getOwnerAccountId() != $loggedInAccountId) {
+            throw new InvalidAccountGroupOwnerException();
+        }
 
         $pendingActions = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId(
             "ACCOUNT_GROUP_INVITE",
@@ -444,7 +469,7 @@ class AccountGroupService {
      * @param int $loggedInAccountId
      *
      * @return void
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
     public function revokeAccountGroupInvitation(
         AccountGroupInvitation $invite,
@@ -456,8 +481,8 @@ class AccountGroupService {
 
         $accountGroup = $this->getAccountGroup($accountGroupId, $loggedInAccountId);
 
-        if ($accountGroup->getOwnerAccountId() !== $loggedInAccountId) {
-            throw new AccessDeniedException();
+        if ($accountGroup->getOwnerAccountId() != $loggedInAccountId) {
+            throw new InvalidAccountGroupOwnerException();
         }
 
         $pendingInvites = $this->pendingActionService->getAllPendingActionsForTypeAndObjectId(
@@ -484,8 +509,7 @@ class AccountGroupService {
      * @param int       $loggedInAccountId
      *
      * @return AccountGroupInvitation
-     * @throws AccessDeniedException
-     * @throws ValidationException
+     * @throws AccessDeniedException|ValidationException
      * @objectInterceptorDisabled
      */
     public function getInvitationDetails(
@@ -498,26 +522,6 @@ class AccountGroupService {
                 "ACCOUNT_GROUP_INVITE",
                 $invitationCode
             );
-
-            $accountId = $pendingAction->getData()["accountId"] ?? null;
-
-            // verify that the invitation belongs to the logged-in account
-            if ($accountId != $loggedInAccountId) {
-                throw new AccessDeniedException();
-            }
-
-            $accountGroup = AccountGroup::fetch($pendingAction->getObjectId());
-
-            $requestingAccountId = $accountGroup->getOwnerAccountId();
-
-            return new AccountGroupInvitation(
-                $pendingAction->getObjectId(),
-                $accountGroup->getName(),
-                $accountId,
-                $accountId ? AccountLabel::fetch($accountId)?->getName() : null,
-                $requestingAccountId ? AccountLabel::fetch($requestingAccountId)->getName() : null,
-                $pendingAction->getExpiryDateTime()->format("Y-m-d H:i:s")
-            );
         } catch (ItemNotFoundException $e) {
             throw new ValidationException(
                 [
@@ -529,6 +533,26 @@ class AccountGroupService {
                 ]
             );
         }
+
+        $accountId = $pendingAction->getData()["accountId"] ?? null;
+
+        // verify that the invitation belongs to the logged-in account
+        if ($accountId != $loggedInAccountId) {
+            throw new AccessDeniedException();
+        }
+
+        $accountGroup = AccountGroup::fetch($pendingAction->getObjectId());
+
+        $requestingAccountId = $accountGroup->getOwnerAccountId();
+
+        return new AccountGroupInvitation(
+            $pendingAction->getObjectId(),
+            $accountGroup->getName(),
+            $accountId,
+            $accountId ? AccountLabel::fetch($accountId)?->getName() : null,
+            $requestingAccountId ? AccountLabel::fetch($requestingAccountId)->getName() : null,
+            $pendingAction->getExpiryDateTime()->format("Y-m-d H:i:s")
+        );
     }
 
 
@@ -539,8 +563,7 @@ class AccountGroupService {
      * @param int       $loggedInAccountId
      *
      * @throws AccessDeniedException
-     * @throws Throwable
-     * @throws ValidationException
+     * @throws Throwable|ValidationException
      * @objectInterceptorDisabled
      */
     public function acceptAccountGroupInvitation(
@@ -553,50 +576,8 @@ class AccountGroupService {
                 "ACCOUNT_GROUP_INVITE",
                 $invitationCode
             );
-
-            $accountId = $pendingAction->getData()["accountId"];
-            $accountGroupId = $pendingAction->getObjectId();
-
-            $pendingData = $pendingAction->getData();
-
-            // verify that the invitation belongs to the logged-in account
-            if ($accountId != $loggedInAccountId) {
-                throw new AccessDeniedException();
-            }
-
-            $accountGroup = AccountGroup::fetch($accountGroupId);
-
-            // check to see that the account isn't already a member
-            try {
-                AccountGroupMember::fetch([$accountGroupId, $accountId]);
-
-                // remove the pending invite anyway
-                $this->pendingActionService->removePendingAction("ACCOUNT_GROUP_INVITE", $invitationCode);
-
-                return; // already a member, so do nothing
-            }
-            catch (ObjectNotFoundException $e) {} //otherwise, continue
-
-            // Add account group member to list
-            $accountGroupMembers = $accountGroup->getAccountGroupMembers();
-            $accountGroupMembers[] = new AccountGroupMember($accountGroupId, $pendingData["accountId"]);
-            $accountGroup->setAccountGroupMembers($accountGroupMembers);
-
-            // Save group to ensure consistency
-            $accountGroupInterceptor = Container::instance()->get(AccountGroupInterceptor::class);
-            $accountGroupInterceptor->executeInsecure(function () use ($accountGroup) {
-                $accountGroup->save();
-            });
-
-            // Remove the pending action once completed.
-            $this->pendingActionService->removePendingAction("ACCOUNT_GROUP_INVITE", $invitationCode);
-
-            $this->emailService->send(
-                new AccountTemplatedEmail($accountId, "security/account-group-welcome", []),
-                $accountId
-            );
-
-        } catch (ItemNotFoundException $e) {
+        }
+        catch (ItemNotFoundException $e) {
             throw new ValidationException(
                 [
                     "invitationCode" => new FieldValidationError(
@@ -608,7 +589,50 @@ class AccountGroupService {
             );
         }
 
+        $accountId = $pendingAction->getData()["accountId"];
+        $accountGroupId = $pendingAction->getObjectId();
 
+        // verify that the invitation belongs to the logged-in account
+        if ($accountId != $loggedInAccountId) {
+            throw new AccessDeniedException();
+        }
+
+        $accountGroup = AccountGroup::fetch($accountGroupId);
+
+        // check to see that the account isn't already a member
+        try {
+            AccountGroupMember::fetch([$accountGroupId, $accountId]);
+            $alreadyMember = true;
+        }
+        catch (ObjectNotFoundException $e) {
+            $alreadyMember = false;
+        }
+
+        if ($alreadyMember) {
+            // remove the pending invite anyway
+            $this->pendingActionService->removePendingAction("ACCOUNT_GROUP_INVITE", $invitationCode);
+
+            throw new AccountAlreadyAttachedToAccountGroupException($accountId);
+        }
+
+        // Add account group member to list
+        $accountGroupMembers = $accountGroup->getAccountGroupMembers();
+        $accountGroupMembers[] = new AccountGroupMember($accountGroupId, $accountId);
+        $accountGroup->setAccountGroupMembers($accountGroupMembers);
+
+        // Save group to ensure consistency
+        $accountGroupInterceptor = Container::instance()->get(AccountGroupInterceptor::class);
+        $accountGroupInterceptor->executeInsecure(function () use ($accountGroup) {
+            $accountGroup->save();
+        });
+
+        // Remove the pending action once completed.
+        $this->pendingActionService->removePendingAction("ACCOUNT_GROUP_INVITE", $invitationCode);
+
+        $this->emailService->send(
+            new AccountTemplatedEmail($accountId, "security/account-group-welcome", []),
+            $accountId
+        );
     }
 
 }
