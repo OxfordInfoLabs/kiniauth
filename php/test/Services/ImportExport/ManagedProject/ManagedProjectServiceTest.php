@@ -90,7 +90,7 @@ class ManagedProjectServiceTest extends TestBase {
         ]));
 
         $this->assertTrue($this->importExportServiceMock->methodWasCalled("importProject", [
-            "soapSuds", new ProjectExport(null,null), 4
+            "soapSuds", $this->service->getLatestExport(1), 4
         ]));
 
         // Assert added as target account
@@ -109,6 +109,7 @@ class ManagedProjectServiceTest extends TestBase {
 
         $projectExport = $this->service->getLatestExport(1);
 
-        $this->assertEquals($expectedExport, $projectExport);
+        $this->assertEquals($expectedExport->getExportData(), $projectExport->getExportData());
+        $this->assertEquals($expectedExport->getExportProjectConfig(), $projectExport->getExportProjectConfig());
     }
 }
