@@ -2,17 +2,19 @@
 
 namespace Kiniauth\Services\Security;
 
+use Kiniauth\Exception\Security\InvalidAccountGroupOwnerException;
 use Kiniauth\Objects\Account\Account;
 use Kiniauth\Objects\Account\AccountGroup;
 use Kinikit\Core\Exception\AccessDeniedException;
 use Kinikit\Persistence\ORM\Interceptor\DefaultORMInterceptor;
+use Throwable;
 
 class AccountGroupInterceptor extends DefaultORMInterceptor {
 
     /**
      * @var SecurityService
      */
-    private $securityService;
+    private SecurityService $securityService;
 
     private bool $disabled = false;
 
@@ -23,17 +25,38 @@ class AccountGroupInterceptor extends DefaultORMInterceptor {
         $this->securityService = $securityService;
     }
 
+    public function postMap($object): bool {
+
+        if ($this->securityService->isSuperUserLoggedIn() || $this->disabled) {
+            return true;
+        }
+
+        $loggedInAccount = $this->getLoggedInAccount();
+
+        if (!$loggedInAccount) {
+            return false;
+        }
+
+        $members = array_map(
+            fn($groupMemberObj) => $groupMemberObj->getMemberAccountId(),
+            $object->getAccountGroupMembers()
+        );
+
+        return in_array($loggedInAccount->getAccountId(), $members);
+    }
+
     /**
      * @param AccountGroup $object
+     *
      * @return void
+     * @throws AccessDeniedException
      */
-    public function preSave($object) {
+    public function preSave($object): void {
 
         if ($this->securityService->isSuperUserLoggedIn() || $this->disabled) {
             return;
         } else {
-            /** @var Account $loggedInAccount */
-            $loggedInAccount = $this->securityService->getLoggedInSecurableAndAccount()[1];
+            $loggedInAccount = $this->getLoggedInAccount();
 
             $members = array_map(fn($groupMemberObj) => $groupMemberObj->getMemberAccountId(), $object->getAccountGroupMembers());
 
@@ -46,17 +69,18 @@ class AccountGroupInterceptor extends DefaultORMInterceptor {
 
     /**
      * @param AccountGroup $object
+     *
      * @return void
+     * @throws InvalidAccountGroupOwnerException
      */
-    public function preDelete($object) {
+    public function preDelete($object): void {
         if ($this->securityService->isSuperUserLoggedIn() || $this->disabled) {
             return;
         } else {
-            /** @var Account $loggedInAccount */
-            $loggedInAccount = $this->securityService->getLoggedInSecurableAndAccount()[1];
+            $loggedInAccount = $this->getLoggedInAccount();
 
             if ($loggedInAccount?->getAccountId() != $object->getOwnerAccountId()) {
-                throw new AccessDeniedException();
+                throw new InvalidAccountGroupOwnerException();
             }
         }
     }
@@ -65,8 +89,11 @@ class AccountGroupInterceptor extends DefaultORMInterceptor {
      * Execute a callable block insecurely with interceptors disabled.
      *
      * @param callable $callable
+     *
+     * @return mixed
+     * @throws Throwable
      */
-    public function executeInsecure($callable) {
+    public function executeInsecure(callable $callable): mixed {
 
         $previousDisabled = $this->disabled;
 
@@ -75,15 +102,18 @@ class AccountGroupInterceptor extends DefaultORMInterceptor {
 
         // Run the callable
         try {
-            $result = $callable();
-        } catch (\Throwable $e) {
+            return $callable();
+        } finally {
             $this->disabled = $previousDisabled;
-            throw($e);
         }
+    }
 
-        $this->disabled = $previousDisabled;
+    private function getLoggedInAccount(): ?Account
+    {
+        $loggedInContext = $this->securityService->getLoggedInSecurableAndAccount();
 
-        return $result;
+        /** @var Account $loggedInAccount */
+        return $loggedInContext[1] ?? null;
     }
 
 }

@@ -2,7 +2,9 @@
 
 namespace Kiniauth\Traits\Controller\Account;
 
+use Exception;
 use Kiniauth\Exception\Security\AccountAlreadyAttachedToAccountGroupException;
+use Kiniauth\Exception\Security\AccountGroupOwnerCannotLeaveException;
 use Kiniauth\Exception\Security\InvalidAccountGroupOwnerException;
 use Kiniauth\Objects\Account\AccountGroupMember;
 use Kiniauth\Services\Account\AccountGroupService;
@@ -15,7 +17,10 @@ use Throwable;
 
 trait AccountGroup {
 
-    private $accountGroupService;
+    /**
+     * @var AccountGroupService
+     */
+    private AccountGroupService $accountGroupService;
 
     /**
      * Account Controller constructor.
@@ -31,16 +36,11 @@ trait AccountGroup {
      * @http GET /
      *
      * @param int $accountGroupId
-     * @param int $loggedInAccountId
      *
      * @return \Kiniauth\Objects\Account\AccountGroup
-     * @throws AccessDeniedException
      */
-    public function getAccountGroup(
-        int $accountGroupId,
-        $loggedInAccountId = Account::LOGGED_IN_ACCOUNT
-    ): \Kiniauth\Objects\Account\AccountGroup {
-        return $this->accountGroupService->getAccountGroup($accountGroupId, $loggedInAccountId);
+    public function getAccountGroup(int $accountGroupId): \Kiniauth\Objects\Account\AccountGroup {
+        return $this->accountGroupService->getAccountGroup($accountGroupId);
     }
 
     /**
@@ -72,16 +72,11 @@ trait AccountGroup {
      * @http GET /members
      *
      * @param int $accountGroupId
-     * @param int $loggedInAccountId
      *
      * @return AccountGroupMember[]
-     * @throws AccessDeniedException
      */
-    public function getAccountGroupMembers(
-        int $accountGroupId,
-        $loggedInAccountId = Account::LOGGED_IN_ACCOUNT
-    ): array {
-        return $this->accountGroupService->getMembersOfAccountGroup($accountGroupId, $loggedInAccountId);
+    public function getAccountGroupMembers(int $accountGroupId): array {
+        return $this->accountGroupService->getMembersOfAccountGroup($accountGroupId);
     }
 
     /**
@@ -89,53 +84,35 @@ trait AccountGroup {
      *
      * @param int $accountGroupId
      * @param int $removingAccountId
-     * @param int $loggedInAccountId
      *
      * @return void
-     * @throws AccessDeniedException
+     * @throws AccessDeniedException|Exception
      */
-    public function removeAccountFromAccountGroup(
-        int $accountGroupId,
-        int $removingAccountId,
-        $loggedInAccountId = Account::LOGGED_IN_ACCOUNT
-    ): void {
-        $this->accountGroupService->removeMemberFromAccountGroup(
-            $accountGroupId,
-            $removingAccountId,
-            $loggedInAccountId
-        );
+    public function removeAccountFromAccountGroup(int $accountGroupId, int $removingAccountId): void {
+        $this->accountGroupService->removeMemberFromAccountGroup($accountGroupId, $removingAccountId);
     }
 
     /**
      * @http GET /leave
      *
      * @param int $accountGroupId
-     * @param int $loggedInAccountId
      *
      * @return void
-     * @throws AccessDeniedException
+     * @throws AccountGroupOwnerCannotLeaveException
      */
-    public function leaveAccountGroup(
-        int $accountGroupId,
-        $loggedInAccountId = Account::LOGGED_IN_ACCOUNT
-    ): void {
-        $this->accountGroupService->leaveAccountGroup($accountGroupId, $loggedInAccountId);
+    public function leaveAccountGroup(int $accountGroupId): void {
+        $this->accountGroupService->leaveAccountGroup($accountGroupId);
     }
 
     /**
      * @http DELETE /
      *
      * @param int $accountGroupId
-     * @param int $loggedInAccountId
      *
      * @return void
-     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
-    public function deleteAccountGroup(
-        int $accountGroupId,
-        $loggedInAccountId = Account::LOGGED_IN_ACCOUNT
-    ): void {
-        $this->accountGroupService->deleteAccountGroup($accountGroupId, $loggedInAccountId);
+    public function deleteAccountGroup(int $accountGroupId): void {
+        $this->accountGroupService->deleteAccountGroup($accountGroupId);
     }
 
     /**
@@ -145,21 +122,12 @@ trait AccountGroup {
      *
      * @param int       $accountGroupId
      * @param string    $accountExternalIdentifier
-     * @param int       $loggedInAccountId
      *
      * @return void
      * @throws InvalidAccountGroupOwnerException|AccountAlreadyAttachedToAccountGroupException|Throwable
      */
-    public function inviteAccountToAccountGroup(
-        int $accountGroupId,
-        string $accountExternalIdentifier,
-        $loggedInAccountId = Account::LOGGED_IN_ACCOUNT
-    ): void {
-        $this->accountGroupService->inviteAccountToAccountGroup(
-            $accountGroupId,
-            $accountExternalIdentifier,
-            $loggedInAccountId
-        );
+    public function inviteAccountToAccountGroup(int $accountGroupId, string $accountExternalIdentifier): void {
+        $this->accountGroupService->inviteAccountToAccountGroup($accountGroupId, $accountExternalIdentifier);
     }
 
 
@@ -169,19 +137,12 @@ trait AccountGroup {
      * @http GET /invitations
      *
      * @param int $accountGroupId
-     * @param int $loggedInAccountId
      *
      * @return AccountGroupInvitation[]
      * @throws AccessDeniedException|InvalidAccountGroupOwnerException
      */
-    public function getActiveAccountGroupInvitationAccounts(
-        int $accountGroupId,
-        $loggedInAccountId = Account::LOGGED_IN_ACCOUNT
-    ): array {
-        return $this->accountGroupService->getActiveAccountGroupInvitationAccounts(
-            $accountGroupId,
-            $loggedInAccountId
-        );
+    public function getActiveAccountGroupInvitationAccounts(int $accountGroupId): array {
+        return $this->accountGroupService->getActiveAccountGroupInvitationAccounts($accountGroupId);
     }
 
     /**
@@ -190,16 +151,12 @@ trait AccountGroup {
      * @http GET /invitation/$invitationCode
      *
      * @param string $invitationCode
-     * @param int $loggedInAccountId
      *
      * @return AccountGroupInvitation
      * @throws ValidationException|AccessDeniedException
      */
-    public function getInvitationDetails(
-        string $invitationCode,
-        $loggedInAccountId = Account::LOGGED_IN_ACCOUNT
-    ): AccountGroupInvitation {
-        return $this->accountGroupService->getInvitationDetails($invitationCode, $loggedInAccountId);
+    public function getInvitationDetails(string $invitationCode): AccountGroupInvitation {
+        return $this->accountGroupService->getInvitationDetails($invitationCode);
     }
 
     /**
@@ -208,16 +165,12 @@ trait AccountGroup {
      * @http POST /invitation/$invitationCode
      *
      * @param string    $invitationCode
-     * @param int       $loggedInAccountId
      *
      * @return void
      * @throws AccessDeniedException|Throwable|ValidationException
      */
-    public function acceptInviteToAccountGroup(
-        string $invitationCode,
-        $loggedInAccountId = Account::LOGGED_IN_ACCOUNT
-    ): void {
-        $this->accountGroupService->acceptAccountGroupInvitation($invitationCode, $loggedInAccountId);
+    public function acceptInviteToAccountGroup(string $invitationCode): void {
+        $this->accountGroupService->acceptAccountGroupInvitation($invitationCode);
     }
 
     /**
@@ -226,15 +179,11 @@ trait AccountGroup {
      * @http DELETE /invite
      *
      * @param AccountGroupInvitation $invite
-     * @param int $loggedInAccountId
      *
      * @return void
-     * @throws AccessDeniedException|InvalidAccountGroupOwnerException
+     * @throws InvalidAccountGroupOwnerException
      */
-    public function revokeAccountGroupInvitation(
-        AccountGroupInvitation $invite,
-        $loggedInAccountId = Account::LOGGED_IN_ACCOUNT
-    ): void {
-        $this->accountGroupService->revokeAccountGroupInvitation($invite, $loggedInAccountId);
+    public function revokeAccountGroupInvitation(AccountGroupInvitation $invite): void {
+        $this->accountGroupService->revokeAccountGroupInvitation($invite);
     }
 }
